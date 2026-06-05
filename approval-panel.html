@@ -1,0 +1,3243 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel de presupuestos</title>
+  <style>
+    :root {
+      --bg: #eef1f4;
+      --surface: #ffffff;
+      --surface-soft: #f7f8fa;
+      --surface-strong: #101820;
+      --text: #18212b;
+      --muted: #66717f;
+      --line: #d9dee5;
+      --accent: #174c43;
+      --accent-dark: #0f3932;
+      --accent-soft: #e3efec;
+      --blue: #1f4e79;
+      --blue-soft: #e5eef7;
+      --warning: #8a5a12;
+      --warning-soft: #fff3dc;
+      --danger: #8f2424;
+      --danger-soft: #f9e3e3;
+      --success: #25613d;
+      --success-soft: #e2f2e9;
+      --neutral-soft: #edf0f3;
+      --shadow: 0 10px 26px rgba(16, 24, 32, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    header {
+      background: var(--surface-strong);
+      border-bottom: 1px solid #24313d;
+      color: #fff;
+      padding: 18px 24px;
+    }
+
+    .header-inner {
+      align-items: center;
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      margin: 0 auto;
+      max-width: 1280px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .subtitle {
+      color: #97a3af;
+      font-size: 14px;
+      margin: 5px 0 0;
+    }
+
+    .updated {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      color: #cfd6dd;
+      font-size: 13px;
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+
+    main {
+      margin: 22px auto;
+      max-width: 1280px;
+      padding: 0 20px 32px;
+    }
+
+    .metrics {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 30px;
+      font-weight: 750;
+      line-height: 1;
+    }
+
+    .toolbar {
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding: 12px;
+    }
+
+    .new-request {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .new-request:hover,
+    .approve:hover {
+      background: var(--accent-dark);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 14px;
+      min-height: 36px;
+      padding: 0 12px;
+    }
+
+    .filter.active {
+      background: var(--surface-strong);
+      border-color: var(--surface-strong);
+      color: #fff;
+    }
+
+    .search {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--text);
+      font-size: 14px;
+      min-height: 36px;
+      min-width: 260px;
+      padding: 0 10px;
+    }
+
+    .toolbar-actions {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+    }
+
+    .board {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .table-head,
+    .row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1.15fr 1.15fr 0.95fr 1fr 0.95fr 1.15fr 1.15fr 1.1fr;
+      padding: 11px 14px;
+    }
+
+    .table-head {
+      background: #e8edf2;
+      border-bottom: 1px solid var(--line);
+      color: #46515d;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .row {
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      min-height: 68px;
+    }
+
+    .row:hover {
+      background: #f8fafc;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .primary {
+      font-size: 14px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .secondary {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      border-radius: 5px;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1;
+      padding: 7px 8px;
+      width: fit-content;
+    }
+
+    .badge.pending_approval,
+    .badge.approved_waiting_reason {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    .badge.in_progress,
+    .badge.missing_info,
+    .badge.ready_to_quote,
+    .badge.proposal_sent,
+    .badge.follow_up,
+    .badge.confirmed,
+    .badge.lost,
+    .badge.test {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .badge.ready_to_quote,
+    .badge.confirmed {
+      background: var(--success-soft);
+      color: var(--success);
+    }
+
+    .badge.missing_info,
+    .badge.follow_up {
+      background: var(--warning-soft);
+      color: var(--warning);
+    }
+
+    .badge.lost {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .badge.referred,
+    .badge.ignored {
+      background: var(--neutral-soft);
+      color: var(--muted);
+    }
+
+    .progress {
+      background: var(--neutral-soft);
+      border-radius: 4px;
+      height: 7px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .progress > div {
+      background: var(--accent);
+      height: 100%;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      min-height: 36px;
+      padding: 0 11px;
+      white-space: nowrap;
+    }
+
+    .approve {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .reject {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .reject:hover {
+      background: #f3cccc;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 36px;
+      text-align: center;
+    }
+
+    .notice {
+      background: var(--blue-soft);
+      border: 1px solid #c6d7e8;
+      border-radius: 6px;
+      color: var(--blue);
+      display: none;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+    }
+
+    .notice.open {
+      display: block;
+    }
+
+    .notice.error {
+      background: var(--warning-soft);
+      border-color: #ead4a8;
+      color: var(--warning);
+    }
+
+    .detail {
+      background: rgba(16, 24, 32, 0.48);
+      display: none;
+      inset: 0;
+      padding: 24px;
+      position: fixed;
+      z-index: 10;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .form-field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .form-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      font: inherit;
+      min-height: 38px;
+      padding: 8px 10px;
+      width: 100%;
+    }
+
+    .form-field textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    .inline-control {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 38px;
+    }
+
+    .autocomplete {
+      position: relative;
+    }
+
+    .autocomplete-list {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      box-shadow: var(--shadow);
+      display: none;
+      left: 0;
+      max-height: 220px;
+      overflow: auto;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 30;
+    }
+
+    .autocomplete-list.open {
+      display: block;
+    }
+
+    .autocomplete-option {
+      cursor: pointer;
+      font-size: 14px;
+      padding: 9px 10px;
+    }
+
+    .autocomplete-option:hover {
+      background: var(--accent-soft);
+    }
+
+    .autocomplete-empty {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 9px 10px;
+    }
+
+    .invoice-reader {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .invoice-preview {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: none;
+      max-height: 220px;
+      object-fit: contain;
+      width: 100%;
+    }
+
+    .invoice-preview.open {
+      display: block;
+    }
+
+    .reader-status {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .purchase-items {
+      display: grid;
+      gap: 10px;
+    }
+
+    .purchase-item {
+      align-items: start;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1.6fr) 90px 120px 38px;
+    }
+
+    .purchase-item input {
+      min-height: 38px;
+    }
+
+    .workspace-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .workspace-tab {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .workspace-tab.active {
+      background: var(--surface-strong);
+      border-color: var(--surface-strong);
+      color: #fff;
+    }
+
+    .workspace-view {
+      display: none;
+    }
+
+    .workspace-view.open {
+      display: block;
+    }
+
+    .panel-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) 420px;
+    }
+
+    .panel-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .compact-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .compact-item {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    .recipe-list {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+
+    .recipe-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8faf9 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      display: grid;
+      gap: 12px;
+      min-height: 150px;
+      padding: 16px;
+      transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+    }
+
+    .recipe-card:hover {
+      border-color: #b8c8c3;
+      box-shadow: 0 12px 28px rgba(16, 24, 32, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .recipe-card-head {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .recipe-card-title {
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .recipe-pill {
+      background: var(--accent-soft);
+      border-radius: 999px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      height: fit-content;
+      padding: 5px 8px;
+      white-space: nowrap;
+    }
+
+    .recipe-card-stats {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recipe-stat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px;
+    }
+
+    .recipe-stat span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .recipe-stat strong {
+      display: block;
+      font-size: 15px;
+      margin-top: 4px;
+    }
+
+    .recipe-detail-summary {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .recipe-detail-section {
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+      padding-top: 14px;
+    }
+
+    .recipe-item {
+      align-items: start;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 120px minmax(0, 1.4fr) 80px 90px 100px 80px 38px;
+    }
+
+    .recipe-process-item {
+      align-items: start;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 120px minmax(0, 1.4fr) 90px 90px minmax(0, 1fr) 38px;
+    }
+
+    .recipe-summary {
+      background: var(--accent-soft);
+      border: 1px solid #c5ddd7;
+      border-radius: 6px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      padding: 12px;
+    }
+
+    .recipe-summary strong {
+      display: block;
+      font-size: 20px;
+    }
+
+    .recipe-scale {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 12px;
+    }
+
+    .recipe-scale-head {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 120px;
+    }
+
+    .recipe-breakdown {
+      display: grid;
+      gap: 6px;
+    }
+
+    .recipe-breakdown-row {
+      align-items: center;
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1.2fr) 110px 110px;
+      padding-top: 7px;
+    }
+
+    .icon-action {
+      min-width: 38px;
+      padding: 0;
+    }
+
+    .detail.open {
+      display: block;
+    }
+
+    .detail-panel {
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+      margin-left: auto;
+      max-height: calc(100vh - 48px);
+      max-width: 560px;
+      overflow: auto;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .detail-head {
+      align-items: flex-start;
+      display: flex;
+      gap: 14px;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .close {
+      background: var(--neutral-soft);
+      color: var(--text);
+      min-width: 38px;
+      padding: 0;
+    }
+
+    .fields {
+      display: grid;
+      gap: 10px;
+    }
+
+    .field {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .field label {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .field div {
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 980px) {
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .search {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .toolbar-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .table-head {
+        display: none;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .purchase-item {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-grid,
+      .recipe-item,
+      .recipe-process-item,
+      .recipe-scale-head,
+      .recipe-breakdown-row,
+      .recipe-summary,
+      .recipe-detail-summary,
+      .recipe-card-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>Control Comercial</h1>
+        <p class="subtitle">Seguimiento de oportunidades, presupuestos y derivaciones de eventos.</p>
+      </div>
+      <div id="updated" class="updated">Actualizando...</div>
+    </div>
+  </header>
+
+  <main>
+    <div id="notice" class="notice"></div>
+
+    <div class="workspace-tabs">
+      <button class="workspace-tab active" data-view="commercial">Comercial</button>
+      <button class="workspace-tab" data-view="customers">Clientes</button>
+      <button class="workspace-tab" data-view="recipes">Recetas</button>
+    </div>
+
+    <section id="view-commercial" class="workspace-view open">
+      <section class="metrics">
+        <div class="metric"><span>Oportunidades</span><strong id="m-total">0</strong></div>
+        <div class="metric"><span>Por aprobar</span><strong id="m-pending">0</strong></div>
+        <div class="metric"><span>En relevamiento</span><strong id="m-progress">0</strong></div>
+        <div class="metric"><span>Listas para presupuestar</span><strong id="m-ready">0</strong></div>
+        <div class="metric"><span>Seguimientos hoy</span><strong id="m-today">0</strong></div>
+        <div class="metric"><span>Vencidas</span><strong id="m-overdue">0</strong></div>
+      </section>
+
+      <section class="toolbar">
+        <div class="filters">
+          <button class="filter active" data-filter="all">Todos</button>
+          <button class="filter" data-filter="pending_approval">Pendientes</button>
+          <button class="filter" data-filter="in_progress">Relevamiento</button>
+          <button class="filter" data-filter="missing_info">Faltan datos</button>
+          <button class="filter" data-filter="ready_to_quote">Listos</button>
+          <button class="filter" data-filter="proposal_sent">Propuesta enviada</button>
+          <button class="filter" data-filter="follow_up">Seguimiento</button>
+          <button class="filter" data-filter="confirmed">Confirmados</button>
+          <button class="filter" data-filter="referred">Derivados</button>
+          <button class="filter" data-filter="due_today">Hoy</button>
+          <button class="filter" data-filter="overdue">Vencidos</button>
+          <button class="filter" data-filter="unassigned">Sin responsable</button>
+        </div>
+        <div class="toolbar-actions">
+          <input id="search" class="search" placeholder="Buscar cliente, telefono, canal o evento">
+          <button class="filter" onclick="showPurchaseForm()">Cargar compra</button>
+          <button class="new-request" onclick="showManualForm()">Nuevo pedido</button>
+        </div>
+      </section>
+
+      <section class="board">
+        <div class="table-head">
+          <div>Cliente</div>
+          <div>Contacto</div>
+          <div>Canal</div>
+          <div>Estado</div>
+          <div>Responsable</div>
+          <div>Evento</div>
+          <div>Proxima accion</div>
+          <div>Acciones</div>
+        </div>
+        <div id="rows"></div>
+      </section>
+    </section>
+
+    <section id="view-customers" class="workspace-view">
+      <div class="panel-grid">
+        <section class="panel-box">
+          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+            <input id="customer-search" class="search" placeholder="Buscar cliente o telefono">
+            <button class="filter" onclick="loadCustomers()">Actualizar</button>
+          </div>
+          <div id="customer-list" class="compact-list"></div>
+        </section>
+        <section class="panel-box">
+          <h2 style="margin-top:0;font-size:20px;">Guardar cliente</h2>
+          <form id="customer-form" class="form-grid">
+            <input type="hidden" name="id">
+            <div class="form-field full">
+              <label>Nombre</label>
+              <input name="fullName" required>
+            </div>
+            <div class="form-field full">
+              <label>Telefono</label>
+              <input name="displayPhone" required>
+            </div>
+            <div class="form-field full">
+              <label>Nombre de agenda</label>
+              <input name="contactName">
+            </div>
+            <div class="form-field full">
+              <label>Notas</label>
+              <textarea name="notes"></textarea>
+            </div>
+            <div class="actions full">
+              <button class="approve" type="submit">Guardar cliente</button>
+              <button class="filter" type="button" onclick="document.getElementById('customer-form').reset()">Limpiar</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+
+    <section id="view-recipes" class="workspace-view">
+      <div class="panel-grid">
+        <section class="panel-box">
+          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+            <input id="recipe-search" class="search" placeholder="Buscar receta">
+            <button class="approve" onclick="showBudgetBuilder()">Generar presupuesto</button>
+            <button class="filter" onclick="loadRecipes()">Actualizar</button>
+          </div>
+          <div id="recipe-list" class="compact-list recipe-list"></div>
+        </section>
+        <section class="panel-box">
+          <h2 style="margin-top:0;font-size:20px;">Costos generales</h2>
+          <form id="cost-settings-form" class="form-grid" style="margin-bottom:16px;">
+            <div class="form-field full">
+              <label>Valor hora de personal</label>
+              <input name="laborHourlyCost" inputmode="decimal" placeholder="$ por hora">
+            </div>
+            <div class="actions full">
+              <button class="filter" type="submit">Guardar valor hora</button>
+            </div>
+          </form>
+          <h2 style="margin-top:0;font-size:20px;">Receta y costo</h2>
+          <form id="recipe-form" class="form-grid">
+            <input type="hidden" name="id">
+            <div class="form-field">
+              <label>Nombre</label>
+              <input name="name" required>
+            </div>
+            <div class="form-field">
+              <label>Rinde cantidad</label>
+              <input name="portions" inputmode="decimal" placeholder="Ej: 30,950" required>
+            </div>
+            <div class="form-field">
+              <label>Unidad de rendimiento</label>
+              <select name="yieldUnit">
+                <option value="unidad">Unidades / porciones</option>
+                <option value="kg">Kg</option>
+                <option value="litros">Litros</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label>Categoria</label>
+              <input name="category" placeholder="Entrada, principal, postre, coffee">
+            </div>
+            <div class="form-field full">
+              <label>Horas de personal</label>
+              <input name="laborHours" inputmode="decimal" placeholder="Horas para esta receta base">
+            </div>
+            <div class="form-field">
+              <label>Tiempo de elaboracion</label>
+              <input name="productionTimeHours" inputmode="decimal" placeholder="Horas de cocina">
+            </div>
+            <div class="form-field">
+              <label>Tiempo de armado</label>
+              <input name="assemblyTimeMinutes" inputmode="decimal" placeholder="Minutos">
+            </div>
+            <div class="form-field">
+              <label>Personas de armado</label>
+              <input name="assemblyPeople" inputmode="decimal" placeholder="Cantidad">
+            </div>
+            <div class="form-field">
+              <label>Cantidad armada</label>
+              <input name="assemblyQuantity" inputmode="decimal" placeholder="Ej: 100">
+            </div>
+            <div class="form-field full">
+              <label>Unidad de armado</label>
+              <input name="assemblyUnit" placeholder="Empanadas, cazuelas, bandejas">
+            </div>
+            <div class="form-field full">
+              <label>Procesos, mermas y rendimiento</label>
+              <div id="recipe-process-rows" class="purchase-items"></div>
+              <button class="filter" type="button" onclick="addRecipeProcessRow()">Agregar registro tecnico</button>
+            </div>
+            <div class="form-field full">
+              <label>Ingredientes</label>
+              <div id="recipe-items" class="purchase-items"></div>
+              <button class="filter" type="button" onclick="addRecipeItemRow()">Agregar insumo</button>
+            </div>
+            <div class="recipe-summary full">
+              <div><span>Total receta</span><strong id="recipe-total">$0</strong></div>
+              <div><span id="recipe-unit-label">Costo unitario</span><strong id="recipe-portion">$0</strong></div>
+              <div><span>Personal</span><strong id="recipe-labor">$0</strong></div>
+            </div>
+            <div class="form-field full">
+              <label>Notas</label>
+              <textarea name="notes"></textarea>
+            </div>
+            <div class="actions full">
+              <button class="approve" type="submit">Guardar receta</button>
+              <button class="filter" type="button" onclick="resetRecipeForm()">Nueva</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <section id="detail" class="detail" onclick="closeDetail(event)">
+    <aside class="detail-panel" onclick="event.stopPropagation()">
+      <div class="detail-head">
+        <div>
+          <h2 id="detail-title" style="margin:0;font-size:22px;">Detalle</h2>
+          <p id="detail-subtitle" class="subtitle"></p>
+        </div>
+        <button class="close" onclick="hideDetail()">X</button>
+      </div>
+      <div id="detail-fields" class="fields"></div>
+    </aside>
+  </section>
+
+  <section id="recipe-detail" class="detail" onclick="closeRecipeDetail(event)">
+    <aside class="detail-panel" onclick="event.stopPropagation()" style="max-width:760px;">
+      <div class="detail-head">
+        <div>
+          <h2 id="recipe-detail-title" style="margin:0;font-size:24px;">Receta</h2>
+          <p id="recipe-detail-subtitle" class="subtitle"></p>
+        </div>
+        <button class="close" onclick="hideRecipeDetail()">X</button>
+      </div>
+      <div id="recipe-detail-body"></div>
+    </aside>
+  </section>
+
+  <section id="manual" class="detail" onclick="closeManual(event)">
+    <aside class="detail-panel" onclick="event.stopPropagation()">
+      <div class="detail-head">
+        <div>
+          <h2 style="margin:0;font-size:22px;">Nueva oportunidad</h2>
+          <p class="subtitle">Carga manual para solicitudes recibidas por canales externos.</p>
+        </div>
+        <button class="close" onclick="hideManualForm()">X</button>
+      </div>
+
+      <form id="manual-form" class="form-grid">
+        <div class="form-field">
+          <label>Canal de origen</label>
+          <select name="channel" required>
+            <option value="">Seleccionar</option>
+            <option>WhatsApp Claudia</option>
+            <option>WhatsApp German</option>
+            <option>WhatsApp Joaquin</option>
+            <option>Instagram</option>
+            <option>Telefono</option>
+            <option>Email</option>
+            <option>Referido</option>
+            <option>Otro</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Estado inicial</label>
+          <select name="status">
+            <option value="in_progress">En relevamiento</option>
+            <option value="missing_info">Faltan datos</option>
+            <option value="ready_to_quote">Listo para presupuestar</option>
+            <option value="proposal_sent">Propuesta enviada</option>
+            <option value="follow_up">En seguimiento</option>
+            <option value="confirmed">Confirmado</option>
+            <option value="lost">Perdido</option>
+            <option value="referred">Derivado</option>
+            <option value="test">Prueba</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Responsable</label>
+          <select name="assignedTo">
+            <option value="">Sin asignar</option>
+            <option>Claudia</option>
+            <option>German</option>
+            <option>Joaquin</option>
+            <option>Administracion</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Nombre del cliente</label>
+          <input name="fullName" required>
+        </div>
+
+        <div class="form-field">
+          <label>Telefono o contacto</label>
+          <input name="phone" placeholder="Opcional">
+        </div>
+
+        <div class="form-field">
+          <label>Tipo de evento</label>
+          <input name="eventType">
+        </div>
+
+        <div class="form-field">
+          <label>Fecha estimada</label>
+          <input name="eventDate" placeholder="DD/MM/AAAA">
+        </div>
+
+        <div class="form-field">
+          <label>Invitados</label>
+          <input name="guestCount" type="number" min="1">
+        </div>
+
+        <div class="form-field">
+          <label>Lugar o zona</label>
+          <input name="venue">
+        </div>
+
+        <div class="form-field full">
+          <label>Servicio gastronomico</label>
+          <input name="serviceType">
+        </div>
+
+        <div class="form-field full">
+          <label>Momentos del evento</label>
+          <input name="eventMoments" placeholder="Bienvenida, recepcion, coffee, comida, postre, barra, trasnoche">
+        </div>
+
+        <div class="form-field">
+          <label>Menu elegido</label>
+          <input name="selectedMenu" placeholder="Ejemplo: Menu premium, criollo, cocktail ejecutivo">
+        </div>
+
+        <div class="form-field">
+          <label>Bebidas</label>
+          <select name="includesDrinks">
+            <option value="">Sin definir</option>
+            <option>Con bebidas</option>
+            <option>Sin bebidas</option>
+            <option>Solo bebidas sin alcohol</option>
+            <option>Bebidas a cotizar aparte</option>
+          </select>
+        </div>
+
+        <div class="form-field full">
+          <label>Detalle de bebidas</label>
+          <input name="drinkType" placeholder="Agua, gaseosas, vinos, mocktails, barra, hidratacion continua">
+        </div>
+
+        <div class="form-field">
+          <label>Modalidad</label>
+          <select name="serviceMode">
+            <option value="">Sin definir</option>
+            <option>Bandejeo</option>
+            <option>Sentado a la mesa</option>
+            <option>Mixto</option>
+            <option>Estaciones</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Tipo de bandejeo</label>
+          <select name="trayServiceType">
+            <option value="">Sin definir</option>
+            <option>Solo finger food</option>
+            <option>Bandejeo de cazuelas</option>
+            <option>Finger food y cazuelas</option>
+            <option>No aplica</option>
+          </select>
+        </div>
+
+        <div class="form-field full">
+          <label>Formato gastronomico</label>
+          <input name="foodFormat" placeholder="Ejemplo: recepcion, principal, postre, mesa dulce, trasnoche">
+        </div>
+
+        <div class="form-field">
+          <label>Vajilla / cristaleria</label>
+          <select name="tableware">
+            <option value="">Sin definir</option>
+            <option>Incluida</option>
+            <option>No incluida</option>
+            <option>Descartable premium</option>
+            <option>A confirmar</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Personal</label>
+          <input name="staff" placeholder="Mozos, barra, estaciones, coordinador">
+        </div>
+
+        <div class="form-field">
+          <label>Cocina / apoyo</label>
+          <select name="kitchenAvailable">
+            <option value="">Sin definir</option>
+            <option>Cuenta con cocina</option>
+            <option>Solo espacio de apoyo</option>
+            <option>No cuenta con cocina</option>
+            <option>A confirmar</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Horarios / jornadas</label>
+          <input name="schedule" placeholder="Horario, duracion, pausas o jornadas">
+        </div>
+
+        <div class="form-field">
+          <label>Presupuesto objetivo</label>
+          <input name="budgetRange" placeholder="Basico, premium, signature o rango estimado">
+        </div>
+
+        <div class="form-field">
+          <label>Proxima accion</label>
+          <input name="nextAction" placeholder="Enviar propuesta, pedir datos, llamar, derivar">
+        </div>
+
+        <div class="form-field">
+          <label>Fecha de seguimiento</label>
+          <input name="followUpDate" type="date">
+        </div>
+
+        <div class="form-field full">
+          <label>Motivo / estado comercial</label>
+          <input name="statusReason" placeholder="Ejemplo: falta confirmar fecha, propuesta enviada, espera respuesta">
+        </div>
+
+        <div class="form-field full">
+          <label>Restricciones alimentarias</label>
+          <input name="dietaryRestrictions">
+        </div>
+
+        <div class="form-field full">
+          <label>Notas comerciales</label>
+          <textarea name="commercialNotes" placeholder="Preferencias, dudas abiertas, rango de presupuesto, decision pendiente."></textarea>
+        </div>
+
+        <div class="form-field full">
+          <label>Notas internas</label>
+          <textarea name="notes" placeholder="Ejemplo: lo pidio por el WhatsApp personal de Claudia, falta confirmar fecha."></textarea>
+        </div>
+
+        <div class="actions full">
+          <button class="approve" type="submit">Guardar pedido</button>
+          <button class="reject" type="button" onclick="hideManualForm()">Cancelar</button>
+        </div>
+      </form>
+    </aside>
+  </section>
+
+  <section id="budget-builder" class="detail" onclick="closeBudgetBuilder(event)">
+    <aside class="detail-panel" onclick="event.stopPropagation()" style="max-width:760px;">
+      <div class="detail-head">
+        <div>
+          <h2 style="margin:0;font-size:22px;">Generar presupuesto</h2>
+          <p class="subtitle">Seleccione recetas y cantidades para calcular el costo final del servicio.</p>
+        </div>
+        <button class="close" onclick="hideBudgetBuilder()">X</button>
+      </div>
+      <div id="budget-recipe-rows" class="purchase-items"></div>
+      <div class="actions" style="margin:12px 0;">
+        <button class="filter" type="button" onclick="addBudgetRecipeRow()">Agregar receta</button>
+      </div>
+      <div class="recipe-summary">
+        <div><span>Recetas</span><strong id="budget-food-total">$0</strong></div>
+        <div><span>Personal incluido</span><strong id="budget-labor-total">$0</strong></div>
+        <div><span>Costo final servicio</span><strong id="budget-total">$0</strong></div>
+      </div>
+      <div id="budget-breakdown" class="recipe-breakdown" style="margin-top:14px;"></div>
+    </aside>
+  </section>
+
+  <section id="purchase" class="detail" onclick="closePurchase(event)">
+    <aside class="detail-panel" onclick="event.stopPropagation()">
+      <div class="detail-head">
+        <div>
+          <h2 style="margin:0;font-size:22px;">Cargar compra</h2>
+          <p class="subtitle">Registro de gastos para la hoja Registro_Gastos.</p>
+        </div>
+        <button class="close" onclick="hidePurchaseForm()">X</button>
+      </div>
+
+      <form id="purchase-form" class="form-grid">
+        <div class="form-field full">
+          <label>Foto de factura</label>
+          <div class="invoice-reader">
+            <input id="invoice-photo" type="file" accept="image/*">
+            <img id="invoice-preview" class="invoice-preview" alt="Vista previa de factura">
+            <p id="invoice-reader-status" class="reader-status">Lectura gratuita local. Si Ollama esta instalado, usa razonamiento local; si no, usa OCR.</p>
+            <div class="actions">
+              <button id="invoice-read-button" class="filter" type="button" onclick="analyzeInvoicePhoto()">Leer factura gratis</button>
+              <button class="filter" type="button" onclick="clearInvoicePhoto()">Quitar foto</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Fecha</label>
+          <input name="date" type="date" required>
+        </div>
+
+        <div class="form-field">
+          <label>Proveedor</label>
+          <div class="inline-control">
+            <div class="autocomplete">
+              <input name="provider" id="purchase-provider" autocomplete="off" required>
+              <div id="purchase-provider-suggestions" class="autocomplete-list"></div>
+            </div>
+            <button class="filter icon-action" type="button" onclick="addPurchaseOptionFromPrompt('provider')">+</button>
+          </div>
+        </div>
+
+        <div class="form-field full">
+          <label>Productos de la factura</label>
+          <div id="purchase-items" class="purchase-items"></div>
+          <div class="actions">
+            <button class="filter" type="button" onclick="addPurchaseItemRow()">Agregar producto</button>
+            <button class="filter" type="button" onclick="addPurchaseOptionFromPrompt('product')">Cargar producto nuevo</button>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Comprobante</label>
+          <select name="invoiceType">
+            <option>Factura A</option>
+            <option>Factura B</option>
+            <option>Factura C</option>
+            <option>Ticket</option>
+            <option>Remito</option>
+            <option>Presupuesto</option>
+            <option>Sin comprobante</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>IVA</label>
+          <select name="ivaRate">
+            <option value="0">0%</option>
+            <option value="0.105">10.5%</option>
+            <option value="0.21">21%</option>
+            <option value="0.27">27%</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Evento</label>
+          <select name="eventName" id="purchase-event" required></select>
+        </div>
+
+        <div class="form-field">
+          <label>Estado de pago</label>
+          <select name="paymentStatus">
+            <option>Pendiente</option>
+            <option>Pagado</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Medio de pago</label>
+          <select name="paymentMethod" id="purchase-payment-method"></select>
+        </div>
+
+        <div class="form-field">
+          <label>Origen de fondos</label>
+          <select name="fundsSource" id="purchase-funds-source"></select>
+        </div>
+
+        <div class="form-field full">
+          <label>Observaciones</label>
+          <textarea name="notes" placeholder="Datos internos, aclaraciones o link del comprobante."></textarea>
+        </div>
+
+        <div class="actions full">
+          <button class="approve" type="submit">Enviar a compras</button>
+          <button class="reject" type="button" onclick="hidePurchaseForm()">Cancelar</button>
+        </div>
+      </form>
+    </aside>
+  </section>
+
+  <section id="edit" class="detail" onclick="closeEdit(event)">
+    <aside class="detail-panel" onclick="event.stopPropagation()">
+      <div class="detail-head">
+        <div>
+          <h2 style="margin:0;font-size:22px;">Editar presupuesto</h2>
+          <p class="subtitle">Complete o ajuste los datos comerciales del pedido.</p>
+        </div>
+        <button class="close" onclick="hideEditForm()">X</button>
+      </div>
+
+      <form id="edit-form" class="form-grid">
+        <input type="hidden" name="phone">
+
+        <div class="form-field">
+          <label>Canal</label>
+          <input name="channel">
+        </div>
+
+        <div class="form-field">
+          <label>Estado</label>
+          <select name="status">
+            <option value="new">Nuevo</option>
+            <option value="pending_approval">Pendiente de aprobacion</option>
+            <option value="approved_waiting_reason">Esperando motivo</option>
+            <option value="in_progress">En relevamiento</option>
+            <option value="missing_info">Faltan datos</option>
+            <option value="ready_to_quote">Listo para presupuestar</option>
+            <option value="proposal_sent">Propuesta enviada</option>
+            <option value="follow_up">En seguimiento</option>
+            <option value="confirmed">Confirmado</option>
+            <option value="lost">Perdido</option>
+            <option value="referred">Derivado</option>
+            <option value="test">Prueba</option>
+            <option value="ignored">Ignorado</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Responsable</label>
+          <select name="assignedTo">
+            <option value="">Sin asignar</option>
+            <option>Claudia</option>
+            <option>German</option>
+            <option>Joaquin</option>
+            <option>Administracion</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Nombre del cliente</label>
+          <input name="fullName">
+        </div>
+
+        <div class="form-field">
+          <label>Telefono o contacto</label>
+          <input name="externalPhone">
+        </div>
+
+        <div class="form-field">
+          <label>Tipo de evento</label>
+          <input name="eventType">
+        </div>
+
+        <div class="form-field">
+          <label>Fecha estimada</label>
+          <input name="eventDate">
+        </div>
+
+        <div class="form-field">
+          <label>Invitados</label>
+          <input name="guestCount" type="number" min="0">
+        </div>
+
+        <div class="form-field">
+          <label>Lugar o zona</label>
+          <input name="venue">
+        </div>
+
+        <div class="form-field full">
+          <label>Servicio gastronomico</label>
+          <input name="serviceType">
+        </div>
+
+        <div class="form-field full">
+          <label>Momentos del evento</label>
+          <input name="eventMoments">
+        </div>
+
+        <div class="form-field">
+          <label>Menu elegido</label>
+          <input name="selectedMenu">
+        </div>
+
+        <div class="form-field">
+          <label>Bebidas</label>
+          <select name="includesDrinks">
+            <option value="">Sin definir</option>
+            <option>Con bebidas</option>
+            <option>Sin bebidas</option>
+            <option>Solo bebidas sin alcohol</option>
+            <option>Bebidas a cotizar aparte</option>
+          </select>
+        </div>
+
+        <div class="form-field full">
+          <label>Detalle de bebidas</label>
+          <input name="drinkType">
+        </div>
+
+        <div class="form-field">
+          <label>Modalidad</label>
+          <select name="serviceMode">
+            <option value="">Sin definir</option>
+            <option>Bandejeo</option>
+            <option>Sentado a la mesa</option>
+            <option>Mixto</option>
+            <option>Estaciones</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Tipo de bandejeo</label>
+          <select name="trayServiceType">
+            <option value="">Sin definir</option>
+            <option>Solo finger food</option>
+            <option>Bandejeo de cazuelas</option>
+            <option>Finger food y cazuelas</option>
+            <option>No aplica</option>
+          </select>
+        </div>
+
+        <div class="form-field full">
+          <label>Formato gastronomico</label>
+          <input name="foodFormat">
+        </div>
+
+        <div class="form-field">
+          <label>Vajilla / cristaleria</label>
+          <select name="tableware">
+            <option value="">Sin definir</option>
+            <option>Incluida</option>
+            <option>No incluida</option>
+            <option>Descartable premium</option>
+            <option>A confirmar</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Personal</label>
+          <input name="staff">
+        </div>
+
+        <div class="form-field">
+          <label>Cocina / apoyo</label>
+          <select name="kitchenAvailable">
+            <option value="">Sin definir</option>
+            <option>Cuenta con cocina</option>
+            <option>Solo espacio de apoyo</option>
+            <option>No cuenta con cocina</option>
+            <option>A confirmar</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label>Horarios / jornadas</label>
+          <input name="schedule">
+        </div>
+
+        <div class="form-field">
+          <label>Presupuesto objetivo</label>
+          <input name="budgetRange">
+        </div>
+
+        <div class="form-field">
+          <label>Proxima accion</label>
+          <input name="nextAction">
+        </div>
+
+        <div class="form-field">
+          <label>Fecha de seguimiento</label>
+          <input name="followUpDate" type="date">
+        </div>
+
+        <div class="form-field full">
+          <label>Motivo / estado comercial</label>
+          <input name="statusReason">
+        </div>
+
+        <div class="form-field full">
+          <label>Restricciones alimentarias</label>
+          <input name="dietaryRestrictions">
+        </div>
+
+        <div class="form-field full">
+          <label>Notas comerciales</label>
+          <textarea name="commercialNotes"></textarea>
+        </div>
+
+        <div class="form-field full">
+          <label>Notas internas</label>
+          <textarea name="notes"></textarea>
+        </div>
+
+        <div class="actions full">
+          <button class="approve" type="submit">Guardar cambios</button>
+          <button class="reject" type="button" onclick="hideEditForm()">Cancelar</button>
+        </div>
+      </form>
+    </aside>
+  </section>
+
+  <script>
+    let allChats = [];
+    let allCustomers = [];
+    let allRecipes = [];
+    let activeFilter = "all";
+    let purchaseOptions = {
+      providers: [],
+      products: [],
+      events: [],
+      paymentMethods: [],
+      fundsSources: [],
+    };
+    let recipeProducts = [];
+    let costSettings = { laborHourlyCost: 0 };
+    let purchaseItemCounter = 0;
+    let recipeItemCounter = 0;
+    let recipeProcessCounter = 0;
+    let budgetRecipeCounter = 0;
+
+    const rows = document.getElementById("rows");
+    const search = document.getElementById("search");
+    const updated = document.getElementById("updated");
+    const notice = document.getElementById("notice");
+
+    document.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-filter]").forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        activeFilter = button.dataset.filter;
+        renderRows();
+      });
+    });
+
+    document.querySelectorAll(".workspace-tab").forEach((button) => {
+      button.addEventListener("click", () => showWorkspaceView(button.dataset.view));
+    });
+
+    search.addEventListener("input", renderRows);
+    document.getElementById("customer-search").addEventListener("input", renderCustomers);
+    document.getElementById("recipe-search").addEventListener("input", renderRecipes);
+    document.getElementById("manual-form").addEventListener("submit", createManualBudget);
+    document.getElementById("edit-form").addEventListener("submit", updateBudget);
+    document.getElementById("purchase-form").addEventListener("submit", createPurchase);
+    document.getElementById("customer-form").addEventListener("submit", saveCustomer);
+    document.getElementById("recipe-form").addEventListener("submit", saveRecipe);
+    document.getElementById("recipe-form").addEventListener("input", updateRecipeTotals);
+    document.getElementById("recipe-form").elements.yieldUnit.addEventListener("change", updateRecipeTotals);
+    document.getElementById("cost-settings-form").addEventListener("submit", saveCostSettings);
+    document.getElementById("invoice-photo").addEventListener("change", previewInvoicePhoto);
+    setupAutocomplete("purchase-provider", "purchase-provider-suggestions", () => purchaseOptions.providers || []);
+
+    async function loadState() {
+      try {
+        const response = await fetch("/api/state");
+        const state = await response.json();
+
+        if (!state.ok) {
+          throw new Error(state.error || "No se pudo cargar el panel.");
+        }
+
+        allChats = state.chats || [];
+        renderMetrics(state.metrics || {});
+        renderRows();
+        updated.textContent = `Actualizado ${new Date().toLocaleTimeString()}`;
+      } catch (error) {
+        rows.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    async function loadPurchaseOptions() {
+      const response = await fetch("/api/purchase-options");
+      const result = await response.json();
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudieron cargar las listas de compras.", "error");
+        return;
+      }
+
+      purchaseOptions = result;
+      renderPurchaseOptions();
+    }
+
+    function renderPurchaseOptions() {
+      fillSelect("purchase-event", purchaseOptions.events || [], "Seleccionar evento");
+      fillSelect("purchase-payment-method", purchaseOptions.paymentMethods || [], "Sin definir");
+      fillSelect("purchase-funds-source", purchaseOptions.fundsSources || [], "Sin definir");
+    }
+
+    function fillSelect(id, items, placeholder) {
+      const select = document.getElementById(id);
+      if (!select) return;
+
+      select.innerHTML = [
+        `<option value="">${escapeHtml(placeholder)}</option>`,
+        ...items.map((item) => `<option>${escapeHtml(item)}</option>`),
+      ].join("");
+    }
+
+    function showWorkspaceView(view) {
+      document.querySelectorAll(".workspace-tab").forEach((button) => {
+        button.classList.toggle("active", button.dataset.view === view);
+      });
+      document.querySelectorAll(".workspace-view").forEach((section) => {
+        section.classList.toggle("open", section.id === `view-${view}`);
+      });
+
+      if (view === "customers") loadCustomers();
+      if (view === "recipes") loadRecipes();
+    }
+
+    async function loadCustomers() {
+      const response = await fetch("/api/customers");
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudieron cargar los clientes.", "error");
+        return;
+      }
+
+      allCustomers = result.customers || [];
+      renderCustomers();
+    }
+
+    function renderCustomers() {
+      const term = normalizeSearch(document.getElementById("customer-search").value);
+      const filtered = allCustomers.filter((customer) => {
+        const searchable = [
+          customer.fullName,
+          customer.displayPhone,
+          customer.contactName,
+          customer.lastEventType,
+          customer.notes,
+        ].join(" ");
+        return normalizeSearch(searchable).includes(term);
+      });
+
+      const list = document.getElementById("customer-list");
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty">Todavia no hay clientes guardados.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((customer) => `
+        <article class="compact-item">
+          <div class="primary">${escapeHtml(customer.fullName || customer.contactName || "Sin nombre")}</div>
+          <div class="secondary">${escapeHtml(customer.displayPhone || "Telefono pendiente")}</div>
+          <div class="secondary">${escapeHtml(customer.lastEventType ? `Ultimo evento: ${customer.lastEventType}` : "")}</div>
+          <div class="secondary">${escapeHtml(customer.budgetCount ? `${customer.budgetCount} presupuesto(s)` : "Sin presupuestos imputados")}</div>
+          <div class="actions" style="margin-top:10px;">
+            <button class="filter" onclick="editCustomer('${escapeAttribute(customer.id)}')">Editar</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function editCustomer(id) {
+      const customer = allCustomers.find((item) => item.id === id);
+      if (!customer) return;
+      const form = document.getElementById("customer-form");
+      setFormValue(form, "id", customer.id || "");
+      setFormValue(form, "fullName", customer.fullName || "");
+      setFormValue(form, "displayPhone", customer.displayPhone || "");
+      setFormValue(form, "contactName", customer.contactName || "");
+      setFormValue(form, "notes", customer.notes || "");
+    }
+
+    async function saveCustomer(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const response = await fetch("/api/customer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el cliente.", "error");
+        return;
+      }
+
+      event.target.reset();
+      await loadCustomers();
+      await loadState();
+      showNotice("Cliente guardado correctamente.");
+    }
+
+    async function saveCostSettings(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const response = await fetch("/api/cost-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el valor hora.", "error");
+        return;
+      }
+
+      costSettings = result.settings || costSettings;
+      await loadRecipes();
+      showNotice("Valor hora actualizado en todas las recetas.");
+    }
+
+    async function showBudgetBuilder() {
+      await loadRecipes();
+      document.getElementById("budget-builder").classList.add("open");
+      document.getElementById("budget-recipe-rows").innerHTML = "";
+      budgetRecipeCounter = 0;
+      addBudgetRecipeRow();
+      updateBudgetBuilder();
+    }
+
+    function hideBudgetBuilder() {
+      document.getElementById("budget-builder").classList.remove("open");
+    }
+
+    function closeBudgetBuilder(event) {
+      if (event.target.id === "budget-builder") {
+        hideBudgetBuilder();
+      }
+    }
+
+    function addBudgetRecipeRow(item = {}) {
+      const id = `budget-recipe-${++budgetRecipeCounter}`;
+      const row = document.createElement("div");
+      row.className = "purchase-item";
+      row.style.gridTemplateColumns = "minmax(0, 1fr) 110px 38px";
+      row.innerHTML = `
+        <select class="budget-recipe-select">
+          <option value="">Seleccionar receta</option>
+          ${allRecipes.map((recipe) => `<option value="${escapeAttribute(recipe.id)}" ${item.recipeId === recipe.id ? "selected" : ""}>${escapeHtml(recipe.name)}</option>`).join("")}
+        </select>
+        <input class="budget-recipe-quantity" inputmode="decimal" placeholder="Cantidad" value="${escapeAttribute(item.quantity || "")}">
+        <button class="reject icon-action" type="button" onclick="removeBudgetRecipeRow(this)">X</button>
+      `;
+      document.getElementById("budget-recipe-rows").appendChild(row);
+      row.querySelector(".budget-recipe-select").addEventListener("change", updateBudgetBuilder);
+      row.querySelector(".budget-recipe-quantity").addEventListener("input", updateBudgetBuilder);
+      updateBudgetBuilder();
+    }
+
+    function removeBudgetRecipeRow(button) {
+      const rows = document.querySelectorAll("#budget-recipe-rows .purchase-item");
+      if (rows.length <= 1) return;
+      button.closest(".purchase-item").remove();
+      updateBudgetBuilder();
+    }
+
+    function updateBudgetBuilder() {
+      const selections = getBudgetSelections();
+      const totals = selections.reduce((acc, selection) => {
+        acc.total += selection.cost;
+        acc.labor += selection.laborCost;
+        return acc;
+      }, { total: 0, labor: 0 });
+      const food = totals.total - totals.labor;
+
+      document.getElementById("budget-food-total").textContent = formatCurrency(food);
+      document.getElementById("budget-labor-total").textContent = formatCurrency(totals.labor);
+      document.getElementById("budget-total").textContent = formatCurrency(totals.total);
+      document.getElementById("budget-breakdown").innerHTML = renderBudgetBreakdown(selections);
+    }
+
+    function getBudgetSelections() {
+      return Array.from(document.querySelectorAll("#budget-recipe-rows .purchase-item"))
+        .map((row) => {
+          const recipe = allRecipes.find((item) => item.id === row.querySelector(".budget-recipe-select").value);
+          const quantity = parseDecimal(row.querySelector(".budget-recipe-quantity").value);
+          if (!recipe || !quantity) return null;
+          const factor = quantity / parseDecimal(recipe.portions || 1);
+          return {
+            recipe,
+            quantity,
+            factor,
+            cost: recipe.costPerPortion * quantity,
+            laborCost: (recipe.laborCost || 0) * factor,
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function renderBudgetBreakdown(selections) {
+      if (!selections.length) {
+        return `<div class="secondary">Seleccione una receta y cantidad para calcular.</div>`;
+      }
+
+      return selections.map((selection) => `
+        <div class="compact-item">
+          <div class="primary">${escapeHtml(selection.recipe.name)} x ${escapeHtml(selection.quantity)}</div>
+          <div class="secondary">Costo: ${formatCurrency(selection.cost)} | Personal: ${formatCurrency(selection.laborCost)}</div>
+          ${renderScaledRecipeItems(selection.recipe, selection.factor)}
+        </div>
+      `).join("");
+    }
+
+    function renderScaledRecipeItems(recipe, factor) {
+      return (recipe.items || []).map((item) => {
+        const scaledQuantity = parseDecimal(item.quantity || 0) * factor;
+        const costQuantity = getCostQuantity(scaledQuantity, item.unit);
+        const unitCost = parseDecimal(item.unitCost || 0);
+        const wastePercent = Math.max(0, parseDecimal(item.wastePercent || 0));
+        const itemCost = costQuantity * unitCost * (1 + wastePercent / 100);
+        const typeLabel = item.type === "recipe" ? "Preparacion" : "Insumo";
+
+        const nested = item.linkedRecipe
+          ? renderNestedPreparationItems(item.linkedRecipe, getCostQuantity(scaledQuantity, item.unit))
+          : "";
+
+        return `
+          <div class="recipe-breakdown-row">
+            <div>
+              <div class="primary">${escapeHtml(item.name)}</div>
+              <div class="secondary">${typeLabel}</div>
+            </div>
+            <div class="primary">${escapeHtml(formatRecipeQuantity(scaledQuantity, item.unit))}</div>
+            <div class="secondary">${formatCurrency(itemCost)}</div>
+          </div>
+          ${nested}
+        `;
+      }).join("");
+    }
+
+    function renderNestedPreparationItems(recipe, requiredPortions) {
+      const basePortions = parseDecimal(recipe.portions || 1);
+      const factor = basePortions > 0 ? requiredPortions / basePortions : 0;
+
+      return (recipe.items || []).map((item) => {
+        const scaledQuantity = parseDecimal(item.quantity || 0) * factor;
+        const costQuantity = getCostQuantity(scaledQuantity, item.unit);
+        const unitCost = parseDecimal(item.unitCost || 0);
+        const wastePercent = Math.max(0, parseDecimal(item.wastePercent || 0));
+        const itemCost = costQuantity * unitCost * (1 + wastePercent / 100);
+
+        return `
+          <div class="recipe-breakdown-row" style="padding-left:18px;">
+            <div>
+              <div class="primary">${escapeHtml(item.name)}</div>
+              <div class="secondary">Dentro de ${escapeHtml(recipe.name)}</div>
+            </div>
+            <div class="primary">${escapeHtml(formatRecipeQuantity(scaledQuantity, item.unit))}</div>
+            <div class="secondary">${formatCurrency(itemCost)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function loadRecipes() {
+      const response = await fetch("/api/recipes");
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudieron cargar las recetas.", "error");
+        return;
+      }
+
+      allRecipes = result.recipes || [];
+      recipeProducts = result.products || [];
+      costSettings = result.settings || { laborHourlyCost: 0 };
+      setFormValue(document.getElementById("cost-settings-form"), "laborHourlyCost", costSettings.laborHourlyCost || "");
+      renderRecipes();
+
+      if (!document.querySelector(".recipe-item")) {
+        resetRecipeForm();
+      }
+    }
+
+    function renderRecipes() {
+      const term = normalizeSearch(document.getElementById("recipe-search").value);
+      const filtered = allRecipes.filter((recipe) =>
+        normalizeSearch([recipe.name, recipe.category, recipe.notes].join(" ")).includes(term)
+      );
+
+      const list = document.getElementById("recipe-list");
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty">Todavia no hay recetas cargadas.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((recipe) => `
+        <article class="recipe-card" onclick="showRecipeDetail('${escapeAttribute(recipe.id)}')">
+          <div class="recipe-card-head">
+            <div>
+              <div class="recipe-card-title">${escapeHtml(recipe.name)}</div>
+              <div class="secondary">Rinde ${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</div>
+            </div>
+            <span class="recipe-pill">${escapeHtml(recipe.category || "Receta")}</span>
+          </div>
+          <div class="recipe-card-stats">
+            <div class="recipe-stat"><span>Total</span><strong>${formatCurrency(recipe.totalCost)}</strong></div>
+            <div class="recipe-stat"><span>x ${escapeHtml(recipe.yieldUnit || "unidad")}</span><strong>${formatCurrency(recipe.costPerPortion)}</strong></div>
+            <div class="recipe-stat"><span>Insumos</span><strong>${formatCurrency(recipe.ingredientCost)}</strong></div>
+            <div class="recipe-stat"><span>Personal</span><strong>${formatCurrency(recipe.laborCost)}</strong></div>
+          </div>
+          <div class="actions" onclick="event.stopPropagation()">
+            <button class="filter" onclick="editRecipe('${escapeAttribute(recipe.id)}')">Editar</button>
+            <button class="reject" onclick="deleteRecipe('${escapeAttribute(recipe.id)}')">Eliminar</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function showRecipeDetail(recipeId) {
+      const recipe = allRecipes.find((item) => item.id === recipeId);
+      if (!recipe) return;
+
+      document.getElementById("recipe-detail-title").textContent = recipe.name;
+      document.getElementById("recipe-detail-subtitle").textContent =
+        `${recipe.category || "Receta"} | Rinde ${formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad")}`;
+      document.getElementById("recipe-detail-body").innerHTML = `
+        <div class="recipe-detail-summary">
+          <div class="recipe-stat"><span>Total</span><strong>${formatCurrency(recipe.totalCost)}</strong></div>
+          <div class="recipe-stat"><span>Costo x ${escapeHtml(recipe.yieldUnit || "unidad")}</span><strong>${formatCurrency(recipe.costPerPortion)}</strong></div>
+          <div class="recipe-stat"><span>Insumos</span><strong>${formatCurrency(recipe.ingredientCost)}</strong></div>
+          <div class="recipe-stat"><span>Personal</span><strong>${formatCurrency(recipe.laborCost)}</strong></div>
+        </div>
+        <div class="actions" style="margin-bottom:16px;">
+          <button class="approve" onclick="hideRecipeDetail(); editRecipe('${escapeAttribute(recipe.id)}')">Editar receta</button>
+          <button class="filter" onclick="startBudgetFromRecipe('${escapeAttribute(recipe.id)}')">Presupuestar</button>
+        </div>
+        <section class="recipe-detail-section">
+          <div class="primary">Ficha tecnica</div>
+          <div class="recipe-detail-summary">
+            <div class="recipe-stat"><span>Elaboracion</span><strong>${formatDurationHours(recipe.productionTimeHours)}</strong></div>
+            <div class="recipe-stat"><span>Armado</span><strong>${formatDurationMinutes(recipe.assemblyTimeMinutes)}</strong></div>
+            <div class="recipe-stat"><span>Personas</span><strong>${escapeHtml(recipe.assemblyPeople || "-")}</strong></div>
+            <div class="recipe-stat"><span>Cantidad armado</span><strong>${escapeHtml(recipe.assemblyQuantity ? `${recipe.assemblyQuantity} ${recipe.assemblyUnit || ""}` : "-")}</strong></div>
+          </div>
+          ${renderRecipeProcessRows(recipe)}
+        </section>
+        <section class="recipe-detail-section">
+          <div class="primary">Composicion</div>
+          ${renderRecipeDetailItems(recipe)}
+        </section>
+        ${recipe.notes ? `
+          <section class="recipe-detail-section" style="margin-top:16px;">
+            <div class="primary">Notas</div>
+            <div class="secondary">${escapeHtml(recipe.notes)}</div>
+          </section>
+        ` : ""}
+      `;
+      document.getElementById("recipe-detail").classList.add("open");
+    }
+
+    function hideRecipeDetail() {
+      document.getElementById("recipe-detail").classList.remove("open");
+    }
+
+    function closeRecipeDetail(event) {
+      if (event.target.id === "recipe-detail") {
+        hideRecipeDetail();
+      }
+    }
+
+    async function startBudgetFromRecipe(recipeId) {
+      const recipe = allRecipes.find((item) => item.id === recipeId);
+      if (!recipe) return;
+
+      hideRecipeDetail();
+      await loadRecipes();
+      document.getElementById("budget-builder").classList.add("open");
+      document.getElementById("budget-recipe-rows").innerHTML = "";
+      budgetRecipeCounter = 0;
+      addBudgetRecipeRow({ recipeId: recipe.id, quantity: recipe.portions || 1 });
+      updateBudgetBuilder();
+    }
+
+    function renderRecipeDetailItems(recipe) {
+      if (!recipe.items?.length) {
+        return `<div class="secondary">Sin ingredientes cargados.</div>`;
+      }
+
+      return recipe.items.map((item) => {
+        const typeLabel = item.type === "recipe" ? "Preparacion" : "Insumo";
+        const nested = item.linkedRecipe
+          ? `<div style="margin-top:8px;padding-left:14px;">${renderNestedPreparationItems(item.linkedRecipe, getCostQuantity(item.quantity, item.unit))}</div>`
+          : "";
+
+        return `
+          <div class="recipe-breakdown-row">
+            <div>
+              <div class="primary">${escapeHtml(item.name)}</div>
+              <div class="secondary">${typeLabel}${item.wastePercent ? ` | Merma ${escapeHtml(item.wastePercent)}%` : ""}</div>
+            </div>
+            <div class="primary">${escapeHtml(formatRecipeQuantity(item.quantity, item.unit))}</div>
+            <div class="secondary">${formatCurrency(item.cost)}</div>
+          </div>
+          ${nested}
+        `;
+      }).join("");
+    }
+
+    function renderRecipeProcessRows(recipe) {
+      if (!recipe.processRows?.length) {
+        return `<div class="secondary">Sin registros tecnicos cargados.</div>`;
+      }
+
+      return recipe.processRows.map((row) => `
+        <div class="recipe-breakdown-row">
+          <div>
+            <div class="primary">${escapeHtml(row.label)}</div>
+            <div class="secondary">${escapeHtml(getProcessTypeLabel(row.type))}${row.notes ? ` | ${escapeHtml(row.notes)}` : ""}</div>
+          </div>
+          <div class="primary">${escapeHtml(formatRecipeQuantity(row.quantity, row.unit))}</div>
+          <div class="secondary"></div>
+        </div>
+      `).join("");
+    }
+
+    function getProcessTypeLabel(type) {
+      return {
+        raw: "Crudo",
+        clean: "Limpio",
+        waste: "Merma",
+        cooked: "Cocido",
+        finished: "Terminado",
+        portion: "Porcionado",
+        note: "Nota",
+      }[type] || "Nota";
+    }
+
+    function formatDurationHours(value) {
+      const hours = parseDecimal(value || 0);
+      return hours ? `${hours.toLocaleString("es-AR", { maximumFractionDigits: 2 })} hs` : "-";
+    }
+
+    function formatDurationMinutes(value) {
+      const minutes = parseDecimal(value || 0);
+      return minutes ? `${minutes.toLocaleString("es-AR", { maximumFractionDigits: 0 })} min` : "-";
+    }
+
+    function updateRecipeScale(recipeId, targetValue) {
+      const recipe = allRecipes.find((item) => item.id === recipeId);
+      const container = document.getElementById(`recipe-scale-${recipeId}`);
+
+      if (!recipe || !container) return;
+
+      container.innerHTML = renderRecipeScale(recipe, targetValue);
+    }
+
+    function renderRecipeScale(recipe, targetValue) {
+      const basePortions = parseDecimal(recipe.portions || 0);
+      const targetPortions = parseDecimal(targetValue || 0);
+
+      if (!basePortions || !targetPortions) {
+        return `<div class="secondary">Ingrese una cantidad valida para calcular.</div>`;
+      }
+
+      const factor = targetPortions / basePortions;
+      const totalCost = (recipe.costPerPortion || 0) * targetPortions;
+      const rows = (recipe.items || []).map((item) => {
+        const baseQuantity = parseDecimal(item.quantity || 0);
+        const scaledQuantity = baseQuantity * factor;
+        const unitCost = parseDecimal(item.unitCost || 0);
+        const wastePercent = Math.max(0, parseDecimal(item.wastePercent || 0));
+        const costQuantity = getCostQuantity(scaledQuantity, item.unit);
+        const itemCost = costQuantity * unitCost * (1 + wastePercent / 100);
+
+        return `
+          <div class="recipe-breakdown-row">
+            <div>
+              <div class="primary">${escapeHtml(item.name)}</div>
+              <div class="secondary">Base: ${escapeHtml(formatRecipeQuantity(baseQuantity, item.unit))}</div>
+            </div>
+            <div class="primary">${escapeHtml(formatRecipeQuantity(scaledQuantity, item.unit))}</div>
+            <div class="secondary">${formatCurrency(itemCost)}</div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="recipe-breakdown-row" style="border-top:0;">
+          <div class="primary">Para producir ${escapeHtml(targetPortions)} unidad(es)</div>
+          <div class="primary">${escapeHtml(formatScaleFactor(factor))}</div>
+          <div class="primary">${formatCurrency(totalCost)}</div>
+        </div>
+        ${rows}
+      `;
+    }
+
+    function formatScaleFactor(factor) {
+      return `x${Number(factor || 0).toLocaleString("es-AR", { maximumFractionDigits: 2 })}`;
+    }
+
+    function formatRecipeQuantity(quantity, unit) {
+      const normalizedUnit = String(unit || "").toLowerCase();
+      const value = Number(quantity || 0);
+      const formatted = value.toLocaleString("es-AR", { maximumFractionDigits: 3 });
+
+      if (normalizedUnit === "gramos") {
+        const kg = value / 1000;
+        return kg >= 1
+          ? `${formatted} g (${kg.toLocaleString("es-AR", { maximumFractionDigits: 3 })} kg)`
+          : `${formatted} g`;
+      }
+
+      if (normalizedUnit === "ml") {
+        const liters = value / 1000;
+        return liters >= 1
+          ? `${formatted} ml (${liters.toLocaleString("es-AR", { maximumFractionDigits: 3 })} litros)`
+          : `${formatted} ml`;
+      }
+
+      return `${formatted} ${unit || ""}`.trim();
+    }
+
+    function resetRecipeForm(recipe = {}) {
+      const form = document.getElementById("recipe-form");
+      form.reset();
+      setFormValue(form, "id", recipe.id || "");
+      setFormValue(form, "name", recipe.name || "");
+      setFormValue(form, "portions", recipe.portions || "");
+      setFormValue(form, "yieldUnit", recipe.yieldUnit || "unidad");
+      setFormValue(form, "category", recipe.category || "");
+      setFormValue(form, "laborHours", recipe.laborHours || "");
+      setFormValue(form, "productionTimeHours", recipe.productionTimeHours || "");
+      setFormValue(form, "assemblyTimeMinutes", recipe.assemblyTimeMinutes || "");
+      setFormValue(form, "assemblyPeople", recipe.assemblyPeople || "");
+      setFormValue(form, "assemblyQuantity", recipe.assemblyQuantity || "");
+      setFormValue(form, "assemblyUnit", recipe.assemblyUnit || "");
+      setFormValue(form, "notes", recipe.notes || "");
+      recipeItemCounter = 0;
+      recipeProcessCounter = 0;
+      document.getElementById("recipe-items").innerHTML = "";
+      document.getElementById("recipe-process-rows").innerHTML = "";
+
+      (recipe.processRows?.length ? recipe.processRows : [{}]).forEach((row) => addRecipeProcessRow(row));
+      const items = recipe.items?.length ? recipe.items : [{}];
+      items.forEach((item) => addRecipeItemRow(item));
+      updateRecipeTotals();
+    }
+
+    function editRecipe(id) {
+      const recipe = allRecipes.find((item) => item.id === id);
+      if (!recipe) return;
+      resetRecipeForm(recipe);
+    }
+
+    function addRecipeProcessRow(item = {}) {
+      const row = document.createElement("div");
+      row.className = "recipe-process-item";
+      row.innerHTML = `
+        <select class="recipe-process-type">
+          ${[
+            ["raw", "Crudo"],
+            ["clean", "Limpio"],
+            ["waste", "Merma"],
+            ["cooked", "Cocido"],
+            ["finished", "Terminado"],
+            ["portion", "Porcionado"],
+            ["note", "Nota"],
+          ].map(([value, label]) => `<option value="${value}" ${item.type === value ? "selected" : ""}>${label}</option>`).join("")}
+        </select>
+        <input class="recipe-process-label" placeholder="Ej: cebolla pelada, receta terminada" value="${escapeAttribute(item.label || "")}">
+        <input class="recipe-process-quantity" inputmode="decimal" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}">
+        <select class="recipe-process-unit">
+          ${["kg", "gramos", "litros", "ml", "unidad", "min", "hs"].map((unit) => `<option value="${unit}" ${String(item.unit || "kg").toLowerCase() === unit ? "selected" : ""}>${unit}</option>`).join("")}
+        </select>
+        <input class="recipe-process-notes" placeholder="Notas" value="${escapeAttribute(item.notes || "")}">
+        <button class="reject icon-action" type="button" onclick="removeRecipeProcessRow(this)">X</button>
+      `;
+      document.getElementById("recipe-process-rows").appendChild(row);
+      recipeProcessCounter += 1;
+    }
+
+    function removeRecipeProcessRow(button) {
+      const rows = document.querySelectorAll(".recipe-process-item");
+      if (rows.length <= 1) return;
+      button.closest(".recipe-process-item").remove();
+    }
+
+    function getRecipeProcessRows() {
+      return Array.from(document.querySelectorAll(".recipe-process-item"))
+        .map((row) => ({
+          type: row.querySelector(".recipe-process-type").value,
+          label: row.querySelector(".recipe-process-label").value.trim(),
+          quantity: row.querySelector(".recipe-process-quantity").value,
+          unit: row.querySelector(".recipe-process-unit").value,
+          notes: row.querySelector(".recipe-process-notes").value.trim(),
+        }))
+        .filter((item) => item.label);
+    }
+
+    function addRecipeItemRow(item = {}) {
+      const id = `recipe-item-${++recipeItemCounter}`;
+      const row = document.createElement("div");
+      row.className = "recipe-item";
+      const itemType = item.type || "product";
+      row.innerHTML = `
+        <select class="recipe-item-type">
+          <option value="product" ${itemType === "product" ? "selected" : ""}>Insumo</option>
+          <option value="recipe" ${itemType === "recipe" ? "selected" : ""}>Preparacion</option>
+        </select>
+        <div class="autocomplete">
+          <input class="recipe-item-name" autocomplete="off" placeholder="Ingrediente" value="${escapeAttribute(item.name || "")}" required>
+          <input class="recipe-item-recipe-id" type="hidden" value="${escapeAttribute(item.recipeId || "")}">
+          <div id="${id}-suggestions" class="autocomplete-list"></div>
+        </div>
+        <input class="recipe-item-quantity" inputmode="decimal" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}" required>
+        <select class="recipe-item-unit">
+          ${["kg", "gramos", "litros", "ml", "unidad"].map((unit) => `<option value="${unit}" ${String(item.unit || "kg").toLowerCase() === unit ? "selected" : ""}>${unit}</option>`).join("")}
+        </select>
+        <input class="recipe-item-unit-cost" inputmode="decimal" placeholder="$ x kg/unidad" value="${escapeAttribute(item.unitCost || "")}" required>
+        <input class="recipe-item-waste" inputmode="decimal" placeholder="Merma %" value="${escapeAttribute(item.wastePercent || "")}">
+        <button class="reject icon-action" type="button" onclick="removeRecipeItemRow(this)">X</button>
+      `;
+      document.getElementById("recipe-items").appendChild(row);
+      row.querySelectorAll("input").forEach((input) => input.addEventListener("input", updateRecipeTotals));
+      row.querySelector(".recipe-item-type").addEventListener("change", () => {
+        row.querySelector(".recipe-item-name").value = "";
+        row.querySelector(".recipe-item-recipe-id").value = "";
+        row.querySelector(".recipe-item-unit-cost").value = "";
+        updateRecipeTotals();
+      });
+      row.querySelector(".recipe-item-unit").addEventListener("change", updateRecipeTotals);
+      row.querySelector(".recipe-item-name").addEventListener("blur", () => applyRecipeSelection(row, row.querySelector(".recipe-item-name").value));
+      row.querySelector(".recipe-item-name").addEventListener("input", () => applyRecipeSelection(row, row.querySelector(".recipe-item-name").value));
+      setupAutocompleteForElement(
+        row.querySelector(".recipe-item-name"),
+        row.querySelector(".autocomplete-list"),
+        () => getRecipeItemSuggestions(row),
+        (value) => applyRecipeSelection(row, value)
+      );
+      applyRecipeSelection(row, row.querySelector(".recipe-item-name").value);
+      updateRecipeTotals();
+    }
+
+    function removeRecipeItemRow(button) {
+      const rows = document.querySelectorAll(".recipe-item");
+
+      if (rows.length <= 1) {
+        showNotice("Debe quedar al menos un ingrediente.", "error");
+        return;
+      }
+
+      button.closest(".recipe-item").remove();
+      updateRecipeTotals();
+    }
+
+    function getRecipeItems() {
+      return Array.from(document.querySelectorAll(".recipe-item"))
+        .map((row) => ({
+          type: row.querySelector(".recipe-item-type").value,
+          recipeId: row.querySelector(".recipe-item-recipe-id").value,
+          name: row.querySelector(".recipe-item-name").value.trim(),
+          quantity: row.querySelector(".recipe-item-quantity").value,
+          unit: row.querySelector(".recipe-item-unit").value,
+          unitCost: row.querySelector(".recipe-item-unit-cost").value,
+          wastePercent: row.querySelector(".recipe-item-waste").value,
+        }))
+        .filter((item) => item.name);
+    }
+
+    function calculateRecipePreview() {
+      const form = document.getElementById("recipe-form");
+      const portions = parseDecimal(form.elements.portions.value || 0);
+      const laborHours = parseDecimal(form.elements.laborHours?.value || 0);
+      const laborCost = laborHours * parseDecimal(costSettings.laborHourlyCost || 0);
+      const total = getRecipeItems().reduce((sum, item) => {
+        const quantity = getCostQuantity(item.quantity, item.unit);
+        const unitCost = getRecipeItemUnitCost(item);
+        const wastePercent = Math.max(0, parseDecimal(item.wastePercent || 0));
+        return sum + quantity * unitCost * (1 + wastePercent / 100);
+      }, laborCost);
+      const costPerPortion = portions > 0 ? total / portions : 0;
+      return { total, costPerPortion, laborCost };
+    }
+
+    function parseDecimal(value) {
+      const raw = String(value ?? "").trim();
+      const normalized = raw.includes(",")
+        ? raw.replace(/\./g, "").replace(",", ".").replace(/[^\d.-]/g, "")
+        : raw.replace(/[^\d.-]/g, "");
+      const number = Number(normalized);
+      return Number.isFinite(number) ? number : 0;
+    }
+
+    function getCostQuantity(quantityValue, unit) {
+      const quantity = parseDecimal(quantityValue);
+      const normalizedUnit = String(unit || "").toLowerCase();
+
+      if (normalizedUnit === "gramos") return quantity / 1000;
+      if (normalizedUnit === "ml") return quantity / 1000;
+      return quantity;
+    }
+
+    function getRecipeItemUnitCost(item) {
+      if (item.type === "recipe") {
+        const recipe = allRecipes.find((entry) => entry.id === item.recipeId || normalizeSearch(entry.name) === normalizeSearch(item.name));
+        return parseDecimal(recipe?.costPerPortion || item.unitCost || 0);
+      }
+
+      return parseDecimal(item.unitCost || 0);
+    }
+
+    function getRecipeItemSuggestions(row) {
+      const type = row.querySelector(".recipe-item-type").value;
+
+      if (type === "recipe") {
+        const currentId = document.getElementById("recipe-form").elements.id.value;
+        return allRecipes
+          .filter((recipe) => recipe.id !== currentId)
+          .map((recipe) => recipe.name);
+      }
+
+      return recipeProducts.map((product) => product.name || product);
+    }
+
+    function applyRecipeSelection(row, value) {
+      if (row.querySelector(".recipe-item-type").value === "recipe") {
+        applyRecipePreparation(row, value);
+        return;
+      }
+
+      applyRecipeProduct(row, value);
+    }
+
+    function applyRecipePreparation(row, value) {
+      const recipe = allRecipes.find((entry) => normalizeSearch(entry.name) === normalizeSearch(value));
+      if (!recipe) return;
+
+      row.querySelector(".recipe-item-name").value = recipe.name;
+      row.querySelector(".recipe-item-recipe-id").value = recipe.id;
+      row.querySelector(".recipe-item-unit-cost").value = recipe.costPerPortion || "";
+      row.querySelector(".recipe-item-unit").value = mapYieldUnitToIngredientUnit(recipe.yieldUnit || "unidad");
+      updateRecipeTotals();
+    }
+
+    function mapYieldUnitToIngredientUnit(unit) {
+      const normalizedUnit = String(unit || "").toLowerCase();
+      if (normalizedUnit === "litros") return "litros";
+      if (normalizedUnit === "kg") return "kg";
+      return "unidad";
+    }
+
+    function applyRecipeProduct(row, value) {
+      const product = findRecipeProduct(value);
+      if (!product) return;
+
+      row.querySelector(".recipe-item-name").value = product.name || value;
+
+      if (product.unitCost) {
+        row.querySelector(".recipe-item-unit-cost").value = product.unitCost;
+      }
+
+      const unit = row.querySelector(".recipe-item-unit");
+      if (!unit.value) {
+        unit.value = "kg";
+      }
+
+      updateRecipeTotals();
+    }
+
+    function findRecipeProduct(value) {
+      const key = normalizeSearch(value);
+      return recipeProducts.find((product) => normalizeSearch(product.name || product) === key);
+    }
+
+    function updateRecipeTotals() {
+      const preview = calculateRecipePreview();
+      const unit = document.getElementById("recipe-form").elements.yieldUnit.value || "unidad";
+      document.getElementById("recipe-total").textContent = formatCurrency(preview.total);
+      document.getElementById("recipe-portion").textContent = formatCurrency(preview.costPerPortion);
+      document.getElementById("recipe-unit-label").textContent = `Costo x ${unit}`;
+      document.getElementById("recipe-labor").textContent = formatCurrency(preview.laborCost);
+    }
+
+    async function saveRecipe(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      payload.items = getRecipeItems();
+      payload.processRows = getRecipeProcessRows();
+
+      const response = await fetch("/api/recipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar la receta.", "error");
+        return;
+      }
+
+      resetRecipeForm();
+      await loadRecipes();
+      showNotice("Receta guardada correctamente.");
+    }
+
+    async function deleteRecipe(id) {
+      const recipe = allRecipes.find((item) => item.id === id);
+      if (!confirm(`Desea eliminar la receta ${recipe?.name || ""}?`)) return;
+
+      const response = await fetch("/api/delete-recipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo eliminar la receta.", "error");
+        return;
+      }
+
+      await loadRecipes();
+      showNotice("Receta eliminada correctamente.");
+    }
+
+    function setupAutocomplete(inputId, listId, getItems, onSelect) {
+      const input = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+
+      if (!input || !list) return;
+
+      setupAutocompleteForElement(input, list, getItems, onSelect);
+    }
+
+    function setupAutocompleteForElement(input, list, getItems, onSelect) {
+      if (!input || !list) return;
+
+      const update = () => renderAutocomplete(input, list, getItems(), onSelect);
+
+      input.addEventListener("input", update);
+      input.addEventListener("focus", update);
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          list.classList.remove("open");
+        }
+      });
+      input.addEventListener("blur", () => {
+        setTimeout(() => list.classList.remove("open"), 160);
+      });
+    }
+
+    function renderAutocomplete(input, list, items, onSelect) {
+      const term = normalizeSearch(input.value);
+      const matches = items
+        .filter((item) => !term || normalizeSearch(item).includes(term))
+        .slice(0, 14);
+
+      if (!input.value.trim()) {
+        list.classList.remove("open");
+        list.innerHTML = "";
+        return;
+      }
+
+      if (matches.length === 0) {
+        list.innerHTML = `<div class="autocomplete-empty">No existe todavia. Se guardara al enviar.</div>`;
+        list.classList.add("open");
+        return;
+      }
+
+      list.innerHTML = matches
+        .map((item) => `<div class="autocomplete-option" data-value="${escapeAttribute(item)}">${escapeHtml(item)}</div>`)
+        .join("");
+      list.classList.add("open");
+
+      list.querySelectorAll(".autocomplete-option").forEach((option) => {
+        option.addEventListener("mousedown", (event) => {
+          event.preventDefault();
+          input.value = option.dataset.value || "";
+          list.classList.remove("open");
+          if (onSelect) {
+            onSelect(input.value);
+          }
+        });
+      });
+    }
+
+    function normalizeSearch(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    }
+
+    function renderMetrics(metrics) {
+      document.getElementById("m-total").textContent = metrics.total || 0;
+      document.getElementById("m-pending").textContent = metrics.pendingApproval || 0;
+      document.getElementById("m-progress").textContent = metrics.inProgress || 0;
+      document.getElementById("m-ready").textContent = metrics.readyToQuote || 0;
+      document.getElementById("m-today").textContent = metrics.dueToday || 0;
+      document.getElementById("m-overdue").textContent = metrics.overdue || 0;
+    }
+
+    function renderRows() {
+      const term = search.value.trim().toLowerCase();
+      const filtered = allChats.filter((chat) => {
+        const matchesFilter =
+          activeFilter === "all" ||
+          chat.status === activeFilter ||
+          (activeFilter === "due_today" && chat.isDueToday) ||
+          (activeFilter === "overdue" && chat.isOverdue) ||
+          (activeFilter === "unassigned" && !chat.assignedTo);
+        const searchable = [
+          chat.displayPhone || chat.phone,
+          chat.channel,
+          chat.assignedTo,
+          chat.nextAction,
+          chat.data?.fullName,
+          chat.data?.eventType,
+          chat.data?.venue,
+          chat.lastMessage,
+        ].join(" ").toLowerCase();
+
+        return matchesFilter && searchable.includes(term);
+      });
+
+      if (filtered.length === 0) {
+        rows.innerHTML = `<div class="empty">No hay conversaciones para mostrar.</div>`;
+        return;
+      }
+
+      rows.innerHTML = filtered.map((chat) => `
+        <article class="row" onclick="showDetail('${escapeAttribute(chat.phone)}')">
+          <div>
+            <div class="primary">${escapeHtml(chat.data?.fullName || "Nombre pendiente")}</div>
+            <div class="secondary">${escapeHtml(chat.stepLabel || "")}</div>
+          </div>
+          <div>
+            <div class="primary">${escapeHtml(chat.displayPhone || chat.phone)}</div>
+            <div class="secondary">${escapeHtml(formatDate(chat.updatedAt))}</div>
+          </div>
+          <div>
+            <div class="primary">${escapeHtml(chat.channel || "Sin canal")}</div>
+          </div>
+          <div><span class="badge ${escapeAttribute(chat.status)}">${escapeHtml(chat.statusLabel)}</span></div>
+          <div>
+            <div class="primary">${escapeHtml(chat.assignedTo || "Sin asignar")}</div>
+            <div class="secondary">${escapeHtml(chat.followUpDate ? `Seguimiento: ${formatShortDate(chat.followUpDate)}` : "")}</div>
+          </div>
+          <div>
+            <div class="primary">${escapeHtml(chat.data?.eventType || "Sin evento")}</div>
+            <div class="secondary">${escapeHtml(chat.data?.eventDate || chat.lastMessage || "")}</div>
+            <div class="secondary">${(chat.suggestedQuestions || []).length ? `${chat.suggestedQuestions.length} pregunta(s) sugerida(s)` : ""}</div>
+          </div>
+          <div>
+            <div class="primary">${escapeHtml(chat.nextAction || "Sin definir")}</div>
+            <div class="secondary">${escapeHtml(chat.data?.statusReason || "")}</div>
+          </div>
+          <div class="actions" onclick="event.stopPropagation()">
+            ${renderActions(chat)}
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderActions(chat) {
+      if (chat.status === "pending_approval" && chat.approvalId) {
+        return `
+          <button class="approve" onclick="approve('${chat.approvalId}')">Iniciar</button>
+          <button class="reject" onclick="rejectRequest('${chat.approvalId}')">Ignorar</button>
+          <button class="reject" onclick="deleteBudget('${escapeAttribute(chat.phone)}')">Eliminar</button>
+        `;
+      }
+
+      if (chat.status === "pending_approval") {
+        return `
+          <button class="filter" onclick="loadState(); showNotice('Esta solicitud ya no esta disponible. El panel se actualizo.', 'error')">Actualizar</button>
+        `;
+      }
+
+      return `
+        <button class="filter" onclick="showDetail('${escapeAttribute(chat.phone)}')">Ver</button>
+        <button class="filter" onclick="showEditForm('${escapeAttribute(chat.phone)}')">Editar</button>
+        <button class="approve" onclick="markStatus('${escapeAttribute(chat.phone)}', 'ready_to_quote')">Listo</button>
+        <button class="filter" onclick="markStatus('${escapeAttribute(chat.phone)}', 'proposal_sent')">Enviada</button>
+        <button class="filter" onclick="markStatus('${escapeAttribute(chat.phone)}', 'follow_up')">Seguimiento</button>
+        <button class="reject" onclick="deleteBudget('${escapeAttribute(chat.phone)}')">Eliminar</button>
+      `;
+    }
+
+    async function approve(id) {
+      await sendDecision("/api/approve", id);
+    }
+
+    async function rejectRequest(id) {
+      await sendDecision("/api/reject", id);
+    }
+
+    async function sendDecision(url, id) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await response.json();
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo completar la accion.", "error");
+      } else {
+        showNotice("Accion realizada correctamente.");
+      }
+
+      await loadState();
+    }
+
+    async function deleteBudget(phone) {
+      const chat = allChats.find((item) => item.phone === phone);
+      const name = chat?.data?.fullName || chat?.displayPhone || chat?.phone || "este presupuesto";
+      const confirmed = confirm(`Desea eliminar definitivamente ${name}? Esta accion no se puede deshacer.`);
+
+      if (!confirmed) {
+        return;
+      }
+
+      const response = await fetch("/api/delete-budget", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+      const result = await response.json();
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo eliminar el presupuesto.", "error");
+        return;
+      }
+
+      hideDetail();
+      hideEditForm();
+      showNotice("Presupuesto eliminado correctamente.");
+      await loadState();
+    }
+
+    function showNotice(message, type = "info") {
+      notice.textContent = message;
+      notice.className = `notice open ${type === "error" ? "error" : ""}`;
+
+      clearTimeout(showNotice.timer);
+      showNotice.timer = setTimeout(() => {
+        notice.className = "notice";
+      }, 4500);
+    }
+
+    async function markStatus(phone, status) {
+      const response = await fetch("/api/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, status }),
+      });
+      const result = await response.json();
+
+      if (!result.ok) {
+        alert(result.error || "No se pudo actualizar el estado.");
+      }
+
+      await loadState();
+    }
+
+    function showManualForm() {
+      document.getElementById("manual").classList.add("open");
+    }
+
+    function hideManualForm() {
+      document.getElementById("manual").classList.remove("open");
+      document.getElementById("manual-form").reset();
+    }
+
+    function closeManual(event) {
+      if (event.target.id === "manual") {
+        hideManualForm();
+      }
+    }
+
+    async function showPurchaseForm() {
+      await loadPurchaseOptions();
+      const form = document.getElementById("purchase-form");
+      form.reset();
+      resetPurchaseItems();
+      setFormValue(form, "date", new Date().toISOString().slice(0, 10));
+      document.getElementById("purchase").classList.add("open");
+    }
+
+    function hidePurchaseForm() {
+      document.getElementById("purchase").classList.remove("open");
+      document.getElementById("purchase-form").reset();
+      resetPurchaseItems();
+    }
+
+    function closePurchase(event) {
+      if (event.target.id === "purchase") {
+        hidePurchaseForm();
+      }
+    }
+
+    function resetPurchaseItems(items = []) {
+      purchaseItemCounter = 0;
+      document.getElementById("purchase-items").innerHTML = "";
+
+      if (items.length) {
+        items.forEach((item) => addPurchaseItemRow(item));
+        return;
+      }
+
+      addPurchaseItemRow();
+    }
+
+    function addPurchaseItemRow(item = {}) {
+      const id = `purchase-item-${++purchaseItemCounter}`;
+      const container = document.getElementById("purchase-items");
+      const row = document.createElement("div");
+      row.className = "purchase-item";
+      row.innerHTML = `
+        <div class="autocomplete">
+          <input class="purchase-item-description" autocomplete="off" placeholder="Producto o descripcion" value="${escapeAttribute(item.description || "")}" required>
+          <div id="${id}-suggestions" class="autocomplete-list"></div>
+        </div>
+        <input class="purchase-item-quantity" type="number" min="0.01" step="0.01" placeholder="Cant." value="${escapeAttribute(item.quantity || 1)}" required>
+        <input class="purchase-item-unit" type="number" min="0.01" step="0.01" placeholder="Unitario" value="${escapeAttribute(item.unitAmount || "")}" required>
+        <button class="reject icon-action" type="button" onclick="removePurchaseItemRow(this)">X</button>
+      `;
+      container.appendChild(row);
+
+      setupAutocompleteForElement(
+        row.querySelector(".purchase-item-description"),
+        row.querySelector(".autocomplete-list"),
+        () => purchaseOptions.products || []
+      );
+    }
+
+    function removePurchaseItemRow(button) {
+      const rows = document.querySelectorAll(".purchase-item");
+
+      if (rows.length <= 1) {
+        showNotice("Debe quedar al menos un producto.", "error");
+        return;
+      }
+
+      button.closest(".purchase-item").remove();
+    }
+
+    function getPurchaseItems() {
+      return Array.from(document.querySelectorAll(".purchase-item"))
+        .map((row) => ({
+          description: row.querySelector(".purchase-item-description").value.trim(),
+          quantity: row.querySelector(".purchase-item-quantity").value,
+          unitAmount: row.querySelector(".purchase-item-unit").value,
+        }))
+        .filter((item) => item.description);
+    }
+
+    async function previewInvoicePhoto(event) {
+      const file = event.target.files?.[0];
+      const preview = document.getElementById("invoice-preview");
+
+      if (!file) {
+        preview.classList.remove("open");
+        preview.removeAttribute("src");
+        return;
+      }
+
+      const dataUrl = await fileToDataUrl(file);
+      preview.src = dataUrl;
+      preview.classList.add("open");
+    }
+
+    function clearInvoicePhoto() {
+      const input = document.getElementById("invoice-photo");
+      const preview = document.getElementById("invoice-preview");
+      input.value = "";
+      preview.classList.remove("open");
+      preview.removeAttribute("src");
+    }
+
+    async function analyzeInvoicePhoto() {
+      const input = document.getElementById("invoice-photo");
+      const button = document.getElementById("invoice-read-button");
+      const status = document.getElementById("invoice-reader-status");
+      const file = input.files?.[0];
+
+      if (!file) {
+        showNotice("Primero suba una foto de factura.", "error");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Leyendo...";
+      status.textContent = "Procesando la imagen en esta computadora. Puede tardar unos segundos.";
+      showNotice("Leyendo factura con herramienta gratuita local. Revise los datos antes de enviar.");
+
+      try {
+        const imageDataUrl = await fileToDataUrl(file);
+        const response = await fetch("/api/purchase-invoice-ocr", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageDataUrl }),
+        });
+        const result = await readJsonResponse(response);
+
+        if (!result.ok) {
+          status.textContent = "No se pudo completar la lectura. Puede cargar los datos manualmente.";
+          showNotice(result.error || "No se pudo leer la factura.", "error");
+          return;
+        }
+
+        fillPurchaseFormFromInvoice(result.result || {});
+        status.textContent = "Lectura completada. Revise proveedor, productos e importes antes de cargar.";
+        showNotice("Lectura completada. Revise y corrija antes de enviar.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Leer factura gratis";
+      }
+    }
+
+    function fillPurchaseFormFromInvoice(data) {
+      const form = document.getElementById("purchase-form");
+      setFormValue(form, "date", data.date || form.elements.date.value);
+      setFormValue(form, "provider", data.provider || form.elements.provider.value);
+
+      if (Array.isArray(data.lineItems) && data.lineItems.length) {
+        resetPurchaseItems(data.lineItems);
+      } else {
+        resetPurchaseItems([{
+          description: data.description || "",
+          quantity: data.quantity || 1,
+          unitAmount: data.unitAmount || "",
+        }]);
+      }
+
+      setFormValue(form, "invoiceType", data.invoiceType || form.elements.invoiceType.value);
+      setFormValue(form, "ivaRate", data.ivaRate || form.elements.ivaRate.value);
+      setFormValue(form, "paymentMethod", data.paymentMethod || form.elements.paymentMethod.value);
+
+      const notes = [
+        data.invoiceNumber ? `Factura: ${data.invoiceNumber}` : "",
+        data.cuit ? `CUIT: ${data.cuit}` : "",
+        data.total ? `Total leido: ${data.total}` : "",
+        data.notes || "",
+      ].filter(Boolean).join(" | ");
+
+      if (notes) {
+        setFormValue(form, "notes", notes);
+      }
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function createPurchase(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const payload = Object.fromEntries(formData.entries());
+      payload.items = getPurchaseItems();
+
+      if (!payload.items.length) {
+        showNotice("Ingrese al menos un producto.", "error");
+        return;
+      }
+
+      const response = await fetch("/api/purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo cargar la compra.", "error");
+        return;
+      }
+
+      hidePurchaseForm();
+      await loadPurchaseOptions();
+      const added = result.result?.addedOptions || {};
+      const extraMessage = [
+        added.provider ? "proveedor nuevo guardado" : "",
+        added.product ? "producto nuevo guardado" : "",
+      ].filter(Boolean).join(", ");
+      showNotice(`${result.result?.message || "Compra cargada correctamente."}${extraMessage ? ` (${extraMessage})` : ""}`);
+    }
+
+    async function readJsonResponse(response) {
+      const text = await response.text();
+
+      try {
+        return text ? JSON.parse(text) : { ok: response.ok };
+      } catch (error) {
+        return {
+          ok: false,
+          error: response.ok
+            ? `Respuesta inesperada del servidor: ${text}`
+            : `El bot respondio ${response.status}: ${text || response.statusText}`,
+        };
+      }
+    }
+
+    async function addPurchaseOptionFromPrompt(type) {
+      const labels = {
+        provider: "proveedor",
+        product: "producto",
+      };
+      const value = prompt(`Ingrese el nuevo ${labels[type] || "dato"}:`);
+
+      if (!value || !value.trim()) {
+        return;
+      }
+
+      const response = await fetch("/api/purchase-option", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, value }),
+      });
+      const result = await response.json();
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el dato.", "error");
+        return;
+      }
+
+      await loadPurchaseOptions();
+
+      if (type === "provider") {
+        setFormValue(document.getElementById("purchase-form"), "provider", result.result.value);
+      }
+
+      if (type === "product") {
+        setFormValue(document.getElementById("purchase-form"), "description", result.result.value);
+      }
+
+      showNotice(`${labels[type] || "Dato"} guardado correctamente.`);
+    }
+
+    async function createManualBudget(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const payload = Object.fromEntries(formData.entries());
+
+      const response = await fetch("/api/manual-budget", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!result.ok) {
+        alert(result.error || "No se pudo guardar el pedido.");
+        return;
+      }
+
+      hideManualForm();
+      await loadState();
+    }
+
+    function showEditForm(phone) {
+      const chat = allChats.find((item) => item.phone === phone);
+      if (!chat) return;
+
+      const form = document.getElementById("edit-form");
+      const data = chat.data || {};
+      setFormValue(form, "phone", chat.phone);
+      setFormValue(form, "channel", chat.channel || data.channel || "");
+      setFormValue(form, "status", chat.status || "in_progress");
+      setFormValue(form, "assignedTo", data.assignedTo || chat.assignedTo || "");
+      setFormValue(form, "fullName", data.fullName || "");
+      setFormValue(form, "externalPhone", chat.displayPhone || data.externalPhone || "");
+      setFormValue(form, "eventType", data.eventType || "");
+      setFormValue(form, "eventDate", data.eventDate || "");
+      setFormValue(form, "guestCount", data.guestCount || "");
+      setFormValue(form, "venue", data.venue || "");
+      setFormValue(form, "serviceType", data.serviceType || "");
+      setFormValue(form, "eventMoments", data.eventMoments || "");
+      setFormValue(form, "selectedMenu", data.selectedMenu || "");
+      setFormValue(form, "includesDrinks", data.includesDrinks || "");
+      setFormValue(form, "drinkType", data.drinkType || "");
+      setFormValue(form, "serviceMode", data.serviceMode || "");
+      setFormValue(form, "trayServiceType", data.trayServiceType || "");
+      setFormValue(form, "foodFormat", data.foodFormat || "");
+      setFormValue(form, "tableware", data.tableware || "");
+      setFormValue(form, "staff", data.staff || "");
+      setFormValue(form, "kitchenAvailable", data.kitchenAvailable || "");
+      setFormValue(form, "schedule", data.schedule || "");
+      setFormValue(form, "budgetRange", data.budgetRange || "");
+      setFormValue(form, "nextAction", data.nextAction || "");
+      setFormValue(form, "followUpDate", data.followUpDate || chat.followUpDate || "");
+      setFormValue(form, "statusReason", data.statusReason || "");
+      setFormValue(form, "dietaryRestrictions", data.dietaryRestrictions || "");
+      setFormValue(form, "commercialNotes", data.commercialNotes || "");
+      setFormValue(form, "notes", data.notes || "");
+
+      document.getElementById("edit").classList.add("open");
+    }
+
+    function setFormValue(form, name, value) {
+      const field = form.elements[name];
+      if (field) {
+        field.value = value;
+      }
+    }
+
+    function hideEditForm() {
+      document.getElementById("edit").classList.remove("open");
+      document.getElementById("edit-form").reset();
+    }
+
+    function closeEdit(event) {
+      if (event.target.id === "edit") {
+        hideEditForm();
+      }
+    }
+
+    async function updateBudget(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const payload = Object.fromEntries(formData.entries());
+
+      const response = await fetch("/api/update-budget", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!result.ok) {
+        alert(result.error || "No se pudieron guardar los cambios.");
+        return;
+      }
+
+      hideEditForm();
+      await loadState();
+    }
+
+    function showDetail(phone) {
+      const chat = allChats.find((item) => item.phone === phone);
+      if (!chat) return;
+
+      document.getElementById("detail-title").textContent = chat.data?.fullName || "Nombre pendiente";
+      document.getElementById("detail-subtitle").textContent = chat.displayPhone || chat.phone;
+      document.getElementById("detail-fields").innerHTML = `
+        <div class="actions" style="margin-bottom:8px;">
+          <button class="approve" onclick="hideDetail(); showEditForm('${escapeAttribute(chat.phone)}')">Editar presupuesto</button>
+          <button class="reject" onclick="deleteBudget('${escapeAttribute(chat.phone)}')">Eliminar</button>
+        </div>
+        ${field("Estado", chat.statusLabel)}
+        ${field("Responsable", chat.assignedTo || "Sin asignar")}
+        ${field("Proxima accion", chat.nextAction || "Sin definir")}
+        ${field("Fecha de seguimiento", chat.followUpDate ? formatShortDate(chat.followUpDate) : "Sin fecha")}
+        ${field("Motivo / estado comercial", chat.data?.statusReason || "Sin detalle")}
+        ${field("Canal de origen", chat.channel || "Sin canal")}
+        ${field("Telefono visible", chat.displayPhone || "Telefono no disponible")}
+        ${field("Paso actual", chat.stepLabel)}
+        ${field("Ultimo mensaje", chat.lastMessage || "Sin registro")}
+        ${field("Nombre completo", chat.data?.fullName || "Pendiente")}
+        ${field("Tipo de evento", chat.data?.eventType || "Pendiente")}
+        ${field("Fecha estimada", chat.data?.eventDate || "Pendiente")}
+        ${field("Cantidad de invitados", chat.data?.guestCount || "Pendiente")}
+        ${field("Lugar o zona", chat.data?.venue || "Pendiente")}
+        ${field("Servicio gastronomico", chat.data?.serviceType || "Pendiente")}
+        ${field("Momentos del evento", chat.data?.eventMoments || "Pendiente")}
+        ${field("Menu elegido", chat.data?.selectedMenu || "Pendiente")}
+        ${field("Bebidas", chat.data?.includesDrinks || "Pendiente")}
+        ${field("Detalle de bebidas", chat.data?.drinkType || "Pendiente")}
+        ${field("Modalidad", chat.data?.serviceMode || "Pendiente")}
+        ${field("Tipo de bandejeo", chat.data?.trayServiceType || "Pendiente")}
+        ${field("Formato gastronomico", chat.data?.foodFormat || "Pendiente")}
+        ${field("Vajilla / cristaleria", chat.data?.tableware || "Pendiente")}
+        ${field("Personal", chat.data?.staff || "Pendiente")}
+        ${field("Cocina / apoyo", chat.data?.kitchenAvailable || "Pendiente")}
+        ${field("Horarios / jornadas", chat.data?.schedule || "Pendiente")}
+        ${field("Presupuesto objetivo", chat.data?.budgetRange || "Pendiente")}
+        ${field("Proxima accion", chat.data?.nextAction || "Pendiente")}
+        ${field("Restricciones alimentarias", chat.data?.dietaryRestrictions || "Pendiente")}
+        ${field("Notas comerciales", chat.data?.commercialNotes || "Sin notas")}
+        ${field("Notas internas", chat.data?.notes || "Sin notas")}
+        ${suggestionsBlock(chat.suggestedQuestions || [])}
+        ${historyBlock(chat.history || [])}
+      `;
+      document.getElementById("detail").classList.add("open");
+    }
+
+    function field(label, value) {
+      return `<div class="field"><label>${escapeHtml(label)}</label><div>${escapeHtml(value)}</div></div>`;
+    }
+
+    function suggestionsBlock(items) {
+      if (!items.length) {
+        return `<div class="field"><label>Preguntas sugeridas</label><div>No hay preguntas sugeridas por ahora.</div></div>`;
+      }
+
+      return `
+        <div class="field">
+          <label>Preguntas sugeridas para el asesor</label>
+          <div>${items.map((item) => `- ${escapeHtml(item)}`).join("<br>")}</div>
+        </div>
+      `;
+    }
+
+    function historyBlock(items) {
+      if (!items.length) {
+        return `<div class="field"><label>Historial</label><div>Sin movimientos registrados.</div></div>`;
+      }
+
+      return `
+        <div class="field">
+          <label>Historial de movimientos</label>
+          <div>${items.slice(0, 12).map((item) => {
+            const detail = item.detail ? ` - ${escapeHtml(item.detail)}` : "";
+            return `${escapeHtml(formatDate(item.at))} - ${escapeHtml(item.actor || "Sistema")}: ${escapeHtml(item.action || "")}${detail}`;
+          }).join("<br>")}</div>
+        </div>
+      `;
+    }
+
+    function hideDetail() {
+      document.getElementById("detail").classList.remove("open");
+    }
+
+    function closeDetail(event) {
+      if (event.target.id === "detail") {
+        hideDetail();
+      }
+    }
+
+    function formatCurrency(value) {
+      return Number(value || 0).toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        maximumFractionDigits: 0,
+      });
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      return new Date(value).toLocaleString();
+    }
+
+    function formatShortDate(value) {
+      if (!value) return "";
+      const [year, month, day] = String(value).split("-");
+      return day && month && year ? `${day}/${month}/${year}` : value;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("`", "&#096;");
+    }
+
+    loadState();
+    loadPurchaseOptions();
+    loadCustomers();
+    loadRecipes();
+    setInterval(loadState, 5000);
+  </script>
+</body>
+</html>
+

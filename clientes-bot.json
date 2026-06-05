@@ -1,0 +1,40 @@
+{
+  "255189810475111@lid": {
+    "id": "255189810475111@lid",
+    "phone": "255189810475111@lid",
+    "displayPhone": "255189810475111",
+    "fullName": "Moretti",
+    "contactName": "Moretti",
+    "aliases": [
+      "255189810475111@lid",
+      "255189810475111",
+      "Moretti"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-05T15:23:08.632Z",
+    "notes": "",
+    "createdAt": "2026-06-05T15:13:22.391Z",
+    "updatedAt": "2026-06-05T15:23:08.632Z"
+  },
+  "201184992358514@lid": {
+    "id": "201184992358514@lid",
+    "phone": "201184992358514@lid",
+    "displayPhone": "201184992358514",
+    "fullName": "martin rodriguez",
+    "contactName": "martin rodriguez",
+    "aliases": [
+      "201184992358514@lid",
+      "201184992358514",
+      "martin rodriguez"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-05T15:18:18.885Z",
+    "notes": "",
+    "createdAt": "2026-06-05T15:18:13.740Z",
+    "updatedAt": "2026-06-05T15:18:18.885Z"
+  }
+}

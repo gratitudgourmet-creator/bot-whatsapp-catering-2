@@ -1,0 +1,13 @@
+{
+  "name": "whatsapp-catering-budget-bot",
+  "version": "1.0.0",
+  "description": "Bot de WhatsApp para recopilar datos de presupuesto de eventos y catering.",
+  "main": "whatsapp-catering-bot.js",
+  "scripts": {
+    "start": "node whatsapp-catering-bot.js"
+  },
+  "dependencies": {
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.26.0"
+  }
+}

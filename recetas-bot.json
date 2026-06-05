@@ -1,0 +1,102 @@
+[
+  {
+    "id": "receta-1780673806630",
+    "name": "EMPANADA MINI",
+    "category": "ENTRADA",
+    "portions": 1,
+    "items": [
+      {
+        "name": "MOLIDA INT X MAYOR",
+        "quantity": 0.0015,
+        "unit": "kg",
+        "unitCost": 12000,
+        "wastePercent": 0
+      },
+      {
+        "name": "COPETIN HOJALDRE",
+        "quantity": 1,
+        "unit": "unidad",
+        "unitCost": 100,
+        "wastePercent": 0
+      }
+    ],
+    "notes": "",
+    "createdAt": "2026-06-05T15:36:46.630Z",
+    "updatedAt": "2026-06-05T15:36:46.630Z"
+  },
+  {
+    "id": "receta-1780673975619",
+    "name": "EMPANADA",
+    "category": "ENTRADA",
+    "portions": 1,
+    "items": [
+      {
+        "name": "PICADILLO DE CARNE",
+        "quantity": 0.03,
+        "unit": "unidad",
+        "unitCost": 10079.159935379645,
+        "wastePercent": 0
+      },
+      {
+        "name": "EMPANADAS HOJALDRE",
+        "quantity": 1,
+        "unit": "unidad",
+        "unitCost": 100,
+        "wastePercent": 0
+      }
+    ],
+    "notes": "",
+    "createdAt": "2026-06-05T15:39:35.619Z",
+    "updatedAt": "2026-06-05T16:22:38.037Z"
+  },
+  {
+    "id": "receta-1780676202288",
+    "name": "PICADILLO DE CARNE",
+    "category": "PREPARACION",
+    "portions": 30.95,
+    "items": [
+      {
+        "name": "MOLIDA INT X MAYOR",
+        "quantity": 15,
+        "unit": "kg",
+        "unitCost": 12000,
+        "wastePercent": 0
+      },
+      {
+        "name": "BOLSA DE CEBOLLA",
+        "quantity": 26.39,
+        "unit": "kg",
+        "unitCost": 5000,
+        "wastePercent": 0
+      }
+    ],
+    "notes": "",
+    "createdAt": "2026-06-05T16:16:42.288Z",
+    "updatedAt": "2026-06-05T16:21:56.954Z"
+  },
+  {
+    "id": "receta-1780676810010",
+    "name": "EMPANADA PREMIUM",
+    "category": "ENTRADA",
+    "portions": 1,
+    "items": [
+      {
+        "name": "PICADILLO DE CARNE",
+        "quantity": 0.03,
+        "unit": "kg",
+        "unitCost": 10079.159935379645,
+        "wastePercent": 0
+      },
+      {
+        "name": "EMPANADAS HOJALDRE",
+        "quantity": 1,
+        "unit": "unidad",
+        "unitCost": 100,
+        "wastePercent": 0
+      }
+    ],
+    "notes": "",
+    "createdAt": "2026-06-05T16:26:50.010Z",
+    "updatedAt": "2026-06-05T16:26:50.010Z"
+  }
+]

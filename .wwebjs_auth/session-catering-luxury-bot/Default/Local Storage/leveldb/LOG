@@ -1,0 +1,15 @@
+2026/06/05-12:35:20.010 2490 Reusing MANIFEST C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Local Storage\leveldb/MANIFEST-000001
+2026/06/05-12:35:20.027 2490 Recovering log #31
+2026/06/05-12:35:20.032 2490 Reusing old log C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Local Storage\leveldb/000031.log 
+2026/06/05-13:25:30.561 2fac Level-0 table #33: started
+2026/06/05-13:25:30.576 2fac Level-0 table #33: 14182 bytes OK
+2026/06/05-13:25:30.581 2fac Delete type=0 #31
+2026/06/05-13:25:30.582 2490 Compacting 4@0 + 1@1 files
+2026/06/05-13:25:30.591 2490 Generated table #34@0: 188 keys, 11683 bytes
+2026/06/05-13:25:30.591 2490 Compacted 4@0 + 1@1 files => 11683 bytes
+2026/06/05-13:25:30.592 2490 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/06/05-13:25:30.594 2490 Delete type=2 #21
+2026/06/05-13:25:30.594 2490 Delete type=2 #24
+2026/06/05-13:25:30.594 2490 Delete type=2 #27
+2026/06/05-13:25:30.595 2490 Delete type=2 #29
+2026/06/05-13:25:30.595 2490 Delete type=2 #33

@@ -1,0 +1,51 @@
+{
+  "bienvenida": [
+    "Bienvenido/a. Gracias por contactarse con Gratitud Gourmet.",
+    "",
+    "Para orientarle correctamente, por favor indiquenos el motivo de su consulta:",
+    "",
+    "1. Solicitar un presupuesto nuevo",
+    "2. Consultar por un presupuesto ya emitido",
+    "3. Contacto de proveedor",
+    "4. Otra consulta"
+  ],
+  "preguntas": {
+    "nombre": "Para comenzar, podria indicarme su nombre completo?",
+    "tipoEvento": "Muchas gracias {nombre}. Que tipo de evento desea presupuestar? Por ejemplo: boda, evento corporativo, cumpleanos, aniversario o celebracion privada.",
+    "fechaEvento": "Perfecto. Cual es la fecha estimada del evento? Por favor, indiquela en formato DD/MM/AAAA.",
+    "cantidadInvitados": "Excelente. Para cuantas personas aproximadamente seria el servicio?",
+    "lugar": "Podria indicarme el lugar o zona del evento? Puede ser salon, quinta, domicilio particular, o bien comentarme si requiere asesoramiento.",
+    "tipoServicio": "Que tipo de servicio gastronomico le interesa? Por ejemplo: cena formal, cocktail/finger food, asado criollo, estaciones gourmet o una experiencia a medida.",
+    "momentosEvento": "Que momentos del evento desea cubrir? Por ejemplo: bienvenida, recepcion, coffee break, almuerzo, cocktail, cena, postre, barra o trasnoche.",
+    "bebidas": "Desea incluir bebidas? Si es asi, indiquenos si necesita agua/gaseosas, aguas saborizadas, vinos, mocktails, barra o hidratacion continua.",
+    "operacionServicio": "Como imagina la dinamica del servicio? Por ejemplo: bandejeo, estaciones asistidas, sentado a la mesa, coffee autoservicio o formato mixto.",
+    "logistica": "Para prever la operacion, el lugar cuenta con cocina o espacio de apoyo, agua, electricidad y lugar para montaje? Si no lo sabe, puede indicarnos 'a confirmar'.",
+    "restricciones": "Por ultimo, existen restricciones alimentarias generales que debamos contemplar? Por ejemplo: veganos, celiacos, vegetarianos, alergias, o simplemente 'no aplica'."
+  },
+  "errores": {
+    "motivoContacto": "Por favor, responda con una opcion valida: 1 para presupuesto nuevo, 2 para presupuesto ya emitido, 3 para proveedores o 4 para otra consulta.",
+    "nombre": "Para una correcta identificacion, por favor indiqueme nombre y apellido.",
+    "tipoEvento": "Para avanzar, necesito que me indique el tipo de evento con un poco mas de detalle.",
+    "fechaFormato": "La fecha indicada no parece tener el formato correcto. Por favor, utilice DD/MM/AAAA. Ejemplo: 18/10/2026.",
+    "fechaPasada": "La fecha del evento debe ser futura. Por favor, indiqueme una fecha posterior a hoy.",
+    "cantidadInvitados": "La cantidad de invitados debe ser un numero entero positivo. Por ejemplo: 120.",
+    "lugar": "Para elaborar el presupuesto, necesito conocer el lugar, zona o si requiere asesoramiento sobre el espacio.",
+    "tipoServicio": "Podria indicarme el estilo de servicio gastronomico que desea considerar?",
+    "momentosEvento": "Para armar una propuesta precisa, necesito saber que momentos del evento desea cubrir.",
+    "bebidas": "Necesito registrar si desea bebidas incluidas o si no aplica.",
+    "operacionServicio": "Necesito conocer la dinamica esperada del servicio: bandejeo, estaciones, sentado a la mesa, autoservicio o mixto.",
+    "logistica": "Necesito saber, aunque sea de forma aproximada, que infraestructura tiene el lugar o si esta a confirmar.",
+    "restricciones": "Necesito registrar si existen restricciones alimentarias o si no aplica.",
+    "pasoDesconocido": "No pude identificar el paso actual de la conversacion. Escriba *reiniciar* para comenzar nuevamente."
+  },
+  "motivosContacto": {
+    "presupuestoNuevo": "Con gusto. Para preparar una propuesta precisa y cuidada, le hare algunas preguntas breves. Puede escribir *reiniciar* en cualquier momento para comenzar nuevamente.",
+    "presupuestoEmitido": "Gracias por escribirnos. Un asesor revisara su consulta sobre el presupuesto ya emitido y se contactara para acompanarle personalmente.",
+    "proveedor": "Gracias por contactarse. Hemos recibido su mensaje como proveedor y sera derivado al area correspondiente.",
+    "otraConsulta": "Gracias por escribirnos. Un asesor revisara su consulta y se contactara a la brevedad."
+  },
+  "postCompletado": "Ya hemos recibido su solicitud. Un asesor se contactara para acompanarle con la propuesta formal. Si desea iniciar una nueva consulta, escriba *reiniciar*.",
+  "despedida": "Muchas gracias por compartir la informacion. Nuestro equipo revisara los detalles y un asesor se contactara para enviarle una propuesta formal, cuidada y acorde a su evento.",
+  "resumenTitulo": "Resumen de su solicitud:",
+  "resumenCierre": "Con esta informacion prepararemos una primera evaluacion para su presupuesto."
+}
