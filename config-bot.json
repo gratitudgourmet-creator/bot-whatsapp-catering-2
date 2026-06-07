@@ -672,7 +672,9 @@
     "RESIDENCIA 22-5",
     "RESIDENCIA 28-5",
     "RESIDENCIA 3-2",
-    "SANTI REUNION 23-5"
+    "SANTI REUNION 23-5",
+    "Evento demo ERP",
+    "PRUEBA"
   ],
   "purchasePaymentMethods": [
     "E-Cheq",

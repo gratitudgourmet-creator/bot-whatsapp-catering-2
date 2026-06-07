@@ -1,0 +1,53 @@
+[
+  {
+    "id": "presupuesto-1780869717012",
+    "version": "1",
+    "eventId": "evento-1780869637595",
+    "eventName": "PRUEBA",
+    "clientName": "JOAQUIN",
+    "status": "accepted",
+    "validUntil": "2026-06-22",
+    "guestCount": 560,
+    "costTotal": 238734.96,
+    "priceTotal": 749252.56,
+    "marginAmount": 510517.6,
+    "marginPercent": 68.14,
+    "markupPercent": 213.84,
+    "targetMarginPercent": 50,
+    "discountAmount": 0,
+    "discountPercent": 0,
+    "taxRate": 0.21,
+    "taxAmount": 130035.57,
+    "tablewareCost": 0,
+    "logisticsCost": 0,
+    "staffCost": 150000,
+    "extraCost": 0,
+    "subtotalBeforeDiscount": 619216.99,
+    "recipes": [
+      {
+        "recipeId": "receta-1780673975619",
+        "name": "EMPANADA",
+        "quantity": 150,
+        "unitCost": 402.37,
+        "totalCost": 60356.22
+      },
+      {
+        "recipeId": "receta-1780676810010",
+        "name": "EMPANADA PREMIUM",
+        "quantity": 50,
+        "unitCost": 402.37,
+        "totalCost": 20118.74
+      },
+      {
+        "recipeId": "receta-1780673806630",
+        "name": "EMPANADA MINI",
+        "quantity": 70,
+        "unitCost": 118,
+        "totalCost": 8260
+      }
+    ],
+    "notes": "",
+    "createdAt": "2026-06-07T22:01:57.010Z",
+    "updatedAt": "2026-06-07T22:04:06.814Z"
+  }
+]

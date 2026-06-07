@@ -1,0 +1,35 @@
+[
+  {
+    "id": "evento-1780869637595",
+    "name": "PRUEBA",
+    "clientId": "",
+    "clientName": "JOAQUIN",
+    "eventDate": "2026-06-24",
+    "guestCount": 560,
+    "venue": "BODEGA CENTENARIO",
+    "serviceType": "AGAPE",
+    "status": "confirmed",
+    "owner": "GERMAN",
+    "role": "Comercial",
+    "nextAction": "",
+    "paymentStatus": "",
+    "productionStatus": "",
+    "menuStatus": "",
+    "staffStatus": "",
+    "logisticsStatus": "",
+    "checklist": {
+      "purchases": false,
+      "production": false,
+      "staff": false,
+      "logistics": false,
+      "menu": false,
+      "payments": false
+    },
+    "notes": "",
+    "quoteTotal": 749252.56,
+    "quoteMarginPercent": 68.14,
+    "purchaseTotal": 0,
+    "createdAt": "2026-06-07T22:00:37.594Z",
+    "updatedAt": "2026-06-07T22:04:22.608Z"
+  }
+]

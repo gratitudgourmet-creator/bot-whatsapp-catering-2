@@ -18,26 +18,71 @@ const qrcode = require("qrcode-terminal");
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
+const crypto = require("crypto");
+const XLSX = require("xlsx");
 const { recognize } = require("tesseract.js");
 
 console.log("Iniciando bot de WhatsApp...");
 
+patchWhatsappClientInjection();
+
 const BOT_CONFIG = loadBotConfig();
 const BOT_MESSAGES = loadBotMessages();
-const STATE_FILE = path.join(__dirname, "bot-state.json");
-const CUSTOMERS_FILE = path.join(__dirname, "clientes-bot.json");
-const RECIPES_FILE = path.join(__dirname, "recetas-bot.json");
-const PRODUCT_PRICES_FILE = path.join(__dirname, "precios-productos-bot.json");
-const COST_SETTINGS_FILE = path.join(__dirname, "costos-bot.json");
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const DATA_DIR = path.resolve(process.env.DATA_DIR || BOT_CONFIG.dataDir || __dirname);
+const CONFIG_FILE = path.resolve(process.env.BOT_CONFIG_FILE || path.join(__dirname, "config-bot.json"));
+const STATE_FILE = dataPath("bot-state.json");
+const CUSTOMERS_FILE = dataPath("clientes-bot.json");
+const RECIPES_FILE = dataPath("recetas-bot.json");
+const PRODUCT_PRICES_FILE = dataPath("precios-productos-bot.json");
+const COST_SETTINGS_FILE = dataPath("costos-bot.json");
+const ERP_EVENTS_FILE = dataPath("eventos-erp.json");
+const ERP_QUOTES_FILE = dataPath("presupuestos-erp.json");
+const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
+const PANEL_AUTH_USER = process.env.PANEL_AUTH_USER || BOT_CONFIG.panelAuthUser || "admin";
+const PANEL_AUTH_PASSWORD = process.env.PANEL_AUTH_PASSWORD || BOT_CONFIG.panelAuthPassword || "";
+const PANEL_SESSION_SECRET =
+  process.env.PANEL_SESSION_SECRET ||
+  BOT_CONFIG.panelSessionSecret ||
+  crypto.createHash("sha256").update(`${PANEL_AUTH_USER}:${PANEL_AUTH_PASSWORD || "local"}`).digest("hex");
+const MAX_JSON_BODY_BYTES = Number(process.env.MAX_JSON_BODY_BYTES || BOT_CONFIG.maxJsonBodyBytes || 15 * 1024 * 1024);
+const DEFAULT_CHROME_EXECUTABLE = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+const DEFAULT_CHROME_VERSION = "148.0.7778.217";
+const WHATSAPP_WEB_VERSION =
+  process.env.WHATSAPP_WEB_VERSION ||
+  BOT_CONFIG.whatsappWebVersion ||
+  getLatestCachedWhatsAppWebVersion();
+const WHATSAPP_CLIENT_ID =
+  process.env.WHATSAPP_CLIENT_ID || BOT_CONFIG.whatsappClientId || "catering-luxury-bot";
+const CHROME_USER_AGENT =
+  process.env.WHATSAPP_CHROME_USER_AGENT ||
+  BOT_CONFIG.whatsappChromeUserAgent ||
+  `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${DEFAULT_CHROME_VERSION} Safari/537.36`;
 
 const client = new Client({
   authStrategy: new LocalAuth({
-    clientId: "catering-luxury-bot",
+    clientId: WHATSAPP_CLIENT_ID,
   }),
+  webVersion: WHATSAPP_WEB_VERSION,
+  webVersionCache: {
+    type: "local",
+    path: path.join(__dirname, ".wwebjs_cache"),
+  },
+  userAgent: CHROME_USER_AGENT,
+  authTimeoutMs: Number(process.env.WHATSAPP_AUTH_TIMEOUT_MS || 90000),
+  takeoverOnConflict: true,
+  takeoverTimeoutMs: 5000,
   puppeteer: {
     headless: true,
-    executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    executablePath: DEFAULT_CHROME_EXECUTABLE,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-extensions",
+      "--disable-gpu",
+      "--no-first-run",
+    ],
   },
 });
 
@@ -65,8 +110,13 @@ const customerRecords = {};
 let recipeRecords = [];
 const productPriceRecords = {};
 let costSettings = {};
+let erpEvents = [];
+let erpQuotes = [];
+let erpPurchases = [];
 const approvedCustomers = new Set();
 const processedMessageIds = new Set();
+const WHATSAPP_INIT_MAX_ATTEMPTS = Number(process.env.WHATSAPP_INIT_MAX_ATTEMPTS || 3);
+const WHATSAPP_INIT_RETRY_MS = Number(process.env.WHATSAPP_INIT_RETRY_MS || 15000);
 
 // IMPORTANTE: configure aqui el numero que va a autorizar las respuestas.
 // Use formato internacional, sin +, sin espacios. Ejemplo Argentina: 5491123456789
@@ -148,6 +198,8 @@ const QUESTIONS = {
 let pendingReplyCounter = loadPersistentState();
 loadBusinessData();
 
+console.log(`Version de WhatsApp Web configurada: ${WHATSAPP_WEB_VERSION || "actual"}`);
+
 client.on("qr", (qr) => {
   console.log("Escanee este QR con WhatsApp para iniciar sesion:");
   qrcode.generate(qr, { small: true });
@@ -159,6 +211,10 @@ client.on("authenticated", () => {
 
 client.on("auth_failure", (message) => {
   console.error("Fallo la autenticacion de WhatsApp:", message);
+});
+
+client.on("disconnected", (reason) => {
+  console.error("WhatsApp se desconecto:", reason);
 });
 
 client.on("loading_screen", (percent, message) => {
@@ -179,15 +235,210 @@ client.on("message", async (message) => {
 });
 
 if (!process.env.BOT_SKIP_WHATSAPP) {
-  client.initialize();
+  startWhatsappClient();
 }
 
 if (!process.env.BOT_SKIP_PANEL) {
   startApprovalPanelServer();
 }
 
+process.on("unhandledRejection", (error) => {
+  if (isTransientWhatsappStartupError(error)) {
+    console.warn(
+      "WhatsApp Web reinicio su pagina durante una operacion interna. El bot seguira intentando mantenerse activo."
+    );
+    console.warn(formatErrorMessage(error));
+    return;
+  }
+
+  console.error("Error no controlado:", error);
+});
+
+process.on("uncaughtException", (error) => {
+  if (isTransientWhatsappStartupError(error)) {
+    console.warn(
+      "WhatsApp Web cerro una tarea interna del navegador. Si el bot no conecta, cierre esta ventana y vuelva a iniciar."
+    );
+    console.warn(formatErrorMessage(error));
+    return;
+  }
+
+  console.error("Error critico:", error);
+  process.exit(1);
+});
+
+async function startWhatsappClient(attempt = 1) {
+  try {
+    console.log(`Conectando WhatsApp (intento ${attempt}/${WHATSAPP_INIT_MAX_ATTEMPTS})...`);
+    await client.initialize();
+  } catch (error) {
+    if (isTransientWhatsappStartupError(error) && attempt < WHATSAPP_INIT_MAX_ATTEMPTS) {
+      console.warn("WhatsApp Web cambio de pagina durante el arranque.");
+      console.warn(`Reintentando en ${Math.round(WHATSAPP_INIT_RETRY_MS / 1000)} segundos...`);
+      await closeWhatsappClientQuietly();
+      await wait(WHATSAPP_INIT_RETRY_MS);
+      return startWhatsappClient(attempt + 1);
+    }
+
+    console.error("No se pudo iniciar WhatsApp.");
+    console.error(formatErrorMessage(error));
+    console.error(
+      "Sugerencia: cierre otras ventanas de WhatsApp Web, verifique Chrome y vuelva a ejecutar iniciar-bot.bat."
+    );
+    process.exit(1);
+  }
+}
+
+function isTransientWhatsappStartupError(error) {
+  const message = formatErrorMessage(error).toLowerCase();
+
+  return (
+    message.includes("execution context was destroyed") ||
+    message.includes("target closed") ||
+    message.includes("session closed") ||
+    message.includes("cannot find context with specified id") ||
+    message.includes("quedo esperando demasiado tiempo")
+  );
+}
+
+function formatErrorMessage(error) {
+  if (!error) {
+    return "";
+  }
+
+  return error.stack || error.message || String(error);
+}
+
+async function closeWhatsappClientQuietly() {
+  try {
+    await client.destroy();
+  } catch (error) {
+    console.warn("No se pudo cerrar el navegador anterior antes de reintentar.");
+    console.warn(formatErrorMessage(error));
+  }
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function dataPath(fileName) {
+  const dataDir = path.resolve(process.env.DATA_DIR || BOT_CONFIG?.dataDir || __dirname);
+  return path.join(dataDir, fileName);
+}
+
+function ensureDirectory(directoryPath) {
+  fs.mkdirSync(directoryPath, { recursive: true });
+}
+
+function patchWhatsappClientInjection() {
+  if (Client.prototype.__cateringInjectionPatched) {
+    return;
+  }
+
+  const originalInject = Client.prototype.inject;
+
+  Client.prototype.inject = async function resilientInject() {
+    const maxAttempts = Number(process.env.WHATSAPP_INJECT_MAX_ATTEMPTS || 8);
+    const attemptTimeoutMs = Number(process.env.WHATSAPP_INJECT_TIMEOUT_MS || 45000);
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        return await withTimeout(
+          originalInject.call(this),
+          attemptTimeoutMs,
+          "La carga interna de WhatsApp Web quedo esperando demasiado tiempo."
+        );
+      } catch (error) {
+        if (!isTransientWhatsappStartupError(error) || attempt >= maxAttempts) {
+          throw error;
+        }
+
+        console.warn(
+          `WhatsApp Web navego durante la carga interna (${attempt}/${maxAttempts}). Esperando y reintentando...`
+        );
+        await waitForWhatsappPageToSettle(this.pupPage);
+      }
+    }
+  };
+
+  Client.prototype.__cateringInjectionPatched = true;
+}
+
+async function waitForWhatsappPageToSettle(page) {
+  if (!page) {
+    await wait(3000);
+    return;
+  }
+
+  try {
+    await page.waitForNavigation({
+      waitUntil: "load",
+      timeout: 15000,
+    });
+  } catch (error) {
+    if (!isTimeoutLikeError(error)) {
+      console.warn("No se pudo esperar la navegacion interna de WhatsApp Web.");
+      console.warn(formatErrorMessage(error));
+    }
+  }
+
+  await wait(3000);
+}
+
+function isTimeoutLikeError(error) {
+  return formatErrorMessage(error).toLowerCase().includes("timeout");
+}
+
+function withTimeout(promise, timeoutMs, message) {
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
+}
+
+function getLatestCachedWhatsAppWebVersion() {
+  const cacheDir = path.join(__dirname, ".wwebjs_cache");
+
+  try {
+    if (!fs.existsSync(cacheDir)) {
+      return undefined;
+    }
+
+    const versions = fs
+      .readdirSync(cacheDir)
+      .filter((fileName) => /^\d+\.\d+\.\d+\.html$/.test(fileName))
+      .map((fileName) => fileName.replace(/\.html$/, ""))
+      .sort(compareWhatsAppWebVersions);
+
+    return versions[versions.length - 1];
+  } catch (error) {
+    console.warn("No se pudo revisar la cache local de WhatsApp Web.");
+    console.warn(formatErrorMessage(error));
+    return undefined;
+  }
+}
+
+function compareWhatsAppWebVersions(left, right) {
+  const leftParts = left.split(".").map(Number);
+  const rightParts = right.split(".").map(Number);
+  const maxLength = Math.max(leftParts.length, rightParts.length);
+
+  for (let index = 0; index < maxLength; index += 1) {
+    const diff = (leftParts[index] || 0) - (rightParts[index] || 0);
+
+    if (diff !== 0) {
+      return diff;
+    }
+  }
+
+  return 0;
+}
+
 function loadBotConfig() {
-  const configPath = path.join(__dirname, "config-bot.json");
+  const configPath = path.resolve(process.env.BOT_CONFIG_FILE || path.join(__dirname, "config-bot.json"));
 
   try {
     if (!fs.existsSync(configPath)) {
@@ -203,10 +454,7 @@ function loadBotConfig() {
 }
 
 function saveBotConfig() {
-  const configPath = path.join(__dirname, "config-bot.json");
-  fs.writeFileSync(configPath, JSON.stringify(BOT_CONFIG, null, 2), {
-    encoding: "utf8",
-  });
+  writeJsonFile(CONFIG_FILE, BOT_CONFIG);
 }
 
 function getConfigList(key) {
@@ -255,11 +503,32 @@ function addPurchaseOption(type, value) {
 }
 
 function startApprovalPanelServer() {
-  const panelPort = Number(process.env.PANEL_PORT || BOT_CONFIG.panelPort || 3080);
+  validateRuntimeConfig();
+  const panelPort = Number(process.env.PORT || process.env.PANEL_PORT || BOT_CONFIG.panelPort || 3080);
+  const panelHost =
+    process.env.PANEL_HOST ||
+    BOT_CONFIG.panelHost ||
+    (IS_PRODUCTION ? "0.0.0.0" : "127.0.0.1");
 
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url, `http://${request.headers.host}`);
+      applySecurityHeaders(response);
+
+      if (request.method === "GET" && requestUrl.pathname === "/health") {
+        return sendJson(response, {
+          ok: true,
+          service: "catering-erp",
+          status: "healthy",
+          environment: process.env.NODE_ENV || "development",
+          dataDir: DATA_DIR,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      if (!isAuthorizedPanelRequest(request)) {
+        return requestPanelAuth(response);
+      }
 
       if (request.method === "GET" && requestUrl.pathname === "/") {
         return servePanelHtml(response);
@@ -293,7 +562,7 @@ function startApprovalPanelServer() {
       if (request.method === "GET" && requestUrl.pathname === "/api/customers") {
         return sendJson(response, {
           ok: true,
-          customers: getCustomerList(),
+          customers: getCustomerInsights(),
         });
       }
 
@@ -304,6 +573,36 @@ function startApprovalPanelServer() {
           products: getRecipeProductOptions(),
           settings: getCostSettings(),
         });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/erp") {
+        return sendJson(response, {
+          ok: true,
+          dashboard: getErpDashboard(),
+          pipeline: getPipelineBoard(),
+          events: getErpEventList(),
+          confirmedEvents: getConfirmedEventList(),
+          quotes: getErpQuoteList(),
+          purchases: getErpPurchaseList(),
+          recipes: getRecipeList(),
+          customers: getCustomerInsights(),
+          productAlerts: getProductPriceAlerts(),
+        });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/proposal.txt") {
+        return sendProposalText(response, requestUrl.searchParams.get("quoteId"));
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/sheets") {
+        return sendJson(response, {
+          ok: true,
+          sheets: buildGoogleSheetsModel(),
+        });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/export.xlsx") {
+        return sendXlsxExport(response);
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/approve") {
@@ -372,6 +671,30 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, result });
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/erp-event") {
+        const body = await readJsonBody(request);
+        const event = saveErpEventRecord(body);
+        return sendJson(response, { ok: true, event, dashboard: getErpDashboard() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/delete-erp-event") {
+        const body = await readJsonBody(request);
+        deleteErpEventRecord(body.id);
+        return sendJson(response, { ok: true, dashboard: getErpDashboard() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/erp-quote") {
+        const body = await readJsonBody(request);
+        const quote = saveErpQuoteRecord(body);
+        return sendJson(response, { ok: true, quote, dashboard: getErpDashboard() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/delete-erp-quote") {
+        const body = await readJsonBody(request);
+        deleteErpQuoteRecord(body.id);
+        return sendJson(response, { ok: true, dashboard: getErpDashboard() });
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase-option") {
         const body = await readJsonBody(request);
         const result = addPurchaseOption(body.type, body.value);
@@ -416,14 +739,83 @@ function startApprovalPanelServer() {
     }
   });
 
-  server.listen(panelPort, "127.0.0.1", () => {
-    console.log(`Panel de aprobaciones disponible en http://localhost:${panelPort}`);
+  server.listen(panelPort, panelHost, () => {
+    const displayHost = panelHost === "0.0.0.0" ? "localhost" : panelHost;
+    console.log(`Panel de aprobaciones disponible en http://${displayHost}:${panelPort}`);
   });
 
   server.on("error", (error) => {
     console.error("No se pudo iniciar el panel de aprobaciones:", error.message);
-    console.error("Si el puerto esta ocupado, cambie panelPort en config-bot.json.");
+    console.error("Si el puerto esta ocupado, cambie PORT/PANEL_PORT o panelPort en config-bot.json.");
   });
+}
+
+function validateRuntimeConfig() {
+  ensureDirectory(DATA_DIR);
+
+  if (IS_PRODUCTION && !PANEL_AUTH_PASSWORD) {
+    throw new Error("En produccion debe configurar PANEL_AUTH_PASSWORD.");
+  }
+}
+
+function applySecurityHeaders(response) {
+  response.setHeader("X-Content-Type-Options", "nosniff");
+  response.setHeader("X-Frame-Options", "DENY");
+  response.setHeader("Referrer-Policy", "same-origin");
+  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self';"
+  );
+
+  if (IS_PRODUCTION) {
+    response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+}
+
+function isAuthorizedPanelRequest(request) {
+  if (!isPanelAuthEnabled()) {
+    return true;
+  }
+
+  const authorization = request.headers.authorization || "";
+  if (!authorization.startsWith("Basic ")) {
+    return false;
+  }
+
+  try {
+    const decoded = Buffer.from(authorization.slice("Basic ".length), "base64").toString("utf8");
+    const separatorIndex = decoded.indexOf(":");
+    const user = decoded.slice(0, separatorIndex);
+    const password = decoded.slice(separatorIndex + 1);
+
+    return timingSafeEqual(user, PANEL_AUTH_USER) && timingSafeEqual(password, PANEL_AUTH_PASSWORD);
+  } catch (error) {
+    return false;
+  }
+}
+
+function isPanelAuthEnabled() {
+  return Boolean(PANEL_AUTH_PASSWORD);
+}
+
+function requestPanelAuth(response) {
+  response.writeHead(401, {
+    "Content-Type": "text/plain; charset=utf-8",
+    "WWW-Authenticate": 'Basic realm="Catering ERP", charset="UTF-8"',
+  });
+  response.end("Autenticacion requerida.");
+}
+
+function timingSafeEqual(left, right) {
+  const leftBuffer = Buffer.from(String(left || ""));
+  const rightBuffer = Buffer.from(String(right || ""));
+
+  if (leftBuffer.length !== rightBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(leftBuffer, rightBuffer);
 }
 
 function servePanelHtml(response) {
@@ -442,15 +834,377 @@ function sendJson(response, payload, statusCode = 200) {
   response.end(JSON.stringify(payload));
 }
 
+function sendXlsxExport(response) {
+  const workbook = XLSX.utils.book_new();
+  const sheets = buildGoogleSheetsModel();
+
+  for (const sheet of sheets) {
+    const worksheet = XLSX.utils.json_to_sheet(sheet.rows, {
+      header: sheet.columns,
+    });
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name);
+  }
+
+  const buffer = XLSX.write(workbook, {
+    type: "buffer",
+    bookType: "xlsx",
+  });
+  const fileName = `catering-erp-${getDateOnly(new Date())}.xlsx`;
+
+  response.writeHead(200, {
+    "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "Content-Disposition": `attachment; filename="${fileName}"`,
+    "Cache-Control": "no-store",
+  });
+  response.end(buffer);
+}
+
+function sendProposalText(response, quoteId) {
+  const quote = getErpQuoteList().find((item) => item.id === quoteId);
+
+  if (!quote) {
+    return sendJson(response, { ok: false, error: "No encontre ese presupuesto." }, 404);
+  }
+
+  const text = buildProposalText(quote);
+  const safeName = normalizeSearchKey(quote.eventName || quote.id).replace(/[^a-z0-9]+/g, "-") || "propuesta";
+
+  response.writeHead(200, {
+    "Content-Type": "text/plain; charset=utf-8",
+    "Content-Disposition": `attachment; filename="${safeName}.txt"`,
+    "Cache-Control": "no-store",
+  });
+  response.end(text);
+}
+
+function buildGoogleSheetsModel() {
+  const dashboard = getErpDashboard();
+  const customers = getCustomerInsights();
+  const recipes = getRecipeList();
+  const events = getErpEventList();
+  const quotes = getErpQuoteList();
+  const purchases = getErpPurchaseList();
+
+  return [
+    makeSheet("Dashboard", [
+      "Indicador",
+      "Valor",
+    ], [
+      { Indicador: "Eventos totales", Valor: dashboard.eventsTotal },
+      { Indicador: "Eventos proximos", Valor: dashboard.upcomingEvents },
+      { Indicador: "Eventos confirmados", Valor: dashboard.confirmedEvents },
+      { Indicador: "Presupuestos abiertos", Valor: dashboard.openQuotes },
+      { Indicador: "Presupuestos aceptados", Valor: dashboard.acceptedQuotes },
+      { Indicador: "Venta aceptada", Valor: dashboard.estimatedRevenue },
+      { Indicador: "Costo estimado", Valor: dashboard.estimatedCost },
+      { Indicador: "Margen estimado", Valor: dashboard.estimatedMargin },
+      { Indicador: "Margen estimado %", Valor: dashboard.estimatedMarginPercent },
+      { Indicador: "Compras pendientes de pago", Valor: dashboard.pendingPurchaseAmount },
+    ]),
+    makeSheet("Eventos", [
+      "ID",
+      "Evento",
+      "Cliente",
+      "Fecha",
+      "Invitados",
+      "Lugar",
+      "Servicio",
+      "Estado",
+      "Responsable",
+      "Proxima accion",
+      "Presupuesto aceptado",
+      "Margen %",
+      "Compras imputadas",
+      "Notas",
+      "Checklist compras",
+      "Checklist produccion",
+      "Checklist personal",
+      "Checklist logistica",
+      "Checklist menu",
+      "Checklist pagos",
+      "Creado",
+      "Actualizado",
+    ], events.map((event) => ({
+      ID: event.id,
+      Evento: event.name,
+      Cliente: event.clientName,
+      Fecha: event.eventDate,
+      Invitados: event.guestCount,
+      Lugar: event.venue,
+      Servicio: event.serviceType,
+      Estado: event.status,
+      Responsable: event.owner,
+      "Proxima accion": event.nextAction,
+      "Presupuesto aceptado": event.quoteTotal,
+      "Margen %": event.quoteMarginPercent,
+      "Compras imputadas": event.purchaseTotal,
+      Notas: event.notes,
+      "Checklist compras": event.checklist?.purchases,
+      "Checklist produccion": event.checklist?.production,
+      "Checklist personal": event.checklist?.staff,
+      "Checklist logistica": event.checklist?.logistics,
+      "Checklist menu": event.checklist?.menu,
+      "Checklist pagos": event.checklist?.payments,
+      Creado: event.createdAt,
+      Actualizado: event.updatedAt,
+    }))),
+    makeSheet("Presupuestos", [
+      "ID",
+      "Evento ID",
+      "Version",
+      "Evento",
+      "Cliente",
+      "Estado",
+      "Invitados",
+      "Costo total",
+      "Precio total",
+      "Margen $",
+      "Margen %",
+      "Markup %",
+      "Margen objetivo %",
+      "Subtotal",
+      "Descuento %",
+      "Descuento $",
+      "Impuesto %",
+      "Impuesto $",
+      "Valido hasta",
+      "Personal extra",
+      "Logistica",
+      "Vajilla",
+      "Otros costos",
+      "Notas",
+      "Creado",
+      "Actualizado",
+    ], quotes.map((quote) => ({
+      ID: quote.id,
+      "Evento ID": quote.eventId,
+      Version: quote.version,
+      Evento: quote.eventName,
+      Cliente: quote.clientName,
+      Estado: quote.status,
+      Invitados: quote.guestCount,
+      "Costo total": quote.costTotal,
+      "Precio total": quote.priceTotal,
+      "Margen $": quote.marginAmount,
+      "Margen %": quote.marginPercent,
+      "Markup %": quote.markupPercent,
+      "Margen objetivo %": quote.targetMarginPercent,
+      Subtotal: quote.subtotalBeforeDiscount,
+      "Descuento %": quote.discountPercent,
+      "Descuento $": quote.discountAmount,
+      "Impuesto %": quote.taxRate,
+      "Impuesto $": quote.taxAmount,
+      "Valido hasta": quote.validUntil,
+      "Personal extra": quote.staffCost,
+      Logistica: quote.logisticsCost,
+      Vajilla: quote.tablewareCost,
+      "Otros costos": quote.extraCost,
+      Notas: quote.notes,
+      Creado: quote.createdAt,
+      Actualizado: quote.updatedAt,
+    }))),
+    makeSheet("Presupuesto_Recetas", [
+      "Presupuesto ID",
+      "Evento",
+      "Receta ID",
+      "Receta",
+      "Cantidad",
+      "Costo unitario",
+      "Costo total",
+    ], quotes.flatMap((quote) => (quote.recipes || []).map((line) => ({
+      "Presupuesto ID": quote.id,
+      Evento: quote.eventName,
+      "Receta ID": line.recipeId,
+      Receta: line.name,
+      Cantidad: line.quantity,
+      "Costo unitario": line.unitCost,
+      "Costo total": line.totalCost,
+    })))),
+    makeSheet("Compras", [
+      "ID",
+      "Fecha",
+      "Proveedor",
+      "Evento",
+      "Descripcion",
+      "Total",
+      "Estado pago",
+      "Medio pago",
+      "Origen fondos",
+      "Creado",
+    ], purchases.map((purchase) => ({
+      ID: purchase.id,
+      Fecha: purchase.date,
+      Proveedor: purchase.provider,
+      Evento: purchase.eventName,
+      Descripcion: purchase.description,
+      Total: purchase.totalAmount,
+      "Estado pago": purchase.paymentStatus,
+      "Medio pago": purchase.paymentMethod,
+      "Origen fondos": purchase.fundsSource,
+      Creado: purchase.createdAt,
+    }))),
+    makeSheet("Compra_Items", [
+      "Compra ID",
+      "Fecha",
+      "Proveedor",
+      "Evento",
+      "Producto",
+      "Cantidad",
+      "Unitario",
+      "Total",
+    ], purchases.flatMap((purchase) => (purchase.lineItems || []).map((item) => ({
+      "Compra ID": purchase.id,
+      Fecha: purchase.date,
+      Proveedor: purchase.provider,
+      Evento: purchase.eventName,
+      Producto: item.description,
+      Cantidad: item.quantity,
+      Unitario: item.unitAmount,
+      Total: item.total,
+    })))),
+    makeSheet("Clientes", [
+      "ID",
+      "Telefono",
+      "Telefono visible",
+      "Nombre",
+      "Agenda",
+      "Presupuestos",
+      "Presupuestos ERP",
+      "Aceptados",
+      "Tasa cierre %",
+      "Venta aceptada",
+      "Preferencias",
+      "Restricciones",
+      "Ultimo evento",
+      "Ultimo presupuesto",
+      "Ultimo contacto",
+      "Notas",
+      "Creado",
+      "Actualizado",
+    ], customers.map((customer) => ({
+      ID: customer.id,
+      Telefono: customer.phone,
+      "Telefono visible": customer.displayPhone,
+      Nombre: customer.fullName,
+      Agenda: customer.contactName,
+      Presupuestos: customer.budgetCount,
+      "Presupuestos ERP": customer.quoteCount,
+      Aceptados: customer.acceptedQuoteCount,
+      "Tasa cierre %": customer.closeRate,
+      "Venta aceptada": customer.totalRevenue,
+      Preferencias: customer.preferences,
+      Restricciones: customer.dietaryRestrictions,
+      "Ultimo evento": customer.lastEventType,
+      "Ultimo presupuesto": customer.lastBudgetAt,
+      "Ultimo contacto": customer.lastSeenAt,
+      Notas: customer.notes,
+      Creado: customer.createdAt,
+      Actualizado: customer.updatedAt,
+    }))),
+    makeSheet("Recetas", [
+      "ID",
+      "Receta",
+      "Categoria",
+      "Rinde",
+      "Unidad",
+      "Costo ingredientes",
+      "Costo personal",
+      "Costo total",
+      "Costo unitario",
+      "Horas personal",
+      "Notas",
+      "Creado",
+      "Actualizado",
+    ], recipes.map((recipe) => ({
+      ID: recipe.id,
+      Receta: recipe.name,
+      Categoria: recipe.category,
+      Rinde: recipe.portions,
+      Unidad: recipe.yieldUnit,
+      "Costo ingredientes": recipe.ingredientCost,
+      "Costo personal": recipe.laborCost,
+      "Costo total": recipe.totalCost,
+      "Costo unitario": recipe.costPerPortion,
+      "Horas personal": recipe.laborHours,
+      Notas: recipe.notes,
+      Creado: recipe.createdAt,
+      Actualizado: recipe.updatedAt,
+    }))),
+    makeSheet("Receta_Items", [
+      "Receta ID",
+      "Receta",
+      "Tipo",
+      "Insumo/Preparacion",
+      "Cantidad",
+      "Unidad",
+      "Costo unitario",
+      "Merma %",
+      "Costo total",
+      "Receta vinculada ID",
+    ], recipes.flatMap((recipe) => (recipe.items || []).map((item) => ({
+      "Receta ID": recipe.id,
+      Receta: recipe.name,
+      Tipo: item.type || "product",
+      "Insumo/Preparacion": item.name,
+      Cantidad: item.quantity,
+      Unidad: item.unit,
+      "Costo unitario": item.unitCost,
+      "Merma %": item.wastePercent,
+      "Costo total": item.cost,
+      "Receta vinculada ID": item.recipeId || "",
+    })))),
+    makeSheet("Productos_Precios", [
+      "Producto",
+      "Costo unitario",
+      "Costo anterior",
+      "Variacion %",
+      "Ultima compra",
+      "Proveedor",
+      "Actualizado",
+    ], Object.values(productPriceRecords).map((product) => ({
+      Producto: product.name,
+      "Costo unitario": product.unitCost,
+      "Costo anterior": product.previousUnitCost,
+      "Variacion %": product.changePercent,
+      "Ultima compra": product.lastPurchaseDate,
+      Proveedor: product.provider,
+      Actualizado: product.updatedAt,
+    }))),
+  ];
+}
+
+function makeSheet(name, columns, rows) {
+  return {
+    name,
+    columns,
+    rows: rows.length ? rows : [Object.fromEntries(columns.map((column) => [column, ""]))],
+  };
+}
+
 function readJsonBody(request) {
   return new Promise((resolve, reject) => {
     let body = "";
+    let rejected = false;
 
     request.on("data", (chunk) => {
+      if (rejected) {
+        return;
+      }
+
       body += chunk;
+
+      if (Buffer.byteLength(body, "utf8") > MAX_JSON_BODY_BYTES) {
+        rejected = true;
+        reject(new Error("La solicitud es demasiado grande."));
+        request.destroy();
+      }
     });
 
     request.on("end", () => {
+      if (rejected) {
+        return;
+      }
+
       try {
         resolve(body ? JSON.parse(body) : {});
       } catch (error) {
@@ -485,6 +1239,9 @@ function loadBusinessData() {
     laborHourlyCost: 0,
     ...readJsonFile(COST_SETTINGS_FILE, {}),
   };
+  erpEvents = readJsonFile(ERP_EVENTS_FILE, []);
+  erpQuotes = readJsonFile(ERP_QUOTES_FILE, []);
+  erpPurchases = readJsonFile(ERP_PURCHASES_FILE, []);
 }
 
 function readJsonFile(filePath, fallback) {
@@ -501,7 +1258,46 @@ function readJsonFile(filePath, fallback) {
 }
 
 function writeJsonFile(filePath, value) {
-  fs.writeFileSync(filePath, JSON.stringify(value, null, 2), "utf8");
+  ensureDirectory(path.dirname(filePath));
+  backupJsonFile(filePath);
+  const tempPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(value, null, 2), "utf8");
+  fs.renameSync(tempPath, filePath);
+}
+
+function backupJsonFile(filePath) {
+  if (process.env.JSON_BACKUPS === "0" || !fs.existsSync(filePath)) {
+    return;
+  }
+
+  try {
+    const backupDir = path.join(DATA_DIR, "backups");
+    ensureDirectory(backupDir);
+    const parsed = path.parse(filePath);
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const backupPath = path.join(backupDir, `${parsed.name}-${stamp}${parsed.ext}`);
+    fs.copyFileSync(filePath, backupPath);
+    pruneJsonBackups(backupDir, parsed.name, parsed.ext);
+  } catch (error) {
+    console.warn("No se pudo crear backup JSON:", error.message);
+  }
+}
+
+function pruneJsonBackups(backupDir, baseName, extension) {
+  const keep = Number(process.env.JSON_BACKUP_KEEP || 30);
+  const backups = fs
+    .readdirSync(backupDir)
+    .filter((fileName) => fileName.startsWith(`${baseName}-`) && fileName.endsWith(extension))
+    .map((fileName) => ({
+      fileName,
+      fullPath: path.join(backupDir, fileName),
+      mtimeMs: fs.statSync(path.join(backupDir, fileName)).mtimeMs,
+    }))
+    .sort((a, b) => b.mtimeMs - a.mtimeMs);
+
+  for (const backup of backups.slice(keep)) {
+    fs.unlinkSync(backup.fullPath);
+  }
 }
 
 function saveCustomerRecords() {
@@ -518,6 +1314,18 @@ function saveProductPriceRecords() {
 
 function saveCostSettings() {
   writeJsonFile(COST_SETTINGS_FILE, costSettings);
+}
+
+function saveErpEvents() {
+  writeJsonFile(ERP_EVENTS_FILE, erpEvents);
+}
+
+function saveErpQuotes() {
+  writeJsonFile(ERP_QUOTES_FILE, erpQuotes);
+}
+
+function saveErpPurchases() {
+  writeJsonFile(ERP_PURCHASES_FILE, erpPurchases);
 }
 
 function getCustomerList() {
@@ -538,6 +1346,8 @@ function normalizeCustomerRecord(customer) {
     lastEventType: customer.lastEventType || "",
     lastBudgetAt: customer.lastBudgetAt || "",
     lastSeenAt: customer.lastSeenAt || customer.updatedAt || customer.createdAt || "",
+    preferences: customer.preferences || "",
+    dietaryRestrictions: customer.dietaryRestrictions || "",
     notes: customer.notes || "",
     createdAt: customer.createdAt || "",
     updatedAt: customer.updatedAt || "",
@@ -560,6 +1370,8 @@ function saveCustomerFromPanel(input) {
     displayPhone,
     fullName,
     contactName: normalizeText(input.contactName || ""),
+    preferences: normalizeText(input.preferences || ""),
+    dietaryRestrictions: normalizeText(input.dietaryRestrictions || ""),
     notes: normalizeText(input.notes || ""),
     source: "panel",
   });
@@ -611,6 +1423,8 @@ function upsertCustomerRecord(phone, input = {}) {
     lastEventType: input.lastEventType || known?.lastEventType || "",
     lastBudgetAt: input.countBudget ? now : known?.lastBudgetAt || "",
     lastSeenAt: now,
+    preferences: input.preferences !== undefined ? normalizeText(input.preferences || "") : known?.preferences || "",
+    dietaryRestrictions: input.dietaryRestrictions !== undefined ? normalizeText(input.dietaryRestrictions || "") : known?.dietaryRestrictions || "",
     notes: input.notes !== undefined ? normalizeText(input.notes || "") : known?.notes || "",
     createdAt: known?.createdAt || now,
     updatedAt: now,
@@ -699,9 +1513,18 @@ function rememberPurchasePrices(purchase) {
       continue;
     }
 
-    productPriceRecords[normalizeProductKey(name)] = {
+    const key = normalizeProductKey(name);
+    const previous = productPriceRecords[key] || {};
+    const previousUnitCost = Number(previous.unitCost || 0);
+    const changePercent = previousUnitCost > 0
+      ? roundMoney(((unitCost - previousUnitCost) / previousUnitCost) * 100)
+      : 0;
+
+    productPriceRecords[key] = {
       name,
       unitCost,
+      previousUnitCost,
+      changePercent,
       lastPurchaseDate: purchase.fecha || new Date().toISOString().slice(0, 10),
       provider: purchase.proveedor || "",
       updatedAt: new Date().toISOString(),
@@ -913,6 +1736,607 @@ function deleteRecipeRecord(id) {
   }
 
   saveRecipeRecords();
+}
+
+function getErpDashboard() {
+  const events = getErpEventList();
+  const quotes = getErpQuoteList();
+  const purchases = getErpPurchaseList();
+  const today = getDateOnly(new Date());
+  const upcomingEvents = events.filter((event) => event.eventDate && event.eventDate >= today);
+  const confirmedEvents = events.filter((event) => event.status === "confirmed" || event.status === "production");
+  const openQuotes = quotes.filter((quote) => ["draft", "sent", "negotiation"].includes(quote.status));
+  const acceptedQuotes = quotes.filter((quote) => quote.status === "accepted");
+  const pendingPurchases = purchases.filter((purchase) => purchase.paymentStatus !== "Pagado");
+  const estimatedRevenue = acceptedQuotes.reduce((sum, quote) => sum + Number(quote.priceTotal || 0), 0);
+  const estimatedCost = acceptedQuotes.reduce((sum, quote) => sum + Number(quote.costTotal || 0), 0);
+  const pendingPurchaseAmount = pendingPurchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
+
+  return {
+    eventsTotal: events.length,
+    upcomingEvents: upcomingEvents.length,
+    confirmedEvents: confirmedEvents.length,
+    openQuotes: openQuotes.length,
+    acceptedQuotes: acceptedQuotes.length,
+    estimatedRevenue: roundMoney(estimatedRevenue),
+    estimatedCost: roundMoney(estimatedCost),
+    estimatedMargin: roundMoney(estimatedRevenue - estimatedCost),
+    estimatedMarginPercent: estimatedRevenue > 0 ? roundMoney(((estimatedRevenue - estimatedCost) / estimatedRevenue) * 100) : 0,
+    pendingPurchaseAmount: roundMoney(pendingPurchaseAmount),
+    pipeline: getPipelineBoard().columns.map((column) => ({
+      id: column.id,
+      label: column.label,
+      count: column.items.length,
+    })),
+    alerts: buildErpAlerts(events, quotes, purchases),
+  };
+}
+
+function buildErpAlerts(events, quotes, purchases) {
+  const today = getDateOnly(new Date());
+  const soon = getDateOnly(addDays(new Date(), 7));
+  const alerts = [];
+
+  const eventsWithoutQuote = events.filter(
+    (event) =>
+      ["confirmed", "production"].includes(event.status) &&
+      !erpQuotes.some((quote) => quote.eventId === event.id && quote.status === "accepted")
+  );
+  const lowMarginQuotes = quotes.filter((quote) => Number(quote.marginPercent || 0) > 0 && Number(quote.marginPercent || 0) < 25);
+  const dueEvents = events.filter((event) => event.eventDate && event.eventDate >= today && event.eventDate <= soon);
+  const unpaidPurchases = purchases.filter((purchase) => purchase.paymentStatus !== "Pagado");
+  const dueFollowUps = getChatDashboardList().filter((chat) => chat.isDueToday || chat.isOverdue);
+  const expiredQuotes = quotes.filter((quote) => quote.validUntil && quote.validUntil < today && !["accepted", "rejected"].includes(quote.status));
+  const staleRecipes = getRecipeList().filter((recipe) =>
+    (recipe.items || []).some((item) => item.type !== "recipe" && !productPriceRecords[normalizeProductKey(item.name)])
+  );
+  const priceAlerts = getProductPriceAlerts().filter((alert) => Math.abs(Number(alert.changePercent || 0)) >= 15);
+
+  if (eventsWithoutQuote.length) {
+    alerts.push({
+      type: "warning",
+      title: "Eventos confirmados sin presupuesto aceptado",
+      detail: `${eventsWithoutQuote.length} evento(s) necesitan control comercial antes de producir.`,
+    });
+  }
+
+  if (lowMarginQuotes.length) {
+    alerts.push({
+      type: "danger",
+      title: "Presupuestos con margen bajo",
+      detail: `${lowMarginQuotes.length} presupuesto(s) estan por debajo del 25% de margen.`,
+    });
+  }
+
+  if (dueEvents.length) {
+    alerts.push({
+      type: "info",
+      title: "Eventos proximos",
+      detail: `${dueEvents.length} evento(s) ocurren dentro de los proximos 7 dias.`,
+    });
+  }
+
+  if (unpaidPurchases.length) {
+    alerts.push({
+      type: "warning",
+      title: "Compras pendientes de pago",
+      detail: `${unpaidPurchases.length} compra(s) requieren seguimiento administrativo.`,
+    });
+  }
+
+  if (dueFollowUps.length) {
+    alerts.push({
+      type: "warning",
+      title: "Seguimientos comerciales pendientes",
+      detail: `${dueFollowUps.length} seguimiento(s) vencen hoy o estan atrasados.`,
+    });
+  }
+
+  if (expiredQuotes.length) {
+    alerts.push({
+      type: "danger",
+      title: "Presupuestos vencidos",
+      detail: `${expiredQuotes.length} presupuesto(s) superaron su fecha de validez.`,
+    });
+  }
+
+  if (staleRecipes.length) {
+    alerts.push({
+      type: "warning",
+      title: "Recetas sin precio actualizado",
+      detail: `${staleRecipes.length} receta(s) tienen insumos sin ultimo precio de compra.`,
+    });
+  }
+
+  if (priceAlerts.length) {
+    alerts.push({
+      type: "danger",
+      title: "Insumos con variacion fuerte",
+      detail: `${priceAlerts.length} producto(s) cambiaron 15% o mas y afectan recetas.`,
+    });
+  }
+
+  return alerts;
+}
+
+function getPipelineBoard() {
+  const columns = [
+    { id: "lead", label: "Consulta", items: [] },
+    { id: "in_progress", label: "Relevamiento", items: [] },
+    { id: "ready_to_quote", label: "Listo para cotizar", items: [] },
+    { id: "proposal_sent", label: "Propuesta enviada", items: [] },
+    { id: "follow_up", label: "Seguimiento", items: [] },
+    { id: "confirmed", label: "Confirmado", items: [] },
+    { id: "lost", label: "Perdido", items: [] },
+  ];
+  const byId = new Map(columns.map((column) => [column.id, column]));
+
+  for (const chat of getChatDashboardList()) {
+    const id = mapPipelineStatus(chat.status);
+    byId.get(id)?.items.push({
+      id: chat.phone,
+      source: "commercial",
+      title: chat.data?.fullName || chat.displayPhone || chat.phone,
+      subtitle: chat.data?.eventType || chat.channel || "",
+      amount: 0,
+      date: chat.followUpDate || "",
+      owner: chat.assignedTo || "",
+      role: chat.assignedTo || "",
+      nextAction: chat.nextAction || "",
+    });
+  }
+
+  for (const event of getErpEventList()) {
+    const id = mapPipelineStatus(event.status);
+    byId.get(id)?.items.push({
+      id: event.id,
+      source: "event",
+      title: event.name,
+      subtitle: event.clientName || event.serviceType || "",
+      amount: event.quoteTotal || 0,
+      date: event.eventDate || "",
+      owner: event.owner || "",
+      role: event.role || "",
+      nextAction: event.nextAction || "",
+    });
+  }
+
+  return { columns };
+}
+
+function mapPipelineStatus(status) {
+  const normalized = normalizeStatus(status);
+  const mapping = {
+    new: "lead",
+    pending_approval: "lead",
+    approved_waiting_reason: "lead",
+    in_progress: "in_progress",
+    missing_info: "in_progress",
+    ready_to_quote: "ready_to_quote",
+    quoted: "ready_to_quote",
+    proposal_sent: "proposal_sent",
+    follow_up: "follow_up",
+    confirmed: "confirmed",
+    production: "confirmed",
+    done: "confirmed",
+    lost: "lost",
+    ignored: "lost",
+    referred: "lost",
+  };
+
+  return mapping[normalized] || mapping[String(status || "").toLowerCase()] || "lead";
+}
+
+function getConfirmedEventList() {
+  return getErpEventList()
+    .filter((event) => ["confirmed", "production"].includes(event.status))
+    .map((event) => ({
+      ...event,
+      checklist: normalizeOperationalChecklist(event.checklist),
+      unpaidPurchases: getErpPurchaseList().filter(
+        (purchase) =>
+          purchase.eventName &&
+          normalizeSearchKey(purchase.eventName) === normalizeSearchKey(event.name) &&
+          purchase.paymentStatus !== "Pagado"
+      ).length,
+    }));
+}
+
+function getCustomerInsights() {
+  const customers = getCustomerList();
+  const events = getErpEventList();
+  const quotes = getErpQuoteList();
+
+  return customers.map((customer) => {
+    const nameKey = normalizeSearchKey(customer.fullName || customer.contactName || customer.displayPhone);
+    const customerEvents = events.filter((event) => normalizeSearchKey(event.clientName) === nameKey);
+    const customerQuotes = quotes.filter((quote) => normalizeSearchKey(quote.clientName) === nameKey);
+    const accepted = customerQuotes.filter((quote) => quote.status === "accepted").length;
+
+    return {
+      ...customer,
+      events: customerEvents,
+      quotes: customerQuotes,
+      quoteCount: customerQuotes.length,
+      acceptedQuoteCount: accepted,
+      closeRate: customerQuotes.length ? roundMoney((accepted / customerQuotes.length) * 100) : 0,
+      totalRevenue: roundMoney(customerQuotes.reduce((sum, quote) => sum + (quote.status === "accepted" ? Number(quote.priceTotal || 0) : 0), 0)),
+    };
+  });
+}
+
+function getProductPriceAlerts() {
+  return Object.values(productPriceRecords)
+    .filter((product) => Number(product.previousUnitCost || 0) > 0 && Number(product.changePercent || 0) !== 0)
+    .map((product) => ({
+      ...product,
+      affectedRecipes: findRecipesUsingProduct(product.name).map((recipe) => recipe.name),
+    }))
+    .sort((a, b) => Math.abs(Number(b.changePercent || 0)) - Math.abs(Number(a.changePercent || 0)));
+}
+
+function findRecipesUsingProduct(productName) {
+  const key = normalizeProductKey(productName);
+  return getRecipeList().filter((recipe) =>
+    (recipe.items || []).some((item) => item.type !== "recipe" && normalizeProductKey(item.name) === key)
+  );
+}
+
+function getErpEventList() {
+  return erpEvents.map(normalizeErpEvent).sort((a, b) => {
+    const dateCompare = String(a.eventDate || "9999-12-31").localeCompare(String(b.eventDate || "9999-12-31"));
+    return dateCompare || a.name.localeCompare(b.name);
+  });
+}
+
+function normalizeErpEvent(event = {}) {
+  const quote = getBestQuoteForEvent(event.id);
+  const purchases = getErpPurchaseList().filter((purchase) => purchase.eventName && normalizeSearchKey(purchase.eventName) === normalizeSearchKey(event.name));
+  const purchaseTotal = purchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
+
+  return {
+    id: event.id || `evento-${Date.now()}`,
+    name: normalizeText(event.name || event.eventName || ""),
+    clientId: normalizeText(event.clientId || ""),
+    clientName: normalizeText(event.clientName || ""),
+    eventDate: normalizePanelDate(event.eventDate || event.date || ""),
+    guestCount: parseDecimalNumber(event.guestCount || 0),
+    venue: normalizeText(event.venue || ""),
+    serviceType: normalizeText(event.serviceType || ""),
+    status: normalizeErpEventStatus(event.status || "lead"),
+    owner: normalizeText(event.owner || event.assignedTo || ""),
+    role: normalizeText(event.role || ""),
+    nextAction: normalizeText(event.nextAction || ""),
+    paymentStatus: normalizeText(event.paymentStatus || ""),
+    productionStatus: normalizeText(event.productionStatus || ""),
+    menuStatus: normalizeText(event.menuStatus || ""),
+    staffStatus: normalizeText(event.staffStatus || ""),
+    logisticsStatus: normalizeText(event.logisticsStatus || ""),
+    checklist: normalizeOperationalChecklist(event.checklist || event),
+    notes: normalizeText(event.notes || ""),
+    quoteTotal: quote ? Number(quote.priceTotal || 0) : 0,
+    quoteMarginPercent: quote ? Number(quote.marginPercent || 0) : 0,
+    purchaseTotal: roundMoney(purchaseTotal),
+    createdAt: event.createdAt || "",
+    updatedAt: event.updatedAt || "",
+  };
+}
+
+function normalizeOperationalChecklist(input = {}) {
+  return {
+    purchases: parseBooleanLike(input.purchases ?? input.checklistPurchases),
+    production: parseBooleanLike(input.production ?? input.checklistProduction),
+    staff: parseBooleanLike(input.staff ?? input.checklistStaff),
+    logistics: parseBooleanLike(input.logistics ?? input.checklistLogistics),
+    menu: parseBooleanLike(input.menu ?? input.checklistMenu),
+    payments: parseBooleanLike(input.payments ?? input.checklistPayments),
+  };
+}
+
+function parseBooleanLike(value) {
+  return value === true || value === "true" || value === "on" || value === "1" || value === 1;
+}
+
+function saveErpEventRecord(input) {
+  const name = normalizeText(input.name || input.eventName || "");
+
+  if (!name) {
+    throw new Error("Ingrese el nombre del evento.");
+  }
+
+  const now = new Date().toISOString();
+  const existingIndex = erpEvents.findIndex((event) => event.id === input.id);
+  const previous = existingIndex >= 0 ? erpEvents[existingIndex] : {};
+  const event = normalizeErpEvent({
+    ...previous,
+    ...input,
+    id: input.id || previous.id || `evento-${Date.now()}`,
+    name,
+    createdAt: previous.createdAt || now,
+    updatedAt: now,
+  });
+
+  if (existingIndex >= 0) {
+    erpEvents[existingIndex] = event;
+  } else {
+    erpEvents.push(event);
+  }
+
+  if (event.clientName || event.clientId) {
+    upsertCustomerRecord(event.clientId || event.clientName, {
+      fullName: event.clientName,
+      contactName: event.clientName,
+      lastEventType: event.serviceType,
+      lastBudgetAt: event.eventDate,
+    });
+  }
+
+  ensurePurchaseOptionExists("event", event.name);
+  saveErpEvents();
+  return event;
+}
+
+function deleteErpEventRecord(id) {
+  erpEvents = erpEvents.filter((event) => event.id !== id);
+  saveErpEvents();
+}
+
+function getErpQuoteList() {
+  return erpQuotes.map(normalizeErpQuote).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
+}
+
+function normalizeErpQuote(quote = {}) {
+  const costTotal = roundMoney(Number(quote.costTotal || 0));
+  const priceTotal = roundMoney(Number(quote.priceTotal || 0));
+  const marginAmount = roundMoney(priceTotal - costTotal);
+
+  return {
+    id: quote.id || `presupuesto-${Date.now()}`,
+    version: normalizeText(quote.version || ""),
+    eventId: normalizeText(quote.eventId || ""),
+    eventName: normalizeText(quote.eventName || ""),
+    clientName: normalizeText(quote.clientName || ""),
+    status: normalizeErpQuoteStatus(quote.status || "draft"),
+    validUntil: normalizePanelDate(quote.validUntil || ""),
+    guestCount: parseDecimalNumber(quote.guestCount || 0),
+    costTotal,
+    priceTotal,
+    marginAmount,
+    marginPercent: priceTotal > 0 ? roundMoney((marginAmount / priceTotal) * 100) : 0,
+    markupPercent: costTotal > 0 ? roundMoney(((priceTotal - costTotal) / costTotal) * 100) : 0,
+    targetMarginPercent: parseDecimalNumber(quote.targetMarginPercent || 35),
+    discountAmount: roundMoney(Number(quote.discountAmount || 0)),
+    discountPercent: roundMoney(Number(quote.discountPercent || 0)),
+    taxRate: roundMoney(Number(quote.taxRate || 0)),
+    taxAmount: roundMoney(Number(quote.taxAmount || 0)),
+    tablewareCost: roundMoney(Number(quote.tablewareCost || 0)),
+    logisticsCost: roundMoney(Number(quote.logisticsCost || 0)),
+    staffCost: roundMoney(Number(quote.staffCost || 0)),
+    extraCost: roundMoney(Number(quote.extraCost || 0)),
+    subtotalBeforeDiscount: roundMoney(Number(quote.subtotalBeforeDiscount || priceTotal || 0)),
+    recipes: Array.isArray(quote.recipes) ? quote.recipes.map(normalizeQuoteRecipeLine).filter((item) => item.recipeId || item.name) : [],
+    notes: normalizeText(quote.notes || ""),
+    createdAt: quote.createdAt || "",
+    updatedAt: quote.updatedAt || "",
+  };
+}
+
+function normalizeQuoteRecipeLine(item = {}) {
+  return {
+    recipeId: normalizeText(item.recipeId || ""),
+    name: normalizeText(item.name || ""),
+    quantity: parseDecimalNumber(item.quantity || 0),
+    unitCost: roundMoney(Number(item.unitCost || 0)),
+    totalCost: roundMoney(Number(item.totalCost || 0)),
+  };
+}
+
+function saveErpQuoteRecord(input) {
+  const now = new Date().toISOString();
+  const existingIndex = erpQuotes.findIndex((quote) => quote.id === input.id);
+  const previous = existingIndex >= 0 ? erpQuotes[existingIndex] : {};
+  const event = erpEvents.find((item) => item.id === input.eventId);
+  const calculated = calculateErpQuote(input);
+  const version = input.version || previous.version || getNextQuoteVersion(input.eventId);
+  const quote = normalizeErpQuote({
+    ...previous,
+    ...input,
+    ...calculated,
+    eventName: input.eventName || event?.name || previous.eventName || "",
+    clientName: input.clientName || event?.clientName || previous.clientName || "",
+    guestCount: input.guestCount || event?.guestCount || previous.guestCount || "",
+    version,
+    id: input.id || previous.id || `presupuesto-${Date.now()}`,
+    createdAt: previous.createdAt || now,
+    updatedAt: now,
+  });
+
+  if (existingIndex >= 0) {
+    erpQuotes[existingIndex] = quote;
+  } else {
+    erpQuotes.push(quote);
+  }
+
+  if (quote.eventId) {
+    if (event) {
+      event.updatedAt = now;
+      if (quote.status === "accepted") {
+        event.status = "confirmed";
+      }
+      saveErpEvents();
+    }
+  }
+
+  saveErpQuotes();
+  return quote;
+}
+
+function calculateErpQuote(input) {
+  const recipes = Array.isArray(input.recipes) ? input.recipes : [];
+  const recipeLines = recipes.map((line) => {
+    const recipe = findRecipeById(line.recipeId);
+    const quantity = parseDecimalNumber(line.quantity || 0);
+    const unitCost = Number(recipe ? calculateRecipeCost(recipe).costPerPortion : line.unitCost || 0);
+
+    return normalizeQuoteRecipeLine({
+      recipeId: line.recipeId,
+      name: recipe?.name || line.name || "",
+      quantity,
+      unitCost,
+      totalCost: unitCost * quantity,
+    });
+  });
+  const recipeCost = recipeLines.reduce((sum, line) => sum + Number(line.totalCost || 0), 0);
+  const staffCost = parseDecimalNumber(input.staffCost || 0);
+  const logisticsCost = parseDecimalNumber(input.logisticsCost || 0);
+  const tablewareCost = parseDecimalNumber(input.tablewareCost || 0);
+  const extraCost = parseDecimalNumber(input.extraCost || 0);
+  const costTotal = roundMoney(recipeCost + staffCost + logisticsCost + tablewareCost + extraCost);
+  const targetMarginPercent = Math.min(95, Math.max(0, parseDecimalNumber(input.targetMarginPercent || getDefaultMarginForEvent(input.eventName || input.serviceType || ""))));
+  const manualPrice = parseDecimalNumber(input.priceTotal || 0);
+  const suggestedPrice = targetMarginPercent >= 95 ? costTotal : costTotal / (1 - targetMarginPercent / 100);
+  const subtotalBeforeDiscount = manualPrice > 0 ? manualPrice : roundMoney(suggestedPrice);
+  const discountPercent = Math.max(0, parseDecimalNumber(input.discountPercent || 0));
+  const discountAmountInput = Math.max(0, parseDecimalNumber(input.discountAmount || 0));
+  const discountAmount = roundMoney(discountAmountInput || subtotalBeforeDiscount * (discountPercent / 100));
+  const taxableSubtotal = Math.max(0, subtotalBeforeDiscount - discountAmount);
+  const taxRate = Math.max(0, parseDecimalNumber(input.taxRate || 0));
+  const taxAmount = roundMoney(taxableSubtotal * taxRate);
+  const priceTotal = roundMoney(taxableSubtotal + taxAmount);
+
+  return {
+    recipes: recipeLines,
+    costTotal,
+    priceTotal,
+    subtotalBeforeDiscount,
+    discountPercent,
+    discountAmount,
+    taxRate,
+    taxAmount,
+    tablewareCost,
+    targetMarginPercent,
+  };
+}
+
+function getDefaultMarginForEvent(eventType) {
+  const targets = BOT_CONFIG.marginTargets || costSettings.marginTargets || {};
+  const key = normalizeSearchKey(eventType);
+  const match = Object.entries(targets).find(([name]) => key.includes(normalizeSearchKey(name)));
+  return parseDecimalNumber(match?.[1] || BOT_CONFIG.defaultMarginPercent || costSettings.defaultMarginPercent || 35);
+}
+
+function getNextQuoteVersion(eventId) {
+  const count = erpQuotes.filter((quote) => quote.eventId === eventId).length;
+  return `v${count + 1}`;
+}
+
+function buildProposalText(quote) {
+  const lines = [
+    `Propuesta ${quote.version || ""} - ${quote.eventName || "Evento"}`.trim(),
+    "",
+    `Cliente: ${quote.clientName || "A confirmar"}`,
+    `Invitados: ${quote.guestCount || "A confirmar"}`,
+    "",
+    "Menu / servicio:",
+    ...(quote.recipes || []).map((item) => `- ${item.name}: ${item.quantity}`),
+    "",
+    `Inversion total: ${formatMoneyText(quote.priceTotal)}`,
+  ];
+
+  if (quote.validUntil) {
+    lines.push(`Validez de la propuesta: ${quote.validUntil}`);
+  }
+
+  if (quote.discountAmount) {
+    lines.push(`Descuento aplicado: ${formatMoneyText(quote.discountAmount)}`);
+  }
+
+  if (quote.taxAmount) {
+    lines.push(`Impuestos incluidos: ${formatMoneyText(quote.taxAmount)}`);
+  }
+
+  if (quote.notes) {
+    lines.push("", "Notas:", quote.notes);
+  }
+
+  return `${lines.join("\n")}\n`;
+}
+
+function formatMoneyText(value) {
+  return Number(value || 0).toLocaleString("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
+  });
+}
+
+function deleteErpQuoteRecord(id) {
+  erpQuotes = erpQuotes.filter((quote) => quote.id !== id);
+  saveErpQuotes();
+}
+
+function getBestQuoteForEvent(eventId) {
+  if (!eventId) return null;
+  return getErpQuoteList().find((quote) => quote.eventId === eventId && quote.status === "accepted")
+    || getErpQuoteList().find((quote) => quote.eventId === eventId)
+    || null;
+}
+
+function getErpPurchaseList() {
+  return erpPurchases.map((purchase) => ({
+    ...purchase,
+    totalAmount: roundMoney(Number(purchase.totalAmount || 0)),
+  })).sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+}
+
+function rememberErpPurchase(purchase) {
+  const record = {
+    id: purchase.id || `compra-${Date.now()}`,
+    date: purchase.fecha || getDateOnly(new Date()),
+    provider: purchase.proveedor || "",
+    eventName: purchase.evento || "",
+    description: purchase.descripcion || "",
+    paymentStatus: purchase.estadoPago || "Pendiente",
+    paymentMethod: purchase.medioPago || "",
+    fundsSource: purchase.origenFondos || "",
+    totalAmount: purchase.totalAmount || 0,
+    lineItems: purchase.lineItems || [],
+    createdAt: new Date().toISOString(),
+  };
+
+  erpPurchases.push(record);
+  saveErpPurchases();
+  return record;
+}
+
+function normalizeErpEventStatus(status) {
+  const value = normalizeText(status || "").toLowerCase();
+  const allowed = new Set(["lead", "quoted", "confirmed", "production", "done", "lost"]);
+  return allowed.has(value) ? value : "lead";
+}
+
+function normalizeErpQuoteStatus(status) {
+  const value = normalizeText(status || "").toLowerCase();
+  const allowed = new Set(["draft", "sent", "negotiation", "accepted", "rejected"]);
+  return allowed.has(value) ? value : "draft";
+}
+
+function normalizePanelDate(value) {
+  const raw = normalizeText(value || "");
+  if (!raw) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  const parsed = parseDateDDMMYYYY(raw);
+  return parsed ? getDateOnly(parsed) : raw;
+}
+
+function getDateOnly(date) {
+  return new Date(date).toISOString().slice(0, 10);
+}
+
+function addDays(date, days) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
 }
 
 function getChatDashboardList() {
@@ -2128,6 +3552,7 @@ async function submitPurchaseRecord(input) {
     ensurePurchaseOptionExists("product", item.description)
   ).length;
   rememberPurchasePrices(purchase);
+  rememberErpPurchase(purchase);
   const webhookUrl = process.env.PURCHASE_WEBHOOK_URL || BOT_CONFIG.purchaseWebhookUrl;
 
   if (!webhookUrl) {
@@ -2185,6 +3610,7 @@ function ensurePurchaseOptionExists(type, value) {
   const allowedTypes = {
     provider: "purchaseProviders",
     product: "purchaseProducts",
+    event: "purchaseEvents",
   };
   const key = allowedTypes[type];
 
@@ -2220,6 +3646,7 @@ function buildPurchaseRecord(input) {
   const ivaAmount = roundMoney(netAmount * ivaRate);
 
   const purchase = {
+    id: input.id || `compra-${Date.now()}`,
     source: "panel_compras",
     spreadsheetId: BOT_CONFIG.purchaseSpreadsheetId || "",
     sheetName: BOT_CONFIG.purchaseSheetName || "Registro_Gastos",

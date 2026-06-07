@@ -2,11 +2,14 @@
 cd /d "%~dp0"
 echo Iniciando Bot WhatsApp Catering...
 
-set "LOCAL_NODE=%~dp0.runtime\node-v24.12.0-win-x64\node.exe"
+set "LOCAL_NODE=%~dp0.runtime\node-v22.21.1-win-x64\node.exe"
+set "OLD_LOCAL_NODE=%~dp0.runtime\node-v24.12.0-win-x64\node.exe"
 set "CODEX_NODE=%~dp0.runtime\codex-node\node.exe"
 
 if exist "%LOCAL_NODE%" (
   "%LOCAL_NODE%" whatsapp-catering-bot.js
+) else if exist "%OLD_LOCAL_NODE%" (
+  "%OLD_LOCAL_NODE%" whatsapp-catering-bot.js
 ) else if exist "%CODEX_NODE%" (
   "%CODEX_NODE%" whatsapp-catering-bot.js
 ) else (

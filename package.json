@@ -4,7 +4,9 @@
   "description": "",
   "main": "whatsapp-catering-bot.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node whatsapp-catering-bot.js",
+    "check": "node --check whatsapp-catering-bot.js",
+    "test": "npm run check"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +15,7 @@
   "dependencies": {
     "qrcode-terminal": "^0.12.0",
     "tesseract.js": "^7.0.0",
-    "whatsapp-web.js": "^1.34.7"
+    "whatsapp-web.js": "^1.34.7",
+    "xlsx": "^0.18.5"
   }
 }

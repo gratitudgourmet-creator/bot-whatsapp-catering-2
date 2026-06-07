@@ -36,5 +36,41 @@
     "notes": "",
     "createdAt": "2026-06-05T15:18:13.740Z",
     "updatedAt": "2026-06-05T15:18:18.885Z"
+  },
+  "Cliente demo": {
+    "id": "Cliente demo",
+    "phone": "Cliente demo",
+    "displayPhone": "",
+    "fullName": "Cliente demo",
+    "contactName": "Cliente demo",
+    "aliases": [
+      "Cliente demo"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "Cocktail",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-07T21:29:24.841Z",
+    "notes": "",
+    "createdAt": "2026-06-07T21:29:24.841Z",
+    "updatedAt": "2026-06-07T21:29:24.841Z"
+  },
+  "JOAQUIN": {
+    "id": "JOAQUIN",
+    "phone": "JOAQUIN",
+    "displayPhone": "",
+    "fullName": "JOAQUIN",
+    "contactName": "JOAQUIN",
+    "aliases": [
+      "JOAQUIN"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "AGAPE",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-07T22:04:22.608Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-07T22:00:37.605Z",
+    "updatedAt": "2026-06-07T22:04:22.608Z"
   }
 }

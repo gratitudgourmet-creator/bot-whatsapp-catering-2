@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$version = "v24.12.0"
+$version = "v22.21.1"
 $folderName = "node-$version-win-x64"
 $botDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $runtimeDir = Join-Path $botDir ".runtime"

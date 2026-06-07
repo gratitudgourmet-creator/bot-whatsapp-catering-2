@@ -743,6 +743,167 @@
       overflow-wrap: anywhere;
     }
 
+    .erp-grid {
+      align-items: start;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+    }
+
+    .erp-section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 16px;
+      padding: 16px;
+    }
+
+    .erp-section h2 {
+      font-size: 18px;
+      margin: 0 0 12px;
+    }
+
+    .erp-kpis {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .erp-kpi,
+    .erp-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .erp-kpi span,
+    .erp-card-meta {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+    }
+
+    .erp-kpi strong {
+      display: block;
+      font-size: 20px;
+      margin-top: 4px;
+    }
+
+    .erp-alert {
+      background: #fff;
+      border-left: 4px solid var(--accent);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      padding: 10px 12px;
+    }
+
+    .erp-alert.danger {
+      border-left-color: var(--danger);
+    }
+
+    .erp-alert.warning {
+      border-left-color: #d97706;
+    }
+
+    .erp-card {
+      margin-bottom: 10px;
+    }
+
+    .erp-card-head {
+      align-items: flex-start;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .erp-card-title {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .erp-status {
+      background: #eef2ff;
+      border-radius: 999px;
+      color: #3730a3;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+
+    .erp-quote-lines {
+      display: grid;
+      gap: 8px;
+    }
+
+    .erp-quote-line {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(180px, 1fr) 90px 42px;
+    }
+
+    .erp-quote-line select,
+    .erp-quote-line input {
+      width: 100%;
+    }
+
+    .pipeline {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(7, minmax(150px, 1fr));
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .pipeline-column {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 150px;
+      padding: 10px;
+    }
+
+    .pipeline-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .pipeline-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      padding: 9px;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .check-item {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .global-results {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
     @media (max-width: 980px) {
       .metrics {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -780,6 +941,7 @@
       }
 
       .panel-grid,
+      .erp-grid,
       .recipe-item,
       .recipe-process-item,
       .recipe-scale-head,
@@ -787,6 +949,12 @@
       .recipe-summary,
       .recipe-detail-summary,
       .recipe-card-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .erp-kpis,
+      .erp-quote-line,
+      .checklist {
         grid-template-columns: 1fr;
       }
     }
@@ -807,10 +975,242 @@
     <div id="notice" class="notice"></div>
 
     <div class="workspace-tabs">
+      <button class="workspace-tab" data-view="erp">ERP</button>
       <button class="workspace-tab active" data-view="commercial">Comercial</button>
       <button class="workspace-tab" data-view="customers">Clientes</button>
       <button class="workspace-tab" data-view="recipes">Recetas</button>
     </div>
+
+    <section id="view-erp" class="workspace-view">
+      <section class="erp-kpis">
+        <div class="erp-kpi"><span>Eventos proximos</span><strong id="erp-kpi-upcoming">0</strong></div>
+        <div class="erp-kpi"><span>Presupuestos abiertos</span><strong id="erp-kpi-open-quotes">0</strong></div>
+        <div class="erp-kpi"><span>Venta aceptada</span><strong id="erp-kpi-revenue">$0</strong></div>
+        <div class="erp-kpi"><span>Margen estimado</span><strong id="erp-kpi-margin">$0</strong></div>
+      </section>
+
+      <div class="erp-grid">
+        <div>
+          <section class="erp-section">
+            <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+              <h2>Centro de control</h2>
+              <div class="actions">
+                <button class="filter" onclick="loadErp()">Actualizar</button>
+                <button class="approve" onclick="downloadErpXlsx()">Descargar Excel</button>
+              </div>
+            </div>
+            <div class="toolbar-actions" style="margin-bottom:12px;">
+              <input id="global-search" class="search" placeholder="Buscar cliente, evento, proveedor, producto o receta">
+              <select id="role-filter">
+                <option value="">Todos los roles</option>
+                <option>Comercial</option>
+                <option>Cocina</option>
+                <option>Compras</option>
+                <option>Administracion</option>
+              </select>
+            </div>
+            <div id="global-results" class="global-results"></div>
+            <div id="erp-alerts"></div>
+          </section>
+
+          <section class="erp-section">
+            <h2>Pipeline comercial</h2>
+            <div id="pipeline-board" class="pipeline"></div>
+          </section>
+
+          <section class="erp-section">
+            <h2>Eventos</h2>
+            <div id="erp-event-list"></div>
+          </section>
+
+          <section class="erp-section">
+            <h2>Eventos confirmados</h2>
+            <div id="confirmed-event-list"></div>
+          </section>
+
+          <section class="erp-section">
+            <h2>Presupuestos</h2>
+            <div id="erp-quote-list"></div>
+          </section>
+
+          <section class="erp-section">
+            <h2>Insumos con variacion</h2>
+            <div id="product-alert-list"></div>
+          </section>
+        </div>
+
+        <div>
+          <section class="erp-section">
+            <h2>Crear evento</h2>
+            <form id="erp-event-form" class="form-grid">
+              <input type="hidden" name="id">
+              <div class="form-field full">
+                <label>Evento</label>
+                <input name="name" required placeholder="Ej: Casamiento Gomez 12/09">
+              </div>
+              <div class="form-field">
+                <label>Cliente</label>
+                <input name="clientName" list="erp-customer-options">
+              </div>
+              <div class="form-field">
+                <label>Fecha</label>
+                <input name="eventDate" type="date">
+              </div>
+              <div class="form-field">
+                <label>Invitados</label>
+                <input name="guestCount" inputmode="decimal">
+              </div>
+              <div class="form-field">
+                <label>Estado</label>
+                <select name="status">
+                  <option value="lead">Consulta</option>
+                  <option value="quoted">Presupuestado</option>
+                  <option value="confirmed">Confirmado</option>
+                  <option value="production">Produccion</option>
+                  <option value="done">Finalizado</option>
+                  <option value="lost">Perdido</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Responsable</label>
+                <input name="owner">
+              </div>
+              <div class="form-field">
+                <label>Rol operativo</label>
+                <select name="role">
+                  <option value="">Sin definir</option>
+                  <option>Comercial</option>
+                  <option>Cocina</option>
+                  <option>Compras</option>
+                  <option>Administracion</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Lugar</label>
+                <input name="venue">
+              </div>
+              <div class="form-field full">
+                <label>Servicio</label>
+                <input name="serviceType">
+              </div>
+              <div class="form-field full">
+                <label>Proxima accion</label>
+                <input name="nextAction">
+              </div>
+              <div class="form-field full">
+                <label>Checklist operativo</label>
+                <div class="checklist">
+                  <label class="check-item"><input type="checkbox" name="checklistPurchases"> Compras</label>
+                  <label class="check-item"><input type="checkbox" name="checklistProduction"> Produccion</label>
+                  <label class="check-item"><input type="checkbox" name="checklistStaff"> Personal</label>
+                  <label class="check-item"><input type="checkbox" name="checklistLogistics"> Logistica</label>
+                  <label class="check-item"><input type="checkbox" name="checklistMenu"> Menu</label>
+                  <label class="check-item"><input type="checkbox" name="checklistPayments"> Pagos</label>
+                </div>
+              </div>
+              <div class="form-field full">
+                <label>Notas</label>
+                <textarea name="notes"></textarea>
+              </div>
+              <div class="actions full">
+                <button class="approve" type="submit">Guardar evento</button>
+                <button class="filter" type="button" onclick="resetErpEventForm()">Nuevo</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="erp-section">
+            <h2>Presupuesto rentable</h2>
+            <form id="erp-quote-form" class="form-grid">
+              <input type="hidden" name="id">
+              <div class="form-field full">
+                <label>Evento</label>
+                <select name="eventId" id="erp-quote-event"></select>
+              </div>
+              <div class="form-field">
+                <label>Estado</label>
+                <select name="status">
+                  <option value="draft">Borrador</option>
+                  <option value="sent">Enviado</option>
+                  <option value="negotiation">Negociacion</option>
+                  <option value="accepted">Aceptado</option>
+                  <option value="rejected">Rechazado</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Margen objetivo %</label>
+                <input name="targetMarginPercent" inputmode="decimal" value="35">
+              </div>
+              <div class="form-field">
+                <label>Version</label>
+                <input name="version" placeholder="v1, v2 premium">
+              </div>
+              <div class="form-field">
+                <label>Valido hasta</label>
+                <input name="validUntil" type="date">
+              </div>
+              <div class="form-field full">
+                <label>Recetas</label>
+                <div id="erp-quote-lines" class="erp-quote-lines"></div>
+                <button class="filter" type="button" onclick="addErpQuoteLine()">Agregar receta</button>
+              </div>
+              <div class="form-field">
+                <label>Personal extra</label>
+                <input name="staffCost" inputmode="decimal" value="0">
+              </div>
+              <div class="form-field">
+                <label>Logistica</label>
+                <input name="logisticsCost" inputmode="decimal" value="0">
+              </div>
+              <div class="form-field">
+                <label>Vajilla</label>
+                <input name="tablewareCost" inputmode="decimal" value="0">
+              </div>
+              <div class="form-field">
+                <label>Otros costos</label>
+                <input name="extraCost" inputmode="decimal" value="0">
+              </div>
+              <div class="form-field">
+                <label>Descuento %</label>
+                <input name="discountPercent" inputmode="decimal" value="0">
+              </div>
+              <div class="form-field">
+                <label>Descuento $</label>
+                <input name="discountAmount" inputmode="decimal" value="0">
+              </div>
+              <div class="form-field">
+                <label>Impuestos</label>
+                <select name="taxRate">
+                  <option value="0">Sin impuestos</option>
+                  <option value="0.105">10.5%</option>
+                  <option value="0.21">21%</option>
+                  <option value="0.27">27%</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Precio manual</label>
+                <input name="priceTotal" inputmode="decimal" placeholder="Opcional">
+              </div>
+              <div class="recipe-summary full">
+                <div><span>Costo</span><strong id="erp-quote-cost">$0</strong></div>
+                <div><span>Precio sugerido</span><strong id="erp-quote-price">$0</strong></div>
+                <div><span>Margen</span><strong id="erp-quote-margin">0%</strong></div>
+              </div>
+              <div class="form-field full">
+                <label>Notas</label>
+                <textarea name="notes"></textarea>
+              </div>
+              <div class="actions full">
+                <button class="approve" type="submit">Guardar presupuesto</button>
+                <button class="filter" type="button" onclick="downloadProposalText()">Propuesta texto</button>
+                <button class="filter" type="button" onclick="resetErpQuoteForm()">Nuevo</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+      <datalist id="erp-customer-options"></datalist>
+    </section>
 
     <section id="view-commercial" class="workspace-view open">
       <section class="metrics">
@@ -883,6 +1283,14 @@
             <div class="form-field full">
               <label>Nombre de agenda</label>
               <input name="contactName">
+            </div>
+            <div class="form-field full">
+              <label>Preferencias</label>
+              <textarea name="preferences" placeholder="Estilo de servicio, gustos, marcas, detalles importantes"></textarea>
+            </div>
+            <div class="form-field full">
+              <label>Restricciones</label>
+              <textarea name="dietaryRestrictions" placeholder="Alergias, dietas, ingredientes a evitar"></textarea>
             </div>
             <div class="form-field full">
               <label>Notas</label>
@@ -1580,6 +1988,12 @@
     let allChats = [];
     let allCustomers = [];
     let allRecipes = [];
+    let erpData = {
+      dashboard: {},
+      events: [],
+      quotes: [],
+      purchases: [],
+    };
     let activeFilter = "all";
     let purchaseOptions = {
       providers: [],
@@ -1594,6 +2008,7 @@
     let recipeItemCounter = 0;
     let recipeProcessCounter = 0;
     let budgetRecipeCounter = 0;
+    let erpQuoteLineCounter = 0;
 
     const rows = document.getElementById("rows");
     const search = document.getElementById("search");
@@ -1624,6 +2039,12 @@
     document.getElementById("recipe-form").addEventListener("input", updateRecipeTotals);
     document.getElementById("recipe-form").elements.yieldUnit.addEventListener("change", updateRecipeTotals);
     document.getElementById("cost-settings-form").addEventListener("submit", saveCostSettings);
+    document.getElementById("erp-event-form").addEventListener("submit", saveErpEvent);
+    document.getElementById("erp-quote-form").addEventListener("submit", saveErpQuote);
+    document.getElementById("erp-quote-form").addEventListener("input", updateErpQuotePreview);
+    document.getElementById("erp-quote-form").addEventListener("change", updateErpQuotePreview);
+    document.getElementById("global-search").addEventListener("input", renderGlobalSearch);
+    document.getElementById("role-filter").addEventListener("change", renderErp);
     document.getElementById("invoice-photo").addEventListener("change", previewInvoicePhoto);
     setupAutocomplete("purchase-provider", "purchase-provider-suggestions", () => purchaseOptions.providers || []);
 
@@ -1684,6 +2105,509 @@
 
       if (view === "customers") loadCustomers();
       if (view === "recipes") loadRecipes();
+      if (view === "erp") loadErp();
+    }
+
+    async function loadErp() {
+      const response = await fetch("/api/erp");
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo cargar el ERP.", "error");
+        return;
+      }
+
+      erpData = result;
+      allRecipes = result.recipes || allRecipes;
+      allCustomers = result.customers || allCustomers;
+      renderErp();
+    }
+
+    function renderErp() {
+      const dashboard = erpData.dashboard || {};
+      document.getElementById("erp-kpi-upcoming").textContent = dashboard.upcomingEvents || 0;
+      document.getElementById("erp-kpi-open-quotes").textContent = dashboard.openQuotes || 0;
+      document.getElementById("erp-kpi-revenue").textContent = formatCurrency(dashboard.estimatedRevenue || 0);
+      document.getElementById("erp-kpi-margin").textContent =
+        `${formatCurrency(dashboard.estimatedMargin || 0)} (${formatPercent(dashboard.estimatedMarginPercent || 0)})`;
+      renderErpAlerts(dashboard.alerts || []);
+      renderPipeline();
+      renderConfirmedEvents();
+      renderProductAlerts();
+      renderGlobalSearch();
+      renderErpEvents();
+      renderErpQuotes();
+      renderErpQuoteEventOptions();
+      renderErpCustomerOptions();
+
+      if (!document.querySelector("#erp-quote-lines .erp-quote-line")) {
+        resetErpQuoteForm();
+      }
+    }
+
+    function renderErpAlerts(alerts) {
+      const container = document.getElementById("erp-alerts");
+      if (!alerts.length) {
+        container.innerHTML = `<div class="empty">Sin alertas criticas. El sistema esta ordenado.</div>`;
+        return;
+      }
+
+      container.innerHTML = alerts.map((alert) => `
+        <div class="erp-alert ${escapeAttribute(alert.type || "")}">
+          <div class="primary">${escapeHtml(alert.title)}</div>
+          <div class="secondary">${escapeHtml(alert.detail)}</div>
+        </div>
+      `).join("");
+    }
+
+    function downloadErpXlsx() {
+      window.location.href = "/api/export.xlsx";
+    }
+
+    function renderPipeline() {
+      const role = document.getElementById("role-filter").value;
+      const container = document.getElementById("pipeline-board");
+      const columns = erpData.pipeline?.columns || [];
+
+      container.innerHTML = columns.map((column) => {
+        const items = (column.items || []).filter((item) => !role || normalizeSearch(item.owner).includes(normalizeSearch(role)) || normalizeSearch(item.role).includes(normalizeSearch(role)));
+        return `
+          <section class="pipeline-column">
+            <div class="pipeline-title"><span>${escapeHtml(column.label)}</span><span>${items.length}</span></div>
+            ${items.length ? items.map((item) => `
+              <article class="pipeline-card">
+                <div class="primary">${escapeHtml(item.title)}</div>
+                <div class="secondary">${escapeHtml(item.subtitle || "")}</div>
+                <div class="secondary">${escapeHtml(item.nextAction || "Sin proxima accion")}</div>
+                <div class="secondary">${item.amount ? formatCurrency(item.amount) : ""} ${item.date ? `| ${escapeHtml(formatShortDate(item.date))}` : ""}</div>
+              </article>
+            `).join("") : `<div class="empty">Sin items</div>`}
+          </section>
+        `;
+      }).join("");
+    }
+
+    function renderConfirmedEvents() {
+      const container = document.getElementById("confirmed-event-list");
+      const events = erpData.confirmedEvents || [];
+
+      if (!events.length) {
+        container.innerHTML = `<div class="empty">No hay eventos confirmados.</div>`;
+        return;
+      }
+
+      container.innerHTML = events.map((event) => `
+        <article class="erp-card">
+          <div class="erp-card-head">
+            <div>
+              <div class="erp-card-title">${escapeHtml(event.name)}</div>
+              <div class="erp-card-meta">${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} | ${escapeHtml(event.clientName || "Sin cliente")} | Compras impagas: ${escapeHtml(event.unpaidPurchases || 0)}</div>
+            </div>
+            <span class="erp-status">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
+          </div>
+          <div class="checklist" style="margin-top:10px;">
+            ${renderChecklistBadge("Compras", event.checklist?.purchases)}
+            ${renderChecklistBadge("Produccion", event.checklist?.production)}
+            ${renderChecklistBadge("Personal", event.checklist?.staff)}
+            ${renderChecklistBadge("Logistica", event.checklist?.logistics)}
+            ${renderChecklistBadge("Menu", event.checklist?.menu)}
+            ${renderChecklistBadge("Pagos", event.checklist?.payments)}
+          </div>
+          <div class="actions" style="margin-top:10px;">
+            <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}')">Actualizar checklist</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderChecklistBadge(label, done) {
+      return `<div class="check-item"><span class="badge ${done ? "confirmed" : "missing_info"}">${done ? "OK" : "Pendiente"}</span>${escapeHtml(label)}</div>`;
+    }
+
+    function renderProductAlerts() {
+      const container = document.getElementById("product-alert-list");
+      const alerts = erpData.productAlerts || [];
+
+      if (!alerts.length) {
+        container.innerHTML = `<div class="empty">No hay variaciones de precio registradas.</div>`;
+        return;
+      }
+
+      container.innerHTML = alerts.slice(0, 12).map((item) => `
+        <article class="erp-card">
+          <div class="erp-card-head">
+            <div>
+              <div class="erp-card-title">${escapeHtml(item.name)}</div>
+              <div class="erp-card-meta">${escapeHtml(item.provider || "Sin proveedor")} | ${escapeHtml(item.lastPurchaseDate || "")}</div>
+            </div>
+            <span class="erp-status">${formatPercent(item.changePercent)}</span>
+          </div>
+          <div class="recipe-summary" style="margin-top:10px;">
+            <div><span>Anterior</span><strong>${formatCurrency(item.previousUnitCost)}</strong></div>
+            <div><span>Actual</span><strong>${formatCurrency(item.unitCost)}</strong></div>
+            <div><span>Recetas</span><strong>${escapeHtml((item.affectedRecipes || []).length)}</strong></div>
+          </div>
+          <div class="secondary" style="margin-top:8px;">${escapeHtml((item.affectedRecipes || []).join(", ") || "Sin recetas afectadas")}</div>
+        </article>
+      `).join("");
+    }
+
+    function renderGlobalSearch() {
+      const term = normalizeSearch(document.getElementById("global-search").value || "");
+      const container = document.getElementById("global-results");
+
+      if (!term) {
+        container.innerHTML = "";
+        return;
+      }
+
+      const results = [
+        ...(erpData.events || []).map((item) => ({ type: "Evento", title: item.name, detail: `${item.clientName || ""} ${item.serviceType || ""}` })),
+        ...(erpData.quotes || []).map((item) => ({ type: "Presupuesto", title: item.eventName, detail: `${formatCurrency(item.priceTotal)} ${item.status}` })),
+        ...(erpData.customers || []).map((item) => ({ type: "Cliente", title: item.fullName || item.contactName, detail: `${item.displayPhone || ""} Cierre ${formatPercent(item.closeRate || 0)}` })),
+        ...(erpData.purchases || []).map((item) => ({ type: "Compra", title: item.provider, detail: `${item.description || ""} ${item.eventName || ""}` })),
+        ...(allRecipes || []).map((item) => ({ type: "Receta", title: item.name, detail: `${item.category || ""} ${formatCurrency(item.costPerPortion)}` })),
+      ].filter((item) => normalizeSearch(`${item.type} ${item.title} ${item.detail}`).includes(term)).slice(0, 10);
+
+      container.innerHTML = results.length
+        ? results.map((item) => `<div class="erp-card"><div class="primary">${escapeHtml(item.type)} | ${escapeHtml(item.title || "")}</div><div class="secondary">${escapeHtml(item.detail || "")}</div></div>`).join("")
+        : `<div class="empty">Sin resultados.</div>`;
+    }
+
+    function renderErpEvents() {
+      const container = document.getElementById("erp-event-list");
+      const events = erpData.events || [];
+
+      if (!events.length) {
+        container.innerHTML = `<div class="empty">Todavia no hay eventos cargados.</div>`;
+        return;
+      }
+
+      container.innerHTML = events.map((event) => `
+        <article class="erp-card">
+          <div class="erp-card-head">
+            <div>
+              <div class="erp-card-title">${escapeHtml(event.name)}</div>
+              <div class="erp-card-meta">${escapeHtml(event.clientName || "Sin cliente")} | ${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} | ${escapeHtml(event.guestCount || 0)} invitados</div>
+            </div>
+            <span class="erp-status">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
+          </div>
+          <div class="erp-card-meta" style="margin-top:8px;">${escapeHtml(event.nextAction || "Sin proxima accion")} ${event.owner ? `| ${escapeHtml(event.owner)}` : ""}</div>
+          <div class="recipe-summary" style="margin-top:10px;">
+            <div><span>Presupuesto</span><strong>${formatCurrency(event.quoteTotal || 0)}</strong></div>
+            <div><span>Margen</span><strong>${formatPercent(event.quoteMarginPercent || 0)}</strong></div>
+            <div><span>Compras</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
+          </div>
+          <div class="actions" style="margin-top:10px;">
+            <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}')">Editar</button>
+            <button class="approve" onclick="startErpQuoteForEvent('${escapeAttribute(event.id)}')">Presupuestar</button>
+            <button class="reject" onclick="deleteErpEvent('${escapeAttribute(event.id)}')">Eliminar</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderErpQuotes() {
+      const container = document.getElementById("erp-quote-list");
+      const quotes = erpData.quotes || [];
+
+      if (!quotes.length) {
+        container.innerHTML = `<div class="empty">No hay presupuestos ERP guardados.</div>`;
+        return;
+      }
+
+      container.innerHTML = quotes.map((quote) => `
+        <article class="erp-card">
+          <div class="erp-card-head">
+            <div>
+              <div class="erp-card-title">${escapeHtml(quote.eventName || "Presupuesto sin evento")}</div>
+              <div class="erp-card-meta">${escapeHtml(quote.clientName || "")} | ${escapeHtml(quote.guestCount || 0)} invitados</div>
+            </div>
+            <span class="erp-status">${escapeHtml(getErpQuoteStatusLabel(quote.status))}</span>
+          </div>
+          <div class="recipe-summary" style="margin-top:10px;">
+            <div><span>Costo</span><strong>${formatCurrency(quote.costTotal)}</strong></div>
+            <div><span>Precio</span><strong>${formatCurrency(quote.priceTotal)}</strong></div>
+            <div><span>Margen</span><strong>${formatPercent(quote.marginPercent)}</strong></div>
+          </div>
+          <div class="actions" style="margin-top:10px;">
+            <button class="filter" onclick="editErpQuote('${escapeAttribute(quote.id)}')">Editar</button>
+            <button class="reject" onclick="deleteErpQuote('${escapeAttribute(quote.id)}')">Eliminar</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderErpQuoteEventOptions(selectedId = "") {
+      const select = document.getElementById("erp-quote-event");
+      const events = erpData.events || [];
+      select.innerHTML = [
+        `<option value="">Seleccionar evento</option>`,
+        ...events.map((event) => `<option value="${escapeAttribute(event.id)}" ${event.id === selectedId ? "selected" : ""}>${escapeHtml(event.name)}</option>`),
+      ].join("");
+    }
+
+    function renderErpCustomerOptions() {
+      document.getElementById("erp-customer-options").innerHTML = (allCustomers || [])
+        .map((customer) => `<option value="${escapeAttribute(customer.fullName || customer.contactName || customer.displayPhone || "")}"></option>`)
+        .join("");
+    }
+
+    async function saveErpEvent(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      ["Purchases", "Production", "Staff", "Logistics", "Menu", "Payments"].forEach((name) => {
+        const field = `checklist${name}`;
+        payload[field] = event.target.elements[field].checked;
+      });
+      const response = await fetch("/api/erp-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el evento.", "error");
+        return;
+      }
+
+      showNotice("Evento guardado.", "success");
+      resetErpEventForm();
+      await loadErp();
+      await loadPurchaseOptions();
+    }
+
+    function editErpEvent(id) {
+      const event = (erpData.events || []).find((item) => item.id === id);
+      if (!event) return;
+      const form = document.getElementById("erp-event-form");
+      ["id", "name", "clientName", "eventDate", "guestCount", "status", "owner", "role", "venue", "serviceType", "nextAction", "notes"]
+        .forEach((field) => setFormValue(form, field, event[field] || ""));
+      form.elements.checklistPurchases.checked = Boolean(event.checklist?.purchases);
+      form.elements.checklistProduction.checked = Boolean(event.checklist?.production);
+      form.elements.checklistStaff.checked = Boolean(event.checklist?.staff);
+      form.elements.checklistLogistics.checked = Boolean(event.checklist?.logistics);
+      form.elements.checklistMenu.checked = Boolean(event.checklist?.menu);
+      form.elements.checklistPayments.checked = Boolean(event.checklist?.payments);
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function resetErpEventForm() {
+      document.getElementById("erp-event-form").reset();
+      document.getElementById("erp-event-form").elements.id.value = "";
+    }
+
+    async function deleteErpEvent(id) {
+      const event = (erpData.events || []).find((item) => item.id === id);
+      if (!confirm(`Desea eliminar el evento ${event?.name || ""}?`)) return;
+      const response = await fetch("/api/delete-erp-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo eliminar el evento.", "error");
+        return;
+      }
+
+      showNotice("Evento eliminado.", "success");
+      await loadErp();
+    }
+
+    function startErpQuoteForEvent(eventId) {
+      resetErpQuoteForm();
+      renderErpQuoteEventOptions(eventId);
+      document.getElementById("erp-quote-form").scrollIntoView({ behavior: "smooth", block: "start" });
+      updateErpQuotePreview();
+    }
+
+    function addErpQuoteLine(item = {}) {
+      const row = document.createElement("div");
+      row.className = "erp-quote-line";
+      row.dataset.lineId = `erp-quote-line-${++erpQuoteLineCounter}`;
+      row.innerHTML = `
+        <select class="erp-line-recipe">
+          <option value="">Receta</option>
+          ${(allRecipes || []).map((recipe) => `<option value="${escapeAttribute(recipe.id)}" ${item.recipeId === recipe.id ? "selected" : ""}>${escapeHtml(recipe.name)}</option>`).join("")}
+        </select>
+        <input class="erp-line-quantity" inputmode="decimal" placeholder="Cantidad" value="${escapeAttribute(item.quantity || "")}">
+        <button class="reject icon-action" type="button" onclick="removeErpQuoteLine(this)">X</button>
+      `;
+      document.getElementById("erp-quote-lines").appendChild(row);
+      row.querySelector(".erp-line-recipe").addEventListener("change", updateErpQuotePreview);
+      row.querySelector(".erp-line-quantity").addEventListener("input", updateErpQuotePreview);
+      updateErpQuotePreview();
+    }
+
+    function removeErpQuoteLine(button) {
+      button.closest(".erp-quote-line").remove();
+      if (!document.querySelector("#erp-quote-lines .erp-quote-line")) {
+        addErpQuoteLine();
+      }
+      updateErpQuotePreview();
+    }
+
+    function getErpQuotePayload() {
+      const form = document.getElementById("erp-quote-form");
+      const event = (erpData.events || []).find((item) => item.id === form.elements.eventId.value);
+      const recipes = Array.from(document.querySelectorAll("#erp-quote-lines .erp-quote-line"))
+        .map((row) => {
+          const recipe = (allRecipes || []).find((item) => item.id === row.querySelector(".erp-line-recipe").value);
+          const quantity = parseDecimal(row.querySelector(".erp-line-quantity").value);
+          if (!recipe || !quantity) return null;
+          return {
+            recipeId: recipe.id,
+            name: recipe.name,
+            quantity,
+            unitCost: recipe.costPerPortion || 0,
+            totalCost: (recipe.costPerPortion || 0) * quantity,
+          };
+        })
+        .filter(Boolean);
+
+      return {
+        ...Object.fromEntries(new FormData(form).entries()),
+        eventName: event?.name || "",
+        clientName: event?.clientName || "",
+        guestCount: event?.guestCount || "",
+        recipes,
+      };
+    }
+
+    function calculateErpQuotePreview() {
+      const payload = getErpQuotePayload();
+      const recipeCost = payload.recipes.reduce((sum, item) => sum + Number(item.totalCost || 0), 0);
+      const staffCost = parseDecimal(payload.staffCost || 0);
+      const logisticsCost = parseDecimal(payload.logisticsCost || 0);
+      const tablewareCost = parseDecimal(payload.tablewareCost || 0);
+      const extraCost = parseDecimal(payload.extraCost || 0);
+      const cost = recipeCost + staffCost + logisticsCost + tablewareCost + extraCost;
+      const targetMargin = Math.min(95, Math.max(0, parseDecimal(payload.targetMarginPercent || 35)));
+      const manualPrice = parseDecimal(payload.priceTotal || 0);
+      const suggestedPrice = targetMargin >= 95 ? cost : cost / (1 - targetMargin / 100);
+      const subtotal = manualPrice > 0 ? manualPrice : suggestedPrice;
+      const discountPercent = Math.max(0, parseDecimal(payload.discountPercent || 0));
+      const discountAmount = Math.max(0, parseDecimal(payload.discountAmount || 0)) || subtotal * (discountPercent / 100);
+      const taxableSubtotal = Math.max(0, subtotal - discountAmount);
+      const taxRate = Math.max(0, parseDecimal(payload.taxRate || 0));
+      const price = taxableSubtotal + taxableSubtotal * taxRate;
+      const margin = price > 0 ? ((price - cost) / price) * 100 : 0;
+      return { cost, price, margin };
+    }
+
+    function updateErpQuotePreview() {
+      const preview = calculateErpQuotePreview();
+      document.getElementById("erp-quote-cost").textContent = formatCurrency(preview.cost);
+      document.getElementById("erp-quote-price").textContent = formatCurrency(preview.price);
+      document.getElementById("erp-quote-margin").textContent = formatPercent(preview.margin);
+    }
+
+    async function saveErpQuote(event) {
+      event.preventDefault();
+      const payload = getErpQuotePayload();
+      const response = await fetch("/api/erp-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el presupuesto.", "error");
+        return;
+      }
+
+      showNotice("Presupuesto guardado.", "success");
+      resetErpQuoteForm();
+      await loadErp();
+    }
+
+    function editErpQuote(id) {
+      const quote = (erpData.quotes || []).find((item) => item.id === id);
+      if (!quote) return;
+      const form = document.getElementById("erp-quote-form");
+      ["id", "status", "targetMarginPercent", "validUntil", "staffCost", "logisticsCost", "extraCost", "priceTotal", "notes"]
+        .forEach((field) => setFormValue(form, field, quote[field] || ""));
+      ["version", "tablewareCost", "discountPercent", "discountAmount", "taxRate"]
+        .forEach((field) => setFormValue(form, field, quote[field] || ""));
+      renderErpQuoteEventOptions(quote.eventId || "");
+      document.getElementById("erp-quote-lines").innerHTML = "";
+      erpQuoteLineCounter = 0;
+      (quote.recipes?.length ? quote.recipes : [{}]).forEach((line) => addErpQuoteLine(line));
+      updateErpQuotePreview();
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function resetErpQuoteForm() {
+      const form = document.getElementById("erp-quote-form");
+      form.reset();
+      form.elements.id.value = "";
+      form.elements.targetMarginPercent.value = "35";
+      form.elements.staffCost.value = "0";
+      form.elements.logisticsCost.value = "0";
+      form.elements.tablewareCost.value = "0";
+      form.elements.extraCost.value = "0";
+      form.elements.discountPercent.value = "0";
+      form.elements.discountAmount.value = "0";
+      form.elements.taxRate.value = "0";
+      form.elements.validUntil.value = "";
+      renderErpQuoteEventOptions();
+      document.getElementById("erp-quote-lines").innerHTML = "";
+      erpQuoteLineCounter = 0;
+      addErpQuoteLine();
+      updateErpQuotePreview();
+    }
+
+    function downloadProposalText() {
+      const id = document.getElementById("erp-quote-form").elements.id.value;
+      if (!id) {
+        showNotice("Guarde el presupuesto antes de descargar la propuesta.", "error");
+        return;
+      }
+      window.location.href = `/api/proposal.txt?quoteId=${encodeURIComponent(id)}`;
+    }
+
+    async function deleteErpQuote(id) {
+      const quote = (erpData.quotes || []).find((item) => item.id === id);
+      if (!confirm(`Desea eliminar el presupuesto de ${quote?.eventName || "este evento"}?`)) return;
+      const response = await fetch("/api/delete-erp-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo eliminar el presupuesto.", "error");
+        return;
+      }
+
+      showNotice("Presupuesto eliminado.", "success");
+      await loadErp();
+    }
+
+    function getErpEventStatusLabel(status) {
+      return {
+        lead: "Consulta",
+        quoted: "Presupuestado",
+        confirmed: "Confirmado",
+        production: "Produccion",
+        done: "Finalizado",
+        lost: "Perdido",
+      }[status] || status;
+    }
+
+    function getErpQuoteStatusLabel(status) {
+      return {
+        draft: "Borrador",
+        sent: "Enviado",
+        negotiation: "Negociacion",
+        accepted: "Aceptado",
+        rejected: "Rechazado",
+      }[status] || status;
     }
 
     async function loadCustomers() {
@@ -1723,12 +2647,35 @@
           <div class="primary">${escapeHtml(customer.fullName || customer.contactName || "Sin nombre")}</div>
           <div class="secondary">${escapeHtml(customer.displayPhone || "Telefono pendiente")}</div>
           <div class="secondary">${escapeHtml(customer.lastEventType ? `Ultimo evento: ${customer.lastEventType}` : "")}</div>
-          <div class="secondary">${escapeHtml(customer.budgetCount ? `${customer.budgetCount} presupuesto(s)` : "Sin presupuestos imputados")}</div>
+          <div class="recipe-summary" style="margin-top:10px;">
+            <div><span>Eventos</span><strong>${escapeHtml(customer.events?.length || 0)}</strong></div>
+            <div><span>Presupuestos</span><strong>${escapeHtml(customer.quoteCount || customer.budgetCount || 0)}</strong></div>
+            <div><span>Cierre</span><strong>${formatPercent(customer.closeRate || 0)}</strong></div>
+          </div>
+          <div class="secondary" style="margin-top:8px;">Venta aceptada: ${formatCurrency(customer.totalRevenue || 0)}</div>
           <div class="actions" style="margin-top:10px;">
             <button class="filter" onclick="editCustomer('${escapeAttribute(customer.id)}')">Editar</button>
+            <button class="filter" onclick="showCustomerInsight('${escapeAttribute(customer.id)}')">Historial</button>
           </div>
         </article>
       `).join("");
+    }
+
+    function showCustomerInsight(id) {
+      const customer = allCustomers.find((item) => item.id === id);
+      if (!customer) return;
+      document.getElementById("detail-title").textContent = customer.fullName || customer.contactName || "Cliente";
+      document.getElementById("detail-subtitle").textContent = customer.displayPhone || "";
+      document.getElementById("detail-fields").innerHTML = `
+        ${field("Tasa de cierre", formatPercent(customer.closeRate || 0))}
+        ${field("Venta aceptada", formatCurrency(customer.totalRevenue || 0))}
+        ${field("Eventos", (customer.events || []).map((event) => `${event.name} (${formatShortDate(event.eventDate)})`).join(", ") || "Sin eventos")}
+        ${field("Presupuestos", (customer.quotes || []).map((quote) => `${quote.version || ""} ${quote.eventName} ${formatCurrency(quote.priceTotal)} ${quote.status}`).join(", ") || "Sin presupuestos")}
+        ${field("Preferencias", customer.preferences || "Sin preferencias")}
+        ${field("Restricciones", customer.dietaryRestrictions || "Sin restricciones")}
+        ${field("Notas", customer.notes || "Sin notas")}
+      `;
+      document.getElementById("detail").classList.add("open");
     }
 
     function editCustomer(id) {
@@ -1739,6 +2686,8 @@
       setFormValue(form, "fullName", customer.fullName || "");
       setFormValue(form, "displayPhone", customer.displayPhone || "");
       setFormValue(form, "contactName", customer.contactName || "");
+      setFormValue(form, "preferences", customer.preferences || "");
+      setFormValue(form, "dietaryRestrictions", customer.dietaryRestrictions || "");
       setFormValue(form, "notes", customer.notes || "");
     }
 
@@ -3206,6 +4155,12 @@
         currency: "ARS",
         maximumFractionDigits: 0,
       });
+    }
+
+    function formatPercent(value) {
+      return `${Number(value || 0).toLocaleString("es-AR", {
+        maximumFractionDigits: 1,
+      })}%`;
     }
 
     function formatDate(value) {
