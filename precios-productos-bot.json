@@ -1,1 +1,38 @@
-{}
+{
+  "jengibre x rama": {
+    "name": "JENGIBRE X RAMA",
+    "unitCost": 15000,
+    "previousUnitCost": 98444,
+    "changePercent": -84.76,
+    "lastPurchaseDate": "2026-06-08",
+    "provider": "FARMACIA BELGRANO",
+    "updatedAt": "2026-06-08T02:35:28.498Z"
+  },
+  "trapo convencional gris": {
+    "name": "TRAPO CONVENCIONAL GRIS",
+    "unitCost": 52221.98,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-08",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T01:56:00.119Z"
+  },
+  "envio": {
+    "name": "ENVIO",
+    "unitCost": 12000,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-08",
+    "provider": "FLETE FELIPE",
+    "updatedAt": "2026-06-08T02:23:09.717Z"
+  },
+  "molida int x mayor": {
+    "name": "MOLIDA INT X MAYOR",
+    "unitCost": 18000,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-08",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T02:39:36.246Z"
+  }
+}

@@ -160,6 +160,72 @@
       color: #fff;
     }
 
+    .filter-select,
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--surface-soft);
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position:
+        calc(100% - 16px) 50%,
+        calc(100% - 11px) 50%;
+      background-repeat: no-repeat;
+      background-size: 5px 5px, 5px 5px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--text);
+      font-size: 14px;
+      min-height: 36px;
+      padding: 0 34px 0 10px;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: #9bb7b0;
+      box-shadow: 0 0 0 3px rgba(23, 76, 67, 0.12);
+      outline: 0;
+    }
+
+    .control-combo {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      width: 100%;
+    }
+
+    .control-combo .search {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .icon-select {
+      align-items: center;
+      display: inline-grid;
+      grid-template-columns: 18px minmax(128px, auto);
+      position: relative;
+    }
+
+    .icon-select::before {
+      content: "";
+      border-bottom: 2px solid var(--muted);
+      border-top: 2px solid var(--muted);
+      box-shadow: 0 5px 0 var(--muted);
+      height: 8px;
+      left: 9px;
+      pointer-events: none;
+      position: absolute;
+      width: 13px;
+      z-index: 1;
+    }
+
+    .icon-select select {
+      padding-left: 30px;
+    }
+
     .search {
       background: var(--surface-soft);
       border: 1px solid var(--line);
@@ -175,6 +241,7 @@
       align-items: center;
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .board {
@@ -297,6 +364,7 @@
     .actions {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     button {
@@ -488,6 +556,185 @@
       min-height: 38px;
     }
 
+    .purchase-dashboard {
+      display: grid;
+      gap: 12px;
+    }
+
+    .purchase-kpis {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .purchase-kpi {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+    }
+
+    .purchase-kpi span {
+      color: var(--muted);
+      display: block;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .purchase-kpi strong {
+      font-size: 18px;
+    }
+
+    .purchase-panels {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      min-width: 0;
+    }
+
+    .purchase-panel {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      cursor: pointer;
+      min-width: 0;
+      padding: 0;
+    }
+
+    .purchase-panel-head {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding: 12px;
+    }
+
+    .purchase-panel-title {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .purchase-panel-summary {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .purchase-panel-toggle {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      display: grid;
+      font-size: 13px;
+      font-weight: 800;
+      height: 28px;
+      place-items: center;
+      width: 28px;
+    }
+
+    .purchase-panel.open .purchase-panel-toggle {
+      color: var(--accent);
+      transform: rotate(180deg);
+    }
+
+    .purchase-rank {
+      background: #fff;
+      border-top: 1px solid var(--line);
+      display: none;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .purchase-panel.open .purchase-rank {
+      display: grid;
+    }
+
+    .menu-dot {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      display: inline-grid;
+      font-size: 18px;
+      line-height: 1;
+      min-height: 34px;
+      min-width: 34px;
+      padding: 0;
+      place-items: center;
+    }
+
+    .menu-dot:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .purchase-rank-row {
+      align-items: start;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .purchase-rank-row strong {
+      display: block;
+      text-align: left;
+    }
+
+    .purchase-table-wrap {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    .purchase-table {
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 980px;
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    .purchase-table th,
+    .purchase-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px 10px;
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    .purchase-table th {
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .purchase-table .money,
+    .purchase-table .number {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .purchase-table th:nth-child(1),
+    .purchase-table td:nth-child(1) {
+      width: 86px;
+    }
+
+    .purchase-table th:nth-child(5),
+    .purchase-table td:nth-child(5) {
+      width: 72px;
+    }
+
+    .purchase-table th:nth-child(6),
+    .purchase-table td:nth-child(6),
+    .purchase-table th:nth-child(7),
+    .purchase-table td:nth-child(7) {
+      width: 96px;
+    }
+
     .workspace-tabs {
       display: flex;
       gap: 8px;
@@ -520,6 +767,10 @@
       grid-template-columns: minmax(0, 1fr) 420px;
     }
 
+    .panel-grid.recipes-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .panel-box {
       background: var(--surface);
       border: 1px solid var(--line);
@@ -540,17 +791,18 @@
     }
 
     .recipe-list {
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
 
     .recipe-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f8faf9 100%);
+      background: #fff;
       border: 1px solid var(--line);
       border-radius: 8px;
       cursor: pointer;
       display: grid;
-      gap: 12px;
-      min-height: 150px;
+      gap: 14px;
+      min-height: 170px;
+      min-width: 0;
       padding: 16px;
       transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
     }
@@ -565,12 +817,14 @@
       display: flex;
       gap: 10px;
       justify-content: space-between;
+      min-width: 0;
     }
 
     .recipe-card-title {
       font-size: 16px;
       font-weight: 800;
       line-height: 1.2;
+      overflow-wrap: anywhere;
     }
 
     .recipe-pill {
@@ -587,7 +841,7 @@
     .recipe-card-stats {
       display: grid;
       gap: 8px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .recipe-stat {
@@ -629,14 +883,21 @@
       align-items: start;
       display: grid;
       gap: 8px;
-      grid-template-columns: 120px minmax(0, 1.4fr) 80px 90px 100px 80px 38px;
+      grid-template-columns: 128px minmax(180px, 1fr) 92px 104px 128px 104px 38px;
     }
 
     .recipe-process-item {
       align-items: start;
       display: grid;
       gap: 8px;
-      grid-template-columns: 120px minmax(0, 1.4fr) 90px 90px minmax(0, 1fr) 38px;
+      grid-template-columns: 128px minmax(180px, 1fr) 92px 104px minmax(140px, 1fr) 38px;
+    }
+
+    .budget-recipe-row {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(220px, 1fr) 120px 38px;
     }
 
     .recipe-summary {
@@ -691,7 +952,8 @@
     }
 
     .detail.open {
-      display: block;
+      display: flex;
+      justify-content: flex-end;
     }
 
     .detail-panel {
@@ -704,6 +966,14 @@
       overflow: auto;
       padding: 20px;
       width: 100%;
+    }
+
+    .detail-panel.wide {
+      max-width: 760px;
+    }
+
+    .detail-panel.extra-wide {
+      max-width: 920px;
     }
 
     .detail-head {
@@ -747,7 +1017,7 @@
       align-items: start;
       display: grid;
       gap: 16px;
-      grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .erp-section {
@@ -761,6 +1031,17 @@
     .erp-section h2 {
       font-size: 18px;
       margin: 0 0 12px;
+    }
+
+    .erp-modal-section {
+      border: 0;
+      box-shadow: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .erp-modal-section.hidden {
+      display: none;
     }
 
     .erp-kpis {
@@ -795,8 +1076,13 @@
       background: #fff;
       border-left: 4px solid var(--accent);
       border-radius: 6px;
+      cursor: pointer;
       margin-bottom: 8px;
       padding: 10px 12px;
+    }
+
+    .erp-alert:hover {
+      background: var(--surface-soft);
     }
 
     .erp-alert.danger {
@@ -888,14 +1174,24 @@
     .checklist {
       display: grid;
       gap: 8px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .check-item {
       align-items: center;
-      display: flex;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: grid;
       gap: 8px;
+      grid-template-columns: 18px minmax(0, 1fr);
       font-size: 13px;
+      padding: 8px;
+    }
+
+    .check-item input {
+      height: 16px;
+      margin: 0;
+      width: 16px;
     }
 
     .global-results {
@@ -954,7 +1250,9 @@
 
       .erp-kpis,
       .erp-quote-line,
-      .checklist {
+      .checklist,
+      .purchase-kpis,
+      .purchase-panels {
         grid-template-columns: 1fr;
       }
     }
@@ -999,18 +1297,35 @@
                 <button class="approve" onclick="downloadErpXlsx()">Descargar Excel</button>
               </div>
             </div>
-            <div class="toolbar-actions" style="margin-bottom:12px;">
+            <div class="control-combo" style="margin-bottom:12px;">
               <input id="global-search" class="search" placeholder="Buscar cliente, evento, proveedor, producto o receta">
-              <select id="role-filter">
-                <option value="">Todos los roles</option>
-                <option>Comercial</option>
-                <option>Cocina</option>
-                <option>Compras</option>
-                <option>Administracion</option>
-              </select>
+              <span class="icon-select">
+                <select id="role-filter">
+                  <option value="">Todos los roles</option>
+                  <option>Comercial</option>
+                  <option>Cocina</option>
+                  <option>Compras</option>
+                  <option>Administracion</option>
+                </select>
+              </span>
+            </div>
+            <div class="actions" style="margin-bottom:12px;">
+              <button class="approve" type="button" onclick="showErpEventForm()">Crear evento</button>
+              <button class="approve" type="button" onclick="showErpQuoteForm()">Presupuesto rentable</button>
             </div>
             <div id="global-results" class="global-results"></div>
             <div id="erp-alerts"></div>
+          </section>
+
+          <section class="erp-section">
+            <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+              <h2>Dashboard de compras</h2>
+              <div class="actions">
+                <button class="filter" onclick="importPurchasesFromSheets()">Importar Sheets</button>
+                <button class="filter" onclick="showPurchaseForm()">Cargar compra</button>
+              </div>
+            </div>
+            <div id="purchase-dashboard" class="purchase-dashboard"></div>
           </section>
 
           <section class="erp-section">
@@ -1039,8 +1354,16 @@
           </section>
         </div>
 
-        <div>
-          <section class="erp-section">
+        <div id="erp-form-modal" class="detail" onclick="closeErpForms(event)">
+          <aside class="detail-panel extra-wide" onclick="event.stopPropagation()">
+            <div class="detail-head">
+              <div>
+                <h2 id="erp-form-modal-title" style="margin:0;font-size:22px;">Formulario</h2>
+                <p class="subtitle">Carga operativa del ERP</p>
+              </div>
+              <button class="close" onclick="hideErpForms()">X</button>
+            </div>
+          <section id="erp-event-card" class="erp-section erp-modal-section">
             <h2>Crear evento</h2>
             <form id="erp-event-form" class="form-grid">
               <input type="hidden" name="id">
@@ -1119,7 +1442,7 @@
             </form>
           </section>
 
-          <section class="erp-section">
+          <section id="erp-quote-card" class="erp-section erp-modal-section">
             <h2>Presupuesto rentable</h2>
             <form id="erp-quote-form" class="form-grid">
               <input type="hidden" name="id">
@@ -1207,6 +1530,7 @@
               </div>
             </form>
           </section>
+          </aside>
         </div>
       </div>
       <datalist id="erp-customer-options"></datalist>
@@ -1224,18 +1548,20 @@
 
       <section class="toolbar">
         <div class="filters">
-          <button class="filter active" data-filter="all">Todos</button>
-          <button class="filter" data-filter="pending_approval">Pendientes</button>
-          <button class="filter" data-filter="in_progress">Relevamiento</button>
-          <button class="filter" data-filter="missing_info">Faltan datos</button>
-          <button class="filter" data-filter="ready_to_quote">Listos</button>
-          <button class="filter" data-filter="proposal_sent">Propuesta enviada</button>
-          <button class="filter" data-filter="follow_up">Seguimiento</button>
-          <button class="filter" data-filter="confirmed">Confirmados</button>
-          <button class="filter" data-filter="referred">Derivados</button>
-          <button class="filter" data-filter="due_today">Hoy</button>
-          <button class="filter" data-filter="overdue">Vencidos</button>
-          <button class="filter" data-filter="unassigned">Sin responsable</button>
+          <select id="commercial-filter" class="filter-select">
+            <option value="all">Todos</option>
+            <option value="pending_approval">Pendientes</option>
+            <option value="in_progress">Relevamiento</option>
+            <option value="missing_info">Faltan datos</option>
+            <option value="ready_to_quote">Listos</option>
+            <option value="proposal_sent">Propuesta enviada</option>
+            <option value="follow_up">Seguimiento</option>
+            <option value="confirmed">Confirmados</option>
+            <option value="referred">Derivados</option>
+            <option value="due_today">Hoy</option>
+            <option value="overdue">Vencidos</option>
+            <option value="unassigned">Sin responsable</option>
+          </select>
         </div>
         <div class="toolbar-actions">
           <input id="search" class="search" placeholder="Buscar cliente, telefono, canal o evento">
@@ -1306,16 +1632,27 @@
     </section>
 
     <section id="view-recipes" class="workspace-view">
-      <div class="panel-grid">
+      <div class="panel-grid recipes-layout">
         <section class="panel-box">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
             <input id="recipe-search" class="search" placeholder="Buscar receta">
             <button class="approve" onclick="showBudgetBuilder()">Generar presupuesto</button>
+            <button class="filter" onclick="showCostSettingsForm()">Costos generales</button>
+            <button class="approve" onclick="showRecipeForm()">Cargar receta</button>
             <button class="filter" onclick="loadRecipes()">Actualizar</button>
           </div>
           <div id="recipe-list" class="compact-list recipe-list"></div>
         </section>
-        <section class="panel-box">
+        <section id="recipe-editor-modal" class="detail" onclick="closeRecipeForm(event)">
+          <aside class="detail-panel extra-wide" onclick="event.stopPropagation()">
+            <div class="detail-head">
+              <div>
+                <h2 id="recipe-editor-title" style="margin:0;font-size:22px;">Receta y costo</h2>
+                <p id="recipe-editor-subtitle" class="subtitle">Carga de receta, procesos, mermas e ingredientes.</p>
+              </div>
+              <button class="close" onclick="hideRecipeForm()">X</button>
+            </div>
+        <section id="cost-settings-card" class="erp-modal-section hidden">
           <h2 style="margin-top:0;font-size:20px;">Costos generales</h2>
           <form id="cost-settings-form" class="form-grid" style="margin-bottom:16px;">
             <div class="form-field full">
@@ -1326,6 +1663,8 @@
               <button class="filter" type="submit">Guardar valor hora</button>
             </div>
           </form>
+        </section>
+        <section id="recipe-form-card" class="erp-modal-section">
           <h2 style="margin-top:0;font-size:20px;">Receta y costo</h2>
           <form id="recipe-form" class="form-grid">
             <input type="hidden" name="id">
@@ -1398,6 +1737,8 @@
             </div>
           </form>
         </section>
+          </aside>
+        </section>
       </div>
     </section>
   </main>
@@ -1412,6 +1753,45 @@
         <button class="close" onclick="hideDetail()">X</button>
       </div>
       <div id="detail-fields" class="fields"></div>
+    </aside>
+  </section>
+
+  <section id="alert-detail" class="detail" onclick="closeAlertDetail(event)">
+    <aside class="detail-panel wide" onclick="event.stopPropagation()">
+      <div class="detail-head">
+        <div>
+          <h2 id="alert-detail-title" style="margin:0;font-size:22px;">Alerta</h2>
+          <p id="alert-detail-subtitle" class="subtitle"></p>
+        </div>
+        <button class="close" onclick="hideAlertDetail()">X</button>
+      </div>
+      <div id="alert-detail-body" class="fields"></div>
+    </aside>
+  </section>
+
+  <section id="purchase-rank-detail" class="detail" onclick="closePurchaseRankDetail(event)">
+    <aside class="detail-panel wide" onclick="event.stopPropagation()">
+      <div class="detail-head">
+        <div>
+          <h2 id="purchase-rank-title" style="margin:0;font-size:22px;">Detalle de compras</h2>
+          <p id="purchase-rank-subtitle" class="subtitle"></p>
+        </div>
+        <button class="close" onclick="hidePurchaseRankDetail()">X</button>
+      </div>
+      <div id="purchase-rank-body" class="fields"></div>
+    </aside>
+  </section>
+
+  <section id="purchase-action-detail" class="detail" onclick="closePurchaseActions(event)">
+    <aside class="detail-panel" onclick="event.stopPropagation()">
+      <div class="detail-head">
+        <div>
+          <h2 id="purchase-action-title" style="margin:0;font-size:22px;">Compra</h2>
+          <p id="purchase-action-subtitle" class="subtitle"></p>
+        </div>
+        <button class="close" onclick="hidePurchaseActions()">X</button>
+      </div>
+      <div id="purchase-action-body" class="fields"></div>
     </aside>
   </section>
 
@@ -1669,13 +2049,14 @@
     <aside class="detail-panel" onclick="event.stopPropagation()">
       <div class="detail-head">
         <div>
-          <h2 style="margin:0;font-size:22px;">Cargar compra</h2>
+          <h2 id="purchase-title" style="margin:0;font-size:22px;">Cargar compra</h2>
           <p class="subtitle">Registro de gastos para la hoja Registro_Gastos.</p>
         </div>
         <button class="close" onclick="hidePurchaseForm()">X</button>
       </div>
 
       <form id="purchase-form" class="form-grid">
+        <input type="hidden" name="id">
         <div class="form-field full">
           <label>Foto de factura</label>
           <div class="invoice-reader">
@@ -2024,6 +2405,11 @@
       });
     });
 
+    document.getElementById("commercial-filter").addEventListener("change", (event) => {
+      activeFilter = event.target.value;
+      renderRows();
+    });
+
     document.querySelectorAll(".workspace-tab").forEach((button) => {
       button.addEventListener("click", () => showWorkspaceView(button.dataset.view));
     });
@@ -2131,6 +2517,7 @@
       document.getElementById("erp-kpi-margin").textContent =
         `${formatCurrency(dashboard.estimatedMargin || 0)} (${formatPercent(dashboard.estimatedMarginPercent || 0)})`;
       renderErpAlerts(dashboard.alerts || []);
+      renderPurchaseDashboard();
       renderPipeline();
       renderConfirmedEvents();
       renderProductAlerts();
@@ -2153,7 +2540,7 @@
       }
 
       container.innerHTML = alerts.map((alert) => `
-        <div class="erp-alert ${escapeAttribute(alert.type || "")}">
+        <div class="erp-alert ${escapeAttribute(alert.type || "")}" onclick="showErpAlertDetail('${escapeAttribute(alert.title || "")}')">
           <div class="primary">${escapeHtml(alert.title)}</div>
           <div class="secondary">${escapeHtml(alert.detail)}</div>
         </div>
@@ -2162,6 +2549,262 @@
 
     function downloadErpXlsx() {
       window.location.href = "/api/export.xlsx";
+    }
+
+    function showErpEventForm() {
+      document.getElementById("erp-form-modal-title").textContent = "Crear evento";
+      document.getElementById("erp-event-card").classList.remove("hidden");
+      document.getElementById("erp-quote-card").classList.add("hidden");
+      document.getElementById("erp-form-modal").classList.add("open");
+    }
+
+    function showErpQuoteForm() {
+      document.getElementById("erp-form-modal-title").textContent = "Presupuesto rentable";
+      document.getElementById("erp-event-card").classList.add("hidden");
+      document.getElementById("erp-quote-card").classList.remove("hidden");
+      document.getElementById("erp-form-modal").classList.add("open");
+    }
+
+    function hideErpForms() {
+      document.getElementById("erp-form-modal").classList.remove("open");
+    }
+
+    function closeErpForms(event) {
+      if (event.target.id === "erp-form-modal") {
+        hideErpForms();
+      }
+    }
+
+    function showErpAlertDetail(title) {
+      const alert = (erpData.dashboard?.alerts || []).find((item) => item.title === title);
+      const body = document.getElementById("alert-detail-body");
+      document.getElementById("alert-detail-title").textContent = alert?.title || title || "Alerta";
+      document.getElementById("alert-detail-subtitle").textContent = alert?.detail || "";
+
+      if (title.includes("Compras pendientes")) {
+        const purchases = (erpData.purchases || []).filter((purchase) => purchase.paymentStatus !== "Pagado");
+        body.innerHTML = `
+          ${field("Que pasa", "Hay compras cargadas que todavia figuran pendientes de pago.")}
+          ${field("Como solucionarlo", "Revisar el pago, actualizar la planilla si ya se pago, o cargar el medio/origen de fondos en la compra siguiente.")}
+          ${renderAlertList(purchases.map((purchase) => `${purchase.provider} | ${purchase.description} | ${formatCurrency(purchase.totalAmount)} | ${purchase.eventName || "Sin evento"}`))}
+          <div class="actions"><button class="approve" onclick="showPurchaseForm(); hideAlertDetail();">Cargar compra</button></div>
+        `;
+      } else if (title.includes("Recetas sin precio")) {
+        const recipes = (erpData.recipes || allRecipes || []).filter((recipe) =>
+          (recipe.items || []).some((item) => item.type !== "recipe" && !recipeProducts[normalizeSearch(item.name)])
+        );
+        body.innerHTML = `
+          ${field("Que pasa", "Hay recetas con insumos que todavia no tienen ultimo precio de compra guardado.")}
+          ${field("Como solucionarlo", "Cargar una compra con esos productos o editar la receta para revisar el nombre del insumo.")}
+          ${renderAlertList((recipes.length ? recipes : (erpData.recipes || allRecipes || [])).slice(0, 8).map((recipe) => recipe.name))}
+          <div class="actions"><button class="approve" onclick="showPurchaseForm(); hideAlertDetail();">Cargar precio por compra</button><button class="filter" onclick="showWorkspaceView('recipes'); hideAlertDetail();">Ver recetas</button></div>
+        `;
+      } else if (title.includes("Insumos con variacion")) {
+        body.innerHTML = `
+          ${field("Que pasa", "Uno o mas insumos cambiaron fuerte de precio y pueden modificar el costo real de recetas y presupuestos.")}
+          ${field("Como solucionarlo", "Revisar los productos afectados y actualizar presupuestos si el margen quedo bajo.")}
+          ${renderAlertList((erpData.productAlerts || []).slice(0, 8).map((item) => `${item.name}: ${formatPercent(item.changePercent)} (${formatCurrency(item.previousUnitCost)} -> ${formatCurrency(item.unitCost)})`))}
+        `;
+      } else {
+        body.innerHTML = `
+          ${field("Resumen", alert?.detail || "Alerta del centro de control.")}
+          ${field("Accion sugerida", "Revisar los registros relacionados y actualizar estado, precio o seguimiento segun corresponda.")}
+        `;
+      }
+
+      document.getElementById("alert-detail").classList.add("open");
+    }
+
+    function renderAlertList(items) {
+      if (!items.length) return `<div class="empty">No hay registros para mostrar.</div>`;
+      return items.map((item) => `<div class="field"><div>${escapeHtml(item)}</div></div>`).join("");
+    }
+
+    function hideAlertDetail() {
+      document.getElementById("alert-detail").classList.remove("open");
+    }
+
+    function closeAlertDetail(event) {
+      if (event.target.id === "alert-detail") {
+        hideAlertDetail();
+      }
+    }
+
+    function renderPurchaseDashboard() {
+      const container = document.getElementById("purchase-dashboard");
+      const purchases = erpData.purchases || [];
+      const summary = erpData.dashboard?.purchases || {};
+
+      if (!purchases.length) {
+        container.innerHTML = `<div class="empty">Todavia no hay compras cargadas desde el sistema.</div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <section class="purchase-kpis">
+          <div class="purchase-kpi"><span>Total compras</span><strong>${formatCurrency(summary.totalAmount || 0)}</strong></div>
+          <div class="purchase-kpi"><span>Pagado</span><strong>${formatCurrency(summary.paidAmount || 0)}</strong></div>
+          <div class="purchase-kpi"><span>Pendiente</span><strong>${formatCurrency(summary.pendingAmount || 0)}</strong></div>
+          <div class="purchase-kpi"><span>Ticket promedio</span><strong>${formatCurrency(summary.averageTicket || 0)}</strong></div>
+          <div class="purchase-kpi"><span>Proveedores</span><strong>${escapeHtml(summary.providersCount || 0)}</strong></div>
+        </section>
+        <section class="purchase-panels">
+          ${renderPurchaseRank("Por proveedor", "byProvider", summary.byProvider || [])}
+          ${renderPurchaseRank("Por evento", "byEvent", summary.byEvent || [])}
+          ${renderPurchaseRank("Por medio de pago", "byPaymentMethod", summary.byPaymentMethod || [])}
+        </section>
+        <div class="toolbar-actions" style="margin-top:4px;">
+          <input id="purchase-dashboard-search" class="search" placeholder="Filtrar compras por proveedor, producto, evento o pago">
+          <select id="purchase-dashboard-status">
+            <option value="">Todos los pagos</option>
+            <option value="Pagado">Pagado</option>
+            <option value="Pendiente">Pendiente</option>
+          </select>
+        </div>
+        <div id="purchase-table-wrap"></div>
+      `;
+
+      document.getElementById("purchase-dashboard-search").addEventListener("input", renderPurchaseTable);
+      document.getElementById("purchase-dashboard-status").addEventListener("change", renderPurchaseTable);
+      renderPurchaseTable();
+    }
+
+    function renderPurchaseRank(title, key, rows) {
+      const top = rows[0];
+      const summary = top
+        ? `${top.label || "Sin definir"} · ${formatCurrency(top.total || 0)}`
+        : "Sin datos";
+      return `
+        <article class="purchase-panel" onclick="showPurchaseRankDetail('${escapeAttribute(title)}', '${escapeAttribute(key)}')">
+          <div class="purchase-panel-head">
+            <div>
+              <div class="purchase-panel-title">${escapeHtml(title)}</div>
+              <div class="purchase-panel-summary">${escapeHtml(summary)}</div>
+            </div>
+            <div class="purchase-panel-toggle">...</div>
+          </div>
+        </article>
+      `;
+    }
+
+    function showPurchaseRankDetail(title, key) {
+      const rows = erpData.dashboard?.purchases?.[key] || [];
+      document.getElementById("purchase-rank-title").textContent = title;
+      document.getElementById("purchase-rank-subtitle").textContent = `${rows.length} agrupacion(es)`;
+      document.getElementById("purchase-rank-body").innerHTML = rows.length
+        ? rows.map((row) => `
+          <div class="field">
+            <label>${escapeHtml(row.label || "Sin definir")}</label>
+            <div><strong>${formatCurrency(row.total || 0)}</strong> · ${escapeHtml(row.count || 0)} compra(s)</div>
+          </div>
+        `).join("")
+        : `<div class="empty">Sin datos.</div>`;
+      document.getElementById("purchase-rank-detail").classList.add("open");
+    }
+
+    function hidePurchaseRankDetail() {
+      document.getElementById("purchase-rank-detail").classList.remove("open");
+    }
+
+    function closePurchaseRankDetail(event) {
+      if (event.target.id === "purchase-rank-detail") {
+        hidePurchaseRankDetail();
+      }
+    }
+
+    function renderPurchaseTable() {
+      const container = document.getElementById("purchase-table-wrap");
+      if (!container) return;
+
+      const term = normalizeSearch(document.getElementById("purchase-dashboard-search")?.value || "");
+      const status = document.getElementById("purchase-dashboard-status")?.value || "";
+      const rows = (erpData.purchases || [])
+        .filter((purchase) => !status || purchase.paymentStatus === status)
+        .filter((purchase) => !term || normalizeSearch([
+          purchase.date,
+          purchase.provider,
+          purchase.description,
+          purchase.eventName,
+          purchase.invoiceType,
+          purchase.paymentStatus,
+          purchase.paymentMethod,
+          purchase.fundsSource,
+          purchase.notes,
+        ].join(" ")).includes(term));
+
+      if (!rows.length) {
+        container.innerHTML = `<div class="empty">No hay compras para ese filtro.</div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="purchase-table-wrap">
+          <table class="purchase-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Proveedor</th>
+                <th>Producto / descripcion</th>
+                <th>Evento</th>
+                <th class="number">Cantidad</th>
+                <th class="money">Unitario</th>
+                <th class="money">Total</th>
+                <th>Comprobante</th>
+                <th>Estado pago</th>
+                <th>Medio</th>
+                <th>Origen fondos</th>
+                <th>Observaciones</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.flatMap((purchase) => {
+                const items = purchase.lineItems?.length ? purchase.lineItems : [{ description: purchase.description, quantity: "", unitAmount: "", total: purchase.totalAmount }];
+                return items.map((item, index) => `
+                  <tr onclick="editPurchase('${escapeAttribute(purchase.id)}')">
+                    <td>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</td>
+                    <td>${escapeHtml(purchase.provider || "")}</td>
+                    <td>${escapeHtml(item.description || purchase.description || "")}</td>
+                    <td>${escapeHtml(purchase.eventName || "")}</td>
+                    <td class="number">${escapeHtml(item.quantity || "")}</td>
+                    <td class="money">${formatCurrency(item.unitAmount || 0)}</td>
+                    <td class="money">${formatCurrency(item.total || purchase.totalAmount || 0)}</td>
+                    <td>${escapeHtml(purchase.invoiceType || "")}</td>
+                    <td><span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span></td>
+                    <td>${escapeHtml(purchase.paymentMethod || "")}</td>
+                    <td>${escapeHtml(purchase.fundsSource || "")}</td>
+                    <td>${escapeHtml(index === 0 ? purchase.notes || "" : "")}</td>
+                    <td class="number">
+                      ${index === 0 ? `
+                        <div class="actions" onclick="event.stopPropagation()">
+                          <button class="menu-dot" type="button" onclick="showPurchaseActions('${escapeAttribute(purchase.id)}')">...</button>
+                        </div>
+                      ` : ""}
+                    </td>
+                  </tr>
+                `);
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function importPurchasesFromSheets() {
+      const response = await fetch("/api/import-purchases-from-sheets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudieron importar las compras de Sheets.", "error");
+        return;
+      }
+
+      await loadErp();
+      showNotice(`Compras importadas desde Sheets: ${result.result?.imported || 0}.`);
     }
 
     function renderPipeline() {
@@ -2374,6 +3017,7 @@
 
       showNotice("Evento guardado.", "success");
       resetErpEventForm();
+      hideErpForms();
       await loadErp();
       await loadPurchaseOptions();
     }
@@ -2381,6 +3025,7 @@
     function editErpEvent(id) {
       const event = (erpData.events || []).find((item) => item.id === id);
       if (!event) return;
+      showErpEventForm();
       const form = document.getElementById("erp-event-form");
       ["id", "name", "clientName", "eventDate", "guestCount", "status", "owner", "role", "venue", "serviceType", "nextAction", "notes"]
         .forEach((field) => setFormValue(form, field, event[field] || ""));
@@ -2390,7 +3035,6 @@
       form.elements.checklistLogistics.checked = Boolean(event.checklist?.logistics);
       form.elements.checklistMenu.checked = Boolean(event.checklist?.menu);
       form.elements.checklistPayments.checked = Boolean(event.checklist?.payments);
-      form.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function resetErpEventForm() {
@@ -2420,7 +3064,7 @@
     function startErpQuoteForEvent(eventId) {
       resetErpQuoteForm();
       renderErpQuoteEventOptions(eventId);
-      document.getElementById("erp-quote-form").scrollIntoView({ behavior: "smooth", block: "start" });
+      showErpQuoteForm();
       updateErpQuotePreview();
     }
 
@@ -2522,12 +3166,14 @@
 
       showNotice("Presupuesto guardado.", "success");
       resetErpQuoteForm();
+      hideErpForms();
       await loadErp();
     }
 
     function editErpQuote(id) {
       const quote = (erpData.quotes || []).find((item) => item.id === id);
       if (!quote) return;
+      showErpQuoteForm();
       const form = document.getElementById("erp-quote-form");
       ["id", "status", "targetMarginPercent", "validUntil", "staffCost", "logisticsCost", "extraCost", "priceTotal", "notes"]
         .forEach((field) => setFormValue(form, field, quote[field] || ""));
@@ -2538,7 +3184,6 @@
       erpQuoteLineCounter = 0;
       (quote.recipes?.length ? quote.recipes : [{}]).forEach((line) => addErpQuoteLine(line));
       updateErpQuotePreview();
-      form.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function resetErpQuoteForm() {
@@ -2729,7 +3374,35 @@
 
       costSettings = result.settings || costSettings;
       await loadRecipes();
+      hideRecipeForm();
       showNotice("Valor hora actualizado en todas las recetas.");
+    }
+
+    function showCostSettingsForm() {
+      document.getElementById("recipe-editor-title").textContent = "Costos generales";
+      document.getElementById("recipe-editor-subtitle").textContent = "Valores base usados para calcular costos de personal.";
+      document.getElementById("cost-settings-card").classList.remove("hidden");
+      document.getElementById("recipe-form-card").classList.add("hidden");
+      document.getElementById("recipe-editor-modal").classList.add("open");
+    }
+
+    function showRecipeForm(recipe = null) {
+      document.getElementById("recipe-editor-title").textContent = recipe?.id ? "Editar receta" : "Cargar receta";
+      document.getElementById("recipe-editor-subtitle").textContent = "Carga de receta, procesos, mermas e ingredientes.";
+      document.getElementById("cost-settings-card").classList.add("hidden");
+      document.getElementById("recipe-form-card").classList.remove("hidden");
+      resetRecipeForm(recipe || {});
+      document.getElementById("recipe-editor-modal").classList.add("open");
+    }
+
+    function hideRecipeForm() {
+      document.getElementById("recipe-editor-modal").classList.remove("open");
+    }
+
+    function closeRecipeForm(event) {
+      if (event.target.id === "recipe-editor-modal") {
+        hideRecipeForm();
+      }
     }
 
     async function showBudgetBuilder() {
@@ -2754,8 +3427,7 @@
     function addBudgetRecipeRow(item = {}) {
       const id = `budget-recipe-${++budgetRecipeCounter}`;
       const row = document.createElement("div");
-      row.className = "purchase-item";
-      row.style.gridTemplateColumns = "minmax(0, 1fr) 110px 38px";
+      row.className = "budget-recipe-row";
       row.innerHTML = `
         <select class="budget-recipe-select">
           <option value="">Seleccionar receta</option>
@@ -2771,7 +3443,7 @@
     }
 
     function removeBudgetRecipeRow(button) {
-      const rows = document.querySelectorAll("#budget-recipe-rows .purchase-item");
+      const rows = document.querySelectorAll("#budget-recipe-rows .budget-recipe-row");
       if (rows.length <= 1) return;
       button.closest(".purchase-item").remove();
       updateBudgetBuilder();
@@ -2793,7 +3465,7 @@
     }
 
     function getBudgetSelections() {
-      return Array.from(document.querySelectorAll("#budget-recipe-rows .purchase-item"))
+      return Array.from(document.querySelectorAll("#budget-recipe-rows .budget-recipe-row"))
         .map((row) => {
           const recipe = allRecipes.find((item) => item.id === row.querySelector(".budget-recipe-select").value);
           const quantity = parseDecimal(row.querySelector(".budget-recipe-quantity").value);
@@ -2914,7 +3586,10 @@
               <div class="recipe-card-title">${escapeHtml(recipe.name)}</div>
               <div class="secondary">Rinde ${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</div>
             </div>
-            <span class="recipe-pill">${escapeHtml(recipe.category || "Receta")}</span>
+            <div class="actions" onclick="event.stopPropagation()">
+              <span class="recipe-pill">${escapeHtml(recipe.category || "Receta")}</span>
+              <button class="menu-dot" onclick="showRecipeActions('${escapeAttribute(recipe.id)}')">...</button>
+            </div>
           </div>
           <div class="recipe-card-stats">
             <div class="recipe-stat"><span>Total</span><strong>${formatCurrency(recipe.totalCost)}</strong></div>
@@ -2922,12 +3597,25 @@
             <div class="recipe-stat"><span>Insumos</span><strong>${formatCurrency(recipe.ingredientCost)}</strong></div>
             <div class="recipe-stat"><span>Personal</span><strong>${formatCurrency(recipe.laborCost)}</strong></div>
           </div>
-          <div class="actions" onclick="event.stopPropagation()">
-            <button class="filter" onclick="editRecipe('${escapeAttribute(recipe.id)}')">Editar</button>
-            <button class="reject" onclick="deleteRecipe('${escapeAttribute(recipe.id)}')">Eliminar</button>
-          </div>
         </article>
       `).join("");
+    }
+
+    function showRecipeActions(id) {
+      const recipe = allRecipes.find((item) => item.id === id);
+      if (!recipe) return;
+      document.getElementById("detail-title").textContent = recipe.name;
+      document.getElementById("detail-subtitle").textContent = recipe.category || "Receta";
+      document.getElementById("detail-fields").innerHTML = `
+        ${field("Rinde", formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}
+        ${field("Costo total", formatCurrency(recipe.totalCost))}
+        ${field("Costo unitario", formatCurrency(recipe.costPerPortion))}
+        <div class="actions">
+          <button class="approve" onclick="hideDetail(); editRecipe('${escapeAttribute(recipe.id)}')">Editar receta</button>
+          <button class="reject" onclick="hideDetail(); deleteRecipe('${escapeAttribute(recipe.id)}')">Eliminar receta</button>
+        </div>
+      `;
+      document.getElementById("detail").classList.add("open");
     }
 
     function showRecipeDetail(recipeId) {
@@ -3163,7 +3851,7 @@
     function editRecipe(id) {
       const recipe = allRecipes.find((item) => item.id === id);
       if (!recipe) return;
-      resetRecipeForm(recipe);
+      showRecipeForm(recipe);
     }
 
     function addRecipeProcessRow(item = {}) {
@@ -3414,6 +4102,7 @@
       }
 
       resetRecipeForm();
+      hideRecipeForm();
       await loadRecipes();
       showNotice("Receta guardada correctamente.");
     }
@@ -3699,14 +4388,70 @@
       await loadPurchaseOptions();
       const form = document.getElementById("purchase-form");
       form.reset();
+      document.getElementById("purchase-title").textContent = "Cargar compra";
       resetPurchaseItems();
       setFormValue(form, "date", new Date().toISOString().slice(0, 10));
       document.getElementById("purchase").classList.add("open");
     }
 
+    async function editPurchase(id) {
+      await loadPurchaseOptions();
+      const purchase = (erpData.purchases || []).find((item) => item.id === id);
+      if (!purchase) {
+        showNotice("No encontre esa compra para editar.", "error");
+        return;
+      }
+
+      const form = document.getElementById("purchase-form");
+      form.reset();
+      document.getElementById("purchase-title").textContent = "Editar compra";
+      setFormValue(form, "id", purchase.id || "");
+      setFormValue(form, "date", purchase.date || "");
+      setFormValue(form, "provider", purchase.provider || "");
+      setFormValue(form, "invoiceType", purchase.invoiceType || "");
+      setFormValue(form, "ivaRate", purchase.ivaRate || "");
+      setFormValue(form, "eventName", purchase.eventName || "");
+      setFormValue(form, "paymentStatus", purchase.paymentStatus || "Pendiente");
+      setFormValue(form, "paymentMethod", purchase.paymentMethod || "");
+      setFormValue(form, "fundsSource", purchase.fundsSource || "");
+      setFormValue(form, "notes", purchase.notes || "");
+      resetPurchaseItems(purchase.lineItems || []);
+      document.getElementById("purchase").classList.add("open");
+    }
+
+    function showPurchaseActions(id) {
+      const purchase = (erpData.purchases || []).find((item) => item.id === id);
+      if (!purchase) return;
+
+      document.getElementById("purchase-action-title").textContent = purchase.provider || "Compra";
+      document.getElementById("purchase-action-subtitle").textContent = `${formatShortDate(purchase.date) || purchase.date || ""} · ${formatCurrency(purchase.totalAmount || 0)}`;
+      document.getElementById("purchase-action-body").innerHTML = `
+        ${field("Producto", purchase.description || "Sin descripcion")}
+        ${field("Evento", purchase.eventName || "Sin evento")}
+        ${field("Estado", purchase.paymentStatus || "Pendiente")}
+        ${field("Medio / origen", [purchase.paymentMethod, purchase.fundsSource].filter(Boolean).join(" · ") || "Sin definir")}
+        <div class="actions">
+          <button class="approve" onclick="hidePurchaseActions(); editPurchase('${escapeAttribute(purchase.id)}')">Editar compra</button>
+          <button class="reject" onclick="hidePurchaseActions(); deletePurchase('${escapeAttribute(purchase.id)}')">Eliminar compra</button>
+        </div>
+      `;
+      document.getElementById("purchase-action-detail").classList.add("open");
+    }
+
+    function hidePurchaseActions() {
+      document.getElementById("purchase-action-detail").classList.remove("open");
+    }
+
+    function closePurchaseActions(event) {
+      if (event.target.id === "purchase-action-detail") {
+        hidePurchaseActions();
+      }
+    }
+
     function hidePurchaseForm() {
       document.getElementById("purchase").classList.remove("open");
       document.getElementById("purchase-form").reset();
+      document.getElementById("purchase-title").textContent = "Cargar compra";
       resetPurchaseItems();
     }
 
@@ -3752,7 +4497,7 @@
     }
 
     function removePurchaseItemRow(button) {
-      const rows = document.querySelectorAll(".purchase-item");
+      const rows = document.querySelectorAll("#purchase-items .purchase-item");
 
       if (rows.length <= 1) {
         showNotice("Debe quedar al menos un producto.", "error");
@@ -3763,7 +4508,7 @@
     }
 
     function getPurchaseItems() {
-      return Array.from(document.querySelectorAll(".purchase-item"))
+      return Array.from(document.querySelectorAll("#purchase-items .purchase-item"))
         .map((row) => ({
           description: row.querySelector(".purchase-item-description").value.trim(),
           quantity: row.querySelector(".purchase-item-quantity").value,
@@ -3900,12 +4645,34 @@
 
       hidePurchaseForm();
       await loadPurchaseOptions();
+      await loadErp();
       const added = result.result?.addedOptions || {};
       const extraMessage = [
         added.provider ? "proveedor nuevo guardado" : "",
         added.product ? "producto nuevo guardado" : "",
       ].filter(Boolean).join(", ");
       showNotice(`${result.result?.message || "Compra cargada correctamente."}${extraMessage ? ` (${extraMessage})` : ""}`);
+    }
+
+    async function deletePurchase(id) {
+      const purchase = (erpData.purchases || []).find((item) => item.id === id);
+      if (!purchase) return;
+      if (!confirm(`Eliminar compra de ${purchase.provider || ""} por ${formatCurrency(purchase.totalAmount || 0)}?`)) return;
+
+      const response = await fetch("/api/delete-purchase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo eliminar la compra.", "error");
+        return;
+      }
+
+      await loadErp();
+      showNotice(result.result?.message || "Compra eliminada correctamente.");
     }
 
     async function readJsonResponse(response) {

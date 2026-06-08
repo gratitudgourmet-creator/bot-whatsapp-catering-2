@@ -41,6 +41,9 @@ const ERP_QUOTES_FILE = dataPath("presupuestos-erp.json");
 const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
 const PANEL_AUTH_USER = process.env.PANEL_AUTH_USER || BOT_CONFIG.panelAuthUser || "admin";
 const PANEL_AUTH_PASSWORD = process.env.PANEL_AUTH_PASSWORD || BOT_CONFIG.panelAuthPassword || "";
+const PURCHASE_SYNC_TOKEN = process.env.PURCHASE_SYNC_TOKEN || BOT_CONFIG.purchaseSyncToken || "";
+const PURCHASE_BIDIRECTIONAL_SYNC_ENABLED =
+  String(process.env.PURCHASE_BIDIRECTIONAL_SYNC_ENABLED || BOT_CONFIG.purchaseBidirectionalSyncEnabled || "").toLowerCase() === "true";
 const PANEL_SESSION_SECRET =
   process.env.PANEL_SESSION_SECRET ||
   BOT_CONFIG.panelSessionSecret ||
@@ -669,6 +672,24 @@ function startApprovalPanelServer() {
         const body = await readJsonBody(request);
         const result = await submitPurchaseRecord(body);
         return sendJson(response, { ok: true, result });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/delete-purchase") {
+        const body = await readJsonBody(request);
+        const result = await deletePurchaseRecord(body.id, { syncSheets: true });
+        return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/import-purchases-from-sheets") {
+        const result = await importPurchasesFromSheets();
+        return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/purchase-sync") {
+        const body = await readJsonBody(request);
+        validatePurchaseSyncToken(body);
+        const result = applyPurchaseSync(body);
+        return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/erp-event") {
@@ -1763,6 +1784,7 @@ function getErpDashboard() {
     estimatedMargin: roundMoney(estimatedRevenue - estimatedCost),
     estimatedMarginPercent: estimatedRevenue > 0 ? roundMoney(((estimatedRevenue - estimatedCost) / estimatedRevenue) * 100) : 0,
     pendingPurchaseAmount: roundMoney(pendingPurchaseAmount),
+    purchases: getPurchaseDashboard(purchases),
     pipeline: getPipelineBoard().columns.map((column) => ({
       id: column.id,
       label: column.label,
@@ -1770,6 +1792,45 @@ function getErpDashboard() {
     })),
     alerts: buildErpAlerts(events, quotes, purchases),
   };
+}
+
+function getPurchaseDashboard(purchases = getErpPurchaseList()) {
+  const totalAmount = purchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
+  const paidPurchases = purchases.filter((purchase) => purchase.paymentStatus === "Pagado");
+  const pendingPurchases = purchases.filter((purchase) => purchase.paymentStatus !== "Pagado");
+  const byProvider = groupPurchaseAmount(purchases, "provider");
+  const byEvent = groupPurchaseAmount(purchases, "eventName");
+  const byPaymentMethod = groupPurchaseAmount(purchases, "paymentMethod");
+
+  return {
+    count: purchases.length,
+    totalAmount: roundMoney(totalAmount),
+    paidAmount: roundMoney(paidPurchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0)),
+    pendingAmount: roundMoney(pendingPurchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0)),
+    averageTicket: purchases.length ? roundMoney(totalAmount / purchases.length) : 0,
+    providersCount: new Set(purchases.map((purchase) => normalizeSearchKey(purchase.provider)).filter(Boolean)).size,
+    pendingCount: pendingPurchases.length,
+    byProvider,
+    byEvent,
+    byPaymentMethod,
+  };
+}
+
+function groupPurchaseAmount(purchases, field) {
+  const grouped = new Map();
+
+  for (const purchase of purchases) {
+    const label = normalizeText(purchase[field] || "Sin definir");
+    const current = grouped.get(label) || { label, count: 0, total: 0 };
+    current.count += 1;
+    current.total += Number(purchase.totalAmount || 0);
+    grouped.set(label, current);
+  }
+
+  return Array.from(grouped.values())
+    .map((item) => ({ ...item, total: roundMoney(item.total) }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 8);
 }
 
 function buildErpAlerts(events, quotes, purchases) {
@@ -2285,11 +2346,19 @@ function getBestQuoteForEvent(eventId) {
 function getErpPurchaseList() {
   return erpPurchases.map((purchase) => ({
     ...purchase,
+    invoiceType: purchase.invoiceType || "",
+    netAmount: roundMoney(Number(purchase.netAmount || purchase.totalAmount || 0)),
+    ivaRate: roundMoney(Number(purchase.ivaRate || 0)),
+    ivaAmount: roundMoney(Number(purchase.ivaAmount || 0)),
     totalAmount: roundMoney(Number(purchase.totalAmount || 0)),
+    notes: purchase.notes || "",
   })).sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 }
 
 function rememberErpPurchase(purchase) {
+  const lineTotal = (purchase.lineItems || []).reduce((sum, item) => sum + Number(item.total || 0), 0);
+  const existingIndex = erpPurchases.findIndex((item) => item.id === purchase.id);
+  const previous = existingIndex >= 0 ? erpPurchases[existingIndex] : {};
   const record = {
     id: purchase.id || `compra-${Date.now()}`,
     date: purchase.fecha || getDateOnly(new Date()),
@@ -2299,14 +2368,116 @@ function rememberErpPurchase(purchase) {
     paymentStatus: purchase.estadoPago || "Pendiente",
     paymentMethod: purchase.medioPago || "",
     fundsSource: purchase.origenFondos || "",
-    totalAmount: purchase.totalAmount || 0,
+    invoiceType: purchase.comprobante || "",
+    netAmount: roundMoney(Number(purchase.neto || 0)),
+    ivaRate: roundMoney(Number(purchase.ivaPorcentaje || 0)),
+    ivaAmount: roundMoney(Number(purchase.ivaCalculado || 0)),
+    totalAmount: roundMoney(Number(purchase.totalAmount || purchase.montoTotal || purchase.total || lineTotal || 0)),
+    notes: purchase.observaciones || "",
     lineItems: purchase.lineItems || [],
-    createdAt: new Date().toISOString(),
+    createdAt: previous.createdAt || purchase.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 
-  erpPurchases.push(record);
+  if (existingIndex >= 0) {
+    erpPurchases[existingIndex] = record;
+  } else {
+    erpPurchases.push(record);
+  }
+
   saveErpPurchases();
   return record;
+}
+
+async function deletePurchaseRecord(id, options = {}) {
+  const cleanId = normalizeText(id || "");
+  const purchase = erpPurchases.find((item) => item.id === cleanId);
+
+  if (!purchase) {
+    throw new Error("No encontre esa compra para eliminar.");
+  }
+
+  erpPurchases = erpPurchases.filter((item) => item.id !== cleanId);
+  saveErpPurchases();
+
+  if (options.syncSheets) {
+    await syncPurchaseToSheets("delete", { id: cleanId, ...purchase });
+  }
+
+  return { id: cleanId, deleted: true };
+}
+
+async function importPurchasesFromSheets() {
+  if (!PURCHASE_BIDIRECTIONAL_SYNC_ENABLED) {
+    throw new Error("Actualice Apps Script y active purchaseBidirectionalSyncEnabled para importar compras historicas desde Sheets.");
+  }
+
+  const result = await syncPurchaseToSheets("export", { id: "dashboard-import-request" });
+  const rows = result.response?.purchases || result.response?.rows || [];
+
+  if (!Array.isArray(rows)) {
+    throw new Error("Sheets no devolvio una lista de compras. Revise el Apps Script.");
+  }
+
+  let imported = 0;
+  for (const row of rows) {
+    const purchase = buildPurchaseRecord({
+      ...row,
+      id: row.id,
+      date: row.date || row.fecha,
+      provider: row.provider || row.proveedor,
+      eventName: row.eventName || row.evento,
+      invoiceType: row.invoiceType || row.comprobante,
+      paymentStatus: row.paymentStatus || row.estadoPago,
+      paymentMethod: row.paymentMethod || row.medioPago,
+      fundsSource: row.fundsSource || row.origenFondos,
+      notes: row.notes || row.observaciones,
+      items: row.items || row.lineItems,
+    });
+    rememberErpPurchase(purchase);
+    imported += 1;
+  }
+
+  return { imported };
+}
+
+function validatePurchaseSyncToken(body = {}) {
+  if (!PURCHASE_SYNC_TOKEN) return;
+
+  const token = normalizeText(body.token || body.syncToken || "");
+  if (token !== PURCHASE_SYNC_TOKEN) {
+    throw new Error("Token de sincronizacion de compras invalido.");
+  }
+}
+
+function applyPurchaseSync(input = {}) {
+  const action = normalizeText(input.action || input.type || "upsert").toLowerCase();
+  const purchaseInput = input.purchase || input;
+
+  if (action === "delete") {
+    const id = normalizeText(purchaseInput.id || input.id || "");
+    const exists = erpPurchases.some((purchase) => purchase.id === id);
+    erpPurchases = erpPurchases.filter((purchase) => purchase.id !== id);
+    saveErpPurchases();
+    return { action, id, deleted: exists };
+  }
+
+  const purchase = buildPurchaseRecord({
+    ...purchaseInput,
+    id: purchaseInput.id || input.id,
+    date: purchaseInput.date || purchaseInput.fecha,
+    provider: purchaseInput.provider || purchaseInput.proveedor,
+    eventName: purchaseInput.eventName || purchaseInput.evento,
+    invoiceType: purchaseInput.invoiceType || purchaseInput.comprobante,
+    paymentStatus: purchaseInput.paymentStatus || purchaseInput.estadoPago,
+    paymentMethod: purchaseInput.paymentMethod || purchaseInput.medioPago,
+    fundsSource: purchaseInput.fundsSource || purchaseInput.origenFondos,
+    notes: purchaseInput.notes || purchaseInput.observaciones,
+    items: purchaseInput.items || purchaseInput.lineItems,
+  });
+  const saved = rememberErpPurchase(purchase);
+  rememberPurchasePrices(purchase);
+  return { action: "upsert", purchase: saved };
 }
 
 function normalizeErpEventStatus(status) {
@@ -3553,7 +3724,25 @@ async function submitPurchaseRecord(input) {
   ).length;
   rememberPurchasePrices(purchase);
   rememberErpPurchase(purchase);
+  const googleResult = await syncPurchaseToSheets(input.id ? "upsert" : "create", purchase);
+
+  return {
+    ...googleResult,
+    addedOptions: { provider: newProvider, product: newProducts > 0 },
+    purchase,
+  };
+}
+
+async function syncPurchaseToSheets(action, purchase) {
   const webhookUrl = process.env.PURCHASE_WEBHOOK_URL || BOT_CONFIG.purchaseWebhookUrl;
+
+  if (action !== "create" && !PURCHASE_BIDIRECTIONAL_SYNC_ENABLED) {
+    return {
+      sent: false,
+      message: "Compra actualizada en el dashboard. Active purchaseBidirectionalSyncEnabled despues de actualizar Apps Script para sincronizar ediciones/eliminaciones con Sheets.",
+      purchase,
+    };
+  }
 
   if (!webhookUrl) {
     console.log("Webhook de compras no configurado. Compra generada:");
@@ -3561,7 +3750,6 @@ async function submitPurchaseRecord(input) {
     return {
       sent: false,
       message: "Webhook de compras no configurado. La compra quedo generada para prueba.",
-      addedOptions: { provider: newProvider, product: newProducts > 0 },
       purchase,
     };
   }
@@ -3571,7 +3759,11 @@ async function submitPurchaseRecord(input) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(purchase),
+    body: JSON.stringify({
+      ...purchase,
+      action,
+      purchase,
+    }),
   });
 
   const text = await response.text();
@@ -3593,11 +3785,16 @@ async function submitPurchaseRecord(input) {
 
   return {
     sent: true,
-    message: googleResult.message || "Compra enviada a Google Sheets.",
-    addedOptions: { provider: newProvider, product: newProducts > 0 },
+    message: googleResult.message || getPurchaseSyncMessage(action),
     row: googleResult.row || null,
     response: googleResult,
   };
+}
+
+function getPurchaseSyncMessage(action) {
+  if (action === "delete") return "Compra eliminada en Google Sheets.";
+  if (action === "upsert") return "Compra actualizada en Google Sheets.";
+  return "Compra enviada a Google Sheets.";
 }
 
 function ensurePurchaseOptionExists(type, value) {
@@ -3669,6 +3866,22 @@ function buildPurchaseRecord(input) {
     observaciones: normalizeText(input.notes || ""),
     lineItems,
   };
+
+  Object.assign(purchase, {
+    date: purchase.fecha,
+    provider: purchase.proveedor,
+    description: purchase.descripcion,
+    quantity: purchase.cantidad,
+    unitAmount: purchase.montoUnitario,
+    totalAmount: purchase.montoTotal,
+    invoiceType: purchase.comprobante,
+    eventName: purchase.evento,
+    paymentStatus: purchase.estadoPago,
+    paymentMethod: purchase.medioPago,
+    fundsSource: purchase.origenFondos,
+    notes: purchase.observaciones,
+    items: lineItems,
+  });
 
   if (!purchase.fecha) {
     throw new Error("Ingrese la fecha de la compra.");

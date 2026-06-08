@@ -93,6 +93,19 @@ El Excel incluye hojas separadas:
 
 En el panel, la pestaña `ERP` tiene el boton `Descargar Excel`.
 
+## Sincronizacion de compras con Google Sheets
+
+El dashboard permite crear, editar y eliminar compras desde el panel. Para activar edicion/eliminacion tambien desde Google Sheets:
+
+1. Copiar el contenido de `docs/google-apps-script-compras.gs` en Apps Script de la planilla.
+2. Configurar propiedades del script:
+   - `DASHBOARD_SYNC_URL`: URL publica del panel, terminada en `/api/purchase-sync`.
+   - `PURCHASE_SYNC_TOKEN`: el mismo valor que `PURCHASE_SYNC_TOKEN` o `purchaseSyncToken`.
+3. Crear un disparador instalable para la funcion `onEdit`.
+4. En `config-bot.json`, cambiar `purchaseBidirectionalSyncEnabled` a `true`.
+
+Para eliminar desde Sheets, escribir `ELIMINAR` en la columna `Accion` o `Accion Sync` de la fila. El script elimina la fila y avisa al dashboard.
+
 ## Scripts
 
 ```bash

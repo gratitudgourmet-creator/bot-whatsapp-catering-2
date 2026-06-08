@@ -12,6 +12,8 @@
   "openaiApiKey": "",
   "invoiceOcrModel": "gpt-4.1-mini",
   "purchaseWebhookUrl": "https://script.google.com/macros/s/AKfycbwnOBujlzL1DA3PwVVo6sh9sD-k2I_QCYitehs6MQ-X6klYtVgmqNJZi4w_t21eCSWSqQ/exec",
+  "purchaseSyncToken": "",
+  "purchaseBidirectionalSyncEnabled": false,
   "purchaseSpreadsheetId": "1ZAd6hdDq1gftQPr6QdPZWS0yyhPcTG9UJcnt3Fgp3HI",
   "purchaseSheetName": "Registro_Gastos",
   "panelPort": 3080,

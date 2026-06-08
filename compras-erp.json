@@ -1,1 +1,119 @@
-[]
+[
+  {
+    "id": "compra-1780883699560",
+    "date": "2026-06-08",
+    "provider": "FARMACIA BELGRANO",
+    "eventName": "HIPODROMO 8-2",
+    "description": "JENGIBRE X RAMA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "",
+    "netAmount": 15000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 15000,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "JENGIBRE X RAMA",
+        "quantity": 1,
+        "unitAmount": 15000,
+        "total": 15000
+      }
+    ],
+    "createdAt": "2026-06-08T01:54:59.572Z",
+    "updatedAt": "2026-06-08T02:35:28.511Z"
+  },
+  {
+    "id": "compra-1780883760117",
+    "date": "2026-06-08",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "AGAPE BUSTELO 14-5",
+    "description": "TRAPO CONVENCIONAL GRIS",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "totalAmount": 52221.98,
+    "lineItems": [
+      {
+        "description": "TRAPO CONVENCIONAL GRIS",
+        "quantity": 1,
+        "unitAmount": 52221.98,
+        "total": 52221.98
+      }
+    ],
+    "createdAt": "2026-06-08T01:56:00.132Z"
+  },
+  {
+    "id": "compra-1780883791821",
+    "date": "2026-06-08",
+    "provider": "FARMACIA BELGRANO",
+    "eventName": "CONSUMO PERSONAL",
+    "description": "JENGIBRE X RAMA",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "totalAmount": 98444,
+    "lineItems": [
+      {
+        "description": "JENGIBRE X RAMA",
+        "quantity": 1,
+        "unitAmount": 98444,
+        "total": 98444
+      }
+    ],
+    "createdAt": "2026-06-08T01:56:31.827Z"
+  },
+  {
+    "id": "compra-1780885389716",
+    "date": "2026-06-08",
+    "provider": "FLETE FELIPE",
+    "eventName": "PRUEBA",
+    "description": "ENVIO",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 12000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 12000,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "ENVIO",
+        "quantity": 1,
+        "unitAmount": 12000,
+        "total": 12000
+      }
+    ],
+    "createdAt": "2026-06-08T02:23:09.728Z"
+  },
+  {
+    "id": "compra-1780886376242",
+    "date": "2026-06-08",
+    "provider": "RUBEN CARNE",
+    "eventName": "MUESTRA CAPITAL",
+    "description": "MOLIDA INT X MAYOR",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Factura A",
+    "netAmount": 18000,
+    "ivaRate": 0.21,
+    "ivaAmount": 3780,
+    "totalAmount": 18000,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "MOLIDA INT X MAYOR",
+        "quantity": 1,
+        "unitAmount": 18000,
+        "total": 18000
+      }
+    ],
+    "createdAt": "2026-06-08T02:39:36.243Z",
+    "updatedAt": "2026-06-08T02:39:36.312Z"
+  }
+]
