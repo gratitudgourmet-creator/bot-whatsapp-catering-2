@@ -1,23 +1,65 @@
 {
+  "2615406970": {
+    "id": "2615406970",
+    "phone": "2615406970",
+    "displayPhone": "2615406970",
+    "fullName": "ESTEFANÍA EBERHARDT",
+    "contactName": "TEFI EBERHARDT",
+    "aliases": [
+      "2615406970",
+      "TEFI EBERHARDT",
+      "ESTEFANÍA EBERHARDT"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-09T14:37:31.840Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-09T14:37:31.840Z",
+    "updatedAt": "2026-06-09T14:37:31.840Z"
+  },
   "2616988941": {
     "id": "2616988941",
     "phone": "2616988941",
     "displayPhone": "2616988941",
     "fullName": "ROMINA PROTOCOLO",
-    "contactName": "",
+    "contactName": "ROMINA PROTOCOLO",
     "aliases": [
       "2616988941",
       "ROMINA PROTOCOLO"
     ],
     "budgetCount": 1,
-    "lastEventType": "INFANTIL",
+    "lastEventType": "Almuerzo",
     "lastBudgetAt": "2026-06-08T20:01:50.279Z",
-    "lastSeenAt": "2026-06-08T20:01:50.279Z",
+    "lastSeenAt": "2026-06-09T17:13:11.862Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-08T20:01:50.279Z",
-    "updatedAt": "2026-06-08T20:01:50.279Z"
+    "updatedAt": "2026-06-09T17:13:11.862Z"
+  },
+  "2619977846": {
+    "id": "2619977846",
+    "phone": "2619977846",
+    "displayPhone": "2619977846",
+    "fullName": "GERMAN",
+    "contactName": "GERRRRR",
+    "aliases": [
+      "2619977846",
+      "GERRRRR",
+      "GERMAN"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-09T14:34:06.829Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-09T14:34:06.829Z",
+    "updatedAt": "2026-06-09T14:34:06.829Z"
   },
   "255189810475111@lid": {
     "id": "255189810475111@lid",
@@ -105,12 +147,12 @@
     "budgetCount": 0,
     "lastEventType": "AGAPE FINGER FOOD",
     "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-09T13:31:24.282Z",
+    "lastSeenAt": "2026-06-09T14:18:27.302Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-08T20:13:42.660Z",
-    "updatedAt": "2026-06-09T13:31:24.282Z"
+    "updatedAt": "2026-06-09T14:18:27.302Z"
   },
   "TEST": {
     "id": "TEST",
@@ -130,5 +172,43 @@
     "notes": "",
     "createdAt": "2026-06-08T20:29:29.489Z",
     "updatedAt": "2026-06-08T20:29:30.189Z"
+  },
+  "ESTEFANÍA": {
+    "id": "ESTEFANÍA",
+    "phone": "ESTEFANÍA",
+    "displayPhone": "",
+    "fullName": "ESTEFANÍA",
+    "contactName": "ESTEFANÍA",
+    "aliases": [
+      "ESTEFANÍA"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "Coffee",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-09T15:45:47.732Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-09T14:17:06.272Z",
+    "updatedAt": "2026-06-09T15:45:47.732Z"
+  },
+  "Cliente Test": {
+    "id": "Cliente Test",
+    "phone": "Cliente Test",
+    "displayPhone": "",
+    "fullName": "Cliente Test",
+    "contactName": "Cliente Test",
+    "aliases": [
+      "Cliente Test"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "Coffee",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-09T14:55:03.773Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-09T14:28:59.219Z",
+    "updatedAt": "2026-06-09T14:55:03.773Z"
   }
 }

@@ -1,0 +1,52 @@
+Date : 2026-06-09 14:30:51
+Directory : c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2
+Total : 23 files,  44513 codes, 36 comments, 1692 blanks, all 46241 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |         15 |     33,116 |          0 |          5 |     33,121 |
+| HTML       |          1 |      6,226 |          0 |        816 |      7,042 |
+| JavaScript |          1 |      4,969 |         36 |        815 |      5,820 |
+| Markdown   |          1 |         84 |          0 |         36 |        120 |
+| PowerShell |          1 |         67 |          0 |          9 |         76 |
+| Batch      |          4 |         51 |          0 |         11 |         62 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                      | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                         |         23 |     44,513 |         36 |      1,692 |     46,241 |
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                  | language   | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\README.md                          | Markdown   |         84 |          0 |         36 |        120 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\approval-panel.html                | HTML       |      6,226 |          0 |        816 |      7,042 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\bot-state.json                     | JSON       |        210 |          0 |          0 |        210 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\clientes-bot.json                  | JSON       |        214 |          0 |          0 |        214 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\compras-erp.json                   | JSON       |     21,640 |          0 |          0 |     21,640 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\config-bot.json                    | JSON       |        713 |          0 |          0 |        713 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\costos-bot.json                    | JSON       |         95 |          0 |          1 |         96 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\eventos-erp.json                   | JSON       |        181 |          0 |          0 |        181 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\iniciar-bot.bat                    | Batch      |         27 |          0 |          4 |         31 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\instalar-inicio-automatico.bat     | Batch      |          6 |          0 |          3 |          9 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\instalar-node-portable.bat         | Batch      |         15 |          0 |          3 |         18 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\instalar-node-portable.ps1         | PowerShell |         67 |          0 |          9 |         76 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\lugares-erp.json                   | JSON       |         53 |          0 |          0 |         53 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\mensajes-bot.json                  | JSON       |         51 |          0 |          1 |         52 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\package-lock.json                  | JSON       |      2,477 |          0 |          1 |      2,478 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\package-whatsapp-catering-bot.json | JSON       |         13 |          0 |          1 |         14 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\package.json                       | JSON       |         21 |          0 |          1 |         22 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\precios-productos-bot.json         | JSON       |      4,097 |          0 |          0 |      4,097 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\presupuestos-erp.json              | JSON       |         31 |          0 |          0 |         31 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\proveedores-erp.json               | JSON       |      3,218 |          0 |          0 |      3,218 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\recetas-bot.json                   | JSON       |        102 |          0 |          0 |        102 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\start-bot.cmd                      | Batch      |          3 |          0 |          1 |          4 |
+| c:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\whatsapp-catering-bot.js           | JavaScript |      4,969 |         36 |        815 |      5,820 |
+| Total                                                                                     |            |     44,513 |         36 |      1,692 |     46,241 |
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

@@ -681,7 +681,11 @@
     "Evento demo ERP",
     "PRUEBA",
     "JESI ECOPARQUE 5-6",
-    "TEST CODEX EVENTO"
+    "TEST CODEX EVENTO",
+    "COFFEE FOPIATZAD",
+    "TEST CHECKLIST CODEX",
+    "TEST PRECIO CODEX",
+    "INFANTIL ROMI"
   ],
   "purchasePaymentMethods": [
     "E-Cheq",
@@ -700,5 +704,10 @@
   "localOcrLanguage": "spa+eng",
   "localInvoiceAiEnabled": true,
   "localInvoiceAiUrl": "http://127.0.0.1:11434/api/generate",
-  "localInvoiceAiModel": "qwen2.5vl:3b"
+  "localInvoiceAiModel": "qwen2.5vl:3b",
+  "eventVenues": [
+    "ECOPARQUE",
+    "Hiper ChangoMás",
+    "SALON PATRICIAS"
+  ]
 }

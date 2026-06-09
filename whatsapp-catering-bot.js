@@ -40,6 +40,7 @@ const ERP_EVENTS_FILE = dataPath("eventos-erp.json");
 const ERP_QUOTES_FILE = dataPath("presupuestos-erp.json");
 const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
 const ERP_PROVIDERS_FILE = dataPath("proveedores-erp.json");
+const ERP_VENUES_FILE = dataPath("lugares-erp.json");
 const PANEL_AUTH_USER = process.env.PANEL_AUTH_USER || BOT_CONFIG.panelAuthUser || "admin";
 const PANEL_AUTH_PASSWORD = process.env.PANEL_AUTH_PASSWORD || BOT_CONFIG.panelAuthPassword || "";
 const PURCHASE_SYNC_TOKEN = process.env.PURCHASE_SYNC_TOKEN || BOT_CONFIG.purchaseSyncToken || "";
@@ -118,6 +119,7 @@ let erpEvents = [];
 let erpQuotes = [];
 let erpPurchases = [];
 let erpProviders = [];
+let erpVenues = [];
 const approvedCustomers = new Set();
 const processedMessageIds = new Set();
 const WHATSAPP_INIT_MAX_ATTEMPTS = Number(process.env.WHATSAPP_INIT_MAX_ATTEMPTS || 3);
@@ -586,6 +588,18 @@ function startApprovalPanelServer() {
         });
       }
 
+      if (request.method === "GET" && requestUrl.pathname === "/api/venues") {
+        return sendJson(response, {
+          ok: true,
+          venues: getVenueList(),
+        });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/map-search") {
+        const results = await searchMapPlaces(requestUrl.searchParams.get("q") || "");
+        return sendJson(response, { ok: true, results });
+      }
+
       if (request.method === "GET" && requestUrl.pathname === "/api/recipes") {
         return sendJson(response, {
           ok: true,
@@ -607,6 +621,7 @@ function startApprovalPanelServer() {
           providers: getProviderList(),
           recipes: getRecipeList(),
           customers: getCustomerInsights(),
+          venues: getVenueList(),
           productAlerts: getProductPriceAlerts(),
         });
       }
@@ -764,6 +779,24 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, customer });
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/delete-customer") {
+        const body = await readJsonBody(request);
+        const result = deleteCustomerRecord(body.id);
+        return sendJson(response, { ok: true, result, customers: getCustomerInsights() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/venue") {
+        const body = await readJsonBody(request);
+        const venue = saveVenueOption(body);
+        return sendJson(response, { ok: true, venue, venues: getVenueList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/delete-venue") {
+        const body = await readJsonBody(request);
+        const result = deleteVenueRecord(body.id);
+        return sendJson(response, { ok: true, result, venues: getVenueList() });
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/recipe") {
         const body = await readJsonBody(request);
         const recipe = saveRecipeRecord(body);
@@ -773,6 +806,12 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/cost-settings") {
         const body = await readJsonBody(request);
         const settings = saveCostSettingsFromPanel(body);
+        return sendJson(response, { ok: true, settings });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/operational-option") {
+        const body = await readJsonBody(request);
+        const settings = addOperationalOption(body.type, body.value);
         return sendJson(response, { ok: true, settings });
       }
 
@@ -959,8 +998,18 @@ function buildGoogleSheetsModel() {
       "Cliente",
       "Fecha",
       "Invitados",
+      "Modalidad precio",
+      "Precio por persona",
+      "Total servicio",
       "Lugar",
       "Servicio",
+      "Momentos",
+      "Menu completo",
+      "Bebidas",
+      "Detalle bebidas",
+      "Vajilla",
+      "Personal",
+      "Horarios",
       "Estado",
       "Responsable",
       "Proxima accion",
@@ -985,8 +1034,18 @@ function buildGoogleSheetsModel() {
       Cliente: event.clientName,
       Fecha: event.eventDate,
       Invitados: event.guestCount,
+      "Modalidad precio": event.priceMode,
+      "Precio por persona": event.pricePerPerson,
+      "Total servicio": event.servicePriceTotal,
       Lugar: event.venue,
       Servicio: event.serviceType,
+      Momentos: event.eventMoments,
+      "Menu completo": event.selectedMenu,
+      Bebidas: event.includesDrinks,
+      "Detalle bebidas": event.drinkType,
+      Vajilla: event.tableware,
+      Personal: event.staff,
+      Horarios: event.schedule,
       Estado: event.status,
       Responsable: event.owner,
       "Proxima accion": event.nextAction,
@@ -1348,7 +1407,9 @@ function loadBusinessData() {
   erpQuotes = readJsonFile(ERP_QUOTES_FILE, []);
   erpPurchases = readJsonFile(ERP_PURCHASES_FILE, []);
   erpProviders = readJsonFile(ERP_PROVIDERS_FILE, []);
+  erpVenues = readJsonFile(ERP_VENUES_FILE, []);
   syncProvidersFromPurchasesAndConfig();
+  syncVenuesFromEventsAndConfig();
 }
 
 function readJsonFile(filePath, fallback) {
@@ -1437,6 +1498,10 @@ function saveErpPurchases() {
 
 function saveErpProviders() {
   writeJsonFile(ERP_PROVIDERS_FILE, erpProviders);
+}
+
+function saveErpVenues() {
+  writeJsonFile(ERP_VENUES_FILE, erpVenues);
 }
 
 function getProviderList() {
@@ -1636,11 +1701,9 @@ function saveCustomerFromPanel(input) {
     throw new Error("Ingrese el nombre del cliente.");
   }
 
-  if (!displayPhone) {
-    throw new Error("Ingrese un telefono para reconocer al cliente.");
-  }
+  const fallbackId = `cliente-${normalizeSearchKey(fullName).replace(/[^a-z0-9]+/g, "-") || Date.now()}`;
 
-  return upsertCustomerRecord(input.id || displayPhone, {
+  return upsertCustomerRecord(input.id || displayPhone || fallbackId, {
     displayPhone,
     fullName,
     contactName: normalizeText(input.contactName || ""),
@@ -1736,6 +1799,8 @@ function getRecipeList() {
 function getCostSettings() {
   return {
     laborHourlyCost: parseDecimalNumber(costSettings.laborHourlyCost || 0),
+    supplyProfiles: normalizeSupplyProfiles(costSettings.supplyProfiles),
+    operationalOptions: normalizeOperationalOptions(costSettings.operationalOptions),
   };
 }
 
@@ -1743,8 +1808,91 @@ function saveCostSettingsFromPanel(input) {
   costSettings = {
     ...costSettings,
     laborHourlyCost: parseDecimalNumber(input.laborHourlyCost || 0),
+    supplyProfiles: parseSupplyProfilesInput(input.supplyProfilesText || input.supplyProfiles),
+    operationalOptions: parseOperationalOptionsInput(input.operationalOptionsText || input.operationalOptions),
     updatedAt: new Date().toISOString(),
   };
+  saveCostSettings();
+  return getCostSettings();
+}
+
+function normalizeSupplyProfiles(profiles) {
+  const defaults = {
+    coffee: ["Cafe", "Te", "Leche", "Azucar", "Edulcorante", "Vasos termicos", "Servilletas", "Medialunas", "Jugo"],
+    finger: ["Bandejas", "Servilletas cocktail", "Pinchos", "Salsas", "Panificados", "Descartables de apoyo"],
+    asado: ["Carne", "Chorizo", "Morcilla", "Carbon/lenia", "Ensaladas", "Pan", "Chimichurri"],
+    bebidas: ["Agua", "Gaseosas", "Hielo", "Vasos", "Conservadoras", "Vinos/espumantes segun propuesta"],
+    postre: ["Cucharas", "Platos de postre", "Bases dulces", "Fruta/decoracion", "Contenedores refrigerados"],
+  };
+  const source = profiles && typeof profiles === "object" && !Array.isArray(profiles) ? profiles : {};
+  return Object.fromEntries(Object.entries({ ...defaults, ...source }).map(([key, values]) => [
+    normalizeText(key).toLowerCase(),
+    Array.isArray(values) ? values.map(normalizeText).filter(Boolean) : String(values || "").split(",").map(normalizeText).filter(Boolean),
+  ]));
+}
+
+function parseSupplyProfilesInput(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) return normalizeSupplyProfiles(value);
+  const text = String(value ?? "").trim();
+  if (!text) return normalizeSupplyProfiles({});
+
+  const profiles = {};
+  text.split(/\r?\n/).forEach((line) => {
+    const [rawKey, ...rest] = line.split(":");
+    const key = normalizeText(rawKey || "").toLowerCase();
+    const values = rest.join(":").split(",").map(normalizeText).filter(Boolean);
+    if (key && values.length) profiles[key] = values;
+  });
+  return normalizeSupplyProfiles(profiles);
+}
+
+function normalizeOperationalOptions(options) {
+  const defaults = {
+    services: ["Coffee", "Finger", "Agape", "Cocktail", "Coctel", "Cena", "Almuerzo", "Asado", "Brunch"],
+    moments: ["Recepcion", "Coffee", "Comida", "Postre", "Barra", "Trasnoche", "Desayuno", "Merienda"],
+    drinks: ["Agua con gas", "Agua sin gas", "Gaseosas", "Detox", "Cafe", "Te", "Vinos", "Espumantes", "Barra"],
+  };
+  const source = options && typeof options === "object" && !Array.isArray(options) ? options : {};
+  return Object.fromEntries(Object.entries({ ...defaults, ...source }).map(([key, values]) => [
+    key,
+    Array.from(new Set((Array.isArray(values) ? values : String(values || "").split(",")).map(normalizeText).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
+  ]));
+}
+
+function parseOperationalOptionsInput(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) return normalizeOperationalOptions(value);
+  const text = String(value ?? "").trim();
+  if (!text) return normalizeOperationalOptions({});
+
+  const options = {};
+  text.split(/\r?\n/).forEach((line) => {
+    const [rawKey, ...rest] = line.split(":");
+    const key = normalizeText(rawKey || "");
+    const values = rest.join(":").split(",").map(normalizeText).filter(Boolean);
+    if (key && values.length) options[key] = values;
+  });
+  return normalizeOperationalOptions(options);
+}
+
+function addOperationalOption(type, value) {
+  const typeMap = { service: "services", services: "services", moment: "moments", moments: "moments", drink: "drinks", drinks: "drinks" };
+  const key = typeMap[normalizeText(type || "").toLowerCase()];
+  const cleanValue = normalizeText(value || "");
+  if (!key || !cleanValue) throw new Error("Ingrese una opcion valida.");
+
+  const options = normalizeOperationalOptions(costSettings.operationalOptions);
+  if (!options[key].some((item) => normalizeSearchKey(item) === normalizeSearchKey(cleanValue))) {
+    options[key].push(cleanValue);
+    options[key].sort((a, b) => a.localeCompare(b));
+  }
+
+  const profiles = normalizeSupplyProfiles(costSettings.supplyProfiles);
+  if (key === "services") {
+    const profileKey = normalizeSearchKey(cleanValue).replace(/[^a-z0-9]+/g, "_") || cleanValue.toLowerCase();
+    if (!profiles[profileKey]) profiles[profileKey] = [];
+  }
+
+  costSettings = { ...costSettings, operationalOptions: options, supplyProfiles: profiles, updatedAt: new Date().toISOString() };
   saveCostSettings();
   return getCostSettings();
 }
@@ -2286,6 +2434,162 @@ function getCustomerInsights() {
   });
 }
 
+function deleteCustomerRecord(id) {
+  const cleanId = normalizeText(id || "");
+  if (!cleanId || !customerRecords[cleanId]) return { id: cleanId, deleted: false };
+  delete customerRecords[cleanId];
+  saveCustomerRecords();
+  return { id: cleanId, deleted: true };
+}
+
+function getVenueList() {
+  syncVenuesFromEventsAndConfig();
+  return erpVenues.map(normalizeVenueRecord).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function syncVenuesFromEventsAndConfig() {
+  const existing = new Map((Array.isArray(erpVenues) ? erpVenues : [])
+    .map((venue) => normalizeVenueRecord(venue))
+    .filter((venue) => venue.name)
+    .map((venue) => [normalizeSearchKey(venue.name), venue]));
+
+  [...getConfigList("eventVenues"), ...erpEvents.map((event) => event.venue).filter(Boolean)].forEach((name) => {
+    const cleanName = normalizeText(name);
+    const key = normalizeSearchKey(cleanName);
+    if (!key || existing.has(key)) return;
+    existing.set(key, normalizeVenueRecord({ name: cleanName }));
+  });
+
+  erpVenues = Array.from(existing.values());
+  saveErpVenues();
+}
+
+function normalizeVenueRecord(input = {}) {
+  const now = new Date().toISOString();
+  const name = normalizeText(input.name || input.venue || "");
+  return {
+    id: normalizeText(input.id || createVenueId(name)),
+    name,
+    address: normalizeText(input.address || input.direccion || ""),
+    phone: normalizeText(input.phone || input.telefono || ""),
+    contactName: normalizeText(input.contactName || input.contacto || ""),
+    email: normalizeText(input.email || ""),
+    reference: normalizeText(input.reference || input.references || input.referencia || ""),
+    notes: normalizeText(input.notes || input.notas || ""),
+    latitude: input.latitude !== "" && input.latitude !== undefined ? Number(input.latitude) : null,
+    longitude: input.longitude !== "" && input.longitude !== undefined ? Number(input.longitude) : null,
+    mapLabel: normalizeText(input.mapLabel || ""),
+    mapProvider: normalizeText(input.mapProvider || ""),
+    mapPlaceId: normalizeText(input.mapPlaceId || ""),
+    createdAt: input.createdAt || now,
+    updatedAt: input.updatedAt || "",
+  };
+}
+
+function createVenueId(name) {
+  const base = normalizeSearchKey(name)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 70);
+  return `lugar-${base || Date.now()}`;
+}
+
+function saveVenueOption(input = {}) {
+  const name = normalizeText(input.name || input.venue || "");
+  if (!name) {
+    throw new Error("Ingrese el nombre del lugar.");
+  }
+
+  const now = new Date().toISOString();
+  const id = normalizeText(input.id || "");
+  const index = erpVenues.findIndex((venue) =>
+    (id && venue.id === id) || normalizeSearchKey(venue.name) === normalizeSearchKey(name)
+  );
+  const previous = index >= 0 ? erpVenues[index] : {};
+  const venue = normalizeVenueRecord({
+    ...previous,
+    ...input,
+    id: id || previous.id || createVenueId(name),
+    name,
+    createdAt: previous.createdAt || now,
+    updatedAt: now,
+  });
+
+  if (index >= 0) {
+    erpVenues[index] = venue;
+  } else {
+    erpVenues.push(venue);
+  }
+
+  if (!Array.isArray(BOT_CONFIG.eventVenues)) {
+    BOT_CONFIG.eventVenues = [];
+  }
+
+  if (!BOT_CONFIG.eventVenues.some((item) => normalizeSearchKey(item) === normalizeSearchKey(venue.name))) {
+    BOT_CONFIG.eventVenues.push(venue.name);
+    BOT_CONFIG.eventVenues.sort((a, b) => a.localeCompare(b));
+    saveBotConfig();
+  }
+
+  saveErpVenues();
+  return venue;
+}
+
+function deleteVenueRecord(id) {
+  const cleanId = normalizeText(id || "");
+  const venue = erpVenues.find((item) => item.id === cleanId);
+  if (!venue) return { id: cleanId, deleted: false };
+
+  erpVenues = erpVenues.filter((item) => item.id !== cleanId);
+  if (Array.isArray(BOT_CONFIG.eventVenues)) {
+    BOT_CONFIG.eventVenues = BOT_CONFIG.eventVenues.filter((item) => normalizeSearchKey(item) !== normalizeSearchKey(venue.name));
+    saveBotConfig();
+  }
+  saveErpVenues();
+  return { id: cleanId, deleted: true };
+}
+
+async function searchMapPlaces(query) {
+  const cleanQuery = normalizeText(query || "");
+  if (!cleanQuery) return [];
+
+  const url = new URL("https://nominatim.openstreetmap.org/search");
+  url.searchParams.set("format", "json");
+  url.searchParams.set("limit", "8");
+  url.searchParams.set("addressdetails", "1");
+  url.searchParams.set("accept-language", "es");
+  url.searchParams.set("q", cleanQuery);
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "CateringERP/1.0 (venue-search)",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Mapa no disponible (${response.status})`);
+    }
+
+    const results = await response.json();
+    return results.map((item) => ({
+      name: normalizeText(item.name || item.display_name?.split(",")[0] || ""),
+      display_name: normalizeText(item.display_name || ""),
+      lat: Number(item.lat),
+      lon: Number(item.lon),
+      place_id: normalizeText(item.place_id || ""),
+      type: normalizeText(item.type || ""),
+      category: normalizeText(item.category || ""),
+    })).filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lon));
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function getProductPriceAlerts() {
   return Object.values(productPriceRecords)
     .filter((product) => Number(product.previousUnitCost || 0) > 0 && Number(product.changePercent || 0) !== 0)
@@ -2316,7 +2620,14 @@ function normalizeErpEvent(event = {}) {
   const purchaseTotal = purchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
   const quoteCostTotal = quote ? Number(quote.costTotal || 0) : 0;
   const finalCostTotal = quoteCostTotal + purchaseTotal;
-  const finalMargin = quote ? Number(quote.priceTotal || 0) - finalCostTotal : 0;
+  const priceMode = normalizeText(event.priceMode || "total");
+  const pricePerPerson = roundMoney(Number(event.pricePerPerson || 0));
+  const servicePriceTotal = roundMoney(Number(event.servicePriceTotal || event.priceTotal || 0));
+  const eventSaleTotal = priceMode === "per_person"
+    ? roundMoney(pricePerPerson * parseDecimalNumber(event.guestCount || 0))
+    : servicePriceTotal;
+  const quoteTotal = quote ? Number(quote.priceTotal || 0) : eventSaleTotal;
+  const finalMargin = quoteTotal - finalCostTotal;
 
   return {
     id: event.id || `evento-${Date.now()}`,
@@ -2327,6 +2638,17 @@ function normalizeErpEvent(event = {}) {
     guestCount: parseDecimalNumber(event.guestCount || 0),
     venue: normalizeText(event.venue || ""),
     serviceType: normalizeText(event.serviceType || ""),
+    eventMoments: normalizeText(event.eventMoments || ""),
+    selectedMenu: normalizeText(event.selectedMenu || ""),
+    includesDrinks: normalizeText(event.includesDrinks || ""),
+    drinkType: normalizeText(event.drinkType || ""),
+    tableware: normalizeText(event.tableware || ""),
+    staff: normalizeText(event.staff || ""),
+    schedule: normalizeText(event.schedule || ""),
+    budgetRange: normalizeText(event.budgetRange || ""),
+    priceMode,
+    pricePerPerson,
+    servicePriceTotal,
     status: normalizeErpEventStatus(event.status || "lead"),
     owner: normalizeText(event.owner || event.assignedTo || ""),
     role: normalizeText(event.role || ""),
@@ -2337,14 +2659,15 @@ function normalizeErpEvent(event = {}) {
     staffStatus: normalizeText(event.staffStatus || ""),
     logisticsStatus: normalizeText(event.logisticsStatus || ""),
     checklist: normalizeOperationalChecklist(event.checklist || event),
+    checklistDetails: normalizeText(event.checklistDetails || ""),
     notes: normalizeText(event.notes || ""),
-    quoteTotal: quote ? Number(quote.priceTotal || 0) : 0,
+    quoteTotal: roundMoney(quoteTotal),
     quoteCostTotal: roundMoney(quoteCostTotal),
     quoteMarginPercent: quote ? Number(quote.marginPercent || 0) : 0,
     purchaseTotal: roundMoney(purchaseTotal),
     finalCostTotal: roundMoney(finalCostTotal),
     operationalMargin: roundMoney(finalMargin),
-    operationalMarginPercent: quote && Number(quote.priceTotal || 0) > 0 ? roundMoney((finalMargin / Number(quote.priceTotal || 0)) * 100) : 0,
+    operationalMarginPercent: quoteTotal > 0 ? roundMoney((finalMargin / quoteTotal) * 100) : 0,
     purchases: purchases.map((purchase) => ({
       id: purchase.id,
       date: purchase.date,
@@ -2359,13 +2682,14 @@ function normalizeErpEvent(event = {}) {
 }
 
 function normalizeOperationalChecklist(input = {}) {
+  const checklist = input.checklist && typeof input.checklist === "object" ? input.checklist : input;
   return {
-    purchases: parseBooleanLike(input.purchases ?? input.checklistPurchases),
-    production: parseBooleanLike(input.production ?? input.checklistProduction),
-    staff: parseBooleanLike(input.staff ?? input.checklistStaff),
-    logistics: parseBooleanLike(input.logistics ?? input.checklistLogistics),
-    menu: parseBooleanLike(input.menu ?? input.checklistMenu),
-    payments: parseBooleanLike(input.payments ?? input.checklistPayments),
+    purchases: parseBooleanLike(checklist.purchases ?? input.purchases ?? input.checklistPurchases),
+    production: parseBooleanLike(checklist.production ?? input.production ?? input.checklistProduction),
+    staff: parseBooleanLike(checklist.staff ?? input.staff ?? input.checklistStaff),
+    logistics: parseBooleanLike(checklist.logistics ?? input.logistics ?? input.checklistLogistics),
+    menu: parseBooleanLike(checklist.menu ?? input.menu ?? input.checklistMenu),
+    payments: parseBooleanLike(checklist.payments ?? input.payments ?? input.checklistPayments),
   };
 }
 
@@ -2392,6 +2716,10 @@ function saveErpEventRecord(input) {
     updatedAt: now,
   });
 
+  if (event.status === "done" && event.eventDate && event.eventDate > new Date().toISOString().slice(0, 10)) {
+    throw new Error("No se puede marcar como realizado un evento con fecha futura.");
+  }
+
   if (existingIndex >= 0) {
     erpEvents[existingIndex] = event;
   } else {
@@ -2408,6 +2736,9 @@ function saveErpEventRecord(input) {
   }
 
   ensurePurchaseOptionExists("event", event.name);
+  if (event.venue) {
+    saveVenueOption({ name: event.venue });
+  }
   saveErpEvents();
   return event;
 }
@@ -2473,6 +2804,11 @@ function saveErpQuoteRecord(input) {
   const existingIndex = erpQuotes.findIndex((quote) => quote.id === input.id);
   const previous = existingIndex >= 0 ? erpQuotes[existingIndex] : {};
   const event = erpEvents.find((item) => item.id === input.eventId);
+
+  if (!input.eventId || !event) {
+    throw new Error("Seleccione el evento al que corresponde el presupuesto.");
+  }
+
   const calculated = calculateErpQuote(input);
   const version = input.version || previous.version || getNextQuoteVersion(input.eventId);
   const quote = normalizeErpQuote({
@@ -2499,6 +2835,10 @@ function saveErpQuoteRecord(input) {
       event.updatedAt = now;
       if (quote.status === "accepted") {
         event.status = "confirmed";
+      } else if (["sent", "negotiation"].includes(quote.status) && !["confirmed", "production", "done"].includes(event.status)) {
+        event.status = "quoted";
+      } else if (event.status === "lead") {
+        event.status = "quoted";
       }
       saveErpEvents();
     }

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "lugar-salon-patricias",
+    "name": "SALON PATRICIAS",
+    "address": "",
+    "phone": "",
+    "contactName": "",
+    "email": "",
+    "reference": "",
+    "notes": "",
+    "latitude": 0,
+    "longitude": 0,
+    "mapLabel": "",
+    "mapProvider": "",
+    "mapPlaceId": "",
+    "createdAt": "2026-06-09T14:47:09.593Z",
+    "updatedAt": "2026-06-09T15:45:47.745Z"
+  },
+  {
+    "id": "lugar-ecoparque",
+    "name": "ECOPARQUE",
+    "address": "",
+    "phone": "",
+    "contactName": "",
+    "email": "",
+    "reference": "",
+    "notes": "",
+    "latitude": 0,
+    "longitude": 0,
+    "mapLabel": "",
+    "mapProvider": "",
+    "mapPlaceId": "",
+    "createdAt": "2026-06-09T14:47:09.593Z",
+    "updatedAt": "2026-06-09T14:50:11.940Z"
+  },
+  {
+    "id": "lugar-hiper-changomas",
+    "name": "Hiper ChangoMás",
+    "address": "Hiper ChangoMás, 1023, Juan Francisco Cobos, Barrio Oficiales de la Policía, Distrito Dorrego, Departamento Guaymallén, Mendoza, 5519, Argentina",
+    "phone": "",
+    "contactName": "",
+    "email": "",
+    "reference": "",
+    "notes": "",
+    "latitude": -32.916376,
+    "longitude": -68.825859,
+    "mapLabel": "Hiper ChangoMás, 1023, Juan Francisco Cobos, Barrio Oficiales de la Policía, Distrito Dorrego, Departamento Guaymallén, Mendoza, 5519, Argentina",
+    "mapProvider": "OpenStreetMap",
+    "mapPlaceId": "1428911",
+    "createdAt": "2026-06-09T17:12:35.198Z",
+    "updatedAt": "2026-06-09T17:13:11.891Z"
+  }
+]

@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Panel de presupuestos</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     :root {
       --bg: #eef1f4;
@@ -160,11 +161,25 @@
       color: #fff;
     }
 
-    .filter-select,
-    select {
+    input,
+    select,
+    textarea,
+    .search,
+    .filter-select {
       appearance: none;
       -webkit-appearance: none;
-      background: var(--surface-soft);
+      background-color: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+      min-height: 36px;
+      padding: 0 12px;
+      width: 100%;
+    }
+
+    select,
+    .filter-select {
       background-image:
         linear-gradient(45deg, transparent 50%, var(--muted) 50%),
         linear-gradient(135deg, var(--muted) 50%, transparent 50%);
@@ -173,12 +188,7 @@
         calc(100% - 11px) 50%;
       background-repeat: no-repeat;
       background-size: 5px 5px, 5px 5px;
-      border: 1px solid var(--line);
-      border-radius: 5px;
-      color: var(--text);
-      font-size: 14px;
-      min-height: 36px;
-      padding: 0 34px 0 10px;
+      padding-right: 34px;
     }
 
     select:focus,
@@ -226,15 +236,33 @@
       padding-left: 30px;
     }
 
+    input::placeholder,
+    textarea::placeholder {
+      color: #8a94a3;
+    }
+
+    textarea {
+      min-height: 90px;
+      padding-top: 10px;
+      resize: vertical;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+      appearance: auto;
+      -webkit-appearance: auto;
+      background: initial;
+      min-height: 0;
+      padding: 0;
+      width: auto;
+    }
+
+    input[type="file"] {
+      padding: 6px 10px;
+    }
+
     .search {
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      border-radius: 5px;
-      color: var(--text);
-      font-size: 14px;
-      min-height: 36px;
       min-width: 260px;
-      padding: 0 10px;
     }
 
     .toolbar-actions {
@@ -1371,7 +1399,7 @@
     .event-finance {
       display: grid;
       gap: 8px;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       margin-top: 12px;
     }
 
@@ -1539,18 +1567,19 @@
     .pipeline {
       display: grid;
       gap: 10px;
-      grid-auto-columns: 132px;
+      grid-auto-columns: 190px;
       grid-auto-flow: column;
       grid-template-columns: none;
       overflow-x: auto;
       padding-bottom: 6px;
+      scrollbar-width: thin;
     }
 
     .pipeline-column {
       background: var(--surface-soft);
       border: 1px solid var(--line);
       border-radius: 8px;
-      min-height: 132px;
+      min-height: 260px;
       padding: 10px;
     }
 
@@ -1569,15 +1598,150 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       margin-bottom: 8px;
-      padding: 8px;
+      padding: 10px;
     }
 
     .pipeline-card .primary {
-      font-size: 12px;
+      font-size: 13px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
     }
 
     .pipeline-card .secondary {
-      font-size: 11px;
+      font-size: 12px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .venue-list {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .venue-card {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      padding: 12px;
+    }
+
+    .venue-card:hover {
+      background: #fff;
+      border-color: #b6c7d6;
+    }
+
+    .venue-title {
+      font-size: 14px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .venue-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .venue-map {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      height: 300px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .map-results {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 0;
+      max-height: 220px;
+      overflow: auto;
+      overflow-x: hidden;
+    }
+
+    .map-result {
+      background: var(--surface-soft);
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--text);
+      cursor: pointer;
+      display: block;
+      font-family: inherit;
+      line-height: 1.35;
+      min-height: auto;
+      padding: 12px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .map-result strong,
+    .map-result .secondary {
+      display: block;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .map-result:last-child {
+      border-bottom: 0;
+    }
+
+    .map-result:hover {
+      background: #fff;
+    }
+
+    .map-fallback {
+      align-content: center;
+      background-color: var(--surface-soft);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      display: grid;
+      gap: 10px;
+      height: 100%;
+      justify-items: center;
+      padding: 18px;
+      position: relative;
+      text-align: center;
+    }
+
+    .map-pin {
+      align-items: center;
+      background: var(--danger);
+      border: 3px solid #fff;
+      border-radius: 50% 50% 50% 0;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, .28);
+      display: grid;
+      height: 28px;
+      justify-items: center;
+      left: 50%;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -100%) rotate(-45deg);
+      width: 28px;
+    }
+
+    .map-pin::after {
+      background: #fff;
+      border-radius: 50%;
+      content: "";
+      height: 8px;
+      width: 8px;
+    }
+
+    .map-fallback-panel {
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      max-width: min(360px, 92%);
+      padding: 12px;
+      position: relative;
+      z-index: 1;
     }
 
     .checklist {
@@ -1601,6 +1765,42 @@
       height: 16px;
       margin: 0;
       width: 16px;
+    }
+
+    .inline-action-field {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .quick-form {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-top: 12px;
+      padding: 12px;
+    }
+
+    .option-checks {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .option-checks.single {
+      grid-template-columns: 1fr;
+    }
+
+    .customer-history-card {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-top: 10px;
+      padding: 12px;
+    }
+
+    .detail-panel .event-purchase-row {
+      grid-template-columns: 84px minmax(90px, 1fr) minmax(120px, 1.4fr) 100px 86px;
     }
 
     .global-results {
@@ -1655,7 +1855,8 @@
       .recipe-detail-summary,
       .recipe-card-stats,
       .provider-card-head,
-      .provider-stats {
+      .provider-stats,
+      .venue-list {
         grid-template-columns: 1fr;
       }
 
@@ -1730,19 +1931,17 @@
             </div>
             <div class="control-combo" style="margin-bottom:12px;">
               <input id="global-search" class="search" placeholder="Buscar cliente, evento, proveedor, producto o receta">
-              <span class="icon-select">
-                <select id="role-filter">
-                  <option value="">Todos los roles</option>
-                  <option>Comercial</option>
-                  <option>Cocina</option>
-                  <option>Compras</option>
-                  <option>Administracion</option>
-                </select>
-              </span>
+              <select id="role-filter">
+                <option value="">Todos los roles</option>
+                <option>Comercial</option>
+                <option>Cocina</option>
+                <option>Compras</option>
+                <option>Administracion</option>
+              </select>
             </div>
-            <div class="actions" style="margin-bottom:12px;">
-              <button class="approve" type="button" onclick="showErpEventForm()">Crear evento</button>
-              <button class="approve" type="button" onclick="showErpQuoteForm()">Presupuesto rentable</button>
+            <div class="actions" style="margin-bottom:12px;justify-content:flex-end;">
+              <button class="filter" type="button" onclick="showErpEventForm()">Crear evento</button>
+              <button class="filter" type="button" onclick="showErpQuoteForm()">Presupuesto rentable</button>
             </div>
             <div id="global-results" class="global-results"></div>
             <div id="erp-alerts"></div>
@@ -1762,6 +1961,17 @@
           <section class="erp-section">
             <h2>Pipeline comercial</h2>
             <div id="pipeline-board" class="pipeline"></div>
+          </section>
+
+          <section class="erp-section">
+            <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+              <h2>Lugares</h2>
+              <div class="inline-action-field" style="max-width:520px;">
+                <input id="venue-search" placeholder="Buscar lugar, direccion, referencia o telefono" oninput="renderVenueList()">
+                <button class="filter" type="button" onclick="showVenueForm()">Nuevo lugar</button>
+              </div>
+            </div>
+            <div id="venue-list" class="venue-list"></div>
           </section>
 
           <section class="erp-section">
@@ -1799,7 +2009,10 @@
               </div>
               <div class="form-field">
                 <label>Cliente</label>
-                <input name="clientName" list="erp-customer-options">
+                <div class="inline-action-field">
+                  <select name="clientName" id="erp-event-customer"></select>
+                  <button class="filter" type="button" onclick="showQuickCustomerForm()">Nuevo</button>
+                </div>
               </div>
               <div class="form-field">
                 <label>Fecha</label>
@@ -1808,6 +2021,21 @@
               <div class="form-field">
                 <label>Invitados</label>
                 <input name="guestCount" inputmode="decimal">
+              </div>
+              <div class="form-field">
+                <label>Precio</label>
+                <select name="priceMode">
+                  <option value="total">Total servicio</option>
+                  <option value="per_person">Por persona</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Valor por persona</label>
+                <input name="pricePerPerson" inputmode="decimal" placeholder="Si aplica">
+              </div>
+              <div class="form-field">
+                <label>Total servicio</label>
+                <input name="servicePriceTotal" inputmode="decimal" placeholder="Si aplica">
               </div>
               <div class="form-field">
                 <label>Estado</label>
@@ -1836,11 +2064,59 @@
               </div>
               <div class="form-field">
                 <label>Lugar</label>
-                <input name="venue">
+                <div class="inline-action-field">
+                  <select name="venue" id="erp-event-venue"></select>
+                  <button class="filter" type="button" onclick="showQuickVenueForm()">Nuevo</button>
+                </div>
               </div>
               <div class="form-field full">
                 <label>Servicio</label>
-                <input name="serviceType">
+                <div id="service-options" class="option-checks"></div>
+                <div class="inline-action-field" style="margin-top:8px;">
+                  <input id="new-service-option" placeholder="Agregar servicio">
+                  <button class="filter" type="button" onclick="addOperationalOptionFromPanel('service', 'new-service-option')">Agregar</button>
+                </div>
+              </div>
+              <div class="form-field full">
+                <label>Momentos del evento</label>
+                <div id="moment-options" class="option-checks"></div>
+                <div class="inline-action-field" style="margin-top:8px;">
+                  <input id="new-moment-option" placeholder="Agregar momento">
+                  <button class="filter" type="button" onclick="addOperationalOptionFromPanel('moment', 'new-moment-option')">Agregar</button>
+                </div>
+              </div>
+              <div class="form-field full">
+                <label>Menu completo</label>
+                <textarea name="selectedMenu" placeholder="Detalle de entradas, principales, postres, estaciones o coffee"></textarea>
+              </div>
+              <div class="form-field">
+                <label>Incluye bebidas</label>
+                <select name="includesDrinks">
+                  <option value="">A definir</option>
+                  <option>Con bebidas</option>
+                  <option>Sin bebidas</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Detalle bebidas</label>
+                <div id="drink-options" class="option-checks single"></div>
+                <div class="inline-action-field" style="margin-top:8px;">
+                  <input id="new-drink-option" list="drink-option-suggestions" placeholder="Agregar bebida">
+                  <button class="filter" type="button" onclick="addOperationalOptionFromPanel('drink', 'new-drink-option')">Agregar</button>
+                </div>
+                <datalist id="drink-option-suggestions"></datalist>
+              </div>
+              <div class="form-field">
+                <label>Vajilla</label>
+                <input name="tableware" placeholder="Cristaleria, manteleria, descartables">
+              </div>
+              <div class="form-field">
+                <label>Personal</label>
+                <input name="staff" placeholder="Mozos, barra, cocina, coordinador">
+              </div>
+              <div class="form-field full">
+                <label>Horarios / cronograma</label>
+                <input name="schedule" placeholder="Armado, servicio, desmontaje">
               </div>
               <div class="form-field full">
                 <label>Proxima accion</label>
@@ -1856,6 +2132,10 @@
                   <label class="check-item"><input type="checkbox" name="checklistMenu"> Menu</label>
                   <label class="check-item"><input type="checkbox" name="checklistPayments"> Pagos</label>
                 </div>
+              </div>
+              <div class="form-field full">
+                <label>Detalle checklist</label>
+                <textarea name="checklistDetails" placeholder="Compras: ...&#10;Produccion: ...&#10;Personal: ...&#10;Logistica: ...&#10;Menu: ...&#10;Pagos: ..."></textarea>
               </div>
               <div class="form-field full">
                 <label>Notas</label>
@@ -1960,6 +2240,7 @@
         </div>
       </div>
       <datalist id="erp-customer-options"></datalist>
+      <datalist id="erp-venue-options"></datalist>
     </section>
 
     <section id="view-commercial" class="workspace-view open">
@@ -2178,8 +2459,16 @@
               <label>Valor hora de personal</label>
               <input name="laborHourlyCost" inputmode="decimal" placeholder="$ por hora">
             </div>
+            <div class="form-field full">
+              <label>Insumos sugeridos por tipo de servicio</label>
+              <textarea name="supplyProfilesText" placeholder="coffee: Cafe, Te, Leche&#10;bebidas: Agua, Hielo, Vasos"></textarea>
+            </div>
+            <div class="form-field full">
+              <label>Listas operativas</label>
+              <textarea name="operationalOptionsText" placeholder="services: Coffee, Finger, Cena&#10;moments: Recepcion, Barra&#10;drinks: Agua, Gaseosas"></textarea>
+            </div>
             <div class="actions full">
-              <button class="filter" type="submit">Guardar valor hora</button>
+              <button class="filter" type="submit">Guardar configuracion</button>
             </div>
           </form>
         </section>
@@ -2884,6 +3173,7 @@
     </aside>
   </section>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     let allChats = [];
     let allCustomers = [];
@@ -2915,6 +3205,8 @@
     let recipeProcessCounter = 0;
     let budgetRecipeCounter = 0;
     let erpQuoteLineCounter = 0;
+    let venueMap = null;
+    let venueMarker = null;
 
     const rows = document.getElementById("rows");
     const search = document.getElementById("search");
@@ -3048,12 +3340,15 @@
       renderErpAlerts(dashboard.alerts || []);
       renderPurchaseDashboard();
       renderPipeline();
+      renderVenueList();
       renderProductAlerts();
       renderGlobalSearch();
       renderErpEvents();
       renderErpQuotes();
       renderErpQuoteEventOptions();
       renderErpCustomerOptions();
+      renderErpVenueOptions();
+      renderOperationalOptionInputs();
 
       if (!document.querySelector("#erp-quote-lines .erp-quote-line")) {
         resetErpQuoteForm();
@@ -3635,14 +3930,286 @@
             ${items.length ? items.map((item) => `
               <article class="pipeline-card">
                 <div class="primary">${escapeHtml(item.title)}</div>
-                <div class="secondary">${escapeHtml(item.subtitle || "")}</div>
-                <div class="secondary">${escapeHtml(item.nextAction || "Sin proxima accion")}</div>
-                <div class="secondary">${item.amount ? formatCurrency(item.amount) : ""} ${item.date ? `| ${escapeHtml(formatShortDate(item.date))}` : ""}</div>
+                <div class="secondary">${escapeHtml(item.subtitle || "Sin cliente")}</div>
+                <div class="secondary">${item.date ? escapeHtml(formatShortDate(item.date)) : "Sin fecha"} ${item.amount ? `· ${formatCurrency(item.amount)}` : ""}</div>
               </article>
             `).join("") : `<div class="empty">Sin items</div>`}
           </section>
         `;
       }).join("");
+    }
+
+    function renderVenueList() {
+      const container = document.getElementById("venue-list");
+      const term = normalizeSearch(document.getElementById("venue-search")?.value || "");
+      const venues = (erpData.venues || []).filter((venue) => {
+        const searchable = [venue.name, venue.address, venue.phone, venue.contactName, venue.reference, venue.notes].join(" ");
+        return !term || normalizeSearch(searchable).includes(term);
+      });
+
+      if (!venues.length) {
+        container.innerHTML = `<div class="empty">Todavia no hay lugares guardados.</div>`;
+        return;
+      }
+
+      container.innerHTML = venues.map((venue) => `
+        <article class="venue-card" onclick="showVenueForm('${escapeAttribute(venue.id)}')">
+          <div class="venue-title">${escapeHtml(venue.name || "Lugar sin nombre")}</div>
+          <div class="venue-meta">${escapeHtml(venue.address || venue.mapLabel || "Direccion pendiente")}</div>
+          <div class="venue-meta">${escapeHtml([venue.phone, venue.contactName].filter(Boolean).join(" · ") || "Contacto pendiente")}</div>
+        </article>
+      `).join("");
+    }
+
+    function showVenueForm(id = "", options = {}) {
+      const venue = (erpData.venues || []).find((item) => item.id === id) || { name: options.name || "" };
+      document.getElementById("detail-title").textContent = venue.id ? "Ficha de lugar" : "Nuevo lugar";
+      document.getElementById("detail-subtitle").textContent = "Busque en el mapa o complete los datos manualmente.";
+      document.getElementById("detail-fields").innerHTML = `
+        <form id="venue-form" class="form-grid quick-form" onsubmit="saveVenueForm(event)">
+          <input type="hidden" name="id" value="${escapeAttribute(venue.id || "")}">
+          <input type="hidden" name="latitude" value="${escapeAttribute(venue.latitude ?? "")}">
+          <input type="hidden" name="longitude" value="${escapeAttribute(venue.longitude ?? "")}">
+          <input type="hidden" name="mapLabel" value="${escapeAttribute(venue.mapLabel || "")}">
+          <input type="hidden" name="mapProvider" value="${escapeAttribute(venue.mapProvider || "")}">
+          <input type="hidden" name="mapPlaceId" value="${escapeAttribute(venue.mapPlaceId || "")}">
+          <div class="form-field full">
+            <label>Buscar en mapa</label>
+            <div class="inline-action-field">
+              <input id="venue-map-search" placeholder="Buscar por nombre o direccion" value="${escapeAttribute(venue.mapLabel || venue.address || venue.name || "")}">
+              <button class="filter" type="button" onclick="searchVenueMap()">Buscar</button>
+            </div>
+          </div>
+          <div id="venue-map-results" class="form-field full"></div>
+          <div class="form-field full">
+            <div id="venue-map" class="venue-map"></div>
+          </div>
+          <div class="form-field">
+            <label>Nombre del lugar</label>
+            <input name="name" required value="${escapeAttribute(venue.name || "")}">
+          </div>
+          <div class="form-field">
+            <label>Telefono</label>
+            <input name="phone" value="${escapeAttribute(venue.phone || "")}">
+          </div>
+          <div class="form-field full">
+            <label>Direccion</label>
+            <input name="address" value="${escapeAttribute(venue.address || "")}">
+          </div>
+          <div class="form-field">
+            <label>Contacto</label>
+            <input name="contactName" value="${escapeAttribute(venue.contactName || "")}">
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <input name="email" type="email" value="${escapeAttribute(venue.email || "")}">
+          </div>
+          <div class="form-field full">
+            <label>Referencias</label>
+            <input name="reference" placeholder="Ingreso, estacionamiento, salon, seguridad" value="${escapeAttribute(venue.reference || "")}">
+          </div>
+          <div class="form-field full">
+            <label>Notas</label>
+            <textarea name="notes">${escapeHtml(venue.notes || "")}</textarea>
+          </div>
+          <div class="actions full">
+            <button class="approve" type="submit">Guardar lugar</button>
+            ${venue.id ? `<button class="reject" type="button" onclick="deleteVenue('${escapeAttribute(venue.id)}')">Eliminar</button>` : ""}
+          </div>
+        </form>
+      `;
+      document.getElementById("detail").classList.add("open");
+      setTimeout(() => initVenueMap(venue), 80);
+    }
+
+    function initVenueMap(venue = {}) {
+      const lat = Number(venue.latitude ?? -32.8895);
+      const lng = Number(venue.longitude ?? -68.8458);
+
+      if (!window.L) {
+        renderVenueMapFallback(lat, lng);
+        setVenueMapPosition(lat, lng);
+        return;
+      }
+
+      const zoom = venue.latitude && venue.longitude ? 15 : 12;
+
+      if (venueMap) {
+        venueMap.remove();
+        venueMap = null;
+        venueMarker = null;
+      }
+
+      venueMap = L.map("venue-map").setView([lat, lng], zoom);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap",
+      }).addTo(venueMap);
+
+      venueMarker = L.marker([lat, lng], { draggable: true }).addTo(venueMap);
+      venueMarker.on("dragend", () => {
+        const position = venueMarker.getLatLng();
+        setVenueMapPosition(position.lat, position.lng);
+      });
+      venueMap.on("click", (event) => {
+        venueMarker.setLatLng(event.latlng);
+        setVenueMapPosition(event.latlng.lat, event.latlng.lng);
+      });
+
+      setVenueMapPosition(lat, lng);
+      setTimeout(() => venueMap.invalidateSize(), 150);
+    }
+
+    function renderVenueMapFallback(latitude, longitude) {
+      const tile = getOpenStreetMapTile(latitude, longitude, 15);
+      const tileUrl = tile ? `https://tile.openstreetmap.org/${tile.z}/${tile.x}/${tile.y}.png` : "";
+      document.getElementById("venue-map").innerHTML = `
+        <div class="map-fallback" style="${tileUrl ? `background-image:url('${tileUrl}')` : ""}">
+          <div class="map-pin" aria-hidden="true"></div>
+          <div class="map-fallback-panel">
+            <strong>Ubicacion seleccionada</strong>
+            <div class="secondary">Lat ${Number(latitude).toFixed(6)} · Lng ${Number(longitude).toFixed(6)}</div>
+            <div class="actions" style="justify-content:center;margin-top:8px;">
+              <a class="filter" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${latitude},${longitude}`)}" target="_blank" rel="noopener">Google Maps</a>
+              <a class="filter" href="https://www.openstreetmap.org/?mlat=${encodeURIComponent(latitude)}&mlon=${encodeURIComponent(longitude)}#map=17/${encodeURIComponent(latitude)}/${encodeURIComponent(longitude)}" target="_blank" rel="noopener">OpenStreetMap</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOpenStreetMapTile(latitude, longitude, zoom) {
+      const lat = Number(latitude);
+      const lon = Number(longitude);
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+      const z = Number(zoom || 15);
+      const scale = 2 ** z;
+      const x = Math.floor(((lon + 180) / 360) * scale);
+      const latRad = lat * Math.PI / 180;
+      const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * scale);
+      return { x, y, z };
+    }
+
+    function setVenueMapPosition(latitude, longitude) {
+      const form = document.getElementById("venue-form");
+      if (!form) return;
+      form.elements.latitude.value = Number(latitude).toFixed(6);
+      form.elements.longitude.value = Number(longitude).toFixed(6);
+    }
+
+    async function searchVenueMap() {
+      const query = document.getElementById("venue-map-search").value.trim();
+      const resultsContainer = document.getElementById("venue-map-results");
+      if (!query) {
+        resultsContainer.innerHTML = `<div class="empty">Ingrese un lugar o direccion para buscar.</div>`;
+        return;
+      }
+
+      resultsContainer.innerHTML = `<div class="empty">Buscando...</div>`;
+      try {
+        const response = await fetch(`/api/map-search?q=${encodeURIComponent(query)}`);
+        const result = await readJsonResponse(response);
+        if (!result.ok) throw new Error(result.error || "No se pudo consultar el mapa.");
+        const results = result.results || [];
+        if (!results.length) {
+          resultsContainer.innerHTML = `<div class="empty">Sin resultados. Puede completar los datos manualmente.</div>`;
+          return;
+        }
+
+        resultsContainer.innerHTML = `
+          <div class="map-results">
+            ${results.map((item, index) => `
+              <button class="map-result" type="button" onclick="selectVenueMapResult(${index})">
+                <strong>${escapeHtml(item.name || item.display_name?.split(",")[0] || "Resultado")}</strong>
+                <div class="secondary">${escapeHtml(item.display_name || "")}</div>
+              </button>
+            `).join("")}
+          </div>
+        `;
+        resultsContainer.dataset.results = JSON.stringify(results);
+      } catch (error) {
+        resultsContainer.innerHTML = `<div class="empty">No se pudo consultar el mapa ahora. Complete la direccion manualmente o pruebe de nuevo.</div>`;
+      }
+    }
+
+    function selectVenueMapResult(index) {
+      const container = document.getElementById("venue-map-results");
+      const results = JSON.parse(container.dataset.results || "[]");
+      const item = results[index];
+      if (!item) return;
+
+      const form = document.getElementById("venue-form");
+      const lat = Number(item.lat);
+      const lng = Number(item.lon);
+      const displayName = item.display_name || "";
+      const name = item.name || displayName.split(",")[0] || form.elements.name.value;
+
+      form.elements.name.value = form.elements.name.value || name;
+      form.elements.address.value = displayName;
+      form.elements.mapLabel.value = displayName;
+      form.elements.mapProvider.value = "OpenStreetMap";
+      form.elements.mapPlaceId.value = item.place_id || "";
+      setVenueMapPosition(lat, lng);
+      container.innerHTML = `
+        <div class="map-results" style="max-height:none;">
+          <div class="map-result">
+            <strong>Seleccionado: ${escapeHtml(name)}</strong>
+            <div class="secondary">${escapeHtml(displayName)}</div>
+          </div>
+        </div>
+      `;
+
+      if (venueMap && venueMarker) {
+        venueMap.setView([lat, lng], 16);
+        venueMarker.setLatLng([lat, lng]);
+      } else {
+        renderVenueMapFallback(lat, lng);
+      }
+    }
+
+    async function saveVenueForm(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+
+      const response = await fetch("/api/venue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el lugar.", "error");
+        return;
+      }
+
+      erpData.venues = result.venues || erpData.venues || [];
+      renderVenueList();
+      renderErpVenueOptions();
+      const eventForm = document.getElementById("erp-event-form");
+      if (eventForm && payload.name) eventForm.elements.venue.value = result.venue.name || payload.name;
+      hideDetail();
+      showNotice("Lugar guardado.");
+    }
+
+    async function deleteVenue(id) {
+      if (!confirm("Desea eliminar este lugar?")) return;
+      const response = await fetch("/api/delete-venue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo eliminar el lugar.", "error");
+        return;
+      }
+
+      erpData.venues = result.venues || erpData.venues || [];
+      renderVenueList();
+      renderErpVenueOptions();
+      hideDetail();
+      showNotice("Lugar eliminado.");
     }
 
     function renderConfirmedEvents() {
@@ -3798,6 +4365,7 @@
           </div>
           <div class="event-finance">
             <div class="event-number highlight"><span>Venta</span><strong>${formatCurrency(event.quoteTotal || 0)}</strong></div>
+            <div class="event-number"><span>Modalidad</span><strong>${escapeHtml(getEventPriceLabel(event))}</strong></div>
             <div class="event-number"><span>Costo presupuesto</span><strong>${formatCurrency(event.quoteCostTotal || 0)}</strong></div>
             <div class="event-number"><span>Compras reales</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
             <div class="event-number warn"><span>Costo final</span><strong>${formatCurrency(event.finalCostTotal || 0)}</strong></div>
@@ -3847,15 +4415,21 @@
           <div class="event-detail-item"><span>Responsable</span><strong>${escapeHtml(event.owner || "Sin responsable")}</strong></div>
           <div class="event-detail-item"><span>Lugar</span><strong>${escapeHtml(event.venue || "Sin lugar")}</strong></div>
           <div class="event-detail-item"><span>Servicio</span><strong>${escapeHtml(event.serviceType || "Sin servicio")}</strong></div>
+          <div class="event-detail-item"><span>Menu</span><strong>${escapeHtml(event.selectedMenu || "Sin menu")}</strong></div>
+          <div class="event-detail-item"><span>Bebidas</span><strong>${escapeHtml([event.includesDrinks, event.drinkType].filter(Boolean).join(" · ") || "Sin definir")}</strong></div>
           <div class="event-detail-item"><span>Rol operativo</span><strong>${escapeHtml(event.role || "Sin definir")}</strong></div>
           <div class="event-detail-item"><span>Proxima accion</span><strong>${escapeHtml(event.nextAction || "Sin definir")}</strong></div>
         </div>
         <div class="event-finance">
           <div class="event-number highlight"><span>Venta</span><strong>${formatCurrency(event.quoteTotal || 0)}</strong></div>
+          <div class="event-number"><span>Modalidad</span><strong>${escapeHtml(getEventPriceLabel(event))}</strong></div>
           <div class="event-number"><span>Costo presupuesto</span><strong>${formatCurrency(event.quoteCostTotal || 0)}</strong></div>
           <div class="event-number"><span>Compras reales</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
           <div class="event-number warn"><span>Costo final</span><strong>${formatCurrency(event.finalCostTotal || 0)}</strong></div>
           <div class="event-number highlight"><span>Margen final</span><strong>${formatCurrency(event.operationalMargin || 0)} (${formatPercent(event.operationalMarginPercent || 0)})</strong></div>
+        </div>
+        <div class="event-finance" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+          <div class="event-number"><span>Momentos</span><strong>${escapeHtml(event.eventMoments || "Sin definir")}</strong></div>
         </div>
         ${renderEventPurchases(event)}
         <div class="event-checks">
@@ -3869,7 +4443,8 @@
         ${event.notes ? `<div class="event-detail-item" style="margin-top:12px;"><span>Notas</span>${escapeHtml(event.notes)}</div>` : ""}
         <div class="actions" style="margin-top:12px;">
           <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}'); hideDetail();">Editar</button>
-          <button class="approve" onclick="startErpQuoteForEvent('${escapeAttribute(event.id)}'); hideDetail();">Presupuestar</button>
+          <button class="filter" onclick="showOperationalSheet('${escapeAttribute(event.id)}')">Ficha operativa</button>
+          ${event.status !== "done" ? `<button class="approve" onclick="startErpQuoteForEvent('${escapeAttribute(event.id)}'); hideDetail();">Presupuestar</button>` : ""}
           ${event.status !== "done" ? `<button class="filter" onclick="markErpEventDone('${escapeAttribute(event.id)}'); hideDetail();">Realizado</button>` : ""}
         </div>
       `;
@@ -3908,16 +4483,179 @@
       return `<span class="event-check ${done ? "done" : ""}">${done ? "OK" : "Pendiente"} · ${escapeHtml(label)}</span>`;
     }
 
+    function getEventPriceLabel(event) {
+      if (event.priceMode === "per_person") {
+        return `${formatCurrency(event.pricePerPerson || 0)} x persona`;
+      }
+      return `${formatCurrency(event.servicePriceTotal || event.quoteTotal || 0)} total`;
+    }
+
+    function getEventSuggestedSupplies(event) {
+      const text = normalizeSearch([
+        event.serviceType,
+        event.selectedMenu,
+        event.eventMoments,
+        event.drinkType,
+        event.includesDrinks,
+      ].join(" "));
+      const suggestions = new Set();
+      const add = (items) => items.forEach((item) => suggestions.add(item));
+      const profiles = getSupplyProfiles();
+      const profileAliases = {
+        coffee: ["coffee", "desayuno", "merienda"],
+        finger: ["finger", "cocktail", "recepcion", "mini"],
+        asado: ["asado", "parrilla"],
+        bebidas: ["bebida", "bebidas", "barra", "vino", "gaseosa", "detox"],
+        postre: ["postre", "dulce"],
+        agape: ["agape", "agape"],
+        cocktail: ["cocktail", "coctel"],
+        coctel: ["coctel", "cocktail"],
+        cena: ["cena"],
+        almuerzo: ["almuerzo"],
+        brunch: ["brunch"],
+      };
+
+      Object.entries(profiles).forEach(([profile, items]) => {
+        const aliases = profileAliases[profile] || [profile];
+        if (aliases.some((alias) => text.includes(normalizeSearch(alias))) || (profile === "bebidas" && event.includesDrinks === "Con bebidas")) {
+          add(items);
+        }
+      });
+
+      (allRecipes || []).forEach((recipe) => {
+        const recipeKey = normalizeSearch(recipe.name || "");
+        if (recipeKey && text.includes(recipeKey)) {
+          (recipe.items || []).forEach((item) => {
+            if (item.name) suggestions.add(item.name);
+          });
+        }
+      });
+
+      return Array.from(suggestions).slice(0, 40);
+    }
+
+    function getSupplyProfiles() {
+      return costSettings.supplyProfiles || {
+        coffee: ["Cafe", "Te", "Leche", "Azucar", "Edulcorante", "Vasos termicos", "Servilletas", "Medialunas", "Jugo"],
+        finger: ["Bandejas", "Servilletas cocktail", "Pinchos", "Salsas", "Panificados", "Descartables de apoyo"],
+        asado: ["Carne", "Chorizo", "Morcilla", "Carbon/lenia", "Ensaladas", "Pan", "Chimichurri"],
+        bebidas: ["Agua", "Gaseosas", "Hielo", "Vasos", "Conservadoras", "Vinos/espumantes segun propuesta"],
+        postre: ["Cucharas", "Platos de postre", "Bases dulces", "Fruta/decoracion", "Contenedores refrigerados"],
+      };
+    }
+
+    function supplyProfilesToText(profiles = getSupplyProfiles()) {
+      return Object.entries(profiles)
+        .map(([key, values]) => `${key}: ${(values || []).join(", ")}`)
+        .join("\n");
+    }
+
+    function operationalOptionsToText(options = getOperationalOptions()) {
+      return Object.entries(options)
+        .map(([key, values]) => `${key}: ${(values || []).join(", ")}`)
+        .join("\n");
+    }
+
+    function buildOperationalSheetText(event, selectedSupplies = null) {
+      const supplies = selectedSupplies || getEventSuggestedSupplies(event);
+      const purchases = event.purchases || [];
+      return [
+        `FICHA OPERATIVA - ${event.name || "Evento"}`,
+        "",
+        `Cliente: ${event.clientName || "Sin cliente"}`,
+        `Fecha: ${formatShortDate(event.eventDate) || "Sin fecha"}`,
+        `Invitados: ${event.guestCount || 0}`,
+        `Lugar: ${event.venue || "Sin lugar"}`,
+        `Servicio: ${event.serviceType || "Sin servicio"}`,
+        `Precio: ${getEventPriceLabel(event)} | Venta total: ${formatCurrency(event.quoteTotal || 0)}`,
+        "",
+        "MENU Y BEBIDAS",
+        `Momentos: ${event.eventMoments || "A definir"}`,
+        `Menu: ${event.selectedMenu || "A definir"}`,
+        `Bebidas: ${[event.includesDrinks, event.drinkType].filter(Boolean).join(" - ") || "A definir"}`,
+        "",
+        "OPERACION",
+        `Vajilla: ${event.tableware || "A definir"}`,
+        `Personal: ${event.staff || "A definir"}`,
+        `Horarios: ${event.schedule || "A definir"}`,
+        `Responsable: ${event.owner || "Sin responsable"}`,
+        "",
+        "CHECKLIST",
+        `Compras: ${event.checklist?.purchases ? "OK" : "Pendiente"}`,
+        `Produccion: ${event.checklist?.production ? "OK" : "Pendiente"}`,
+        `Personal: ${event.checklist?.staff ? "OK" : "Pendiente"}`,
+        `Logistica: ${event.checklist?.logistics ? "OK" : "Pendiente"}`,
+        `Menu: ${event.checklist?.menu ? "OK" : "Pendiente"}`,
+        `Pagos: ${event.checklist?.payments ? "OK" : "Pendiente"}`,
+        `Detalle: ${event.checklistDetails || "Sin detalle"}`,
+        "",
+        "INSUMOS SUGERIDOS",
+        supplies.length ? supplies.map((item) => `- ${item}`).join("\n") : "- Sin sugerencias todavia",
+        "",
+        "COMPRAS IMPUTADAS",
+        purchases.length ? purchases.map((purchase) => `- ${formatShortDate(purchase.date) || ""} | ${purchase.provider || ""} | ${purchase.description || ""} | ${formatCurrency(purchase.totalAmount || 0)} | ${purchase.paymentStatus || "Pendiente"}`).join("\n") : "- Sin compras imputadas",
+        "",
+        `Notas: ${event.notes || "Sin notas"}`,
+      ].join("\n");
+    }
+
+    function showOperationalSheet(id) {
+      const event = (erpData.events || []).find((item) => item.id === id);
+      if (!event) return;
+      const supplies = getEventSuggestedSupplies(event);
+      const sheetText = buildOperationalSheetText(event);
+      document.getElementById("alert-detail-title").textContent = `Ficha operativa`;
+      document.getElementById("alert-detail-subtitle").textContent = event.name || "";
+      document.getElementById("alert-detail-body").innerHTML = `
+        ${field("Venta", `${getEventPriceLabel(event)} · ${formatCurrency(event.quoteTotal || 0)}`)}
+        ${field("Menu completo", event.selectedMenu || "A definir")}
+        ${field("Bebidas", [event.includesDrinks, event.drinkType].filter(Boolean).join(" · ") || "A definir")}
+        ${field("Operacion", [event.tableware, event.staff, event.schedule].filter(Boolean).join(" · ") || "A definir")}
+        <div class="form-field full">
+          <label>Insumos sugeridos</label>
+          <div id="operational-supply-checks" class="checklist">
+            ${supplies.length ? supplies.map((item, index) => `
+              <label class="check-item"><input type="checkbox" value="${escapeAttribute(item)}" checked onchange="refreshOperationalSheetText('${escapeAttribute(event.id)}')"> ${escapeHtml(item)}</label>
+            `).join("") : `<div class="empty">Sin sugerencias todavia.</div>`}
+          </div>
+        </div>
+        <textarea id="operational-sheet-text" style="min-height:320px;">${escapeHtml(sheetText)}</textarea>
+        <div class="actions"><button class="approve" onclick="copyOperationalSheet()">Copiar ficha</button></div>
+      `;
+      document.getElementById("alert-detail").classList.add("open");
+    }
+
+    function getSelectedOperationalSupplies() {
+      return Array.from(document.querySelectorAll("#operational-supply-checks input[type='checkbox']:checked"))
+        .map((input) => input.value)
+        .filter(Boolean);
+    }
+
+    function refreshOperationalSheetText(eventId) {
+      const event = (erpData.events || []).find((item) => item.id === eventId);
+      if (!event) return;
+      document.getElementById("operational-sheet-text").value = buildOperationalSheetText(event, getSelectedOperationalSupplies());
+    }
+
+    async function copyOperationalSheet() {
+      const text = document.getElementById("operational-sheet-text").value;
+      await navigator.clipboard.writeText(text);
+      showNotice("Ficha operativa copiada.");
+    }
+
     function renderErpQuotes() {
       const container = document.getElementById("erp-quote-list");
       const quotes = erpData.quotes || [];
+      const eventById = new Map((erpData.events || []).map((event) => [event.id, event]));
+      const activeQuotes = quotes.filter((quote) => eventById.get(quote.eventId)?.status !== "done");
+      const archivedQuotes = quotes.filter((quote) => eventById.get(quote.eventId)?.status === "done");
 
       if (!quotes.length) {
         container.innerHTML = `<div class="empty">No hay presupuestos ERP guardados.</div>`;
         return;
       }
 
-      container.innerHTML = quotes.map((quote) => `
+      const renderQuoteCard = (quote) => `
         <article class="erp-card">
           <div class="erp-card-head">
             <div>
@@ -3936,12 +4674,22 @@
             <button class="reject" onclick="deleteErpQuote('${escapeAttribute(quote.id)}')">Eliminar</button>
           </div>
         </article>
-      `).join("");
+      `;
+
+      container.innerHTML = `
+        ${activeQuotes.length
+          ? activeQuotes.map(renderQuoteCard).join("")
+          : `<div class="empty">No hay presupuestos activos. Los de eventos realizados quedan archivados.</div>`}
+        <details class="event-history">
+          <summary>Presupuestos archivados (${archivedQuotes.length})</summary>
+          ${archivedQuotes.length ? archivedQuotes.map(renderQuoteCard).join("") : `<div class="empty">Sin presupuestos archivados.</div>`}
+        </details>
+      `;
     }
 
     function renderErpQuoteEventOptions(selectedId = "") {
       const select = document.getElementById("erp-quote-event");
-      const events = erpData.events || [];
+      const events = (erpData.events || []).filter((event) => event.status !== "done" || event.id === selectedId);
       select.innerHTML = [
         `<option value="">Seleccionar evento</option>`,
         ...events.map((event) => `<option value="${escapeAttribute(event.id)}" ${event.id === selectedId ? "selected" : ""}>${escapeHtml(event.name)}</option>`),
@@ -3952,15 +4700,165 @@
       document.getElementById("erp-customer-options").innerHTML = (allCustomers || [])
         .map((customer) => `<option value="${escapeAttribute(customer.fullName || customer.contactName || customer.displayPhone || "")}"></option>`)
         .join("");
+      const selected = document.getElementById("erp-event-customer").value;
+      document.getElementById("erp-event-customer").innerHTML = [
+        `<option value="">Seleccionar cliente</option>`,
+        ...(allCustomers || []).map((customer) => {
+          const value = customer.fullName || customer.contactName || customer.displayPhone || "";
+          return `<option value="${escapeAttribute(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(value)}</option>`;
+        }),
+      ].join("");
+    }
+
+    function renderErpVenueOptions() {
+      document.getElementById("erp-venue-options").innerHTML = (erpData.venues || [])
+        .map((venue) => `<option value="${escapeAttribute(venue.name || venue)}"></option>`)
+        .join("");
+      const selected = document.getElementById("erp-event-venue").value;
+      document.getElementById("erp-event-venue").innerHTML = [
+        `<option value="">Seleccionar lugar</option>`,
+        ...(erpData.venues || []).map((venue) => {
+          const value = venue.name || venue;
+          return `<option value="${escapeAttribute(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(value)}</option>`;
+        }),
+      ].join("");
+    }
+
+    function getOperationalOptions() {
+      return costSettings.operationalOptions || {
+        services: ["Coffee", "Finger", "Agape", "Cocktail", "Coctel", "Cena", "Almuerzo", "Asado", "Brunch"],
+        moments: ["Recepcion", "Coffee", "Comida", "Postre", "Barra", "Trasnoche", "Desayuno", "Merienda"],
+        drinks: ["Agua con gas", "Agua sin gas", "Gaseosas", "Detox", "Cafe", "Te", "Vinos", "Espumantes", "Barra"],
+      };
+    }
+
+    function renderOperationalOptionInputs(eventData = {}) {
+      const options = getOperationalOptions();
+      renderCheckGroup("service-options", "serviceType", options.services || [], eventData.serviceType || "");
+      renderCheckGroup("moment-options", "eventMoments", options.moments || [], eventData.eventMoments || "");
+      renderCheckGroup("drink-options", "drinkType", options.drinks || [], eventData.drinkType || "");
+      document.getElementById("drink-option-suggestions").innerHTML = (options.drinks || [])
+        .map((item) => `<option value="${escapeAttribute(item)}"></option>`)
+        .join("");
+    }
+
+    function renderCheckGroup(containerId, fieldName, options, selectedText) {
+      const selected = new Set(String(selectedText || "").split(",").map((item) => normalizeSearch(item)).filter(Boolean));
+      document.getElementById(containerId).innerHTML = (options || []).map((option) => {
+        const checked = selected.has(normalizeSearch(option));
+        return `<label class="check-item"><input type="checkbox" data-field="${escapeAttribute(fieldName)}" value="${escapeAttribute(option)}" ${checked ? "checked" : ""}> ${escapeHtml(option)}</label>`;
+      }).join("");
+    }
+
+    function getCheckedOptionText(fieldName) {
+      return Array.from(document.querySelectorAll(`input[data-field="${fieldName}"]:checked`))
+        .map((input) => input.value)
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    async function addOperationalOptionFromPanel(type, inputId) {
+      const input = document.getElementById(inputId);
+      const value = input.value.trim();
+      if (!value) return;
+      const response = await fetch("/api/operational-option", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, value }),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo agregar la opcion.", "error");
+        return;
+      }
+      costSettings = result.settings || costSettings;
+      input.value = "";
+      renderOperationalOptionInputs({
+        serviceType: getCheckedOptionText("serviceType"),
+        eventMoments: getCheckedOptionText("eventMoments"),
+        drinkType: getCheckedOptionText("drinkType"),
+      });
+      showNotice("Opcion agregada.");
+    }
+
+    function showQuickCustomerForm() {
+      const form = document.getElementById("erp-event-form");
+      const currentName = form.elements.clientName.value || "";
+      document.getElementById("detail-title").textContent = "Crear cliente";
+      document.getElementById("detail-subtitle").textContent = "Se asocia al evento que estas cargando.";
+      document.getElementById("detail-fields").innerHTML = `
+        <form class="form-grid quick-form" onsubmit="saveQuickCustomer(event)">
+          <div class="form-field full">
+            <label>Nombre</label>
+            <input name="fullName" required value="${escapeAttribute(currentName)}">
+          </div>
+          <div class="form-field">
+            <label>Telefono</label>
+            <input name="displayPhone">
+          </div>
+          <div class="form-field">
+            <label>Nombre de agenda</label>
+            <input name="contactName">
+          </div>
+          <div class="form-field full">
+            <label>Preferencias</label>
+            <textarea name="preferences"></textarea>
+          </div>
+          <div class="form-field full">
+            <label>Restricciones</label>
+            <textarea name="dietaryRestrictions"></textarea>
+          </div>
+          <div class="actions full">
+            <button class="approve" type="submit">Guardar cliente</button>
+          </div>
+        </form>
+      `;
+      document.getElementById("detail").classList.add("open");
+    }
+
+    async function saveQuickCustomer(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const response = await fetch("/api/customer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el cliente.", "error");
+        return;
+      }
+
+      const customerName = result.customer.fullName || payload.fullName || "";
+      document.getElementById("erp-event-form").elements.clientName.value = customerName;
+      allCustomers = [result.customer, ...allCustomers.filter((customer) => customer.id !== result.customer.id)];
+      renderErpCustomerOptions();
+      hideDetail();
+      showNotice("Cliente creado y asociado al evento.");
+    }
+
+    function showQuickVenueForm() {
+      const form = document.getElementById("erp-event-form");
+      const currentVenue = form.elements.venue.value || "";
+      showVenueForm("", { name: currentVenue });
     }
 
     async function saveErpEvent(event) {
       event.preventDefault();
       const payload = Object.fromEntries(new FormData(event.target).entries());
-      ["Purchases", "Production", "Staff", "Logistics", "Menu", "Payments"].forEach((name) => {
-        const field = `checklist${name}`;
-        payload[field] = event.target.elements[field].checked;
-      });
+      payload.checklist = {
+        purchases: event.target.elements.checklistPurchases.checked,
+        production: event.target.elements.checklistProduction.checked,
+        staff: event.target.elements.checklistStaff.checked,
+        logistics: event.target.elements.checklistLogistics.checked,
+        menu: event.target.elements.checklistMenu.checked,
+        payments: event.target.elements.checklistPayments.checked,
+      };
+      payload.serviceType = getCheckedOptionText("serviceType");
+      payload.eventMoments = getCheckedOptionText("eventMoments");
+      payload.drinkType = getCheckedOptionText("drinkType");
       const response = await fetch("/api/erp-event", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -3983,6 +4881,11 @@
     async function markErpEventDone(id) {
       const event = (erpData.events || []).find((item) => item.id === id);
       if (!event) return;
+      const today = new Date().toISOString().slice(0, 10);
+      if (event.eventDate && event.eventDate > today) {
+        showNotice("No se puede marcar como realizado un evento con fecha futura.", "error");
+        return;
+      }
 
       const response = await fetch("/api/erp-event", {
         method: "POST",
@@ -4005,8 +4908,9 @@
       if (!event) return;
       showErpEventForm();
       const form = document.getElementById("erp-event-form");
-      ["id", "name", "clientName", "eventDate", "guestCount", "status", "owner", "role", "venue", "serviceType", "nextAction", "notes"]
+      ["id", "name", "clientName", "eventDate", "guestCount", "priceMode", "pricePerPerson", "servicePriceTotal", "status", "owner", "role", "venue", "selectedMenu", "includesDrinks", "tableware", "staff", "schedule", "nextAction", "notes", "checklistDetails"]
         .forEach((field) => setFormValue(form, field, event[field] || ""));
+      renderOperationalOptionInputs(event);
       form.elements.checklistPurchases.checked = Boolean(event.checklist?.purchases);
       form.elements.checklistProduction.checked = Boolean(event.checklist?.production);
       form.elements.checklistStaff.checked = Boolean(event.checklist?.staff);
@@ -4018,6 +4922,8 @@
     function resetErpEventForm() {
       document.getElementById("erp-event-form").reset();
       document.getElementById("erp-event-form").elements.id.value = "";
+      document.getElementById("erp-event-form").elements.priceMode.value = "total";
+      renderOperationalOptionInputs();
     }
 
     async function deleteErpEvent(id) {
@@ -4131,6 +5037,10 @@
     async function saveErpQuote(event) {
       event.preventDefault();
       const payload = getErpQuotePayload();
+      if (!payload.eventId) {
+        showNotice("Seleccione el evento del presupuesto.", "error");
+        return;
+      }
       const response = await fetch("/api/erp-quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -4281,6 +5191,7 @@
           <div class="actions" style="margin-top:10px;">
             <button class="filter" onclick="editCustomer('${escapeAttribute(customer.id)}')">Editar</button>
             <button class="filter" onclick="showCustomerInsight('${escapeAttribute(customer.id)}')">Historial</button>
+            <button class="reject" onclick="deleteCustomer('${escapeAttribute(customer.id)}')">Eliminar</button>
           </div>
         </article>
       `).join("");
@@ -4294,13 +5205,43 @@
       document.getElementById("detail-fields").innerHTML = `
         ${field("Tasa de cierre", formatPercent(customer.closeRate || 0))}
         ${field("Venta aceptada", formatCurrency(customer.totalRevenue || 0))}
-        ${field("Eventos", (customer.events || []).map((event) => `${event.name} (${formatShortDate(event.eventDate)})`).join(", ") || "Sin eventos")}
-        ${field("Presupuestos", (customer.quotes || []).map((quote) => `${quote.version || ""} ${quote.eventName} ${formatCurrency(quote.priceTotal)} ${quote.status}`).join(", ") || "Sin presupuestos")}
+        <div class="form-field full"><label>Eventos</label>${renderCustomerHistoryCards(customer.events || [], "event")}</div>
+        <div class="form-field full"><label>Presupuestos</label>${renderCustomerHistoryCards(customer.quotes || [], "quote")}</div>
         ${field("Preferencias", customer.preferences || "Sin preferencias")}
         ${field("Restricciones", customer.dietaryRestrictions || "Sin restricciones")}
         ${field("Notas", customer.notes || "Sin notas")}
       `;
       document.getElementById("detail").classList.add("open");
+    }
+
+    function renderCustomerHistoryCards(items, type) {
+      if (!items.length) return `<div class="empty">Sin registros.</div>`;
+      return items.map((item) => `
+        <article class="customer-history-card">
+          <strong>${escapeHtml(type === "event" ? item.name : item.eventName || "Presupuesto")}</strong>
+          <div class="secondary">${escapeHtml(type === "event" ? formatShortDate(item.eventDate) || "Sin fecha" : `${item.version || ""} ${getErpQuoteStatusLabel(item.status)}`)}</div>
+          ${type === "quote" ? `<div class="secondary">${formatCurrency(item.priceTotal || 0)}</div>` : ""}
+        </article>
+      `).join("");
+    }
+
+    async function deleteCustomer(id) {
+      const customer = allCustomers.find((item) => item.id === id);
+      if (!confirm(`Desea eliminar el cliente ${customer?.fullName || ""}?`)) return;
+      const response = await fetch("/api/delete-customer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo eliminar el cliente.", "error");
+        return;
+      }
+      allCustomers = result.customers || allCustomers.filter((item) => item.id !== id);
+      renderCustomers();
+      renderErpCustomerOptions();
+      showNotice("Cliente eliminado.");
     }
 
     function editCustomer(id) {
@@ -4492,7 +5433,7 @@
       costSettings = result.settings || costSettings;
       await loadRecipes();
       hideRecipeForm();
-      showNotice("Valor hora actualizado en todas las recetas.");
+      showNotice("Configuracion operativa actualizada.");
     }
 
     function showCostSettingsForm() {
@@ -4500,6 +5441,8 @@
       document.getElementById("recipe-editor-subtitle").textContent = "Valores base usados para calcular costos de personal.";
       document.getElementById("cost-settings-card").classList.remove("hidden");
       document.getElementById("recipe-form-card").classList.add("hidden");
+      setFormValue(document.getElementById("cost-settings-form"), "supplyProfilesText", supplyProfilesToText());
+      setFormValue(document.getElementById("cost-settings-form"), "operationalOptionsText", operationalOptionsToText());
       document.getElementById("recipe-editor-modal").classList.add("open");
     }
 
@@ -4677,6 +5620,8 @@
       recipeProducts = result.products || [];
       costSettings = result.settings || { laborHourlyCost: 0 };
       setFormValue(document.getElementById("cost-settings-form"), "laborHourlyCost", costSettings.laborHourlyCost || "");
+      setFormValue(document.getElementById("cost-settings-form"), "supplyProfilesText", supplyProfilesToText(costSettings.supplyProfiles));
+      setFormValue(document.getElementById("cost-settings-form"), "operationalOptionsText", operationalOptionsToText(costSettings.operationalOptions));
       renderRecipes();
 
       if (!document.querySelector(".recipe-item")) {

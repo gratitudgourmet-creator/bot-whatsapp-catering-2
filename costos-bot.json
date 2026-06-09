@@ -1,4 +1,95 @@
-﻿{
-  "laborHourlyCost": 0
+{
+  "laborHourlyCost": 0,
+  "supplyProfiles": {
+    "coffee": [
+      "Cafe",
+      "Te",
+      "Leche",
+      "Azucar",
+      "Edulcorante",
+      "Vasos termicos",
+      "Servilletas",
+      "Medialunas",
+      "Jugo"
+    ],
+    "finger": [
+      "Bandejas",
+      "Servilletas cocktail",
+      "Pinchos",
+      "Salsas",
+      "Panificados",
+      "Descartables de apoyo"
+    ],
+    "asado": [
+      "Carne",
+      "Chorizo",
+      "Morcilla",
+      "Carbon/lenia",
+      "Ensaladas",
+      "Pan",
+      "Chimichurri"
+    ],
+    "bebidas": [
+      "Agua",
+      "Gaseosas",
+      "Hielo",
+      "Vasos",
+      "Conservadoras",
+      "Vinos/espumantes segun propuesta"
+    ],
+    "postre": [
+      "Cucharas",
+      "Platos de postre",
+      "Bases dulces",
+      "Fruta/decoracion",
+      "Contenedores refrigerados"
+    ],
+    "coffee con bebidas": [
+      "Cafe",
+      "Te",
+      "Leche",
+      "Azucar",
+      "Edulcorante",
+      "Vasos termicos",
+      "Servilletas",
+      "Medialunas",
+      "Jugo"
+    ],
+    "test_service_codex": []
+  },
+  "updatedAt": "2026-06-09T15:42:22.093Z",
+  "operationalOptions": {
+    "services": [
+      "Agape",
+      "Almuerzo",
+      "Asado",
+      "Brunch",
+      "Cena",
+      "Cocktail",
+      "Coctel",
+      "Coffee",
+      "Finger"
+    ],
+    "moments": [
+      "Barra",
+      "Coffee",
+      "Comida",
+      "Desayuno",
+      "Merienda",
+      "Postre",
+      "Recepcion",
+      "Trasnoche"
+    ],
+    "drinks": [
+      "Agua con gas",
+      "Agua sin gas",
+      "Barra",
+      "Cafe",
+      "Detox",
+      "Espumantes",
+      "Gaseosas",
+      "Te",
+      "Vinos"
+    ]
+  }
 }
-
