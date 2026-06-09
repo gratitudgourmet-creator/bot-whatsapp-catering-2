@@ -57,7 +57,7 @@
     ],
     "test_service_codex": []
   },
-  "updatedAt": "2026-06-09T15:42:22.093Z",
+  "updatedAt": "2026-06-09T19:08:56.276Z",
   "operationalOptions": {
     "services": [
       "Agape",
@@ -68,7 +68,8 @@
       "Cocktail",
       "Coctel",
       "Coffee",
-      "Finger"
+      "Finger",
+      "TEST SERVICE CODEX"
     ],
     "moments": [
       "Barra",

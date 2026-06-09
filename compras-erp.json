@@ -21636,5 +21636,87 @@
     ],
     "createdAt": "2026-06-09T13:35:32.686Z",
     "updatedAt": "2026-06-09T13:35:32.717Z"
+  },
+  {
+    "id": "compra-1781035758844",
+    "date": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "eventName": "JESI ECOPARQUE 5-6",
+    "description": "ZUCCHINI XKG",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 13099.98,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 13099.98,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "ZUCCHINI XKG",
+        "quantity": 1,
+        "unitAmount": 6000,
+        "total": 6000
+      },
+      {
+        "description": "BERENJENA XKG",
+        "quantity": 1,
+        "unitAmount": 2000,
+        "total": 2000
+      },
+      {
+        "description": "ZANAHORIA XKG",
+        "quantity": 1,
+        "unitAmount": 1600,
+        "total": 1600
+      },
+      {
+        "description": "CEBOLLA VERDEO XAT",
+        "quantity": 1,
+        "unitAmount": 700,
+        "total": 700
+      },
+      {
+        "description": "CIBOULETTE XAT",
+        "quantity": 1,
+        "unitAmount": 1300,
+        "total": 1300
+      },
+      {
+        "description": "ALBAHACA X ATADO",
+        "quantity": 1,
+        "unitAmount": 1499.98,
+        "total": 1499.98
+      }
+    ],
+    "createdAt": "2026-06-09T20:09:18.844Z",
+    "updatedAt": "2026-06-09T20:09:18.891Z"
+  },
+  {
+    "id": "compra-1781035814194",
+    "date": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "eventName": "JESI ECOPARQUE 5-6",
+    "description": "CEBOLLA XKG",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 1300,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 1300,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CEBOLLA XKG",
+        "quantity": 1,
+        "unitAmount": 1300,
+        "total": 1300
+      }
+    ],
+    "createdAt": "2026-06-09T20:10:14.194Z",
+    "updatedAt": "2026-06-09T20:10:14.222Z"
   }
 ]

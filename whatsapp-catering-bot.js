@@ -1003,6 +1003,8 @@ function buildGoogleSheetsModel() {
       "Total servicio",
       "Lugar",
       "Servicio",
+      "Modalidad asistencia",
+      "Mozos",
       "Momentos",
       "Menu completo",
       "Bebidas",
@@ -1016,6 +1018,7 @@ function buildGoogleSheetsModel() {
       "Presupuesto aceptado",
       "Costo presupuesto",
       "Compras imputadas",
+      "Costo stock/ficticio",
       "Costo final",
       "Margen final",
       "Margen final %",
@@ -1039,6 +1042,8 @@ function buildGoogleSheetsModel() {
       "Total servicio": event.servicePriceTotal,
       Lugar: event.venue,
       Servicio: event.serviceType,
+      "Modalidad asistencia": event.assistanceMode,
+      Mozos: event.waiterCount,
       Momentos: event.eventMoments,
       "Menu completo": event.selectedMenu,
       Bebidas: event.includesDrinks,
@@ -1052,6 +1057,7 @@ function buildGoogleSheetsModel() {
       "Presupuesto aceptado": event.quoteTotal,
       "Costo presupuesto": event.quoteCostTotal,
       "Compras imputadas": event.purchaseTotal,
+      "Costo stock/ficticio": event.stockCostTotal,
       "Costo final": event.finalCostTotal,
       "Margen final": event.operationalMargin,
       "Margen final %": event.operationalMarginPercent,
@@ -2171,8 +2177,9 @@ function getErpDashboard() {
   const openQuotes = quotes.filter((quote) => ["draft", "sent", "negotiation"].includes(quote.status));
   const acceptedQuotes = quotes.filter((quote) => quote.status === "accepted");
   const pendingPurchases = purchases.filter((purchase) => purchase.paymentStatus !== "Pagado");
-  const estimatedRevenue = acceptedQuotes.reduce((sum, quote) => sum + Number(quote.priceTotal || 0), 0);
-  const estimatedCost = acceptedQuotes.reduce((sum, quote) => sum + Number(quote.costTotal || 0), 0);
+  const marginEvents = events.filter((event) => ["confirmed", "production", "done"].includes(event.status));
+  const estimatedRevenue = marginEvents.reduce((sum, event) => sum + Number(event.quoteTotal || 0), 0);
+  const estimatedCost = marginEvents.reduce((sum, event) => sum + Number(event.finalCostTotal || 0), 0);
   const pendingPurchaseAmount = pendingPurchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
 
   return {
@@ -2335,8 +2342,19 @@ function getPipelineBoard() {
     { id: "lost", label: "Perdido", items: [] },
   ];
   const byId = new Map(columns.map((column) => [column.id, column]));
+  const completedEventKeys = new Set(getErpEventList()
+    .filter((event) => event.status === "done")
+    .flatMap((event) => [event.name, event.clientName].map(normalizeSearchKey).filter(Boolean)));
 
   for (const chat of getChatDashboardList()) {
+    const chatKeys = [
+      chat.data?.eventName,
+      chat.data?.eventType,
+      chat.data?.fullName,
+      chat.data?.clientName,
+    ].map(normalizeSearchKey).filter(Boolean);
+    if (chatKeys.some((key) => completedEventKeys.has(key))) continue;
+
     const id = mapPipelineStatus(chat.status);
     byId.get(id)?.items.push({
       id: chat.phone,
@@ -2352,6 +2370,7 @@ function getPipelineBoard() {
   }
 
   for (const event of getErpEventList()) {
+    if (event.status === "done") continue;
     const id = mapPipelineStatus(event.status);
     byId.get(id)?.items.push({
       id: event.id,
@@ -2618,8 +2637,10 @@ function normalizeErpEvent(event = {}) {
   const quote = getBestQuoteForEvent(event.id);
   const purchases = getErpPurchaseList().filter((purchase) => purchase.eventName && normalizeSearchKey(purchase.eventName) === normalizeSearchKey(event.name));
   const purchaseTotal = purchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
+  const stockItems = normalizeStockCostItems(event.stockItems || event.stockCosts || []);
+  const stockCostTotal = stockItems.reduce((sum, item) => sum + Number(item.total || 0), 0);
   const quoteCostTotal = quote ? Number(quote.costTotal || 0) : 0;
-  const finalCostTotal = quoteCostTotal + purchaseTotal;
+  const finalCostTotal = quoteCostTotal + purchaseTotal + stockCostTotal;
   const priceMode = normalizeText(event.priceMode || "total");
   const pricePerPerson = roundMoney(Number(event.pricePerPerson || 0));
   const servicePriceTotal = roundMoney(Number(event.servicePriceTotal || event.priceTotal || 0));
@@ -2627,6 +2648,10 @@ function normalizeErpEvent(event = {}) {
     ? roundMoney(pricePerPerson * parseDecimalNumber(event.guestCount || 0))
     : servicePriceTotal;
   const quoteTotal = quote ? Number(quote.priceTotal || 0) : eventSaleTotal;
+  const menuItems = normalizeEventMenuItems(event.menuItems || event.selectedMenu || []);
+  const selectedMenu = menuItems.length
+    ? menuItems.map((item) => item.name).filter(Boolean).join(", ")
+    : normalizeText(event.selectedMenu || "");
   const finalMargin = quoteTotal - finalCostTotal;
 
   return {
@@ -2638,8 +2663,11 @@ function normalizeErpEvent(event = {}) {
     guestCount: parseDecimalNumber(event.guestCount || 0),
     venue: normalizeText(event.venue || ""),
     serviceType: normalizeText(event.serviceType || ""),
+    assistanceMode: normalizeText(event.assistanceMode || ""),
+    waiterCount: parseDecimalNumber(event.waiterCount || 0),
     eventMoments: normalizeText(event.eventMoments || ""),
-    selectedMenu: normalizeText(event.selectedMenu || ""),
+    selectedMenu,
+    menuItems,
     includesDrinks: normalizeText(event.includesDrinks || ""),
     drinkType: normalizeText(event.drinkType || ""),
     tableware: normalizeText(event.tableware || ""),
@@ -2665,6 +2693,8 @@ function normalizeErpEvent(event = {}) {
     quoteCostTotal: roundMoney(quoteCostTotal),
     quoteMarginPercent: quote ? Number(quote.marginPercent || 0) : 0,
     purchaseTotal: roundMoney(purchaseTotal),
+    stockCostTotal: roundMoney(stockCostTotal),
+    stockItems,
     finalCostTotal: roundMoney(finalCostTotal),
     operationalMargin: roundMoney(finalMargin),
     operationalMarginPercent: quoteTotal > 0 ? roundMoney((finalMargin / quoteTotal) * 100) : 0,
@@ -2679,6 +2709,43 @@ function normalizeErpEvent(event = {}) {
     createdAt: event.createdAt || "",
     updatedAt: event.updatedAt || "",
   };
+}
+
+function normalizeEventMenuItems(input) {
+  if (Array.isArray(input)) {
+    return input
+      .map((item) => {
+        if (typeof item === "string") return { name: normalizeText(item) };
+        return {
+          name: normalizeText(item.name || item.item || item.description || ""),
+          detail: normalizeText(item.detail || item.notes || ""),
+        };
+      })
+      .filter((item) => item.name);
+  }
+
+  return String(input || "")
+    .split(/\r?\n|,/)
+    .map((name) => ({ name: normalizeText(name) }))
+    .filter((item) => item.name);
+}
+
+function normalizeStockCostItems(input) {
+  if (!Array.isArray(input)) return [];
+  return input
+    .map((item) => {
+      const quantity = parseDecimalNumber(item.quantity || 1);
+      const unitAmount = parseDecimalNumber(item.unitAmount || item.amount || 0);
+      const total = roundMoney(parseDecimalNumber(item.total || 0) || quantity * unitAmount);
+      return {
+        description: normalizeText(item.description || item.name || ""),
+        quantity,
+        unitAmount: roundMoney(unitAmount),
+        total,
+        notes: normalizeText(item.notes || ""),
+      };
+    })
+    .filter((item) => item.description || item.total > 0);
 }
 
 function normalizeOperationalChecklist(input = {}) {

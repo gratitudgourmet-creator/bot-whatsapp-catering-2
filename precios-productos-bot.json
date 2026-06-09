@@ -901,12 +901,12 @@
   },
   "ciboulette xat": {
     "name": "CIBOULETTE XAT",
-    "unitCost": 500,
+    "unitCost": 1300,
     "previousUnitCost": 500,
-    "changePercent": 0,
-    "lastPurchaseDate": "2026-02-13",
-    "provider": "FERIA",
-    "updatedAt": "2026-06-08T17:48:36.299Z"
+    "changePercent": 160,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "updatedAt": "2026-06-09T20:09:18.849Z"
   },
   "rucula xat": {
     "name": "RUCULA XAT",
@@ -928,12 +928,12 @@
   },
   "cebolla verdeo xat": {
     "name": "CEBOLLA VERDEO XAT",
-    "unitCost": 1500,
+    "unitCost": 700,
     "previousUnitCost": 1500,
-    "changePercent": 0,
-    "lastPurchaseDate": "2026-02-13",
-    "provider": "FERIA",
-    "updatedAt": "2026-06-08T17:48:36.391Z"
+    "changePercent": -53.33,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "updatedAt": "2026-06-09T20:09:18.849Z"
   },
   "pimiento verde xkg": {
     "name": "PIMIENTO VERDE XKG",
@@ -964,21 +964,21 @@
   },
   "berenjena xkg": {
     "name": "BERENJENA XKG",
-    "unitCost": 1200,
+    "unitCost": 2000,
     "previousUnitCost": 1200,
-    "changePercent": 0,
-    "lastPurchaseDate": "2026-02-23",
-    "provider": "VERDULERIA",
-    "updatedAt": "2026-06-08T17:48:37.932Z"
+    "changePercent": 66.67,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "updatedAt": "2026-06-09T20:09:18.849Z"
   },
   "zucchini xkg": {
     "name": "ZUCCHINI XKG",
-    "unitCost": 1500,
-    "previousUnitCost": 1300,
-    "changePercent": 15.38,
-    "lastPurchaseDate": "2026-03-03",
-    "provider": "FERIA",
-    "updatedAt": "2026-06-08T17:48:47.415Z"
+    "unitCost": 6000,
+    "previousUnitCost": 1500,
+    "changePercent": 300,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "updatedAt": "2026-06-09T20:09:18.848Z"
   },
   "pepino xun": {
     "name": "PEPINO XUN",
@@ -1306,12 +1306,12 @@
   },
   "albahaca x atado": {
     "name": "ALBAHACA X ATADO",
-    "unitCost": 750,
+    "unitCost": 1499.98,
     "previousUnitCost": 750,
-    "changePercent": 0,
-    "lastPurchaseDate": "2026-03-03",
-    "provider": "FERIA",
-    "updatedAt": "2026-06-08T17:48:46.820Z"
+    "changePercent": 100,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "updatedAt": "2026-06-09T20:09:18.849Z"
   },
   "caldo de verdura en polvo": {
     "name": "CALDO DE VERDURA EN POLVO",
@@ -4093,5 +4093,23 @@
     "lastPurchaseDate": "2026-06-05",
     "provider": "MC COMPANY",
     "updatedAt": "2026-06-08T20:16:18.879Z"
+  },
+  "zanahoria xkg": {
+    "name": "ZANAHORIA XKG",
+    "unitCost": 1600,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "updatedAt": "2026-06-09T20:09:18.849Z"
+  },
+  "cebolla xkg": {
+    "name": "CEBOLLA XKG",
+    "unitCost": 1300,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "updatedAt": "2026-06-09T20:10:14.196Z"
   }
 }

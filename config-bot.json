@@ -645,7 +645,9 @@
     "BANDEJA ALUMNIO REAL 5 XI",
     "LIVINGS",
     "SILLONES NORDICOS",
-    "MESAS ALTAS"
+    "MESAS ALTAS",
+    "ZANAHORIA XKG",
+    "CEBOLLA XKG"
   ],
   "purchaseEvents": [
     "AGAPE BUSTELO 14-5",
@@ -685,7 +687,8 @@
     "COFFEE FOPIATZAD",
     "TEST CHECKLIST CODEX",
     "TEST PRECIO CODEX",
-    "INFANTIL ROMI"
+    "INFANTIL ROMI",
+    "JESI COFFEE U MAZA"
   ],
   "purchasePaymentMethods": [
     "E-Cheq",
@@ -708,6 +711,7 @@
   "eventVenues": [
     "ECOPARQUE",
     "Hiper ChangoMás",
-    "SALON PATRICIAS"
+    "SALON PATRICIAS",
+    "Universidad Maza"
   ]
 }
