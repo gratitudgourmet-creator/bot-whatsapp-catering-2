@@ -1,1 +1,73 @@
-[]
+[
+  {
+    "id": "evento-1780949622533",
+    "name": "JESI ECOPARQUE 5-6",
+    "clientId": "",
+    "clientName": "JESICA CASA DE GOBIERNO",
+    "eventDate": "2026-06-05",
+    "guestCount": 50,
+    "venue": "ECOPARQUE",
+    "serviceType": "AGAPE FINGER FOOD",
+    "status": "done",
+    "owner": "JOAQUIN",
+    "role": "Cocina",
+    "nextAction": "",
+    "paymentStatus": "",
+    "productionStatus": "",
+    "menuStatus": "",
+    "staffStatus": "",
+    "logisticsStatus": "",
+    "checklist": {
+      "purchases": false,
+      "production": false,
+      "staff": false,
+      "logistics": false,
+      "menu": false,
+      "payments": false
+    },
+    "notes": "",
+    "quoteTotal": 4650650,
+    "quoteCostTotal": 0,
+    "quoteMarginPercent": 100,
+    "purchaseTotal": 500740,
+    "finalCostTotal": 500740,
+    "operationalMargin": 4149910,
+    "operationalMarginPercent": 89.23,
+    "purchases": [
+      {
+        "id": "sheets-row-797",
+        "date": "2026-06-05",
+        "provider": "VIRGEN DEL VALLE / RACH SA",
+        "description": "SANDWICH TRIPLE X25",
+        "paymentStatus": "Pagado",
+        "totalAmount": 50000
+      },
+      {
+        "id": "sheets-row-798",
+        "date": "2026-06-05",
+        "provider": "LA PARRA",
+        "description": "PAN PANINI",
+        "paymentStatus": "Pagado",
+        "totalAmount": 9140
+      },
+      {
+        "id": "sheets-row-799",
+        "date": "2026-06-05",
+        "provider": "VERDULERIA",
+        "description": "VERDURA",
+        "paymentStatus": "Pagado",
+        "totalAmount": 1600
+      },
+      {
+        "id": "compra-1780949778851",
+        "date": "2026-06-05",
+        "provider": "MC COMPANY",
+        "description": "SILLONES NORDICOS",
+        "paymentStatus": "Pendiente",
+        "totalAmount": 440000
+      }
+    ],
+    "createdAt": "2026-06-08T20:13:42.530Z",
+    "updatedAt": "2026-06-09T13:31:24.270Z"
+  }
+]

@@ -13,7 +13,7 @@
   "invoiceOcrModel": "gpt-4.1-mini",
   "purchaseWebhookUrl": "https://script.google.com/macros/s/AKfycbwnOBujlzL1DA3PwVVo6sh9sD-k2I_QCYitehs6MQ-X6klYtVgmqNJZi4w_t21eCSWSqQ/exec",
   "purchaseSyncToken": "",
-  "purchaseBidirectionalSyncEnabled": false,
+  "purchaseBidirectionalSyncEnabled": true,
   "purchaseSpreadsheetId": "1ZAd6hdDq1gftQPr6QdPZWS0yyhPcTG9UJcnt3Fgp3HI",
   "purchaseSheetName": "Registro_Gastos",
   "panelPort": 3080,
@@ -642,7 +642,10 @@
     "ESTUCHE 105 PP CLEAR PACK XI",
     "TENEDOR BLANCO REFORZADOS X50",
     "CUCHILLO BLANCO REFORZADOS X50",
-    "BANDEJA ALUMNIO REAL 5 XI"
+    "BANDEJA ALUMNIO REAL 5 XI",
+    "LIVINGS",
+    "SILLONES NORDICOS",
+    "MESAS ALTAS"
   ],
   "purchaseEvents": [
     "AGAPE BUSTELO 14-5",
@@ -676,7 +679,9 @@
     "RESIDENCIA 3-2",
     "SANTI REUNION 23-5",
     "Evento demo ERP",
-    "PRUEBA"
+    "PRUEBA",
+    "JESI ECOPARQUE 5-6",
+    "TEST CODEX EVENTO"
   ],
   "purchasePaymentMethods": [
     "E-Cheq",

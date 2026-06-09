@@ -1,4 +1,24 @@
 {
+  "2616988941": {
+    "id": "2616988941",
+    "phone": "2616988941",
+    "displayPhone": "2616988941",
+    "fullName": "ROMINA PROTOCOLO",
+    "contactName": "",
+    "aliases": [
+      "2616988941",
+      "ROMINA PROTOCOLO"
+    ],
+    "budgetCount": 1,
+    "lastEventType": "INFANTIL",
+    "lastBudgetAt": "2026-06-08T20:01:50.279Z",
+    "lastSeenAt": "2026-06-08T20:01:50.279Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-08T20:01:50.279Z",
+    "updatedAt": "2026-06-08T20:01:50.279Z"
+  },
   "255189810475111@lid": {
     "id": "255189810475111@lid",
     "phone": "255189810475111@lid",
@@ -64,13 +84,51 @@
       "JOAQUIN"
     ],
     "budgetCount": 0,
-    "lastEventType": "AGAPE",
+    "lastEventType": "AGAPE CON POSTRE",
     "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-07T22:04:22.608Z",
+    "lastSeenAt": "2026-06-08T18:56:05.799Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-07T22:00:37.605Z",
-    "updatedAt": "2026-06-07T22:04:22.608Z"
+    "updatedAt": "2026-06-08T18:56:05.799Z"
+  },
+  "JESICA CASA DE GOBIERNO": {
+    "id": "JESICA CASA DE GOBIERNO",
+    "phone": "JESICA CASA DE GOBIERNO",
+    "displayPhone": "",
+    "fullName": "JESICA CASA DE GOBIERNO",
+    "contactName": "JESICA CASA DE GOBIERNO",
+    "aliases": [
+      "JESICA CASA DE GOBIERNO"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "AGAPE FINGER FOOD",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-09T13:31:24.282Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-08T20:13:42.660Z",
+    "updatedAt": "2026-06-09T13:31:24.282Z"
+  },
+  "TEST": {
+    "id": "TEST",
+    "phone": "TEST",
+    "displayPhone": "",
+    "fullName": "TEST",
+    "contactName": "TEST",
+    "aliases": [
+      "TEST"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "TEST",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-08T20:29:30.189Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-08T20:29:29.489Z",
+    "updatedAt": "2026-06-08T20:29:30.189Z"
   }
 }

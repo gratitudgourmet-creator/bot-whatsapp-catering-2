@@ -1,1 +1,31 @@
-[]
+[
+  {
+    "id": "presupuesto-1780949726239",
+    "version": "v1",
+    "eventId": "evento-1780949622533",
+    "eventName": "JESI ECOPARQUE 5-6",
+    "clientName": "JESICA CASA DE GOBIERNO",
+    "status": "accepted",
+    "validUntil": "",
+    "guestCount": 50,
+    "costTotal": 0,
+    "priceTotal": 4650650,
+    "marginAmount": 4650650,
+    "marginPercent": 100,
+    "markupPercent": 0,
+    "targetMarginPercent": 35,
+    "discountAmount": 0,
+    "discountPercent": 0,
+    "taxRate": 0,
+    "taxAmount": 0,
+    "tablewareCost": 0,
+    "logisticsCost": 0,
+    "staffCost": 0,
+    "extraCost": 0,
+    "subtotalBeforeDiscount": 4650650,
+    "recipes": [],
+    "notes": "",
+    "createdAt": "2026-06-08T20:15:26.222Z",
+    "updatedAt": "2026-06-08T20:15:26.222Z"
+  }
+]

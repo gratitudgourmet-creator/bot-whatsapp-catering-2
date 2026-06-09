@@ -249,15 +249,16 @@
       border: 1px solid var(--line);
       border-radius: 6px;
       box-shadow: var(--shadow);
-      overflow: hidden;
+      overflow: auto;
     }
 
     .table-head,
     .row {
       display: grid;
-      gap: 12px;
-      grid-template-columns: 1.15fr 1.15fr 0.95fr 1fr 0.95fr 1.15fr 1.15fr 1.1fr;
-      padding: 11px 14px;
+      gap: 10px;
+      grid-template-columns: minmax(130px, 1.15fr) minmax(112px, 0.95fr) minmax(105px, 0.9fr) minmax(108px, 0.85fr) minmax(110px, 0.9fr) minmax(120px, 1fr) minmax(125px, 1fr) minmax(176px, 1.35fr);
+      min-width: 1040px;
+      padding: 9px 12px;
     }
 
     .table-head {
@@ -273,7 +274,7 @@
       align-items: center;
       border-bottom: 1px solid var(--line);
       cursor: pointer;
-      min-height: 68px;
+      min-height: 58px;
     }
 
     .row:hover {
@@ -285,25 +286,27 @@
     }
 
     .primary {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       overflow-wrap: anywhere;
     }
 
     .secondary {
       color: var(--muted);
-      font-size: 13px;
-      margin-top: 4px;
+      font-size: 11px;
+      line-height: 1.35;
+      margin-top: 3px;
       overflow-wrap: anywhere;
     }
 
     .badge {
       border-radius: 5px;
       display: inline-flex;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
-      line-height: 1;
-      padding: 7px 8px;
+      line-height: 1.2;
+      max-width: 100%;
+      padding: 5px 7px;
       width: fit-content;
     }
 
@@ -365,6 +368,24 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+    }
+
+    .row-actions {
+      display: grid;
+      gap: 6px;
+      grid-template-columns: repeat(4, auto);
+      justify-content: start;
+    }
+
+    .row-actions button {
+      font-size: 12px;
+      min-height: 30px;
+      padding: 0 8px;
+    }
+
+    .row-actions .menu-dot {
+      min-height: 30px;
+      min-width: 30px;
     }
 
     button {
@@ -561,6 +582,35 @@
       gap: 12px;
     }
 
+    .purchase-period-bar {
+      align-items: end;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(180px, 220px) repeat(2, minmax(140px, 170px)) minmax(0, 1fr);
+    }
+
+    .purchase-period-field {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .purchase-period-field label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .purchase-period-summary {
+      align-self: center;
+      color: var(--muted);
+      font-size: 12px;
+      justify-self: end;
+      min-width: 0;
+      text-align: right;
+    }
+
     .purchase-kpis {
       display: grid;
       gap: 10px;
@@ -650,6 +700,93 @@
       display: grid;
     }
 
+    .rank-modal-summary {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-bottom: 12px;
+      padding: 12px;
+    }
+
+    .rank-modal-summary span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .rank-modal-summary strong {
+      font-size: 17px;
+    }
+
+    .rank-search {
+      margin-bottom: 12px;
+      max-width: none;
+      width: 100%;
+    }
+
+    .rank-list {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: grid;
+      max-height: min(52vh, 460px);
+      overflow-y: auto;
+    }
+
+    .rank-row {
+      align-items: center;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 34px minmax(0, 1fr) auto;
+      padding: 11px 12px;
+    }
+
+    .rank-row + .rank-row {
+      border-top: 1px solid var(--line);
+    }
+
+    .rank-row:hover {
+      background: var(--surface-soft);
+    }
+
+    .rank-position {
+      background: var(--accent-soft);
+      border-radius: 999px;
+      color: var(--accent);
+      display: grid;
+      font-size: 12px;
+      font-weight: 900;
+      height: 28px;
+      place-items: center;
+      width: 28px;
+    }
+
+    .rank-label {
+      font-weight: 800;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .rank-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .rank-amount {
+      font-size: 16px;
+      font-weight: 900;
+      text-align: right;
+      white-space: nowrap;
+    }
+
     .menu-dot {
       background: var(--surface-soft);
       border: 1px solid var(--line);
@@ -684,8 +821,10 @@
     .purchase-table-wrap {
       border: 1px solid var(--line);
       border-radius: 6px;
+      max-height: min(54vh, 560px);
       max-width: 100%;
-      overflow-x: auto;
+      overflow: auto;
+      overscroll-behavior: contain;
     }
 
     .purchase-table {
@@ -709,7 +848,10 @@
       background: var(--surface-soft);
       color: var(--muted);
       font-size: 11px;
+      position: sticky;
+      top: 0;
       text-transform: uppercase;
+      z-index: 2;
     }
 
     .purchase-table .money,
@@ -788,6 +930,67 @@
       border: 1px solid var(--line);
       border-radius: 6px;
       padding: 12px;
+    }
+
+    .provider-list {
+      max-height: min(68vh, 720px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .provider-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .provider-card-head {
+      align-items: start;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .provider-title {
+      font-size: 16px;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .provider-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .provider-stats {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .provider-stat {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px;
+    }
+
+    .provider-stat span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .provider-stat strong {
+      display: block;
+      margin-top: 4px;
     }
 
     .recipe-list {
@@ -1047,7 +1250,7 @@
     .erp-kpis {
       display: grid;
       gap: 10px;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       margin-bottom: 16px;
     }
 
@@ -1093,8 +1296,53 @@
       border-left-color: #d97706;
     }
 
+    .alert-list-scroll {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      max-height: 360px;
+      overflow: auto;
+    }
+
+    .alert-row {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) 110px 120px;
+      padding: 10px 12px;
+    }
+
+    .alert-row + .alert-row {
+      border-top: 1px solid var(--line);
+    }
+
+    .alert-row strong,
+    .alert-row span {
+      overflow-wrap: anywhere;
+    }
+
+    .alert-row .secondary {
+      margin-top: 3px;
+    }
+
+    .compact-insight {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-bottom: 12px;
+    }
+
     .erp-card {
       margin-bottom: 10px;
+    }
+
+    .event-control-card {
+      cursor: pointer;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .event-control-card:hover {
+      border-color: #b6c7d6;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
     }
 
     .erp-card-head {
@@ -1120,6 +1368,157 @@
       white-space: nowrap;
     }
 
+    .event-finance {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      margin-top: 12px;
+    }
+
+    .event-number {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      min-width: 0;
+      padding: 10px;
+    }
+
+    .event-number.highlight {
+      background: var(--accent-soft);
+      border-color: #c5ddd7;
+    }
+
+    .event-number.warn {
+      background: var(--warning-soft);
+      border-color: #f3d19b;
+    }
+
+    .event-number span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .event-number strong {
+      display: block;
+      font-size: 16px;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .event-purchases {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      margin-top: 12px;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .event-purchase-row {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 86px minmax(0, 1.2fr) minmax(0, 1.3fr) 120px 92px;
+      padding: 9px 10px;
+    }
+
+    .event-purchase-row + .event-purchase-row {
+      border-top: 1px solid var(--line);
+    }
+
+    .event-purchase-row.header {
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      position: sticky;
+      text-transform: uppercase;
+      top: 0;
+      z-index: 1;
+    }
+
+    .event-history {
+      border-top: 1px solid var(--line);
+      margin-top: 14px;
+      padding-top: 10px;
+    }
+
+    .event-history summary {
+      cursor: pointer;
+      font-weight: 800;
+      list-style: none;
+      padding: 8px 0;
+    }
+
+    .event-history summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .event-history-row {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) 130px 150px;
+      margin-top: 8px;
+      padding: 10px 12px;
+    }
+
+    .event-history-row:hover {
+      background: #fff;
+      border-color: #b6c7d6;
+    }
+
+    .event-detail-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 12px;
+    }
+
+    .event-detail-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .event-detail-item span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .event-checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .event-check {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 9px;
+    }
+
+    .event-check.done {
+      background: var(--success-soft);
+      border-color: #bfe3cf;
+      color: var(--success);
+    }
+
     .erp-quote-lines {
       display: grid;
       gap: 8px;
@@ -1140,7 +1539,9 @@
     .pipeline {
       display: grid;
       gap: 10px;
-      grid-template-columns: repeat(7, minmax(150px, 1fr));
+      grid-auto-columns: 132px;
+      grid-auto-flow: column;
+      grid-template-columns: none;
       overflow-x: auto;
       padding-bottom: 6px;
     }
@@ -1149,7 +1550,7 @@
       background: var(--surface-soft);
       border: 1px solid var(--line);
       border-radius: 8px;
-      min-height: 150px;
+      min-height: 132px;
       padding: 10px;
     }
 
@@ -1168,7 +1569,15 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       margin-bottom: 8px;
-      padding: 9px;
+      padding: 8px;
+    }
+
+    .pipeline-card .primary {
+      font-size: 12px;
+    }
+
+    .pipeline-card .secondary {
+      font-size: 11px;
     }
 
     .checklist {
@@ -1244,16 +1653,36 @@
       .recipe-breakdown-row,
       .recipe-summary,
       .recipe-detail-summary,
-      .recipe-card-stats {
+      .recipe-card-stats,
+      .provider-card-head,
+      .provider-stats {
         grid-template-columns: 1fr;
       }
 
       .erp-kpis,
       .erp-quote-line,
+      .event-finance,
+      .event-purchase-row,
+      .event-history-row,
+      .event-detail-grid,
+      .alert-row,
+      .compact-insight,
       .checklist,
+      .rank-modal-summary,
+      .rank-row,
+      .purchase-period-bar,
       .purchase-kpis,
       .purchase-panels {
         grid-template-columns: 1fr;
+      }
+
+      .rank-amount {
+        text-align: left;
+      }
+
+      .purchase-period-summary {
+        justify-self: stretch;
+        text-align: left;
       }
     }
   </style>
@@ -1276,6 +1705,7 @@
       <button class="workspace-tab" data-view="erp">ERP</button>
       <button class="workspace-tab active" data-view="commercial">Comercial</button>
       <button class="workspace-tab" data-view="customers">Clientes</button>
+      <button class="workspace-tab" data-view="providers">Proveedores</button>
       <button class="workspace-tab" data-view="recipes">Recetas</button>
     </div>
 
@@ -1284,6 +1714,7 @@
         <div class="erp-kpi"><span>Eventos proximos</span><strong id="erp-kpi-upcoming">0</strong></div>
         <div class="erp-kpi"><span>Presupuestos abiertos</span><strong id="erp-kpi-open-quotes">0</strong></div>
         <div class="erp-kpi"><span>Venta aceptada</span><strong id="erp-kpi-revenue">$0</strong></div>
+        <div class="erp-kpi"><span>Eventos realizados</span><strong id="erp-kpi-done">0</strong></div>
         <div class="erp-kpi"><span>Margen estimado</span><strong id="erp-kpi-margin">$0</strong></div>
       </section>
 
@@ -1334,13 +1765,8 @@
           </section>
 
           <section class="erp-section">
-            <h2>Eventos</h2>
+            <h2>Control de eventos</h2>
             <div id="erp-event-list"></div>
-          </section>
-
-          <section class="erp-section">
-            <h2>Eventos confirmados</h2>
-            <div id="confirmed-event-list"></div>
           </section>
 
           <section class="erp-section">
@@ -1625,6 +2051,99 @@
             <div class="actions full">
               <button class="approve" type="submit">Guardar cliente</button>
               <button class="filter" type="button" onclick="document.getElementById('customer-form').reset()">Limpiar</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+
+    <section id="view-providers" class="workspace-view">
+      <div class="panel-grid">
+        <section class="panel-box">
+          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+            <input id="provider-search" class="search" placeholder="Buscar proveedor, CUIT, banco o alias">
+            <button class="filter" onclick="loadProviders()">Actualizar</button>
+          </div>
+          <div id="provider-list" class="compact-list provider-list"></div>
+        </section>
+        <section class="panel-box">
+          <h2 style="margin-top:0;font-size:20px;">Ficha de proveedor</h2>
+          <form id="provider-form" class="form-grid">
+            <input type="hidden" name="id">
+            <div class="form-field full">
+              <label>Nombre comercial</label>
+              <input name="name" required>
+            </div>
+            <div class="form-field full">
+              <label>Razon social</label>
+              <input name="legalName">
+            </div>
+            <div class="form-field">
+              <label>CUIT</label>
+              <input name="cuit" placeholder="20-00000000-0">
+            </div>
+            <div class="form-field">
+              <label>Condicion IVA</label>
+              <select name="ivaCondition">
+                <option value="">Sin definir</option>
+                <option>Responsable Inscripto</option>
+                <option>Monotributo</option>
+                <option>Exento</option>
+                <option>Consumidor Final</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Contacto</label>
+              <input name="contactName">
+            </div>
+            <div class="form-field">
+              <label>Telefono</label>
+              <input name="phone">
+            </div>
+            <div class="form-field">
+              <label>Email</label>
+              <input name="email" type="email">
+            </div>
+            <div class="form-field">
+              <label>Categoria</label>
+              <input name="category" placeholder="Carnes, verduras, logistica">
+            </div>
+            <div class="form-field full">
+              <label>Direccion</label>
+              <input name="address">
+            </div>
+            <div class="form-field">
+              <label>Banco</label>
+              <input name="bankName">
+            </div>
+            <div class="form-field">
+              <label>Tipo de cuenta</label>
+              <input name="bankAccountType" placeholder="CC, CA, billetera">
+            </div>
+            <div class="form-field">
+              <label>Nro cuenta</label>
+              <input name="bankAccountNumber">
+            </div>
+            <div class="form-field">
+              <label>CBU / CVU</label>
+              <input name="cbu">
+            </div>
+            <div class="form-field">
+              <label>Alias</label>
+              <input name="alias">
+            </div>
+            <div class="form-field">
+              <label>Condicion de pago</label>
+              <input name="paymentTerms" placeholder="Contado, 7 dias, mensual">
+            </div>
+            <div class="form-field full">
+              <label>Notas</label>
+              <textarea name="notes"></textarea>
+            </div>
+            <div class="actions full">
+              <button class="approve" type="submit">Guardar proveedor</button>
+              <button class="filter" type="button" onclick="resetProviderForm()">Nuevo</button>
+              <button class="reject" type="button" onclick="deleteSelectedProvider()">Eliminar</button>
             </div>
           </form>
         </section>
@@ -2368,6 +2887,7 @@
   <script>
     let allChats = [];
     let allCustomers = [];
+    let allProviders = [];
     let allRecipes = [];
     let erpData = {
       dashboard: {},
@@ -2382,6 +2902,11 @@
       events: [],
       paymentMethods: [],
       fundsSources: [],
+    };
+    let purchasePeriodFilter = {
+      preset: "last30",
+      from: "",
+      to: "",
     };
     let recipeProducts = [];
     let costSettings = { laborHourlyCost: 0 };
@@ -2416,11 +2941,13 @@
 
     search.addEventListener("input", renderRows);
     document.getElementById("customer-search").addEventListener("input", renderCustomers);
+    document.getElementById("provider-search").addEventListener("input", renderProviders);
     document.getElementById("recipe-search").addEventListener("input", renderRecipes);
     document.getElementById("manual-form").addEventListener("submit", createManualBudget);
     document.getElementById("edit-form").addEventListener("submit", updateBudget);
     document.getElementById("purchase-form").addEventListener("submit", createPurchase);
     document.getElementById("customer-form").addEventListener("submit", saveCustomer);
+    document.getElementById("provider-form").addEventListener("submit", saveProvider);
     document.getElementById("recipe-form").addEventListener("submit", saveRecipe);
     document.getElementById("recipe-form").addEventListener("input", updateRecipeTotals);
     document.getElementById("recipe-form").elements.yieldUnit.addEventListener("change", updateRecipeTotals);
@@ -2490,6 +3017,7 @@
       });
 
       if (view === "customers") loadCustomers();
+      if (view === "providers") loadProviders();
       if (view === "recipes") loadRecipes();
       if (view === "erp") loadErp();
     }
@@ -2514,12 +3042,12 @@
       document.getElementById("erp-kpi-upcoming").textContent = dashboard.upcomingEvents || 0;
       document.getElementById("erp-kpi-open-quotes").textContent = dashboard.openQuotes || 0;
       document.getElementById("erp-kpi-revenue").textContent = formatCurrency(dashboard.estimatedRevenue || 0);
+      document.getElementById("erp-kpi-done").textContent = dashboard.completedEvents || 0;
       document.getElementById("erp-kpi-margin").textContent =
         `${formatCurrency(dashboard.estimatedMargin || 0)} (${formatPercent(dashboard.estimatedMarginPercent || 0)})`;
       renderErpAlerts(dashboard.alerts || []);
       renderPurchaseDashboard();
       renderPipeline();
-      renderConfirmedEvents();
       renderProductAlerts();
       renderGlobalSearch();
       renderErpEvents();
@@ -2600,10 +3128,12 @@
           <div class="actions"><button class="approve" onclick="showPurchaseForm(); hideAlertDetail();">Cargar precio por compra</button><button class="filter" onclick="showWorkspaceView('recipes'); hideAlertDetail();">Ver recetas</button></div>
         `;
       } else if (title.includes("Insumos con variacion")) {
+        const alerts = getSortedProductAlerts();
         body.innerHTML = `
           ${field("Que pasa", "Uno o mas insumos cambiaron fuerte de precio y pueden modificar el costo real de recetas y presupuestos.")}
           ${field("Como solucionarlo", "Revisar los productos afectados y actualizar presupuestos si el margen quedo bajo.")}
-          ${renderAlertList((erpData.productAlerts || []).slice(0, 8).map((item) => `${item.name}: ${formatPercent(item.changePercent)} (${formatCurrency(item.previousUnitCost)} -> ${formatCurrency(item.unitCost)})`))}
+          <input id="product-alert-search" class="search" placeholder="Buscar insumo, proveedor o receta" oninput="renderProductAlertDetailRows()">
+          <div id="product-alert-detail-list">${renderProductAlertRows(alerts)}</div>
         `;
       } else {
         body.innerHTML = `
@@ -2620,6 +3150,41 @@
       return items.map((item) => `<div class="field"><div>${escapeHtml(item)}</div></div>`).join("");
     }
 
+    function getSortedProductAlerts() {
+      return [...(erpData.productAlerts || [])].sort((a, b) =>
+        Math.abs(Number(b.changePercent || 0)) - Math.abs(Number(a.changePercent || 0))
+      );
+    }
+
+    function renderProductAlertRows(items) {
+      if (!items.length) return `<div class="empty">No hay insumos para mostrar.</div>`;
+      return `
+        <div class="alert-list-scroll">
+          ${items.map((item) => `
+            <div class="alert-row">
+              <div>
+                <strong>${escapeHtml(item.name || "Insumo sin nombre")}</strong>
+                <div class="secondary">${escapeHtml(item.provider || "Sin proveedor")} | ${escapeHtml(item.lastPurchaseDate || "Sin fecha")}</div>
+                <div class="secondary">${escapeHtml((item.affectedRecipes || []).slice(0, 4).join(", ") || "Sin recetas afectadas")}${(item.affectedRecipes || []).length > 4 ? ` +${(item.affectedRecipes || []).length - 4}` : ""}</div>
+              </div>
+              <strong>${formatPercent(item.changePercent || 0)}</strong>
+              <span>${formatCurrency(item.previousUnitCost || 0)} -> ${formatCurrency(item.unitCost || 0)}</span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderProductAlertDetailRows() {
+      const term = normalizeSearch(document.getElementById("product-alert-search")?.value || "");
+      const alerts = getSortedProductAlerts().filter((item) => {
+        const haystack = `${item.name || ""} ${item.provider || ""} ${(item.affectedRecipes || []).join(" ")}`;
+        return !term || normalizeSearch(haystack).includes(term);
+      });
+      const container = document.getElementById("product-alert-detail-list");
+      if (container) container.innerHTML = renderProductAlertRows(alerts);
+    }
+
     function hideAlertDetail() {
       document.getElementById("alert-detail").classList.remove("open");
     }
@@ -2632,15 +3197,40 @@
 
     function renderPurchaseDashboard() {
       const container = document.getElementById("purchase-dashboard");
-      const purchases = erpData.purchases || [];
-      const summary = erpData.dashboard?.purchases || {};
+      const allPurchases = erpData.purchases || [];
+      const visiblePurchases = getVisiblePurchasesByPeriod();
+      const summary = buildPurchaseSummary(visiblePurchases);
+      const period = getPurchasePeriodRange();
 
-      if (!purchases.length) {
+      if (!allPurchases.length) {
         container.innerHTML = `<div class="empty">Todavia no hay compras cargadas desde el sistema.</div>`;
         return;
       }
 
       container.innerHTML = `
+        <section class="purchase-period-bar">
+          <div class="purchase-period-field">
+            <label>Periodo</label>
+            <select id="purchase-period-preset">
+              <option value="last30" ${purchasePeriodFilter.preset === "last30" ? "selected" : ""}>Ultimos 30 dias</option>
+              <option value="today" ${purchasePeriodFilter.preset === "today" ? "selected" : ""}>Hoy</option>
+              <option value="last7" ${purchasePeriodFilter.preset === "last7" ? "selected" : ""}>Ultimos 7 dias</option>
+              <option value="currentMonth" ${purchasePeriodFilter.preset === "currentMonth" ? "selected" : ""}>Mes actual</option>
+              <option value="last90" ${purchasePeriodFilter.preset === "last90" ? "selected" : ""}>Ultimos 90 dias</option>
+              <option value="all" ${purchasePeriodFilter.preset === "all" ? "selected" : ""}>Todo el historial</option>
+              <option value="custom" ${purchasePeriodFilter.preset === "custom" ? "selected" : ""}>Personalizado</option>
+            </select>
+          </div>
+          <div class="purchase-period-field">
+            <label>Desde</label>
+            <input id="purchase-period-from" type="date" value="${escapeAttribute(period.from || "")}" ${purchasePeriodFilter.preset === "custom" ? "" : "disabled"}>
+          </div>
+          <div class="purchase-period-field">
+            <label>Hasta</label>
+            <input id="purchase-period-to" type="date" value="${escapeAttribute(period.to || "")}" ${purchasePeriodFilter.preset === "custom" ? "" : "disabled"}>
+          </div>
+          <div class="purchase-period-summary">${escapeHtml(period.label)} · ${visiblePurchases.length} de ${allPurchases.length} compra(s)</div>
+        </section>
         <section class="purchase-kpis">
           <div class="purchase-kpi"><span>Total compras</span><strong>${formatCurrency(summary.totalAmount || 0)}</strong></div>
           <div class="purchase-kpi"><span>Pagado</span><strong>${formatCurrency(summary.paidAmount || 0)}</strong></div>
@@ -2664,9 +3254,203 @@
         <div id="purchase-table-wrap"></div>
       `;
 
+      document.getElementById("purchase-period-preset").addEventListener("change", (event) => {
+        const previousPeriod = getPurchasePeriodRange();
+        purchasePeriodFilter.preset = event.target.value;
+        if (purchasePeriodFilter.preset === "custom") {
+          purchasePeriodFilter.from = purchasePeriodFilter.from || previousPeriod.from || toDateValue(addDays(new Date(), -29));
+          purchasePeriodFilter.to = purchasePeriodFilter.to || previousPeriod.to || toDateValue(new Date());
+        }
+        renderPurchaseDashboard();
+      });
+      document.getElementById("purchase-period-from").addEventListener("change", (event) => {
+        purchasePeriodFilter.from = event.target.value;
+        purchasePeriodFilter.preset = "custom";
+        renderPurchaseDashboard();
+      });
+      document.getElementById("purchase-period-to").addEventListener("change", (event) => {
+        purchasePeriodFilter.to = event.target.value;
+        purchasePeriodFilter.preset = "custom";
+        renderPurchaseDashboard();
+      });
       document.getElementById("purchase-dashboard-search").addEventListener("input", renderPurchaseTable);
       document.getElementById("purchase-dashboard-status").addEventListener("change", renderPurchaseTable);
       renderPurchaseTable();
+    }
+
+    function getVisiblePurchasesByPeriod() {
+      const period = getPurchasePeriodRange();
+      return (erpData.purchases || []).filter((purchase) => isPurchaseInsidePeriod(purchase, period));
+    }
+
+    function getPurchasePeriodRange() {
+      const today = new Date();
+      const preset = purchasePeriodFilter.preset || "last30";
+
+      if (preset === "all") {
+        return { from: "", to: "", label: "Todo el historial" };
+      }
+
+      if (preset === "custom") {
+        return {
+          from: purchasePeriodFilter.from || "",
+          to: purchasePeriodFilter.to || "",
+          label: formatPeriodLabel(purchasePeriodFilter.from, purchasePeriodFilter.to, "Periodo personalizado"),
+        };
+      }
+
+      if (preset === "today") {
+        const value = toDateValue(today);
+        return { from: value, to: value, label: "Hoy" };
+      }
+
+      if (preset === "last7") {
+        return {
+          from: toDateValue(addDays(today, -6)),
+          to: toDateValue(today),
+          label: "Ultimos 7 dias",
+        };
+      }
+
+      if (preset === "currentMonth") {
+        return {
+          from: toDateValue(new Date(today.getFullYear(), today.getMonth(), 1)),
+          to: toDateValue(today),
+          label: "Mes actual",
+        };
+      }
+
+      if (preset === "last90") {
+        return {
+          from: toDateValue(addDays(today, -89)),
+          to: toDateValue(today),
+          label: "Ultimos 90 dias",
+        };
+      }
+
+      return {
+        from: toDateValue(addDays(today, -29)),
+        to: toDateValue(today),
+        label: "Ultimos 30 dias",
+      };
+    }
+
+    function isPurchaseInsidePeriod(purchase, period) {
+      if (!period.from && !period.to) return true;
+
+      const value = normalizePurchaseDate(purchase.date);
+      if (!value) return false;
+      if (period.from && value < period.from) return false;
+      if (period.to && value > period.to) return false;
+      return true;
+    }
+
+    function buildPurchaseSummary(purchases) {
+      const summary = {
+        totalAmount: 0,
+        paidAmount: 0,
+        pendingAmount: 0,
+        averageTicket: 0,
+        providersCount: 0,
+        byProvider: [],
+        byEvent: [],
+        byPaymentMethod: [],
+      };
+      const providers = new Set();
+      const providerTotals = {};
+      const eventTotals = {};
+      const paymentTotals = {};
+
+      purchases.forEach((purchase) => {
+        const total = getPurchaseTotal(purchase);
+        summary.totalAmount += total;
+
+        if (purchase.paymentStatus === "Pagado") {
+          summary.paidAmount += total;
+        } else {
+          summary.pendingAmount += total;
+        }
+
+        const provider = purchase.provider || "Sin proveedor";
+        providers.add(provider);
+        addPurchaseGroupTotal(providerTotals, provider, total);
+        addPurchaseGroupTotal(eventTotals, purchase.eventName || "Sin evento", total);
+        addPurchaseGroupTotal(paymentTotals, purchase.paymentMethod || "Sin definir", total);
+      });
+
+      summary.providersCount = providers.size;
+      summary.averageTicket = purchases.length ? summary.totalAmount / purchases.length : 0;
+      summary.byProvider = sortPurchaseGroups(providerTotals);
+      summary.byEvent = sortPurchaseGroups(eventTotals);
+      summary.byPaymentMethod = sortPurchaseGroups(paymentTotals);
+      return summary;
+    }
+
+    function getPurchaseTotal(purchase) {
+      const netAmount = Number(purchase.netAmount || 0);
+      const ivaAmount = Number(purchase.ivaAmount || 0);
+      const grossAmount = netAmount + ivaAmount;
+      const storedTotal = Number(purchase.totalAmount || 0);
+
+      if (grossAmount > storedTotal) return grossAmount;
+      if (Number.isFinite(storedTotal)) return storedTotal;
+
+      return (purchase.lineItems || []).reduce((sum, item) => sum + Number(item.total || 0), 0);
+    }
+
+    function getPurchaseLineTotal(purchase, item) {
+      const net = Number(item.total || 0);
+      const rawIvaRate = Number(purchase.ivaRate || 0);
+      const ivaRate = rawIvaRate > 1 ? rawIvaRate / 100 : rawIvaRate;
+      return ivaRate > 0 ? net * (1 + ivaRate) : net;
+    }
+
+    function addPurchaseGroupTotal(groups, label, amount) {
+      if (!groups[label]) {
+        groups[label] = { label, total: 0, count: 0 };
+      }
+
+      groups[label].total += Number(amount || 0);
+      groups[label].count += 1;
+    }
+
+    function sortPurchaseGroups(groups) {
+      return Object.values(groups).sort((a, b) => b.total - a.total);
+    }
+
+    function normalizePurchaseDate(value) {
+      if (!value) return "";
+      const raw = String(value).trim();
+      const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+
+      const slashMatch = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (slashMatch) {
+        return `${slashMatch[3]}-${slashMatch[2].padStart(2, "0")}-${slashMatch[1].padStart(2, "0")}`;
+      }
+
+      const date = new Date(raw);
+      return Number.isNaN(date.getTime()) ? "" : toDateValue(date);
+    }
+
+    function formatPeriodLabel(from, to, fallback) {
+      if (from && to) return `${formatShortDate(from)} al ${formatShortDate(to)}`;
+      if (from) return `Desde ${formatShortDate(from)}`;
+      if (to) return `Hasta ${formatShortDate(to)}`;
+      return fallback;
+    }
+
+    function addDays(date, days) {
+      const next = new Date(date);
+      next.setDate(next.getDate() + days);
+      return next;
+    }
+
+    function toDateValue(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
     }
 
     function renderPurchaseRank(title, key, rows) {
@@ -2688,18 +3472,46 @@
     }
 
     function showPurchaseRankDetail(title, key) {
-      const rows = erpData.dashboard?.purchases?.[key] || [];
+      const rows = buildPurchaseSummary(getVisiblePurchasesByPeriod())[key] || [];
+      const period = getPurchasePeriodRange();
+      const total = rows.reduce((sum, row) => sum + Number(row.total || 0), 0);
+      const count = rows.reduce((sum, row) => sum + Number(row.count || 0), 0);
       document.getElementById("purchase-rank-title").textContent = title;
-      document.getElementById("purchase-rank-subtitle").textContent = `${rows.length} agrupacion(es)`;
-      document.getElementById("purchase-rank-body").innerHTML = rows.length
-        ? rows.map((row) => `
-          <div class="field">
-            <label>${escapeHtml(row.label || "Sin definir")}</label>
-            <div><strong>${formatCurrency(row.total || 0)}</strong> · ${escapeHtml(row.count || 0)} compra(s)</div>
-          </div>
-        `).join("")
-        : `<div class="empty">Sin datos.</div>`;
+      document.getElementById("purchase-rank-subtitle").textContent = `${period.label} · ranking de compras`;
+      document.getElementById("purchase-rank-body").innerHTML = `
+        <section class="rank-modal-summary">
+          <div><span>Total</span><strong>${formatCurrency(total)}</strong></div>
+          <div><span>Compras</span><strong>${escapeHtml(count)}</strong></div>
+          <div><span>Grupos</span><strong>${escapeHtml(rows.length)}</strong></div>
+        </section>
+        <input id="purchase-rank-search" class="search rank-search" placeholder="Buscar dentro de este ranking">
+        <div id="purchase-rank-list">${renderPurchaseRankRows(rows)}</div>
+      `;
+      document.getElementById("purchase-rank-search").addEventListener("input", (event) => {
+        const term = normalizeSearch(event.target.value);
+        const filteredRows = rows.filter((row) => normalizeSearch(row.label || "Sin definir").includes(term));
+        document.getElementById("purchase-rank-list").innerHTML = renderPurchaseRankRows(filteredRows);
+      });
       document.getElementById("purchase-rank-detail").classList.add("open");
+    }
+
+    function renderPurchaseRankRows(rows) {
+      if (!rows.length) return `<div class="empty">No hay resultados para mostrar.</div>`;
+
+      return `
+        <section class="rank-list">
+          ${rows.map((row, index) => `
+            <article class="rank-row">
+              <div class="rank-position">${escapeHtml(index + 1)}</div>
+              <div>
+                <div class="rank-label" title="${escapeAttribute(row.label || "Sin definir")}">${escapeHtml(row.label || "Sin definir")}</div>
+                <div class="rank-meta">${escapeHtml(row.count || 0)} compra(s)</div>
+              </div>
+              <div class="rank-amount">${formatCurrency(row.total || 0)}</div>
+            </article>
+          `).join("")}
+        </section>
+      `;
     }
 
     function hidePurchaseRankDetail() {
@@ -2718,7 +3530,7 @@
 
       const term = normalizeSearch(document.getElementById("purchase-dashboard-search")?.value || "");
       const status = document.getElementById("purchase-dashboard-status")?.value || "";
-      const rows = (erpData.purchases || [])
+      const rows = getVisiblePurchasesByPeriod()
         .filter((purchase) => !status || purchase.paymentStatus === status)
         .filter((purchase) => !term || normalizeSearch([
           purchase.date,
@@ -2759,7 +3571,7 @@
             </thead>
             <tbody>
               ${rows.flatMap((purchase) => {
-                const items = purchase.lineItems?.length ? purchase.lineItems : [{ description: purchase.description, quantity: "", unitAmount: "", total: purchase.totalAmount }];
+                const items = purchase.lineItems?.length ? purchase.lineItems : [{ description: purchase.description, quantity: "", unitAmount: "", total: getPurchaseTotal(purchase) }];
                 return items.map((item, index) => `
                   <tr onclick="editPurchase('${escapeAttribute(purchase.id)}')">
                     <td>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</td>
@@ -2768,7 +3580,7 @@
                     <td>${escapeHtml(purchase.eventName || "")}</td>
                     <td class="number">${escapeHtml(item.quantity || "")}</td>
                     <td class="money">${formatCurrency(item.unitAmount || 0)}</td>
-                    <td class="money">${formatCurrency(item.total || purchase.totalAmount || 0)}</td>
+                    <td class="money">${formatCurrency(getPurchaseLineTotal(purchase, item) || getPurchaseTotal(purchase) || 0)}</td>
                     <td>${escapeHtml(purchase.invoiceType || "")}</td>
                     <td><span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span></td>
                     <td>${escapeHtml(purchase.paymentMethod || "")}</td>
@@ -2804,7 +3616,10 @@
       }
 
       await loadErp();
-      showNotice(`Compras importadas desde Sheets: ${result.result?.imported || 0}.`);
+      const imported = result.result?.imported || 0;
+      const skipped = result.result?.skipped || 0;
+      const detail = skipped ? ` ${skipped} fila(s) incompleta(s) fueron omitidas.` : "";
+      showNotice(`Compras importadas desde Sheets: ${imported}.${detail}`);
     }
 
     function renderPipeline() {
@@ -2835,7 +3650,7 @@
       const events = erpData.confirmedEvents || [];
 
       if (!events.length) {
-        container.innerHTML = `<div class="empty">No hay eventos confirmados.</div>`;
+        container.innerHTML = `<div class="empty">No hay eventos confirmados, en proceso o realizados.</div>`;
         return;
       }
 
@@ -2848,6 +3663,11 @@
             </div>
             <span class="erp-status">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
           </div>
+          <div class="recipe-summary" style="margin-top:10px;">
+            <div><span>Venta</span><strong>${formatCurrency(event.quoteTotal || 0)}</strong></div>
+            <div><span>Compras imputadas</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
+            <div><span>Margen real</span><strong>${formatCurrency(event.operationalMargin || 0)} (${formatPercent(event.operationalMarginPercent || 0)})</strong></div>
+          </div>
           <div class="checklist" style="margin-top:10px;">
             ${renderChecklistBadge("Compras", event.checklist?.purchases)}
             ${renderChecklistBadge("Produccion", event.checklist?.production)}
@@ -2858,6 +3678,7 @@
           </div>
           <div class="actions" style="margin-top:10px;">
             <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}')">Actualizar checklist</button>
+            <button class="approve" onclick="markErpEventDone('${escapeAttribute(event.id)}')">Marcar realizado</button>
           </div>
         </article>
       `).join("");
@@ -2869,30 +3690,51 @@
 
     function renderProductAlerts() {
       const container = document.getElementById("product-alert-list");
-      const alerts = erpData.productAlerts || [];
+      const alerts = getSortedProductAlerts();
 
       if (!alerts.length) {
         container.innerHTML = `<div class="empty">No hay variaciones de precio registradas.</div>`;
         return;
       }
 
-      container.innerHTML = alerts.slice(0, 12).map((item) => `
+      const increases = alerts.filter((item) => Number(item.changePercent || 0) > 0);
+      const decreases = alerts.filter((item) => Number(item.changePercent || 0) < 0);
+      const affectedRecipes = new Set(alerts.flatMap((item) => item.affectedRecipes || []));
+      const topAlerts = alerts.slice(0, 3);
+
+      container.innerHTML = `
         <article class="erp-card">
-          <div class="erp-card-head">
-            <div>
-              <div class="erp-card-title">${escapeHtml(item.name)}</div>
-              <div class="erp-card-meta">${escapeHtml(item.provider || "Sin proveedor")} | ${escapeHtml(item.lastPurchaseDate || "")}</div>
+          <div class="compact-insight">
+            <div class="event-number"><span>Insumos</span><strong>${alerts.length}</strong></div>
+            <div class="event-number warn"><span>Subas</span><strong>${increases.length}</strong></div>
+            <div class="event-number highlight"><span>Recetas afectadas</span><strong>${affectedRecipes.size}</strong></div>
+          </div>
+          ${topAlerts.map((item) => `
+            <div class="alert-row" style="border:1px solid var(--line);border-radius:8px;margin-top:8px;">
+              <div>
+                <strong>${escapeHtml(item.name || "Insumo sin nombre")}</strong>
+                <div class="secondary">${escapeHtml(item.provider || "Sin proveedor")} | ${escapeHtml((item.affectedRecipes || []).slice(0, 2).join(", ") || "Sin recetas afectadas")}</div>
+              </div>
+              <strong>${formatPercent(item.changePercent || 0)}</strong>
+              <span>${formatCurrency(item.unitCost || 0)}</span>
             </div>
-            <span class="erp-status">${formatPercent(item.changePercent)}</span>
+          `).join("")}
+          <div class="actions" style="margin-top:12px;">
+            <button class="filter" onclick="showProductAlertsDetail()">Ver detalle</button>
           </div>
-          <div class="recipe-summary" style="margin-top:10px;">
-            <div><span>Anterior</span><strong>${formatCurrency(item.previousUnitCost)}</strong></div>
-            <div><span>Actual</span><strong>${formatCurrency(item.unitCost)}</strong></div>
-            <div><span>Recetas</span><strong>${escapeHtml((item.affectedRecipes || []).length)}</strong></div>
-          </div>
-          <div class="secondary" style="margin-top:8px;">${escapeHtml((item.affectedRecipes || []).join(", ") || "Sin recetas afectadas")}</div>
         </article>
-      `).join("");
+      `;
+    }
+
+    function showProductAlertsDetail() {
+      document.getElementById("alert-detail-title").textContent = "Insumos con variacion";
+      document.getElementById("alert-detail-subtitle").textContent = `${getSortedProductAlerts().length} insumo(s) con cambios fuertes de precio.`;
+      document.getElementById("alert-detail-body").innerHTML = `
+        ${field("Lectura rapida", "La lista esta ordenada por mayor impacto porcentual. Use el buscador para encontrar un insumo, proveedor o receta puntual.")}
+        <input id="product-alert-search" class="search" placeholder="Buscar insumo, proveedor o receta" oninput="renderProductAlertDetailRows()">
+        <div id="product-alert-detail-list">${renderProductAlertRows(getSortedProductAlerts())}</div>
+      `;
+      document.getElementById("alert-detail").classList.add("open");
     }
 
     function renderGlobalSearch() {
@@ -2920,34 +3762,150 @@
     function renderErpEvents() {
       const container = document.getElementById("erp-event-list");
       const events = erpData.events || [];
+      const activeEvents = events.filter((event) => event.status !== "done");
+      const completedEvents = events.filter((event) => event.status === "done");
 
       if (!events.length) {
         container.innerHTML = `<div class="empty">Todavia no hay eventos cargados.</div>`;
         return;
       }
 
-      container.innerHTML = events.map((event) => `
-        <article class="erp-card">
+      const activeHtml = activeEvents.length
+        ? activeEvents.map(renderEventControlCard).join("")
+        : `<div class="empty">No hay eventos activos. Los realizados quedan en el historial.</div>`;
+
+      const historyHtml = `
+        <details class="event-history" ${completedEvents.length ? "" : "open"}>
+          <summary>Historial realizados (${completedEvents.length})</summary>
+          ${completedEvents.length
+            ? completedEvents.map(renderEventHistoryRow).join("")
+            : `<div class="empty">Todavia no hay eventos realizados.</div>`}
+        </details>
+      `;
+
+      container.innerHTML = activeHtml + historyHtml;
+    }
+
+    function renderEventControlCard(event) {
+      return `
+        <article class="erp-card event-control-card" onclick="showEventOverview('${escapeAttribute(event.id)}')">
           <div class="erp-card-head">
             <div>
               <div class="erp-card-title">${escapeHtml(event.name)}</div>
-              <div class="erp-card-meta">${escapeHtml(event.clientName || "Sin cliente")} | ${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} | ${escapeHtml(event.guestCount || 0)} invitados</div>
+              <div class="erp-card-meta">${escapeHtml(event.clientName || "Sin cliente")} | ${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} | ${escapeHtml(event.guestCount || 0)} invitados ${event.owner ? `| ${escapeHtml(event.owner)}` : ""}</div>
             </div>
             <span class="erp-status">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
           </div>
-          <div class="erp-card-meta" style="margin-top:8px;">${escapeHtml(event.nextAction || "Sin proxima accion")} ${event.owner ? `| ${escapeHtml(event.owner)}` : ""}</div>
-          <div class="recipe-summary" style="margin-top:10px;">
-            <div><span>Presupuesto</span><strong>${formatCurrency(event.quoteTotal || 0)}</strong></div>
-            <div><span>Margen</span><strong>${formatPercent(event.quoteMarginPercent || 0)}</strong></div>
-            <div><span>Compras</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
+          <div class="event-finance">
+            <div class="event-number highlight"><span>Venta</span><strong>${formatCurrency(event.quoteTotal || 0)}</strong></div>
+            <div class="event-number"><span>Costo presupuesto</span><strong>${formatCurrency(event.quoteCostTotal || 0)}</strong></div>
+            <div class="event-number"><span>Compras reales</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
+            <div class="event-number warn"><span>Costo final</span><strong>${formatCurrency(event.finalCostTotal || 0)}</strong></div>
+            <div class="event-number highlight"><span>Margen final</span><strong>${formatCurrency(event.operationalMargin || 0)} (${formatPercent(event.operationalMarginPercent || 0)})</strong></div>
           </div>
-          <div class="actions" style="margin-top:10px;">
+          ${renderEventPurchases(event)}
+          <div class="event-checks">
+            ${renderEventCheck("Compras", event.checklist?.purchases)}
+            ${renderEventCheck("Produccion", event.checklist?.production)}
+            ${renderEventCheck("Personal", event.checklist?.staff)}
+            ${renderEventCheck("Logistica", event.checklist?.logistics)}
+            ${renderEventCheck("Menu", event.checklist?.menu)}
+            ${renderEventCheck("Pagos", event.checklist?.payments)}
+          </div>
+          <div class="actions" style="margin-top:10px;" onclick="event.stopPropagation()">
             <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}')">Editar</button>
             <button class="approve" onclick="startErpQuoteForEvent('${escapeAttribute(event.id)}')">Presupuestar</button>
+            <button class="filter" onclick="markErpEventDone('${escapeAttribute(event.id)}')">Realizado</button>
             <button class="reject" onclick="deleteErpEvent('${escapeAttribute(event.id)}')">Eliminar</button>
           </div>
         </article>
-      `).join("");
+      `;
+    }
+
+    function renderEventHistoryRow(event) {
+      return `
+        <div class="event-history-row" onclick="showEventOverview('${escapeAttribute(event.id)}')">
+          <div>
+            <strong>${escapeHtml(event.name)}</strong>
+            <span class="erp-card-meta">${escapeHtml(event.clientName || "Sin cliente")} | ${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")}</span>
+          </div>
+          <strong>${formatCurrency(event.quoteTotal || 0)}</strong>
+          <span class="erp-status">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
+        </div>
+      `;
+    }
+
+    function showEventOverview(id) {
+      const event = (erpData.events || []).find((item) => item.id === id);
+      if (!event) return;
+
+      document.getElementById("detail-title").textContent = event.name || "Evento";
+      document.getElementById("detail-subtitle").textContent = `${event.clientName || "Sin cliente"} | ${formatShortDate(event.eventDate) || "Sin fecha"} | ${event.guestCount || 0} invitados`;
+      document.getElementById("detail-fields").innerHTML = `
+        <div class="event-detail-grid">
+          <div class="event-detail-item"><span>Estado</span><strong>${escapeHtml(getErpEventStatusLabel(event.status))}</strong></div>
+          <div class="event-detail-item"><span>Responsable</span><strong>${escapeHtml(event.owner || "Sin responsable")}</strong></div>
+          <div class="event-detail-item"><span>Lugar</span><strong>${escapeHtml(event.venue || "Sin lugar")}</strong></div>
+          <div class="event-detail-item"><span>Servicio</span><strong>${escapeHtml(event.serviceType || "Sin servicio")}</strong></div>
+          <div class="event-detail-item"><span>Rol operativo</span><strong>${escapeHtml(event.role || "Sin definir")}</strong></div>
+          <div class="event-detail-item"><span>Proxima accion</span><strong>${escapeHtml(event.nextAction || "Sin definir")}</strong></div>
+        </div>
+        <div class="event-finance">
+          <div class="event-number highlight"><span>Venta</span><strong>${formatCurrency(event.quoteTotal || 0)}</strong></div>
+          <div class="event-number"><span>Costo presupuesto</span><strong>${formatCurrency(event.quoteCostTotal || 0)}</strong></div>
+          <div class="event-number"><span>Compras reales</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
+          <div class="event-number warn"><span>Costo final</span><strong>${formatCurrency(event.finalCostTotal || 0)}</strong></div>
+          <div class="event-number highlight"><span>Margen final</span><strong>${formatCurrency(event.operationalMargin || 0)} (${formatPercent(event.operationalMarginPercent || 0)})</strong></div>
+        </div>
+        ${renderEventPurchases(event)}
+        <div class="event-checks">
+          ${renderEventCheck("Compras", event.checklist?.purchases)}
+          ${renderEventCheck("Produccion", event.checklist?.production)}
+          ${renderEventCheck("Personal", event.checklist?.staff)}
+          ${renderEventCheck("Logistica", event.checklist?.logistics)}
+          ${renderEventCheck("Menu", event.checklist?.menu)}
+          ${renderEventCheck("Pagos", event.checklist?.payments)}
+        </div>
+        ${event.notes ? `<div class="event-detail-item" style="margin-top:12px;"><span>Notas</span>${escapeHtml(event.notes)}</div>` : ""}
+        <div class="actions" style="margin-top:12px;">
+          <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}'); hideDetail();">Editar</button>
+          <button class="approve" onclick="startErpQuoteForEvent('${escapeAttribute(event.id)}'); hideDetail();">Presupuestar</button>
+          ${event.status !== "done" ? `<button class="filter" onclick="markErpEventDone('${escapeAttribute(event.id)}'); hideDetail();">Realizado</button>` : ""}
+        </div>
+      `;
+      document.getElementById("detail").classList.add("open");
+    }
+
+    function renderEventPurchases(event) {
+      const purchases = event.purchases || [];
+      if (!purchases.length) {
+        return `<div class="empty" style="margin-top:12px;">No hay compras imputadas a este evento.</div>`;
+      }
+
+      return `
+        <div class="event-purchases">
+          <div class="event-purchase-row header">
+            <div>Fecha</div>
+            <div>Proveedor</div>
+            <div>Compra</div>
+            <div>Total</div>
+            <div>Pago</div>
+          </div>
+          ${purchases.map((purchase) => `
+            <div class="event-purchase-row">
+              <div>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</div>
+              <div>${escapeHtml(purchase.provider || "Sin proveedor")}</div>
+              <div>${escapeHtml(purchase.description || "Sin descripcion")}</div>
+              <div><strong>${formatCurrency(purchase.totalAmount || 0)}</strong></div>
+              <div><span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span></div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderEventCheck(label, done) {
+      return `<span class="event-check ${done ? "done" : ""}">${done ? "OK" : "Pendiente"} · ${escapeHtml(label)}</span>`;
     }
 
     function renderErpQuotes() {
@@ -3020,6 +3978,26 @@
       hideErpForms();
       await loadErp();
       await loadPurchaseOptions();
+    }
+
+    async function markErpEventDone(id) {
+      const event = (erpData.events || []).find((item) => item.id === id);
+      if (!event) return;
+
+      const response = await fetch("/api/erp-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...event, status: "done" }),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo marcar el evento como realizado.", "error");
+        return;
+      }
+
+      showNotice("Evento marcado como realizado.");
+      await loadErp();
     }
 
     function editErpEvent(id) {
@@ -3114,6 +4092,7 @@
 
       return {
         ...Object.fromEntries(new FormData(form).entries()),
+        manualPrice: form.elements.priceTotal.value,
         eventName: event?.name || "",
         clientName: event?.clientName || "",
         guestCount: event?.guestCount || "",
@@ -3175,10 +4154,11 @@
       if (!quote) return;
       showErpQuoteForm();
       const form = document.getElementById("erp-quote-form");
-      ["id", "status", "targetMarginPercent", "validUntil", "staffCost", "logisticsCost", "extraCost", "priceTotal", "notes"]
+      ["id", "status", "targetMarginPercent", "validUntil", "staffCost", "logisticsCost", "extraCost", "notes"]
         .forEach((field) => setFormValue(form, field, quote[field] || ""));
       ["version", "tablewareCost", "discountPercent", "discountAmount", "taxRate"]
         .forEach((field) => setFormValue(form, field, quote[field] || ""));
+      setFormValue(form, "priceTotal", quote.manualPrice || "");
       renderErpQuoteEventOptions(quote.eventId || "");
       document.getElementById("erp-quote-lines").innerHTML = "";
       erpQuoteLineCounter = 0;
@@ -3355,6 +4335,143 @@
       await loadCustomers();
       await loadState();
       showNotice("Cliente guardado correctamente.");
+    }
+
+    async function loadProviders() {
+      const response = await fetch("/api/providers");
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudieron cargar los proveedores.", "error");
+        return;
+      }
+
+      allProviders = result.providers || [];
+      renderProviders();
+    }
+
+    function renderProviders() {
+      const term = normalizeSearch(document.getElementById("provider-search").value);
+      const filtered = allProviders.filter((provider) => normalizeSearch([
+        provider.name,
+        provider.legalName,
+        provider.cuit,
+        provider.ivaCondition,
+        provider.contactName,
+        provider.phone,
+        provider.email,
+        provider.bankName,
+        provider.cbu,
+        provider.alias,
+        provider.category,
+        provider.notes,
+      ].join(" ")).includes(term));
+
+      const list = document.getElementById("provider-list");
+      if (!filtered.length) {
+        list.innerHTML = `<div class="empty">Todavia no hay proveedores para mostrar.</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map((provider) => `
+        <article class="provider-card">
+          <div class="provider-card-head">
+            <div>
+              <div class="provider-title">${escapeHtml(provider.name || "Sin nombre")}</div>
+              <div class="provider-meta">${escapeHtml(provider.legalName || "Razon social pendiente")}</div>
+              <div class="provider-meta">${escapeHtml([provider.cuit, provider.ivaCondition].filter(Boolean).join(" · ") || "Datos fiscales pendientes")}</div>
+            </div>
+            <button class="menu-dot" type="button" onclick="editProvider('${escapeAttribute(provider.id)}')">...</button>
+          </div>
+          <div class="provider-stats">
+            <div class="provider-stat"><span>Compras</span><strong>${escapeHtml(provider.purchaseCount || 0)}</strong></div>
+            <div class="provider-stat"><span>Total comprado</span><strong>${formatCurrency(provider.totalPurchased || 0)}</strong></div>
+            <div class="provider-stat"><span>Ultima compra</span><strong>${escapeHtml(formatShortDate(provider.lastPurchaseDate) || "Sin fecha")}</strong></div>
+          </div>
+          <div class="provider-meta">${escapeHtml([provider.bankName, provider.alias || provider.cbu].filter(Boolean).join(" · ") || "Datos bancarios pendientes")}</div>
+          <div class="provider-meta">${escapeHtml([provider.contactName, provider.phone, provider.email].filter(Boolean).join(" · ") || "Contacto pendiente")}</div>
+        </article>
+      `).join("");
+    }
+
+    function editProvider(id) {
+      const provider = allProviders.find((item) => item.id === id);
+      if (!provider) return;
+      const form = document.getElementById("provider-form");
+      [
+        "id",
+        "name",
+        "legalName",
+        "cuit",
+        "ivaCondition",
+        "contactName",
+        "phone",
+        "email",
+        "address",
+        "bankName",
+        "bankAccountType",
+        "bankAccountNumber",
+        "cbu",
+        "alias",
+        "paymentTerms",
+        "category",
+        "notes",
+      ].forEach((field) => setFormValue(form, field, provider[field] || ""));
+    }
+
+    function resetProviderForm() {
+      document.getElementById("provider-form").reset();
+      document.getElementById("provider-form").elements.id.value = "";
+    }
+
+    async function saveProvider(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const response = await fetch("/api/provider", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el proveedor.", "error");
+        return;
+      }
+
+      allProviders = result.providers || allProviders;
+      renderProviders();
+      await loadPurchaseOptions();
+      showNotice("Proveedor guardado correctamente.");
+    }
+
+    async function deleteSelectedProvider() {
+      const form = document.getElementById("provider-form");
+      const id = form.elements.id.value;
+      const provider = allProviders.find((item) => item.id === id);
+      if (!id || !provider) {
+        showNotice("Seleccione un proveedor para eliminar.", "error");
+        return;
+      }
+
+      if (!confirm(`Eliminar proveedor ${provider.name}?`)) return;
+
+      const response = await fetch("/api/delete-provider", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo eliminar el proveedor.", "error");
+        return;
+      }
+
+      allProviders = result.providers || [];
+      resetProviderForm();
+      renderProviders();
+      showNotice("Proveedor eliminado.");
     }
 
     async function saveCostSettings(event) {
@@ -4260,7 +5377,7 @@
             <div class="primary">${escapeHtml(chat.nextAction || "Sin definir")}</div>
             <div class="secondary">${escapeHtml(chat.data?.statusReason || "")}</div>
           </div>
-          <div class="actions" onclick="event.stopPropagation()">
+          <div class="row-actions" onclick="event.stopPropagation()">
             ${renderActions(chat)}
           </div>
         </article>
@@ -4272,7 +5389,7 @@
         return `
           <button class="approve" onclick="approve('${chat.approvalId}')">Iniciar</button>
           <button class="reject" onclick="rejectRequest('${chat.approvalId}')">Ignorar</button>
-          <button class="reject" onclick="deleteBudget('${escapeAttribute(chat.phone)}')">Eliminar</button>
+          <button class="reject wide-action" onclick="deleteBudget('${escapeAttribute(chat.phone)}')">Eliminar</button>
         `;
       }
 
@@ -4286,10 +5403,24 @@
         <button class="filter" onclick="showDetail('${escapeAttribute(chat.phone)}')">Ver</button>
         <button class="filter" onclick="showEditForm('${escapeAttribute(chat.phone)}')">Editar</button>
         <button class="approve" onclick="markStatus('${escapeAttribute(chat.phone)}', 'ready_to_quote')">Listo</button>
-        <button class="filter" onclick="markStatus('${escapeAttribute(chat.phone)}', 'proposal_sent')">Enviada</button>
-        <button class="filter" onclick="markStatus('${escapeAttribute(chat.phone)}', 'follow_up')">Seguimiento</button>
-        <button class="reject" onclick="deleteBudget('${escapeAttribute(chat.phone)}')">Eliminar</button>
+        <button class="menu-dot" type="button" onclick="showCommercialActions('${escapeAttribute(chat.phone)}')">...</button>
       `;
+    }
+
+    function showCommercialActions(phone) {
+      const chat = allChats.find((item) => item.phone === phone);
+      if (!chat) return;
+
+      document.getElementById("detail-title").textContent = chat.data?.fullName || chat.displayPhone || "Acciones";
+      document.getElementById("detail-subtitle").textContent = "Cambiar estado o eliminar oportunidad";
+      document.getElementById("detail-fields").innerHTML = `
+        <div class="actions">
+          <button class="filter" onclick="hideDetail(); markStatus('${escapeAttribute(phone)}', 'proposal_sent')">Propuesta enviada</button>
+          <button class="filter" onclick="hideDetail(); markStatus('${escapeAttribute(phone)}', 'follow_up')">Seguimiento</button>
+          <button class="reject" onclick="hideDetail(); deleteBudget('${escapeAttribute(phone)}')">Eliminar</button>
+        </div>
+      `;
+      document.getElementById("detail").classList.add("open");
     }
 
     async function approve(id) {

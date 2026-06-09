@@ -39,6 +39,7 @@ const COST_SETTINGS_FILE = dataPath("costos-bot.json");
 const ERP_EVENTS_FILE = dataPath("eventos-erp.json");
 const ERP_QUOTES_FILE = dataPath("presupuestos-erp.json");
 const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
+const ERP_PROVIDERS_FILE = dataPath("proveedores-erp.json");
 const PANEL_AUTH_USER = process.env.PANEL_AUTH_USER || BOT_CONFIG.panelAuthUser || "admin";
 const PANEL_AUTH_PASSWORD = process.env.PANEL_AUTH_PASSWORD || BOT_CONFIG.panelAuthPassword || "";
 const PURCHASE_SYNC_TOKEN = process.env.PURCHASE_SYNC_TOKEN || BOT_CONFIG.purchaseSyncToken || "";
@@ -116,6 +117,7 @@ let costSettings = {};
 let erpEvents = [];
 let erpQuotes = [];
 let erpPurchases = [];
+let erpProviders = [];
 const approvedCustomers = new Set();
 const processedMessageIds = new Set();
 const WHATSAPP_INIT_MAX_ATTEMPTS = Number(process.env.WHATSAPP_INIT_MAX_ATTEMPTS || 3);
@@ -498,6 +500,14 @@ function addPurchaseOption(type, value) {
     saveBotConfig();
   }
 
+  if (type === "provider") {
+    syncProvidersFromPurchasesAndConfig();
+    if (!erpProviders.some((provider) => normalizeSearchKey(provider.name) === normalizeSearchKey(cleanValue))) {
+      erpProviders.push(normalizeProviderRecord({ name: cleanValue }));
+      saveErpProviders();
+    }
+  }
+
   return {
     type,
     value: cleanValue,
@@ -569,6 +579,13 @@ function startApprovalPanelServer() {
         });
       }
 
+      if (request.method === "GET" && requestUrl.pathname === "/api/providers") {
+        return sendJson(response, {
+          ok: true,
+          providers: getProviderList(),
+        });
+      }
+
       if (request.method === "GET" && requestUrl.pathname === "/api/recipes") {
         return sendJson(response, {
           ok: true,
@@ -587,6 +604,7 @@ function startApprovalPanelServer() {
           confirmedEvents: getConfirmedEventList(),
           quotes: getErpQuoteList(),
           purchases: getErpPurchaseList(),
+          providers: getProviderList(),
           recipes: getRecipeList(),
           customers: getCustomerInsights(),
           productAlerts: getProductPriceAlerts(),
@@ -720,6 +738,18 @@ function startApprovalPanelServer() {
         const body = await readJsonBody(request);
         const result = addPurchaseOption(body.type, body.value);
         return sendJson(response, { ok: true, result });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/provider") {
+        const body = await readJsonBody(request);
+        const provider = saveProviderRecord(body);
+        return sendJson(response, { ok: true, provider, providers: getProviderList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/delete-provider") {
+        const body = await readJsonBody(request);
+        const result = deleteProviderRecord(body.id);
+        return sendJson(response, { ok: true, result, providers: getProviderList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase-invoice-ocr") {
@@ -905,6 +935,7 @@ function buildGoogleSheetsModel() {
   const events = getErpEventList();
   const quotes = getErpQuoteList();
   const purchases = getErpPurchaseList();
+  const providers = getProviderList();
 
   return [
     makeSheet("Dashboard", [
@@ -934,8 +965,11 @@ function buildGoogleSheetsModel() {
       "Responsable",
       "Proxima accion",
       "Presupuesto aceptado",
-      "Margen %",
+      "Costo presupuesto",
       "Compras imputadas",
+      "Costo final",
+      "Margen final",
+      "Margen final %",
       "Notas",
       "Checklist compras",
       "Checklist produccion",
@@ -957,8 +991,11 @@ function buildGoogleSheetsModel() {
       Responsable: event.owner,
       "Proxima accion": event.nextAction,
       "Presupuesto aceptado": event.quoteTotal,
-      "Margen %": event.quoteMarginPercent,
+      "Costo presupuesto": event.quoteCostTotal,
       "Compras imputadas": event.purchaseTotal,
+      "Costo final": event.finalCostTotal,
+      "Margen final": event.operationalMargin,
+      "Margen final %": event.operationalMarginPercent,
       Notas: event.notes,
       "Checklist compras": event.checklist?.purchases,
       "Checklist produccion": event.checklist?.production,
@@ -1083,6 +1120,53 @@ function buildGoogleSheetsModel() {
       Unitario: item.unitAmount,
       Total: item.total,
     })))),
+    makeSheet("Proveedores", [
+      "ID",
+      "Nombre comercial",
+      "Razon social",
+      "CUIT",
+      "Condicion IVA",
+      "Contacto",
+      "Telefono",
+      "Email",
+      "Direccion",
+      "Banco",
+      "Tipo cuenta",
+      "Nro cuenta",
+      "CBU/CVU",
+      "Alias",
+      "Condicion pago",
+      "Categoria",
+      "Compras",
+      "Total comprado",
+      "Ultima compra",
+      "Notas",
+      "Creado",
+      "Actualizado",
+    ], providers.map((provider) => ({
+      ID: provider.id,
+      "Nombre comercial": provider.name,
+      "Razon social": provider.legalName,
+      CUIT: provider.cuit,
+      "Condicion IVA": provider.ivaCondition,
+      Contacto: provider.contactName,
+      Telefono: provider.phone,
+      Email: provider.email,
+      Direccion: provider.address,
+      Banco: provider.bankName,
+      "Tipo cuenta": provider.bankAccountType,
+      "Nro cuenta": provider.bankAccountNumber,
+      "CBU/CVU": provider.cbu,
+      Alias: provider.alias,
+      "Condicion pago": provider.paymentTerms,
+      Categoria: provider.category,
+      Compras: provider.purchaseCount,
+      "Total comprado": provider.totalPurchased,
+      "Ultima compra": provider.lastPurchaseDate,
+      Notas: provider.notes,
+      Creado: provider.createdAt,
+      Actualizado: provider.updatedAt,
+    }))),
     makeSheet("Clientes", [
       "ID",
       "Telefono",
@@ -1263,6 +1347,8 @@ function loadBusinessData() {
   erpEvents = readJsonFile(ERP_EVENTS_FILE, []);
   erpQuotes = readJsonFile(ERP_QUOTES_FILE, []);
   erpPurchases = readJsonFile(ERP_PURCHASES_FILE, []);
+  erpProviders = readJsonFile(ERP_PROVIDERS_FILE, []);
+  syncProvidersFromPurchasesAndConfig();
 }
 
 function readJsonFile(filePath, fallback) {
@@ -1347,6 +1433,173 @@ function saveErpQuotes() {
 
 function saveErpPurchases() {
   writeJsonFile(ERP_PURCHASES_FILE, erpPurchases);
+}
+
+function saveErpProviders() {
+  writeJsonFile(ERP_PROVIDERS_FILE, erpProviders);
+}
+
+function getProviderList() {
+  syncProvidersFromPurchasesAndConfig();
+  const stats = getProviderStats();
+  return erpProviders
+    .map((provider) => normalizeProviderRecord(provider, stats[normalizeSearchKey(provider.name)] || {}))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function normalizeProviderRecord(provider = {}, stats = {}) {
+  const now = new Date().toISOString();
+  const name = normalizeText(provider.name || provider.displayName || "");
+  return {
+    id: provider.id || createProviderId(name),
+    name,
+    legalName: normalizeText(provider.legalName || ""),
+    cuit: normalizeText(provider.cuit || ""),
+    ivaCondition: normalizeText(provider.ivaCondition || ""),
+    contactName: normalizeText(provider.contactName || ""),
+    phone: normalizeText(provider.phone || ""),
+    email: normalizeText(provider.email || ""),
+    address: normalizeText(provider.address || ""),
+    bankName: normalizeText(provider.bankName || ""),
+    bankAccountType: normalizeText(provider.bankAccountType || ""),
+    bankAccountNumber: normalizeText(provider.bankAccountNumber || ""),
+    cbu: normalizeText(provider.cbu || ""),
+    alias: normalizeText(provider.alias || ""),
+    paymentTerms: normalizeText(provider.paymentTerms || ""),
+    category: normalizeText(provider.category || ""),
+    notes: normalizeText(provider.notes || ""),
+    purchaseCount: Number(stats.purchaseCount || provider.purchaseCount || 0),
+    totalPurchased: roundMoney(Number(stats.totalPurchased || provider.totalPurchased || 0)),
+    lastPurchaseDate: stats.lastPurchaseDate || provider.lastPurchaseDate || "",
+    createdAt: provider.createdAt || now,
+    updatedAt: provider.updatedAt || provider.createdAt || now,
+  };
+}
+
+function getProviderStats() {
+  return erpPurchases.reduce((stats, purchase) => {
+    const name = normalizeText(purchase.provider || "");
+    const key = normalizeSearchKey(name);
+    if (!key) return stats;
+
+    if (!stats[key]) {
+      stats[key] = { purchaseCount: 0, totalPurchased: 0, lastPurchaseDate: "" };
+    }
+
+    stats[key].purchaseCount += 1;
+    stats[key].totalPurchased += Number(purchase.totalAmount || 0);
+    if (String(purchase.date || "") > String(stats[key].lastPurchaseDate || "")) {
+      stats[key].lastPurchaseDate = purchase.date || "";
+    }
+    return stats;
+  }, {});
+}
+
+function syncProvidersFromPurchasesAndConfig() {
+  const existing = new Map();
+  let changed = false;
+  erpProviders = (Array.isArray(erpProviders) ? erpProviders : [])
+    .map((provider) => normalizeProviderRecord(provider))
+    .filter((provider) => provider.name);
+
+  erpProviders.forEach((provider) => existing.set(normalizeSearchKey(provider.name), provider));
+
+  [
+    ...getConfigList("purchaseProviders"),
+    ...erpPurchases.map((purchase) => purchase.provider),
+  ].forEach((name) => {
+    const cleanName = normalizeText(name || "");
+    const key = normalizeSearchKey(cleanName);
+    if (!key || existing.has(key)) return;
+
+    const provider = normalizeProviderRecord({ name: cleanName });
+    erpProviders.push(provider);
+    existing.set(key, provider);
+    changed = true;
+  });
+
+  if (changed) {
+    saveErpProviders();
+  }
+}
+
+function saveProviderRecord(input = {}) {
+  const name = normalizeText(input.name || "");
+  if (!name) {
+    throw new Error("Ingrese el nombre del proveedor.");
+  }
+
+  syncProvidersFromPurchasesAndConfig();
+  const id = normalizeText(input.id || "") || createProviderId(name);
+  const nameKey = normalizeSearchKey(name);
+  const duplicate = erpProviders.find((provider) =>
+    provider.id !== id && normalizeSearchKey(provider.name) === nameKey
+  );
+
+  if (duplicate) {
+    throw new Error("Ya existe un proveedor con ese nombre.");
+  }
+
+  const index = erpProviders.findIndex((provider) => provider.id === id);
+  const previous = index >= 0 ? erpProviders[index] : {};
+  const provider = normalizeProviderRecord({
+    ...previous,
+    ...input,
+    id,
+    name,
+    createdAt: previous.createdAt || input.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+
+  if (index >= 0) {
+    erpProviders[index] = provider;
+  } else {
+    erpProviders.push(provider);
+  }
+
+  ensurePurchaseOptionExists("provider", provider.name);
+  saveErpProviders();
+  return normalizeProviderRecord(provider, getProviderStats()[normalizeSearchKey(provider.name)] || {});
+}
+
+function deleteProviderRecord(id) {
+  const cleanId = normalizeText(id || "");
+  const provider = erpProviders.find((item) => item.id === cleanId);
+  if (!provider) {
+    throw new Error("No encontre ese proveedor.");
+  }
+
+  const hasPurchases = erpPurchases.some((purchase) =>
+    normalizeSearchKey(purchase.provider) === normalizeSearchKey(provider.name)
+  );
+  if (hasPurchases) {
+    throw new Error("No se puede eliminar porque tiene compras asociadas. Puede editar sus datos.");
+  }
+
+  erpProviders = erpProviders.filter((item) => item.id !== cleanId);
+  removePurchaseProviderOption(provider.name);
+  saveErpProviders();
+  return { id: cleanId, deleted: true };
+}
+
+function removePurchaseProviderOption(name) {
+  const key = "purchaseProviders";
+  const providerKey = normalizeSearchKey(name || "");
+  if (!providerKey || !Array.isArray(BOT_CONFIG[key])) return;
+
+  const previousLength = BOT_CONFIG[key].length;
+  BOT_CONFIG[key] = BOT_CONFIG[key].filter((item) => normalizeSearchKey(item) !== providerKey);
+  if (BOT_CONFIG[key].length !== previousLength) {
+    saveBotConfig();
+  }
+}
+
+function createProviderId(name) {
+  const base = normalizeSearchKey(name)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 70);
+  return `proveedor-${base || Date.now()}`;
 }
 
 function getCustomerList() {
@@ -1765,7 +2018,8 @@ function getErpDashboard() {
   const purchases = getErpPurchaseList();
   const today = getDateOnly(new Date());
   const upcomingEvents = events.filter((event) => event.eventDate && event.eventDate >= today);
-  const confirmedEvents = events.filter((event) => event.status === "confirmed" || event.status === "production");
+  const confirmedEvents = events.filter((event) => ["confirmed", "production"].includes(event.status));
+  const completedEvents = events.filter((event) => event.status === "done");
   const openQuotes = quotes.filter((quote) => ["draft", "sent", "negotiation"].includes(quote.status));
   const acceptedQuotes = quotes.filter((quote) => quote.status === "accepted");
   const pendingPurchases = purchases.filter((purchase) => purchase.paymentStatus !== "Pagado");
@@ -1777,6 +2031,7 @@ function getErpDashboard() {
     eventsTotal: events.length,
     upcomingEvents: upcomingEvents.length,
     confirmedEvents: confirmedEvents.length,
+    completedEvents: completedEvents.length,
     openQuotes: openQuotes.length,
     acceptedQuotes: acceptedQuotes.length,
     estimatedRevenue: roundMoney(estimatedRevenue),
@@ -1928,6 +2183,7 @@ function getPipelineBoard() {
     { id: "proposal_sent", label: "Propuesta enviada", items: [] },
     { id: "follow_up", label: "Seguimiento", items: [] },
     { id: "confirmed", label: "Confirmado", items: [] },
+    { id: "done", label: "Realizado", items: [] },
     { id: "lost", label: "Perdido", items: [] },
   ];
   const byId = new Map(columns.map((column) => [column.id, column]));
@@ -1979,7 +2235,7 @@ function mapPipelineStatus(status) {
     follow_up: "follow_up",
     confirmed: "confirmed",
     production: "confirmed",
-    done: "confirmed",
+    done: "done",
     lost: "lost",
     ignored: "lost",
     referred: "lost",
@@ -1990,7 +2246,7 @@ function mapPipelineStatus(status) {
 
 function getConfirmedEventList() {
   return getErpEventList()
-    .filter((event) => ["confirmed", "production"].includes(event.status))
+    .filter((event) => ["confirmed", "production", "done"].includes(event.status))
     .map((event) => ({
       ...event,
       checklist: normalizeOperationalChecklist(event.checklist),
@@ -2000,6 +2256,10 @@ function getConfirmedEventList() {
           normalizeSearchKey(purchase.eventName) === normalizeSearchKey(event.name) &&
           purchase.paymentStatus !== "Pagado"
       ).length,
+      operationalMargin: roundMoney(Number(event.quoteTotal || 0) - Number(event.finalCostTotal || 0)),
+      operationalMarginPercent: Number(event.quoteTotal || 0) > 0
+        ? roundMoney(((Number(event.quoteTotal || 0) - Number(event.finalCostTotal || 0)) / Number(event.quoteTotal || 0)) * 100)
+        : 0,
     }));
 }
 
@@ -2054,6 +2314,9 @@ function normalizeErpEvent(event = {}) {
   const quote = getBestQuoteForEvent(event.id);
   const purchases = getErpPurchaseList().filter((purchase) => purchase.eventName && normalizeSearchKey(purchase.eventName) === normalizeSearchKey(event.name));
   const purchaseTotal = purchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
+  const quoteCostTotal = quote ? Number(quote.costTotal || 0) : 0;
+  const finalCostTotal = quoteCostTotal + purchaseTotal;
+  const finalMargin = quote ? Number(quote.priceTotal || 0) - finalCostTotal : 0;
 
   return {
     id: event.id || `evento-${Date.now()}`,
@@ -2076,8 +2339,20 @@ function normalizeErpEvent(event = {}) {
     checklist: normalizeOperationalChecklist(event.checklist || event),
     notes: normalizeText(event.notes || ""),
     quoteTotal: quote ? Number(quote.priceTotal || 0) : 0,
+    quoteCostTotal: roundMoney(quoteCostTotal),
     quoteMarginPercent: quote ? Number(quote.marginPercent || 0) : 0,
     purchaseTotal: roundMoney(purchaseTotal),
+    finalCostTotal: roundMoney(finalCostTotal),
+    operationalMargin: roundMoney(finalMargin),
+    operationalMarginPercent: quote && Number(quote.priceTotal || 0) > 0 ? roundMoney((finalMargin / Number(quote.priceTotal || 0)) * 100) : 0,
+    purchases: purchases.map((purchase) => ({
+      id: purchase.id,
+      date: purchase.date,
+      provider: purchase.provider,
+      description: purchase.description,
+      paymentStatus: purchase.paymentStatus,
+      totalAmount: purchase.totalAmount,
+    })),
     createdAt: event.createdAt || "",
     updatedAt: event.updatedAt || "",
   };
@@ -2170,6 +2445,7 @@ function normalizeErpQuote(quote = {}) {
     discountPercent: roundMoney(Number(quote.discountPercent || 0)),
     taxRate: roundMoney(Number(quote.taxRate || 0)),
     taxAmount: roundMoney(Number(quote.taxAmount || 0)),
+    manualPrice: roundMoney(Number(quote.manualPrice || 0)),
     tablewareCost: roundMoney(Number(quote.tablewareCost || 0)),
     logisticsCost: roundMoney(Number(quote.logisticsCost || 0)),
     staffCost: roundMoney(Number(quote.staffCost || 0)),
@@ -2254,7 +2530,7 @@ function calculateErpQuote(input) {
   const extraCost = parseDecimalNumber(input.extraCost || 0);
   const costTotal = roundMoney(recipeCost + staffCost + logisticsCost + tablewareCost + extraCost);
   const targetMarginPercent = Math.min(95, Math.max(0, parseDecimalNumber(input.targetMarginPercent || getDefaultMarginForEvent(input.eventName || input.serviceType || ""))));
-  const manualPrice = parseDecimalNumber(input.priceTotal || 0);
+  const manualPrice = parseDecimalNumber(input.manualPrice || input.priceManual || 0);
   const suggestedPrice = targetMarginPercent >= 95 ? costTotal : costTotal / (1 - targetMarginPercent / 100);
   const subtotalBeforeDiscount = manualPrice > 0 ? manualPrice : roundMoney(suggestedPrice);
   const discountPercent = Math.max(0, parseDecimalNumber(input.discountPercent || 0));
@@ -2269,6 +2545,7 @@ function calculateErpQuote(input) {
     recipes: recipeLines,
     costTotal,
     priceTotal,
+    manualPrice,
     subtotalBeforeDiscount,
     discountPercent,
     discountAmount,
@@ -2344,19 +2621,41 @@ function getBestQuoteForEvent(eventId) {
 }
 
 function getErpPurchaseList() {
-  return erpPurchases.map((purchase) => ({
-    ...purchase,
-    invoiceType: purchase.invoiceType || "",
-    netAmount: roundMoney(Number(purchase.netAmount || purchase.totalAmount || 0)),
-    ivaRate: roundMoney(Number(purchase.ivaRate || 0)),
-    ivaAmount: roundMoney(Number(purchase.ivaAmount || 0)),
-    totalAmount: roundMoney(Number(purchase.totalAmount || 0)),
-    notes: purchase.notes || "",
-  })).sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  return erpPurchases.map((purchase) => {
+    const amounts = getPurchaseAmounts(purchase);
+    return {
+      ...purchase,
+      invoiceType: purchase.invoiceType || "",
+      netAmount: amounts.netAmount,
+      ivaRate: amounts.ivaRate,
+      ivaAmount: amounts.ivaAmount,
+      totalAmount: amounts.totalAmount,
+      notes: purchase.notes || "",
+    };
+  }).sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+}
+
+function getPurchaseAmounts(purchase = {}) {
+  const lineTotal = (purchase.lineItems || purchase.items || []).reduce(
+    (sum, item) => sum + Number(item.total || 0),
+    0
+  );
+  const rawIvaRate = Number(purchase.ivaRate || purchase.ivaPorcentaje || 0);
+  const ivaRate = roundMoney(rawIvaRate > 1 ? rawIvaRate / 100 : rawIvaRate);
+  const storedIvaAmount = roundMoney(Number(purchase.ivaAmount || purchase.ivaCalculado || 0));
+  const storedTotal = roundMoney(Number(purchase.totalAmount || purchase.montoTotal || purchase.total || 0));
+  const storedNet = roundMoney(Number(purchase.netAmount || purchase.neto || 0));
+  const netAmount = roundMoney(storedNet || lineTotal || (ivaRate > 0 ? storedTotal / (1 + ivaRate) : storedTotal));
+  const ivaAmount = roundMoney(storedIvaAmount || netAmount * ivaRate);
+  const grossAmount = roundMoney(netAmount + ivaAmount);
+  const totalAmount = ivaRate > 0 && grossAmount > storedTotal ? grossAmount : (storedTotal || grossAmount);
+
+  return { netAmount, ivaRate, ivaAmount, totalAmount };
 }
 
 function rememberErpPurchase(purchase) {
   const lineTotal = (purchase.lineItems || []).reduce((sum, item) => sum + Number(item.total || 0), 0);
+  const amounts = getPurchaseAmounts({ ...purchase, lineItems: purchase.lineItems || [] });
   const existingIndex = erpPurchases.findIndex((item) => item.id === purchase.id);
   const previous = existingIndex >= 0 ? erpPurchases[existingIndex] : {};
   const record = {
@@ -2369,10 +2668,10 @@ function rememberErpPurchase(purchase) {
     paymentMethod: purchase.medioPago || "",
     fundsSource: purchase.origenFondos || "",
     invoiceType: purchase.comprobante || "",
-    netAmount: roundMoney(Number(purchase.neto || 0)),
-    ivaRate: roundMoney(Number(purchase.ivaPorcentaje || 0)),
-    ivaAmount: roundMoney(Number(purchase.ivaCalculado || 0)),
-    totalAmount: roundMoney(Number(purchase.totalAmount || purchase.montoTotal || purchase.total || lineTotal || 0)),
+    netAmount: amounts.netAmount || roundMoney(Number(purchase.neto || lineTotal || 0)),
+    ivaRate: amounts.ivaRate,
+    ivaAmount: amounts.ivaAmount,
+    totalAmount: amounts.totalAmount,
     notes: purchase.observaciones || "",
     lineItems: purchase.lineItems || [],
     createdAt: previous.createdAt || purchase.createdAt || new Date().toISOString(),
@@ -2416,29 +2715,57 @@ async function importPurchasesFromSheets() {
   const rows = result.response?.purchases || result.response?.rows || [];
 
   if (!Array.isArray(rows)) {
-    throw new Error("Sheets no devolvio una lista de compras. Revise el Apps Script.");
+    const message = result.response?.message || result.response?.raw || JSON.stringify(result.response || {});
+    throw new Error(`Sheets no devolvio una lista de compras. La implementacion publicada parece seguir usando el Apps Script anterior. Respuesta: ${message}`);
   }
 
   let imported = 0;
+  let skipped = 0;
+  const errors = [];
   for (const row of rows) {
-    const purchase = buildPurchaseRecord({
-      ...row,
-      id: row.id,
-      date: row.date || row.fecha,
-      provider: row.provider || row.proveedor,
-      eventName: row.eventName || row.evento,
-      invoiceType: row.invoiceType || row.comprobante,
-      paymentStatus: row.paymentStatus || row.estadoPago,
-      paymentMethod: row.paymentMethod || row.medioPago,
-      fundsSource: row.fundsSource || row.origenFondos,
-      notes: row.notes || row.observaciones,
-      items: row.items || row.lineItems,
-    });
-    rememberErpPurchase(purchase);
-    imported += 1;
+    try {
+      const purchase = buildPurchaseRecord({
+        ...row,
+        id: getImportedPurchaseId(row),
+        date: row.date || row.fecha,
+        provider: row.provider || row.proveedor,
+        eventName: row.eventName || row.evento,
+        invoiceType: row.invoiceType || row.comprobante,
+        paymentStatus: row.paymentStatus || row.estadoPago,
+        paymentMethod: row.paymentMethod || row.medioPago,
+        fundsSource: row.fundsSource || row.origenFondos,
+        notes: row.notes || row.observaciones,
+        items: row.items || row.lineItems,
+      }, { requireEvent: false, defaultEvent: "Sin evento" });
+      rememberErpPurchase(purchase);
+      rememberPurchasePrices(purchase);
+      imported += 1;
+    } catch (error) {
+      skipped += 1;
+      if (errors.length < 5) {
+        errors.push(error.message);
+      }
+    }
   }
 
-  return { imported };
+  return { imported, skipped, errors };
+}
+
+function getImportedPurchaseId(row = {}) {
+  const existingId = normalizeText(row.id || row.purchaseId || "");
+  if (existingId) return existingId;
+
+  const rowNumber = normalizeText(row.rowNumber || row.row || "");
+  if (rowNumber) return `sheets-row-${rowNumber}`;
+
+  return [
+    "sheets",
+    normalizeText(row.date || row.fecha || ""),
+    normalizeText(row.provider || row.proveedor || ""),
+    normalizeText(row.description || row.descripcion || ""),
+    normalizeText(row.eventName || row.evento || ""),
+    normalizeText(row.totalAmount || row.total || ""),
+  ].join("-");
 }
 
 function validatePurchaseSyncToken(body = {}) {
@@ -2474,7 +2801,7 @@ function applyPurchaseSync(input = {}) {
     fundsSource: purchaseInput.fundsSource || purchaseInput.origenFondos,
     notes: purchaseInput.notes || purchaseInput.observaciones,
     items: purchaseInput.items || purchaseInput.lineItems,
-  });
+  }, { requireEvent: false, defaultEvent: "Sin evento" });
   const saved = rememberErpPurchase(purchase);
   rememberPurchasePrices(purchase);
   return { action: "upsert", purchase: saved };
@@ -3832,15 +4159,17 @@ function ensurePurchaseOptionExists(type, value) {
   return true;
 }
 
-function buildPurchaseRecord(input) {
+function buildPurchaseRecord(input, options = {}) {
+  const requireEvent = options.requireEvent !== false;
   const lineItems = parsePurchaseItems(input);
   const firstItem = lineItems[0];
-  const totalAmount = roundMoney(
+  const netAmount = roundMoney(
     lineItems.reduce((sum, item) => sum + item.total, 0)
   );
-  const ivaRate = parseOptionalNumber(input.ivaRate);
-  const netAmount = totalAmount;
+  const rawIvaRate = parseOptionalNumber(input.ivaRate);
+  const ivaRate = rawIvaRate > 1 ? rawIvaRate / 100 : rawIvaRate;
   const ivaAmount = roundMoney(netAmount * ivaRate);
+  const totalAmount = roundMoney(netAmount + ivaAmount);
 
   const purchase = {
     id: input.id || `compra-${Date.now()}`,
@@ -3855,11 +4184,11 @@ function buildPurchaseRecord(input) {
     montoUnitario: firstItem.unitAmount,
     montoTotal: totalAmount,
     comprobante: normalizeText(input.invoiceType || ""),
-    evento: normalizeText(input.eventName || ""),
+    evento: normalizeText(input.eventName || "") || (requireEvent ? "" : normalizeText(options.defaultEvent || "Sin evento")),
     neto: netAmount,
     ivaPorcentaje: ivaRate,
     ivaCalculado: ivaAmount,
-    total: roundMoney(netAmount + ivaAmount),
+    total: totalAmount,
     estadoPago: normalizeText(input.paymentStatus || "Pendiente"),
     medioPago: normalizeText(input.paymentMethod || ""),
     origenFondos: normalizeText(input.fundsSource || ""),
@@ -3874,6 +4203,9 @@ function buildPurchaseRecord(input) {
     quantity: purchase.cantidad,
     unitAmount: purchase.montoUnitario,
     totalAmount: purchase.montoTotal,
+    netAmount: purchase.neto,
+    ivaRate: purchase.ivaPorcentaje,
+    ivaAmount: purchase.ivaCalculado,
     invoiceType: purchase.comprobante,
     eventName: purchase.evento,
     paymentStatus: purchase.estadoPago,
@@ -3895,7 +4227,7 @@ function buildPurchaseRecord(input) {
     throw new Error("Ingrese la descripcion de la compra.");
   }
 
-  if (!purchase.evento) {
+  if (requireEvent && !purchase.evento) {
     throw new Error("Ingrese el evento al que corresponde la compra.");
   }
 
@@ -3955,7 +4287,7 @@ function parseOptionalNumber(value) {
     return 0;
   }
 
-  const number = Number(String(value).replace(",", "."));
+  const number = Number(String(value).replace(",", ".").replace(/[^\d.-]/g, ""));
   return Number.isFinite(number) ? number : 0;
 }
 
@@ -4767,7 +5099,7 @@ function renderMessage(message, data = {}) {
 }
 
 function normalizeText(value) {
-  return value.trim().replace(/\s+/g, " ");
+  return String(value ?? "").trim().replace(/\s+/g, " ");
 }
 
 function isResetCommand(text) {

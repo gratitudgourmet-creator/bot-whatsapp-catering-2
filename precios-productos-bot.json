@@ -1,38 +1,4097 @@
 {
   "jengibre x rama": {
     "name": "JENGIBRE X RAMA",
-    "unitCost": 15000,
-    "previousUnitCost": 98444,
-    "changePercent": -84.76,
-    "lastPurchaseDate": "2026-06-08",
-    "provider": "FARMACIA BELGRANO",
-    "updatedAt": "2026-06-08T02:35:28.498Z"
+    "unitCost": 1650,
+    "previousUnitCost": 1650,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-28",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:41.221Z"
   },
   "trapo convencional gris": {
     "name": "TRAPO CONVENCIONAL GRIS",
-    "unitCost": 52221.98,
-    "previousUnitCost": 0,
+    "unitCost": 1635.2444999999998,
+    "previousUnitCost": 1635.2444999999998,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-06-08",
+    "lastPurchaseDate": "2026-02-26",
     "provider": "BACA LOGISTICA CUYO SAS",
-    "updatedAt": "2026-06-08T01:56:00.119Z"
+    "updatedAt": "2026-06-08T17:48:40.572Z"
   },
   "envio": {
     "name": "ENVIO",
     "unitCost": 12000,
-    "previousUnitCost": 0,
-    "changePercent": 0,
+    "previousUnitCost": 18000,
+    "changePercent": -33.33,
     "lastPurchaseDate": "2026-06-08",
     "provider": "FLETE FELIPE",
-    "updatedAt": "2026-06-08T02:23:09.717Z"
+    "updatedAt": "2026-06-08T17:48:57.479Z"
   },
   "molida int x mayor": {
     "name": "MOLIDA INT X MAYOR",
+    "unitCost": 8500,
+    "previousUnitCost": 8500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:53.816Z"
+  },
+  "fiambre muestra palco": {
+    "name": "FIAMBRE MUESTRA PALCO",
+    "unitCost": 32761.28,
+    "previousUnitCost": 32761.28,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-02",
+    "provider": "TORRENT",
+    "updatedAt": "2026-06-08T17:48:32.452Z"
+  },
+  "aceite x 1,5l": {
+    "name": "ACEITE X 1,5L",
+    "unitCost": 4538.15,
+    "previousUnitCost": 5200,
+    "changePercent": -12.73,
+    "lastPurchaseDate": "2026-02-05",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:34.303Z"
+  },
+  "papel higienico x4": {
+    "name": "PAPEL HIGIENICO X4",
     "unitCost": 18000,
+    "previousUnitCost": 18000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-02",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:32.506Z"
+  },
+  "servilleta 24x24": {
+    "name": "SERVILLETA 24X24",
+    "unitCost": 8842.98,
+    "previousUnitCost": 7700,
+    "changePercent": 14.84,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:42.916Z"
+  },
+  "bobina papel fajina": {
+    "name": "BOBINA PAPEL FAJINA",
+    "unitCost": 13000,
+    "previousUnitCost": 13000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-02",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:32.560Z"
+  },
+  "frutas": {
+    "name": "FRUTAS",
+    "unitCost": 4400,
+    "previousUnitCost": 4400,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-02",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:32.588Z"
+  },
+  "sandwich jyq x6": {
+    "name": "SANDWICH JYQ X6",
+    "unitCost": 14300,
+    "previousUnitCost": 11818.181818181818,
+    "changePercent": 21,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:46.192Z"
+  },
+  "verdura": {
+    "name": "VERDURA",
+    "unitCost": 1600,
+    "previousUnitCost": 1600,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-05",
+    "provider": "VERDULERIA",
+    "updatedAt": "2026-06-09T13:20:30.333Z"
+  },
+  "maple de huevos": {
+    "name": "MAPLE DE HUEVOS",
+    "unitCost": 5416.666666666667,
+    "previousUnitCost": 5600,
+    "changePercent": -3.27,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "YAMI HUEVOS",
+    "updatedAt": "2026-06-08T17:48:57.058Z"
+  },
+  "nafta infinia": {
+    "name": "NAFTA INFINIA",
+    "unitCost": 30039.55,
+    "previousUnitCost": 60214,
+    "changePercent": -50.11,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "YPF LAMADRID / RUMAOS SA",
+    "updatedAt": "2026-06-08T17:48:55.858Z"
+  },
+  "salsa x8": {
+    "name": "SALSA X8",
+    "unitCost": 9000,
+    "previousUnitCost": 9000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-02",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:32.760Z"
+  },
+  "bolsa de cebolla": {
+    "name": "BOLSA DE CEBOLLA",
+    "unitCost": 6000,
+    "previousUnitCost": 6000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:46.784Z"
+  },
+  "cafe en grano": {
+    "name": "CAFE EN GRANO",
+    "unitCost": 64703.61,
+    "previousUnitCost": 78291.37,
+    "changePercent": -17.36,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "VENDNET CUYO",
+    "updatedAt": "2026-06-08T17:48:39.667Z"
+  },
+  "estacionamiento uvas caramelos pastafrola": {
+    "name": "ESTACIONAMIENTO UVAS CARAMELOS PASTAFROLA",
+    "unitCost": 5000,
+    "previousUnitCost": 5000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-03",
+    "provider": "VARIOS",
+    "updatedAt": "2026-06-08T17:48:32.920Z"
+  },
+  "costillas": {
+    "name": "COSTILLAS",
+    "unitCost": 18501,
+    "previousUnitCost": 18501,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-03",
+    "provider": "PARRILLADA 13",
+    "updatedAt": "2026-06-08T17:48:32.945Z"
+  },
+  "lingote de membrillo": {
+    "name": "LINGOTE DE MEMBRILLO",
+    "unitCost": 23800,
+    "previousUnitCost": 1000,
+    "changePercent": 2280,
+    "lastPurchaseDate": "2026-02-19",
+    "provider": "CHOCOLEZZA",
+    "updatedAt": "2026-06-08T17:48:36.993Z"
+  },
+  "vacio": {
+    "name": "VACIO",
+    "unitCost": 20500,
+    "previousUnitCost": 20500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:52.837Z"
+  },
+  "morcillas valenciana": {
+    "name": "MORCILLAS VALENCIANA",
+    "unitCost": 5537.1901,
+    "previousUnitCost": 5537.1901,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-03",
+    "provider": "GRANJA BENEDETTI / ALMA SRL",
+    "updatedAt": "2026-06-08T17:48:33.140Z"
+  },
+  "chorizos puro cerdo": {
+    "name": "CHORIZOS PURO CERDO",
+    "unitCost": 8099.1736,
+    "previousUnitCost": 8099.1736,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-03",
+    "provider": "GRANJA BENEDETTI / ALMA SRL",
+    "updatedAt": "2026-06-08T17:48:33.309Z"
+  },
+  "matambrito de cerdo": {
+    "name": "MATAMBRITO DE CERDO",
+    "unitCost": 15500,
+    "previousUnitCost": 15500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:52.871Z"
+  },
+  "entrana": {
+    "name": "ENTRAÑA",
+    "unitCost": 25000,
+    "previousUnitCost": 25000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:52.681Z"
+  },
+  "sandwich jyq": {
+    "name": "SANDWICH JYQ",
+    "unitCost": 1800,
+    "previousUnitCost": 2500,
+    "changePercent": -28,
+    "lastPurchaseDate": "2026-03-19",
+    "provider": "TRIGAL SU PANADERIA",
+    "updatedAt": "2026-06-08T17:48:52.364Z"
+  },
+  "estacionamiento": {
+    "name": "ESTACIONAMIENTO",
+    "unitCost": 1000,
+    "previousUnitCost": 400,
+    "changePercent": 150,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "MERCADO CENTRAL",
+    "updatedAt": "2026-06-08T17:48:55.196Z"
+  },
+  "pan": {
+    "name": "PAN",
+    "unitCost": 420600,
+    "previousUnitCost": 59400,
+    "changePercent": 608.08,
+    "lastPurchaseDate": "2026-06-08",
+    "provider": "CARO SERGIO CIABATTA",
+    "updatedAt": "2026-06-08T19:04:51.330Z"
+  },
+  "pan mignon": {
+    "name": "PAN MIGNON",
+    "unitCost": 3415,
+    "previousUnitCost": 2900,
+    "changePercent": 17.76,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "JEBBS",
+    "updatedAt": "2026-06-08T17:48:49.924Z"
+  },
+  "sandwich crudo": {
+    "name": "SANDWICH CRUDO",
+    "unitCost": 6280,
+    "previousUnitCost": 17763,
+    "changePercent": -64.65,
+    "lastPurchaseDate": "2026-03-19",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:52.261Z"
+  },
+  "santa julia tintillo lata": {
+    "name": "SANTA JULIA TINTILLO LATA",
+    "unitCost": 3000,
+    "previousUnitCost": 3000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-03",
+    "provider": "VEA 5 GUAYMALLEN",
+    "updatedAt": "2026-06-08T17:48:33.604Z"
+  },
+  "nafta v-power": {
+    "name": "NAFTA V-POWER",
+    "unitCost": 30000,
+    "previousUnitCost": 29999.99,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-19",
+    "provider": "NEUMASHOP NARVAEZ",
+    "updatedAt": "2026-06-08T17:48:52.287Z"
+  },
+  "vajilla residencia": {
+    "name": "VAJILLA RESIDENCIA",
+    "unitCost": 114100,
+    "previousUnitCost": 169200,
+    "changePercent": -32.57,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-08T17:48:55.353Z"
+  },
+  "pan trabuco": {
+    "name": "PAN TRABUCO",
+    "unitCost": 2900,
+    "previousUnitCost": 2900,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "JEBBS",
+    "updatedAt": "2026-06-08T17:48:40.623Z"
+  },
+  "facturas especiales": {
+    "name": "FACTURAS ESPECIALES",
+    "unitCost": 700,
+    "previousUnitCost": 700,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-03",
+    "provider": "JEBBS",
+    "updatedAt": "2026-06-08T17:48:33.747Z"
+  },
+  "pan flauta": {
+    "name": "PAN FLAUTA",
+    "unitCost": 2700,
+    "previousUnitCost": 2700,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-03",
+    "provider": "JEBBS",
+    "updatedAt": "2026-06-08T17:48:33.780Z"
+  },
+  "hielo": {
+    "name": "HIELO",
+    "unitCost": 5200,
+    "previousUnitCost": 5200,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-12",
+    "provider": "FRAN. SERGIO LAOS",
+    "updatedAt": "2026-06-08T17:48:35.547Z"
+  },
+  "jugo de limon x500cc": {
+    "name": "JUGO DE LIMON X500CC",
+    "unitCost": 1676.843,
+    "previousUnitCost": 1800,
+    "changePercent": -6.84,
+    "lastPurchaseDate": "2026-02-11",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:35.294Z"
+  },
+  "sandwich triple x25": {
+    "name": "SANDWICH TRIPLE X25",
+    "unitCost": 50000,
+    "previousUnitCost": 50000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-05",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-09T13:20:03.223Z"
+  },
+  "sandwich triple": {
+    "name": "SANDWICH TRIPLE",
+    "unitCost": 1000,
+    "previousUnitCost": 1000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-04",
+    "provider": "LA NUEVA PERLA",
+    "updatedAt": "2026-06-08T17:48:33.972Z"
+  },
+  "minifacturas": {
+    "name": "MINIFACTURAS",
+    "unitCost": 10413.23,
+    "previousUnitCost": 10413.2231,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:57.242Z"
+  },
+  "minitortitas": {
+    "name": "MINITORTITAS",
+    "unitCost": 7692.31,
+    "previousUnitCost": 7692.3077,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:57.287Z"
+  },
+  "lavandina 2l": {
+    "name": "LAVANDINA 2L",
+    "unitCost": 2431,
+    "previousUnitCost": 2431,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-05",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:34.074Z"
+  },
+  "tortita poli (con bolsa)": {
+    "name": "TORTITA POLI (CON BOLSA)",
+    "unitCost": 6000,
+    "previousUnitCost": 950,
+    "changePercent": 531.58,
+    "lastPurchaseDate": "2026-03-19",
+    "provider": "TRIGAL SU PANADERIA",
+    "updatedAt": "2026-06-08T17:48:52.387Z"
+  },
+  "medialuna poli (con bolsa)": {
+    "name": "MEDIALUNA POLI (CON BOLSA)",
+    "unitCost": 1250,
+    "previousUnitCost": 1250,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-05",
+    "provider": "BRULEE",
+    "updatedAt": "2026-06-08T17:48:34.158Z"
+  },
+  "suprema": {
+    "name": "SUPREMA",
+    "unitCost": 11100,
+    "previousUnitCost": 11000,
+    "changePercent": 0.91,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "AVICOLA RODEO",
+    "updatedAt": "2026-06-08T17:48:55.827Z"
+  },
+  "caldos": {
+    "name": "CALDOS",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-05",
+    "provider": "VARIOS",
+    "updatedAt": "2026-06-08T17:48:34.241Z"
+  },
+  "ciabatta": {
+    "name": "CIABATTA",
+    "unitCost": 750,
+    "previousUnitCost": 750,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-25",
+    "provider": "CARO SERGIO CIABATTA",
+    "updatedAt": "2026-06-08T17:48:40.063Z"
+  },
+  "bulon de precision": {
+    "name": "BULON DE PRECISION",
+    "unitCost": 9000,
+    "previousUnitCost": 9000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-05",
+    "provider": "FERRETERIA",
+    "updatedAt": "2026-06-08T17:48:34.365Z"
+  },
+  "pan lactal 460g": {
+    "name": "PAN LACTAL 460G",
+    "unitCost": 4130.99009279,
+    "previousUnitCost": 4130.99009279,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:34.396Z"
+  },
+  "manteca": {
+    "name": "MANTECA",
+    "unitCost": 3250,
+    "previousUnitCost": 3250,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "VARIOS",
+    "updatedAt": "2026-06-08T17:48:53.490Z"
+  },
+  "avena instantanea 400g": {
+    "name": "AVENA INSTANTANEA 400G",
+    "unitCost": 2752.29389897,
+    "previousUnitCost": 2752.29389897,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:34.448Z"
+  },
+  "harina 0000": {
+    "name": "HARINA 0000",
+    "unitCost": 959.3729262649999,
+    "previousUnitCost": 959.3729262649999,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:34.475Z"
+  },
+  "galleta tipo agua 315g": {
+    "name": "GALLETA TIPO AGUA 315G",
+    "unitCost": 1028.96995674,
+    "previousUnitCost": 1028.96995674,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:34.509Z"
+  },
+  "aceite x 5lt": {
+    "name": "ACEITE X 5LT",
+    "unitCost": 16469.19533193,
+    "previousUnitCost": 16469.19533193,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:34.534Z"
+  },
+  "cherry x kg": {
+    "name": "CHERRY X KG",
+    "unitCost": 10000,
+    "previousUnitCost": 1500,
+    "changePercent": 566.67,
+    "lastPurchaseDate": "2026-02-28",
+    "provider": "VERDULERIA BELGRANO",
+    "updatedAt": "2026-06-08T17:48:41.179Z"
+  },
+  "cajon de naranjas": {
+    "name": "CAJON DE NARANJAS",
+    "unitCost": 30000,
+    "previousUnitCost": 30000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "PUESTO 194 - 195 / FRUTAS DE COLORES",
+    "updatedAt": "2026-06-08T17:48:34.607Z"
+  },
+  "polo rosso x atado": {
+    "name": "POLO ROSSO X ATADO",
+    "unitCost": 1000,
+    "previousUnitCost": 1500,
+    "changePercent": -33.33,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:42.847Z"
+  },
+  "lechuga rulo x cajon": {
+    "name": "LECHUGA RULO X CAJON",
+    "unitCost": 18000,
+    "previousUnitCost": 18000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "PUESTO 194 - 195 / FRUTAS DE COLORES",
+    "updatedAt": "2026-06-08T17:48:34.667Z"
+  },
+  "queso cremoso pizzero": {
+    "name": "QUESO CREMOSO PIZZERO",
+    "unitCost": 6070.6,
+    "previousUnitCost": 6070.6,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:41.552Z"
+  },
+  "galleta tipo agua 306g": {
+    "name": "GALLETA TIPO AGUA 306G",
+    "unitCost": 809.6956999999999,
+    "previousUnitCost": 809.6956999999999,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:34.747Z"
+  },
+  "jamon cocido grande": {
+    "name": "JAMON COCIDO GRANDE",
+    "unitCost": 8899.0055,
+    "previousUnitCost": 8899.0055,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:34.768Z"
+  },
+  "queso crema 290g": {
+    "name": "QUESO CREMA 290G",
+    "unitCost": 1945.9669,
+    "previousUnitCost": 2425.25854747,
+    "changePercent": -19.76,
+    "lastPurchaseDate": "2026-02-11",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:35.221Z"
+  },
+  "queso barra tybo": {
+    "name": "QUESO BARRA TYBO",
+    "unitCost": 8595.8512,
+    "previousUnitCost": 12255.50650412,
+    "changePercent": -29.86,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:37.316Z"
+  },
+  "galletas chocolinas 250g": {
+    "name": "GALLETAS CHOCOLINAS 250G",
+    "unitCost": 2010.25,
+    "previousUnitCost": 1478.4215,
+    "changePercent": 35.97,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:49.155Z"
+  },
+  "pan para chori": {
+    "name": "PAN PARA CHORI",
+    "unitCost": 600,
+    "previousUnitCost": 600,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "DULCE RINCON",
+    "updatedAt": "2026-06-08T17:48:34.899Z"
+  },
+  "tartas petit": {
+    "name": "TARTAS PETIT",
+    "unitCost": 2400,
+    "previousUnitCost": 2400,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "MOM PASTELERIA",
+    "updatedAt": "2026-06-08T17:48:34.930Z"
+  },
+  "milanesas de pollo xkg": {
+    "name": "MILANESAS DE POLLO XKG",
+    "unitCost": 7500,
+    "previousUnitCost": 7500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-06",
+    "provider": "ALICIA CORREA MILANESAS",
+    "updatedAt": "2026-06-08T17:48:34.955Z"
+  },
+  "sandwich jyq x25": {
+    "name": "SANDWICH JYQ X25",
+    "unitCost": 44214.83,
+    "previousUnitCost": 44214.83,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-07",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:35.053Z"
+  },
+  "alfajores de maizena": {
+    "name": "ALFAJORES DE MAIZENA",
+    "unitCost": 10000,
+    "previousUnitCost": 10000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-08",
+    "provider": "LA NUEVA PERLA",
+    "updatedAt": "2026-06-08T17:48:35.088Z"
+  },
+  "pan xkg": {
+    "name": "PAN XKG",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-08",
+    "provider": "LA NUEVA PERLA",
+    "updatedAt": "2026-06-08T17:48:35.124Z"
+  },
+  "leche la serenisima": {
+    "name": "LECHE LA SERENISIMA",
+    "unitCost": 2410,
+    "previousUnitCost": 4000,
+    "changePercent": -39.75,
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "MARKET MULTIRUBRO M Y M S.A.S",
+    "updatedAt": "2026-06-08T17:48:53.861Z"
+  },
+  "jugo de limon x1000cc": {
+    "name": "JUGO DE LIMON X1000CC",
+    "unitCost": 3142.1983,
+    "previousUnitCost": 3142.1983,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:35.793Z"
+  },
+  "medialunas de 60 gramos": {
+    "name": "MEDIALUNAS DE 60 GRAMOS",
+    "unitCost": 270,
+    "previousUnitCost": 270,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-17",
+    "provider": "FRO-ZEN SAS",
+    "updatedAt": "2026-06-08T17:48:52.121Z"
+  },
+  "tortitas mix": {
+    "name": "TORTITAS MIX",
+    "unitCost": 200,
+    "previousUnitCost": 200,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-17",
+    "provider": "FRO-ZEN SAS",
+    "updatedAt": "2026-06-08T17:48:52.095Z"
+  },
+  "molida xkg": {
+    "name": "MOLIDA XKG",
+    "unitCost": 8300,
+    "previousUnitCost": 8300,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-19",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:52.337Z"
+  },
+  "tapa de asado xkg": {
+    "name": "TAPA DE ASADO XKG",
+    "unitCost": 16890,
+    "previousUnitCost": 4300,
+    "changePercent": 292.79,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:52.768Z"
+  },
+  "pan panini": {
+    "name": "PAN PANINI",
+    "unitCost": 9140,
+    "previousUnitCost": 9140,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-05",
+    "provider": "LA PARRA",
+    "updatedAt": "2026-06-09T13:20:13.957Z"
+  },
+  "coca cola 500ml": {
+    "name": "COCA COLA 500ML",
+    "unitCost": 1025.44,
+    "previousUnitCost": 1025.44,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-11",
+    "provider": "DANEM SAS / ALMA DEL SUR DISTRIBUCIONES",
+    "updatedAt": "2026-06-08T17:48:35.520Z"
+  },
+  "sandwich jyq x16": {
+    "name": "SANDWICH JYQ X16",
+    "unitCost": 22291.41,
+    "previousUnitCost": 27685.95,
+    "changePercent": -19.48,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:40.860Z"
+  },
+  "sandwich queso y pollo x16": {
+    "name": "SANDWICH QUESO Y POLLO X16",
+    "unitCost": 27685.95,
+    "previousUnitCost": 27685.95,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:35.600Z"
+  },
+  "queso crema pouch la paulina x4kg": {
+    "name": "QUESO CREMA POUCH LA PAULINA X4KG",
+    "unitCost": 19611.09,
+    "previousUnitCost": 19611.09,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:35.627Z"
+  },
+  "parking": {
+    "name": "PARKING",
+    "unitCost": 1000,
+    "previousUnitCost": 1000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "MERCADO CENTRAL",
+    "updatedAt": "2026-06-08T17:48:35.660Z"
+  },
+  "empanadas hojaldre": {
+    "name": "EMPANADAS HOJALDRE",
+    "unitCost": 1200,
+    "previousUnitCost": 192284,
+    "changePercent": -99.38,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LA CUYANITA S.A.",
+    "updatedAt": "2026-06-08T17:48:56.302Z"
+  },
+  "pascualina rectangular": {
+    "name": "PASCUALINA RECTANGULAR",
+    "unitCost": 2629.75,
+    "previousUnitCost": 2629.75,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "LA CUYANITA S.A.",
+    "updatedAt": "2026-06-08T17:48:35.715Z"
+  },
+  "copetin hojaldre": {
+    "name": "COPETIN HOJALDRE",
+    "unitCost": 1502.4793,
+    "previousUnitCost": 1502.48,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "LA CUYANITA S.A.",
+    "updatedAt": "2026-06-08T17:48:48.349Z"
+  },
+  "fiambres": {
+    "name": "FIAMBRES",
+    "unitCost": 700000,
+    "previousUnitCost": 11029.09090909091,
+    "changePercent": 6246.85,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "TOCCHET CESAR",
+    "updatedAt": "2026-06-08T17:48:56.666Z"
+  },
+  "merme. dulc. fruti. 454g": {
+    "name": "MERME. DULC. FRUTI. 454G",
+    "unitCost": 1905.1488,
+    "previousUnitCost": 1905.1488,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:35.846Z"
+  },
+  "champign. bahia trozos 400g": {
+    "name": "CHAMPIGN. BAHIA TROZOS 400G",
+    "unitCost": 2071.562,
+    "previousUnitCost": 2071.562,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:35.872Z"
+  },
+  "crem. lech. tonadita 350ml": {
+    "name": "CREM. LECH. TONADITA 350ML",
+    "unitCost": 2157.2314,
+    "previousUnitCost": 2157.2314,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:35.902Z"
+  },
+  "levadura levex seca 20gr": {
+    "name": "LEVADURA LEVEX SECA 20GR",
+    "unitCost": 710.876,
+    "previousUnitCost": 710.876,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:35.931Z"
+  },
+  "leche ilolay entera 1lt": {
+    "name": "LECHE ILOLAY ENTERA 1LT",
+    "unitCost": 1990,
+    "previousUnitCost": 1399,
+    "changePercent": 42.24,
+    "lastPurchaseDate": "2026-05-19",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:52.489Z"
+  },
+  "salamin lario p.fino t.tandil. xkg": {
+    "name": "SALAMIN LARIO P.FINO T.TANDIL. XKG",
+    "unitCost": 24719.00826446281,
+    "previousUnitCost": 24719.00826446281,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "VEA 21 MENDOZA",
+    "updatedAt": "2026-06-08T17:48:35.991Z"
+  },
+  "queso pategras la paulina xkg": {
+    "name": "QUESO PATEGRAS LA PAULINA XKG",
+    "unitCost": 16272.727272727274,
+    "previousUnitCost": 16272.727272727274,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "VEA 21 MENDOZA",
+    "updatedAt": "2026-06-08T17:48:36.018Z"
+  },
+  "afeitadora bic bli 5": {
+    "name": "AFEITADORA BIC BLI 5",
+    "unitCost": 2202.4793388429753,
+    "previousUnitCost": 2202.4793388429753,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "VEA 21 MENDOZA",
+    "updatedAt": "2026-06-08T17:48:36.052Z"
+  },
+  "marcador x6 pintaloco pelikan 6un": {
+    "name": "MARCADOR X6 PINTALOCO PELIKAN 6UN",
+    "unitCost": 1453.099173553719,
+    "previousUnitCost": 1453.099173553719,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "VEA 21 MENDOZA",
+    "updatedAt": "2026-06-08T17:48:36.083Z"
+  },
+  "nafta super": {
+    "name": "NAFTA SUPER",
+    "unitCost": 50000,
+    "previousUnitCost": 50000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "SHELL / FLAMARIQUE GUILLERMO DANIEL",
+    "updatedAt": "2026-06-08T17:48:36.126Z"
+  },
+  "papa xkg": {
+    "name": "PAPA XKG",
+    "unitCost": 2368.1,
+    "previousUnitCost": 2000,
+    "changePercent": 18.4,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "VERDULERIA",
+    "updatedAt": "2026-06-08T17:48:53.407Z"
+  },
+  "tomate cherry xkg": {
+    "name": "TOMATE CHERRY XKG",
+    "unitCost": 1500,
+    "previousUnitCost": 1500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:36.242Z"
+  },
+  "albahaca xkg": {
+    "name": "ALBAHACA XKG",
+    "unitCost": 500,
+    "previousUnitCost": 500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:36.270Z"
+  },
+  "ciboulette xat": {
+    "name": "CIBOULETTE XAT",
+    "unitCost": 500,
+    "previousUnitCost": 500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:36.299Z"
+  },
+  "rucula xat": {
+    "name": "RUCULA XAT",
+    "unitCost": 333.33,
+    "previousUnitCost": 350,
+    "changePercent": -4.76,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:45.735Z"
+  },
+  "perejil xat": {
+    "name": "PEREJIL XAT",
+    "unitCost": 1000,
+    "previousUnitCost": 1000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:36.358Z"
+  },
+  "cebolla verdeo xat": {
+    "name": "CEBOLLA VERDEO XAT",
+    "unitCost": 1500,
+    "previousUnitCost": 1500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-13",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:36.391Z"
+  },
+  "pimiento verde xkg": {
+    "name": "PIMIENTO VERDE XKG",
+    "unitCost": 1500,
+    "previousUnitCost": 1300,
+    "changePercent": 15.38,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:50.230Z"
+  },
+  "pimiento rojo xkg": {
+    "name": "PIMIENTO ROJO XKG",
+    "unitCost": 2500,
+    "previousUnitCost": 2800,
+    "changePercent": -10.71,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:50.302Z"
+  },
+  "pimiento amarillo xkg": {
+    "name": "PIMIENTO AMARILLO XKG",
+    "unitCost": 2700,
+    "previousUnitCost": 2800,
+    "changePercent": -3.57,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:50.199Z"
+  },
+  "berenjena xkg": {
+    "name": "BERENJENA XKG",
+    "unitCost": 1200,
+    "previousUnitCost": 1200,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-23",
+    "provider": "VERDULERIA",
+    "updatedAt": "2026-06-08T17:48:37.932Z"
+  },
+  "zucchini xkg": {
+    "name": "ZUCCHINI XKG",
+    "unitCost": 1500,
+    "previousUnitCost": 1300,
+    "changePercent": 15.38,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:47.415Z"
+  },
+  "pepino xun": {
+    "name": "PEPINO XUN",
+    "unitCost": 1300,
+    "previousUnitCost": 1300,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:47.838Z"
+  },
+  "ajo xcab": {
+    "name": "AJO XCAB",
+    "unitCost": 500,
+    "previousUnitCost": 400,
+    "changePercent": 25,
+    "lastPurchaseDate": "2026-02-28",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:41.243Z"
+  },
+  "limon xkg": {
+    "name": "LIMON XKG",
+    "unitCost": 2000,
+    "previousUnitCost": 2500,
+    "changePercent": -20,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "VERDULERIA",
+    "updatedAt": "2026-06-08T17:48:37.499Z"
+  },
+  "tomate": {
+    "name": "TOMATE",
+    "unitCost": 1300,
+    "previousUnitCost": 1300,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:50.118Z"
+  },
+  "naranja xkg": {
+    "name": "NARANJA XKG",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:42.668Z"
+  },
+  "folios a4 x 100": {
+    "name": "FOLIOS A4 X 100",
+    "unitCost": 6656.18,
+    "previousUnitCost": 6656.18,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-19",
+    "provider": "DISTRIBUIDORA PERU",
+    "updatedAt": "2026-06-08T17:48:36.899Z"
+  },
+  "cinta de enmascarar 12mm x 50m": {
+    "name": "CINTA DE ENMASCARAR 12MM X 50M",
+    "unitCost": 1476.46,
+    "previousUnitCost": 1476.46,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-19",
+    "provider": "DISTRIBUIDORA PERU",
+    "updatedAt": "2026-06-08T17:48:36.924Z"
+  },
+  "cinta ancha 48*100": {
+    "name": "CINTA ANCHA 48*100",
+    "unitCost": 2706.61,
+    "previousUnitCost": 2533.26,
+    "changePercent": 6.84,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:55.952Z"
+  },
+  "mozzarella santa maria xkg": {
+    "name": "MOZZARELLA SANTA MARIA XKG",
+    "unitCost": 6555.79,
+    "previousUnitCost": 6555.79,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-19",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:36.970Z"
+  },
+  "papas fritas ricks xkg": {
+    "name": "PAPAS FRITAS RICKS XKG",
+    "unitCost": 6163.22,
+    "previousUnitCost": 6163.22,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:37.085Z"
+  },
+  "palito salado la fanega xkg": {
+    "name": "PALITO SALADO LA FANEGA XKG",
+    "unitCost": 4004.13,
+    "previousUnitCost": 4004.13,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:37.106Z"
+  },
+  "levadura levina x 500gr": {
+    "name": "LEVADURA LEVINA X 500GR",
+    "unitCost": 2690.78,
+    "previousUnitCost": 2690.78,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:37.131Z"
+  },
+  "aceite de girasol natura 1.5l": {
+    "name": "ACEITE DE GIRASOL NATURA 1.5L",
+    "unitCost": 4748.9,
+    "previousUnitCost": 4748.9,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:37.171Z"
+  },
+  "harina economica 0000 x 25kg": {
+    "name": "HARINA ECONOMICA 0000 X 25KG",
+    "unitCost": 19722.17,
+    "previousUnitCost": 19722.17,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:37.200Z"
+  },
+  "mani saborizado queso sure x 1kg": {
+    "name": "MANI SABORIZADO QUESO SURE X 1KG",
+    "unitCost": 4564.71,
+    "previousUnitCost": 4564.71,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:37.230Z"
+  },
+  "caldos knorr verdura x 12 unidades": {
+    "name": "CALDOS KNORR VERDURA X 12 UNIDADES",
+    "unitCost": 2026.09,
+    "previousUnitCost": 2026.09,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:37.259Z"
+  },
+  "lomo ahumado el aljibe x kg": {
+    "name": "LOMO AHUMADO EL ALJIBE X KG",
+    "unitCost": 12522.73,
+    "previousUnitCost": 12522.73,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:37.285Z"
+  },
+  "sabor alicante verdura 4s x 10gr": {
+    "name": "SABOR ALICANTE VERDURA 4S X 10GR",
+    "unitCost": 848.5124,
+    "previousUnitCost": 848.5124,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-20",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:37.345Z"
+  },
+  "anis estrellado": {
+    "name": "ANIS ESTRELLADO",
+    "unitCost": 70000,
+    "previousUnitCost": 130000,
+    "changePercent": -46.15,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:47.091Z"
+  },
+  "clavo olor": {
+    "name": "CLAVO OLOR",
+    "unitCost": 60000,
+    "previousUnitCost": 2000,
+    "changePercent": 2900,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:47.188Z"
+  },
+  "cardamomo": {
+    "name": "CARDAMOMO",
+    "unitCost": 130000,
+    "previousUnitCost": 80000,
+    "changePercent": 62.5,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:47.288Z"
+  },
+  "zapallo anco xkg": {
+    "name": "ZAPALLO ANCO XKG",
+    "unitCost": 5000,
+    "previousUnitCost": 1200,
+    "changePercent": 316.67,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FARFAN E HIJOS",
+    "updatedAt": "2026-06-08T17:48:43.582Z"
+  },
+  "zapallito redondo xkg": {
+    "name": "ZAPALLITO REDONDO XKG",
+    "unitCost": 1300,
+    "previousUnitCost": 1300,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:42.415Z"
+  },
+  "lechuga": {
+    "name": "LECHUGA",
+    "unitCost": 3500,
+    "previousUnitCost": 8000,
+    "changePercent": -56.25,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:42.469Z"
+  },
+  "cabo madera 150cm pino c/rosca": {
+    "name": "CABO MADERA 150CM PINO C/ROSCA",
+    "unitCost": 1974.5084999999997,
+    "previousUnitCost": 1974.51,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:40.273Z"
+  },
+  "mopa s/cabo economica x 200grs": {
+    "name": "MOPA S/CABO ECONOMICA X 200GRS",
+    "unitCost": 1548.5,
+    "previousUnitCost": 1550.4,
+    "changePercent": -0.12,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:40.409Z"
+  },
+  "estuche 105 pp clear pack x1 (bandeja polipropileno con tapa)": {
+    "name": "ESTUCHE 105 PP CLEAR PACK X1 (BANDEJA POLIPROPILENO CON TAPA)",
+    "unitCost": 5702.5,
+    "previousUnitCost": 512.4,
+    "changePercent": 1012.9,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:51.540Z"
+  },
+  "picada intermedia mayorista": {
+    "name": "PICADA INTERMEDIA MAYORISTA",
+    "unitCost": 12217.19,
+    "previousUnitCost": 12217.19,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "CIMBRA SAS / CARNES DE MI CAMPO",
+    "updatedAt": "2026-06-08T17:48:46.458Z"
+  },
+  "cuchara sundae blanca kv x50": {
+    "name": "CUCHARA SUNDAE BLANCA KV X50",
+    "unitCost": 1157.02,
+    "previousUnitCost": 1157.02,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-23",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:37.810Z"
+  },
+  "peras xkg": {
+    "name": "PERAS XKG",
+    "unitCost": 2500,
+    "previousUnitCost": 2500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:42.639Z"
+  },
+  "camote xkg": {
+    "name": "CAMOTE XKG",
+    "unitCost": 1500,
+    "previousUnitCost": 1500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-23",
+    "provider": "VERDULERIA",
+    "updatedAt": "2026-06-08T17:48:38.032Z"
+  },
+  "sal fina celusal salero x 100grs": {
+    "name": "SAL FINA CELUSAL SALERO X 100GRS",
+    "unitCost": 1500.9,
+    "previousUnitCost": 1500.9,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-23",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:38.231Z"
+  },
+  "aceto reduccion la toscana pet x 250ml": {
+    "name": "ACETO REDUCCION LA TOSCANA PET X 250ML",
+    "unitCost": 8989.81,
+    "previousUnitCost": 8989.81,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-23",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:38.280Z"
+  },
+  "aceite laur oliva extra virgen x 500cc": {
+    "name": "ACEITE LAUR OLIVA EXTRA VIRGEN X 500CC",
+    "unitCost": 8805.97,
+    "previousUnitCost": 8805.97,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-23",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:38.309Z"
+  },
+  "jamon cocido cagnoli": {
+    "name": "JAMON COCIDO CAGNOLI",
+    "unitCost": 7780.5,
+    "previousUnitCost": 7780.5,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:41.524Z"
+  },
+  "queso barra tybo la paulina": {
+    "name": "QUESO BARRA TYBO LA PAULINA",
+    "unitCost": 7712.38,
+    "previousUnitCost": 7712.38,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-23",
+    "provider": "EL VASCO",
+    "updatedAt": "2026-06-08T17:48:38.414Z"
+  },
+  "albahaca x atado": {
+    "name": "ALBAHACA X ATADO",
+    "unitCost": 750,
+    "previousUnitCost": 750,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:46.820Z"
+  },
+  "caldo de verdura en polvo": {
+    "name": "CALDO DE VERDURA EN POLVO",
+    "unitCost": 5000,
+    "previousUnitCost": 5000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:38.559Z"
+  },
+  "acelga": {
+    "name": "ACELGA",
+    "unitCost": 500,
+    "previousUnitCost": 500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:38.590Z"
+  },
+  "chaucha xkg": {
+    "name": "CHAUCHA XKG",
+    "unitCost": 3500,
+    "previousUnitCost": 2500,
+    "changePercent": 40,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "VERDULERIA BELGRANO",
+    "updatedAt": "2026-06-08T17:48:44.082Z"
+  },
+  "cebolla morada xkg": {
+    "name": "CEBOLLA MORADA XKG",
+    "unitCost": 1000,
+    "previousUnitCost": 2000,
+    "changePercent": -50,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:50.153Z"
+  },
+  "palta xkg": {
+    "name": "PALTA XKG",
+    "unitCost": 8700,
+    "previousUnitCost": 7500,
+    "changePercent": 16,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:50.334Z"
+  },
+  "bolsa de zanahoria": {
+    "name": "BOLSA DE ZANAHORIA",
+    "unitCost": 4000,
+    "previousUnitCost": 8000,
+    "changePercent": -50,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:48.052Z"
+  },
+  "bolsa de papa": {
+    "name": "BOLSA DE PAPA",
+    "unitCost": 11500,
+    "previousUnitCost": 12000,
+    "changePercent": -4.17,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:46.700Z"
+  },
+  "aceite de girasol natura x 5 l": {
+    "name": "ACEITE DE GIRASOL NATURA X 5 L",
+    "unitCost": 19532.99,
+    "previousUnitCost": 21439,
+    "changePercent": -8.89,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.741Z"
+  },
+  "vinagre de alcohol caminito x 1 l": {
+    "name": "VINAGRE DE ALCOHOL CAMINITO X 1 L",
+    "unitCost": 1071.93,
+    "previousUnitCost": 1071.93,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:38.998Z"
+  },
+  "sardo brescia x kg": {
+    "name": "SARDO BRESCIA X KG",
+    "unitCost": 11629.55,
+    "previousUnitCost": 11629.55,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.026Z"
+  },
+  "leche l.vida ilolay entera x 1 l": {
+    "name": "LECHE L.VIDA ILOLAY ENTERA X 1 L",
+    "unitCost": 1649.85,
+    "previousUnitCost": 1649.85,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.055Z"
+  },
+  "azucar ledesma x 1 kg": {
+    "name": "AZUCAR LEDESMA X 1 KG",
+    "unitCost": 1421.2,
+    "previousUnitCost": 1236.37,
+    "changePercent": 14.95,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:42.130Z"
+  },
+  "oregano indias x 1 kg": {
+    "name": "OREGANO INDIAS X 1 KG",
+    "unitCost": 6036.33,
+    "previousUnitCost": 6029.59,
+    "changePercent": 0.11,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.923Z"
+  },
+  "pimenton indias x 1 kg": {
+    "name": "PIMENTON INDIAS X 1 KG",
+    "unitCost": 7665.46,
+    "previousUnitCost": 7566.55,
+    "changePercent": 1.31,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.891Z"
+  },
+  "galleta criollitas tripack": {
+    "name": "GALLETA CRIOLLITAS TRIPACK",
+    "unitCost": 1213.18,
+    "previousUnitCost": 1213.18,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.172Z"
+  },
+  "crema de leche santa maria x 5 l": {
+    "name": "CREMA DE LECHE SANTA MARIA X 5 L",
+    "unitCost": 38428.5,
+    "previousUnitCost": 31759.09,
+    "changePercent": 21,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:49.186Z"
+  },
+  "manteca pilon yolcle sys x 2.5 kg": {
+    "name": "MANTECA PILON YOLCLE SYS X 2.5 KG",
+    "unitCost": 22266.14,
+    "previousUnitCost": 22266.14,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.235Z"
+  },
+  "dulce de leche santa maria x 1 kg familiar": {
+    "name": "DULCE DE LECHE SANTA MARIA X 1 KG FAMILIAR",
+    "unitCost": 3631,
+    "previousUnitCost": 3631,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.265Z"
+  },
+  "queso crema tonadita patagonia pouch x 3 kg": {
+    "name": "QUESO CREMA TONADITA PATAGONIA POUCH X 3 KG",
+    "unitCost": 20214.87,
+    "previousUnitCost": 13131.46,
+    "changePercent": 53.94,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:56.441Z"
+  },
+  "aceite de girasol natura x 900ml": {
+    "name": "ACEITE DE GIRASOL NATURA X 900ML",
+    "unitCost": 3446.36,
+    "previousUnitCost": 3446.36,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.331Z"
+  },
+  "lentejas i-pena x 400 gr": {
+    "name": "LENTEJAS I-PEÑA X 400 GR",
+    "unitCost": 1697.59,
+    "previousUnitCost": 1697.59,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.382Z"
+  },
+  "sal fina dos anclas x 5 kg": {
+    "name": "SAL FINA DOS ANCLAS X 5 KG",
+    "unitCost": 7477.4,
+    "previousUnitCost": 9060.15,
+    "changePercent": -17.47,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.763Z"
+  },
+  "aceitunas 00 x 5 kg valero": {
+    "name": "ACEITUNAS 00 X 5 KG VALERO",
+    "unitCost": 11730.51,
+    "previousUnitCost": 20013.64,
+    "changePercent": -41.39,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:48.867Z"
+  },
+  "cafe molido la virginia x 1 kg": {
+    "name": "CAFE MOLIDO LA VIRGINIA X 1 KG",
+    "unitCost": 17438.58,
+    "previousUnitCost": 17479.09,
+    "changePercent": -0.23,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:56.399Z"
+  },
+  "lactal blanco familiar x 500 gr (sm)": {
+    "name": "LACTAL BLANCO FAMILIAR X 500 GR (SM)",
+    "unitCost": 3515.29,
+    "previousUnitCost": 3515.29,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.507Z"
+  },
+  "fideos tirabuzon lucchetti x 500 gr": {
+    "name": "FIDEOS TIRABUZON LUCCHETTI X 500 GR",
+    "unitCost": 1070.38,
+    "previousUnitCost": 1070.38,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.536Z"
+  },
+  "arroz gallo oro x 1 kg": {
+    "name": "ARROZ GALLO ORO X 1 KG",
+    "unitCost": 1915.28,
+    "previousUnitCost": 1915.28,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.578Z"
+  },
+  "fritolin aceite oliva natura (sm)": {
+    "name": "FRITOLIN ACEITE OLIVA NATURA (SM)",
+    "unitCost": 2253.41,
+    "previousUnitCost": 2253.41,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.605Z"
+  },
+  "toalla bobina 20cm x300mts": {
+    "name": "TOALLA BOBINA 20CM X300MTS",
+    "unitCost": 15289.26,
+    "previousUnitCost": 15289.26,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:39.693Z"
+  },
+  "bolsa pp 5x25 x100": {
+    "name": "BOLSA PP 5X25 X100",
+    "unitCost": 991.74,
+    "previousUnitCost": 991.74,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:39.720Z"
+  },
+  "prepizza masa madre 30x30": {
+    "name": "PREPIZZA MASA MADRE 30X30",
+    "unitCost": 2800,
+    "previousUnitCost": 2800,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-24",
+    "provider": "CARO SERGIO CIABATTA",
+    "updatedAt": "2026-06-08T17:48:39.780Z"
+  },
+  "sticker alba producto seleccionado": {
+    "name": "STICKER ALBA PRODUCTO SELECCIONADO",
+    "unitCost": 1652.92,
+    "previousUnitCost": 1652.92,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-25",
+    "provider": "ALBA LEONARDO",
+    "updatedAt": "2026-06-08T17:48:39.808Z"
+  },
+  "arveja inalpa seca remojada x350g": {
+    "name": "ARVEJA INALPA SECA REMOJADA X350G",
+    "unitCost": 645.15,
+    "previousUnitCost": 645.15,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-25",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.869Z"
+  },
+  "garbanzos caracas x350g": {
+    "name": "GARBANZOS CARACAS X350G",
+    "unitCost": 776.05,
+    "previousUnitCost": 776.05,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-25",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.895Z"
+  },
+  "yogur natural yogurlac descremado x 1l": {
+    "name": "YOGUR NATURAL YOGURLAC DESCREMADO X 1L",
+    "unitCost": 4020.56,
+    "previousUnitCost": 4020.56,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-25",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:39.926Z"
+  },
+  "choclo en grano inalpa x300g": {
+    "name": "CHOCLO EN GRANO INALPA X300G",
+    "unitCost": 1365.1,
+    "previousUnitCost": 1439.93,
+    "changePercent": -5.2,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:49.010Z"
+  },
+  "durazno xkg": {
+    "name": "DURAZNO XKG",
+    "unitCost": 1850,
+    "previousUnitCost": 2100,
+    "changePercent": -11.9,
+    "lastPurchaseDate": "2026-03-05",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:49.342Z"
+  },
+  "pote 55cc natural x1": {
+    "name": "POTE 55CC NATURAL X1",
+    "unitCost": 76,
+    "previousUnitCost": 74.38,
+    "changePercent": 2.18,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:49.972Z"
+  },
+  "tomillo fresco x atado": {
+    "name": "TOMILLO FRESCO X ATADO",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "TERRAFRUT",
+    "updatedAt": "2026-06-08T17:48:45.534Z"
+  },
+  "romero fresco x atado": {
+    "name": "ROMERO FRESCO X ATADO",
+    "unitCost": 4000,
+    "previousUnitCost": 2000,
+    "changePercent": 100,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "TERRAFRUT",
+    "updatedAt": "2026-06-08T17:48:45.697Z"
+  },
+  "ricota garcia la serenisima bjo sodio 500g": {
+    "name": "RICOTA GARCÍA LA SERENISIMA BJO SODIO 500G",
+    "unitCost": 3081.8678,
+    "previousUnitCost": 3081.8678,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-25",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:40.182Z"
+  },
+  "ricota garcia la serenisima sem gr 500g": {
+    "name": "RICOTA GARCÍA LA SERENISIMA SEM GR 500G",
+    "unitCost": 2890.686,
+    "previousUnitCost": 2890.686,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-25",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:40.205Z"
+  },
+  "uva xkg": {
+    "name": "UVA XKG",
+    "unitCost": 20000,
+    "previousUnitCost": 2000,
+    "changePercent": 900,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "MAIPU FRUT",
+    "updatedAt": "2026-06-08T17:48:44.733Z"
+  },
+  "esponja virulana verde multiuso": {
+    "name": "ESPONJA VIRULANA VERDE MULTIUSO",
+    "unitCost": 379.01199999999994,
+    "previousUnitCost": 379.01199999999994,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:40.297Z"
+  },
+  "alcohol fino al 70% thames x5lts": {
+    "name": "ALCOHOL FINO AL 70% THAMES X5LTS",
+    "unitCost": 16583.81,
+    "previousUnitCost": 23884.3,
+    "changePercent": -30.57,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:56.535Z"
+  },
+  "desengr. thames rapid plus senasa x5lts": {
+    "name": "DESENGR. THAMES RAPID PLUS SENASA X5LTS",
+    "unitCost": 9721.388,
+    "previousUnitCost": 9721.388,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:40.351Z"
+  },
+  "consorcio 80x100 negro marpla x50u": {
+    "name": "CONSORCIO 80X100 NEGRO MARPLA X50U",
+    "unitCost": 21818.18,
+    "previousUnitCost": 5931.543499999999,
+    "changePercent": 267.83,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:55.984Z"
+  },
+  "escoba caribe": {
+    "name": "ESCOBA CARIBE",
+    "unitCost": 2759.2084999999997,
+    "previousUnitCost": 2759.2084999999997,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:40.438Z"
+  },
+  "detergente eco x5lt": {
+    "name": "DETERGENTE ECO X5LT",
+    "unitCost": 7721.657,
+    "previousUnitCost": 7407.6155,
+    "changePercent": 4.24,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:54.481Z"
+  },
+  "secador de piso brk 40cm": {
+    "name": "SECADOR DE PISO BRK 40CM",
+    "unitCost": 2027.0435,
+    "previousUnitCost": 2027.0435,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:40.497Z"
+  },
+  "pan baguet blanca": {
+    "name": "PAN BAGUET BLANCA",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "JEBBS",
+    "updatedAt": "2026-06-08T17:48:40.651Z"
+  },
+  "bolsa de limon": {
+    "name": "BOLSA DE LIMON",
+    "unitCost": 10000,
+    "previousUnitCost": 10000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "PUESTO 192 / CAC",
+    "updatedAt": "2026-06-08T17:48:40.703Z"
+  },
+  "agua saborizada fresh limone 600cc": {
+    "name": "AGUA SABORIZADA FRESH LIMONE 600CC",
+    "unitCost": 667.9362500000001,
+    "previousUnitCost": 667.9362500000001,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:40.733Z"
+  },
+  "agua saborizada fresh pomelo 600cc": {
+    "name": "AGUA SABORIZADA FRESH POMELO 600CC",
+    "unitCost": 703.0909,
+    "previousUnitCost": 667.9362500000001,
+    "changePercent": 5.26,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:46.517Z"
+  },
+  "agua saborizada fresh naranja 600cc": {
+    "name": "AGUA SABORIZADA FRESH NARANJA 600CC",
+    "unitCost": 703.0909,
+    "previousUnitCost": 667.9362500000001,
+    "changePercent": 5.26,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:46.556Z"
+  },
+  "caja de pera": {
+    "name": "CAJA DE PERA",
+    "unitCost": 28000,
+    "previousUnitCost": 25000,
+    "changePercent": 12,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:47.965Z"
+  },
+  "jamon crudo tipo": {
+    "name": "JAMON CRUDO TIPO",
+    "unitCost": 43793.38842975207,
+    "previousUnitCost": 43793.38842975207,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-26",
+    "provider": "TORRENT",
+    "updatedAt": "2026-06-08T17:48:40.903Z"
+  },
+  "canela en rama": {
+    "name": "CANELA EN RAMA",
+    "unitCost": 80000,
+    "previousUnitCost": 70000,
+    "changePercent": 14.29,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:47.140Z"
+  },
+  "pascualina individual criolla": {
+    "name": "PASCUALINA INDIVIDUAL CRIOLLA",
+    "unitCost": 2253.7192,
+    "previousUnitCost": 2253.7192,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-28",
+    "provider": "LA CUYANITA S.A.",
+    "updatedAt": "2026-06-08T17:48:41.157Z"
+  },
+  "manzana x kg": {
+    "name": "MANZANA X KG",
+    "unitCost": 10000,
+    "previousUnitCost": 10000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-28",
+    "provider": "VERDULERIA BELGRANO",
+    "updatedAt": "2026-06-08T17:48:41.199Z"
+  },
+  "fritolin clasico cocinero": {
+    "name": "FRITOLIN CLASICO COCINERO",
+    "unitCost": 3270.96,
+    "previousUnitCost": 3270.96,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-28",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:41.331Z"
+  },
+  "jamon cocido pata piamontesa xkg": {
+    "name": "JAMON COCIDO PATA PIAMONTESA XKG",
+    "unitCost": 7959.09,
+    "previousUnitCost": 7959.09,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-28",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:41.353Z"
+  },
+  "barra q santa maria x kg": {
+    "name": "BARRA Q SANTA MARIA X KG",
+    "unitCost": 9518.3,
+    "previousUnitCost": 7866.36,
+    "changePercent": 21,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:48.981Z"
+  },
+  "jamon cocido pata trozer rect 4241 xkg": {
+    "name": "JAMON COCIDO PATA TROZER RECT 4241 XKG",
+    "unitCost": 11220,
+    "previousUnitCost": 5950,
+    "changePercent": 88.57,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:48.754Z"
+  },
+  "aceite de oliva alpujarra x1l extra virgen": {
+    "name": "ACEITE DE OLIVA ALPUJARRA X1L EXTRA VIRGEN",
+    "unitCost": 9024.69,
+    "previousUnitCost": 9024.69,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-02-28",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:41.461Z"
+  },
+  "guantes nitrilo negro m x100": {
+    "name": "GUANTES NITRILO NEGRO M X100",
+    "unitCost": 13884.3,
+    "previousUnitCost": 4499.48,
+    "changePercent": 208.58,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:54.695Z"
+  },
+  "guantes nitrilo negro l x100": {
+    "name": "GUANTES NITRILO NEGRO L X100",
+    "unitCost": 13884.3,
+    "previousUnitCost": 4499.48,
+    "changePercent": 208.58,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:54.718Z"
+  },
+  "bob limp 1004 19cm 400m x1": {
+    "name": "BOB LIMP 1004 19CM 400M X1",
+    "unitCost": 11235,
+    "previousUnitCost": 11235,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:44.913Z"
+  },
+  "trapo de piso gris make x1": {
+    "name": "TRAPO DE PISO GRIS MAKE X1",
+    "unitCost": 893.01,
+    "previousUnitCost": 893.01,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:41.725Z"
+  },
+  "film stretch sin cono ( coreless ) 50cm / 4,1kg": {
+    "name": "FILM STRETCH SIN CONO ( CORELESS ) 50CM / 4,1KG",
+    "unitCost": 14277.67,
+    "previousUnitCost": 14277.67,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:44.850Z"
+  },
+  "roluminio industrial x1": {
+    "name": "ROLUMINIO INDUSTRIAL X1",
+    "unitCost": 7537.16,
+    "previousUnitCost": 7537.16,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:41.789Z"
+  },
+  "bolsa pp 12 x 25 x 100": {
+    "name": "BOLSA PP 12 X 25 X 100",
+    "unitCost": 837.31,
+    "previousUnitCost": 837.31,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:41.818Z"
+  },
+  "bolsa pp 5 x 15 x 100": {
+    "name": "BOLSA PP 5 X 15 X 100",
+    "unitCost": 428.09,
+    "previousUnitCost": 428.09,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:41.847Z"
+  },
+  "langostino pelado roto": {
+    "name": "LANGOSTINO PELADO ROTO",
+    "unitCost": 19698.38,
+    "previousUnitCost": 19698.38,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PESIMAR SA / LAGUS",
+    "updatedAt": "2026-06-08T17:48:41.873Z"
+  },
+  "langostina pelado desvenado": {
+    "name": "LANGOSTINA PELADO DESVENADO",
+    "unitCost": 25723.39,
+    "previousUnitCost": 25723.39,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PESIMAR SA / LAGUS",
+    "updatedAt": "2026-06-08T17:48:41.901Z"
+  },
+  "filet de trucha salmonada": {
+    "name": "FILET DE TRUCHA SALMONADA",
+    "unitCost": 21709.92,
+    "previousUnitCost": 21709.92,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PESIMAR SA / LAGUS",
+    "updatedAt": "2026-06-08T17:48:41.953Z"
+  },
+  "cofias x100u": {
+    "name": "COFIAS X100U",
+    "unitCost": 4911.49,
+    "previousUnitCost": 4911.49,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:41.984Z"
+  },
+  "pano handy pro roll x60u 28cmx42xm i8th azul": {
+    "name": "PAÑO HANDY PRO ROLL X60U 28CMX42XM I8TH AZUL",
+    "unitCost": 15788.116499999998,
+    "previousUnitCost": 15863.66,
+    "changePercent": -0.48,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:54.586Z"
+  },
+  "pano amarillo ballerina a granel": {
+    "name": "PAÑO AMARILLO BALLERINA A GRANEL",
+    "unitCost": 563.426,
+    "previousUnitCost": 462.69,
+    "changePercent": 21.77,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:54.511Z"
+  },
+  "pulverizador gatillo eco transparente jm": {
+    "name": "PULVERIZADOR GATILLO ECO TRANSPARENTE JM",
+    "unitCost": 525.11,
+    "previousUnitCost": 525.11,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:42.069Z"
+  },
+  "pap hig greenline bco cono chico 8 rollos": {
+    "name": "PAP HIG GREENLINE BCO CONO CHICO 8 ROLLOS",
+    "unitCost": 10786.92,
+    "previousUnitCost": 10786.92,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:42.098Z"
+  },
+  "banana xkg": {
+    "name": "BANANA XKG",
+    "unitCost": 2500,
+    "previousUnitCost": 2500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:47.690Z"
+  },
+  "te grisella mora arandano x20 uni": {
+    "name": "TE GRISELLA MORA ARANDANO X20 UNI",
+    "unitCost": 1812.25,
+    "previousUnitCost": 1812.25,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:43.001Z"
+  },
+  "te limon lima jengibre menta saint gotta": {
+    "name": "TE LIMON LIMA JENGIBRE MENTA SAINT GOTTA",
+    "unitCost": 4039,
+    "previousUnitCost": 4039,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:43.029Z"
+  },
+  "te matcha menta limon saint gottard x 20": {
+    "name": "TE MATCHA MENTA LIMON SAINT GOTTARD X 20",
+    "unitCost": 6685,
+    "previousUnitCost": 6685,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:43.056Z"
+  },
+  "azucar comun tipo a la perla x 1kg": {
+    "name": "AZUCAR COMUN TIPO A LA PERLA X 1KG",
+    "unitCost": 1250,
+    "previousUnitCost": 1250,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:43.085Z"
+  },
+  "bolsa friselina 40x45 nuevo modelo forma": {
+    "name": "BOLSA FRISELINA 40X45 NUEVO MODELO FORMA",
+    "unitCost": 500,
+    "previousUnitCost": 500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:43.109Z"
+  },
+  "sandia": {
+    "name": "SANDIA",
+    "unitCost": 411.76,
+    "previousUnitCost": 411.76,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "ALBERTI PUESTOS 91-92",
+    "updatedAt": "2026-06-08T17:48:43.136Z"
+  },
+  "azucar molida superior ledesma bolsa": {
+    "name": "AZUCAR MOLIDA SUPERIOR LEDESMA BOLSA",
+    "unitCost": 490,
+    "previousUnitCost": 490,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:43.190Z"
+  },
+  "dulce de leche clasico ilolay x400": {
+    "name": "DULCE DE LECHE CLASICO ILOLAY X400",
+    "unitCost": 91475,
+    "previousUnitCost": 91475,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:43.245Z"
+  },
+  "framuesas banadas en choco amar blan fr": {
+    "name": "FRAMUESAS BANADAS EN CHOCO AMAR BLAN FR",
+    "unitCost": 8320,
+    "previousUnitCost": 8320,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:43.269Z"
+  },
+  "boniato": {
+    "name": "BONIATO",
+    "unitCost": 3300,
+    "previousUnitCost": 3300,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:43.296Z"
+  },
+  "repollo blanco": {
+    "name": "REPOLLO BLANCO",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:43.353Z"
+  },
+  "kiwi": {
+    "name": "KIWI",
+    "unitCost": 8200,
+    "previousUnitCost": 8200,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:43.438Z"
+  },
+  "lechuga rulito": {
+    "name": "LECHUGA RULITO",
+    "unitCost": 2500,
+    "previousUnitCost": 3500,
+    "changePercent": -28.57,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:50.075Z"
+  },
+  "anana": {
+    "name": "ANANA",
+    "unitCost": 4000,
+    "previousUnitCost": 4000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:43.459Z"
+  },
+  "ciruela": {
+    "name": "CIRUELA",
+    "unitCost": 2800,
+    "previousUnitCost": 2800,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PUESTO 134 / BUENAVIDA",
+    "updatedAt": "2026-06-08T17:48:43.485Z"
+  },
+  "higado vacuno fresco": {
+    "name": "HIGADO VACUNO FRESCO",
+    "unitCost": 4890,
+    "previousUnitCost": 4890,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "GRANJA BENEDETTI / ALMA SRL",
+    "updatedAt": "2026-06-08T17:48:43.505Z"
+  },
+  "bondiola fresca de cerdo": {
+    "name": "BONDIOLA FRESCA DE CERDO",
+    "unitCost": 9050.94,
+    "previousUnitCost": 12800,
+    "changePercent": -29.29,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LA CASA DEL CERDO",
+    "updatedAt": "2026-06-08T17:48:55.584Z"
+  },
+  "peperina": {
+    "name": "PEPERINA",
+    "unitCost": 500,
+    "previousUnitCost": 500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:43.555Z"
+  },
+  "molleja": {
+    "name": "MOLLEJA",
+    "unitCost": 18998,
+    "previousUnitCost": 18998,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "LA PRADERA CARNES",
+    "updatedAt": "2026-06-08T17:48:43.605Z"
+  },
+  "salchicas panchera swift": {
+    "name": "SALCHICAS PANCHERA SWIFT",
+    "unitCost": 2486,
+    "previousUnitCost": 2486,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "OSCAR DAVID",
+    "updatedAt": "2026-06-08T17:48:43.631Z"
+  },
+  "pan de super pancho alkopan cr umb": {
+    "name": "PAN DE SUPER PANCHO ALKOPAN CR UMB",
+    "unitCost": 2742,
+    "previousUnitCost": 2742,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "OSCAR DAVID",
+    "updatedAt": "2026-06-08T17:48:43.748Z"
+  },
+  "grisines veneziana ticereal": {
+    "name": "GRISINES VENEZIANA TICEREAL",
+    "unitCost": 180.4,
+    "previousUnitCost": 180.4,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "OSCAR DAVID",
+    "updatedAt": "2026-06-08T17:48:43.775Z"
+  },
+  "zigrinato blanco beneziana": {
+    "name": "ZIGRINATO BLANCO BENEZIANA",
+    "unitCost": 4145.75,
+    "previousUnitCost": 4145.75,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "OSCAR DAVID",
+    "updatedAt": "2026-06-08T17:48:43.802Z"
+  },
+  "pan peceto dialecto": {
+    "name": "PAN PECETO DIALECTO",
+    "unitCost": 1941.5,
+    "previousUnitCost": 1941.5,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "OSCAR DAVID",
+    "updatedAt": "2026-06-08T17:48:43.827Z"
+  },
+  "pan peceto dialecto ajo": {
+    "name": "PAN PECETO DIALECTO AJO",
+    "unitCost": 647,
+    "previousUnitCost": 647,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "OSCAR DAVID",
+    "updatedAt": "2026-06-08T17:48:43.866Z"
+  },
+  "queso cremala quesera": {
+    "name": "QUESO CREMALA QUESERA",
+    "unitCost": 16431,
+    "previousUnitCost": 16431,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:43.919Z"
+  },
+  "fid matara tirab veg": {
+    "name": "FID MATARA TIRAB VEG",
+    "unitCost": 3988,
+    "previousUnitCost": 3988,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:43.945Z"
+  },
+  "monster mango loco 473ml": {
+    "name": "MONSTER MANGO LOCO 473ML",
+    "unitCost": 1734,
+    "previousUnitCost": 3469,
+    "changePercent": -50.01,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:44.000Z"
+  },
+  "fid provid tirabuzon 500g": {
+    "name": "FID PROVID TIRABUZON 500G",
+    "unitCost": 230,
+    "previousUnitCost": 230,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:44.025Z"
+  },
+  "fid provid tirab veg 500g": {
+    "name": "FID PROVID TIRAB VEG 500G",
+    "unitCost": 1329,
+    "previousUnitCost": 1329,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BLOW MAX",
+    "updatedAt": "2026-06-08T17:48:44.054Z"
+  },
+  "copa cristal 50ml": {
+    "name": "COPA CRISTAL 50ML",
+    "unitCost": 2503,
+    "previousUnitCost": 2503,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BARKA / VOIT ARGENTINA SAS",
+    "updatedAt": "2026-06-08T17:48:44.114Z"
+  },
+  "vaso cristal 50ml": {
+    "name": "VASO CRISTAL 50ML",
+    "unitCost": 4165.2,
+    "previousUnitCost": 4165.2,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "BARKA / VOIT ARGENTINA SAS",
+    "updatedAt": "2026-06-08T17:48:44.148Z"
+  },
+  "cajas azucar": {
+    "name": "CAJAS AZUCAR",
+    "unitCost": 26859.5,
+    "previousUnitCost": 26859.5,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:44.187Z"
+  },
+  "cappeleti": {
+    "name": "CAPPELETI",
+    "unitCost": 20,
+    "previousUnitCost": 20,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:44.219Z"
+  },
+  "menta": {
+    "name": "MENTA",
+    "unitCost": 500,
+    "previousUnitCost": 500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:44.248Z"
+  },
+  "portobela": {
+    "name": "PORTOBELA",
+    "unitCost": 1416,
+    "previousUnitCost": 17000,
+    "changePercent": -91.67,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "TERRAFRUT",
+    "updatedAt": "2026-06-08T17:48:45.455Z"
+  },
+  "champinon": {
+    "name": "CHAMPIÑON",
+    "unitCost": 3000,
+    "previousUnitCost": 1000,
+    "changePercent": 200,
+    "lastPurchaseDate": "2026-03-05",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:49.383Z"
+  },
+  "azucar ledesma x1kg": {
+    "name": "AZUCAR LEDESMA X1KG",
+    "unitCost": 1245.31,
+    "previousUnitCost": 28424,
+    "changePercent": -95.62,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.784Z"
+  },
+  "gaseosa cocacola 2,25l": {
+    "name": "GASEOSA COCACOLA 2,25L",
+    "unitCost": 36.56,
+    "previousUnitCost": 36.56,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "GO BAR",
+    "updatedAt": "2026-06-08T17:48:44.478Z"
+  },
+  "gaseosa sprite 2,25l": {
+    "name": "GASEOSA SPRITE 2,25L",
+    "unitCost": 685.21,
+    "previousUnitCost": 685.21,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "GO BAR",
+    "updatedAt": "2026-06-08T17:48:44.508Z"
+  },
+  "gaseosa cocacola zero 2,25l": {
+    "name": "GASEOSA COCACOLA ZERO 2,25L",
+    "unitCost": 68.54,
+    "previousUnitCost": 68.54,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "GO BAR",
+    "updatedAt": "2026-06-08T17:48:44.535Z"
+  },
+  "chaqueta cocinero arciel 3xl": {
+    "name": "CHAQUETA COCINERO ARCIEL 3XL",
+    "unitCost": 54520,
+    "previousUnitCost": 54520,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "LORENZO GASTON EZEQUIEL",
+    "updatedAt": "2026-06-08T17:48:44.566Z"
+  },
+  "chaqueta cocinero arciel xl": {
+    "name": "CHAQUETA COCINERO ARCIEL XL",
+    "unitCost": 41980,
+    "previousUnitCost": 41980,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "LORENZO GASTON EZEQUIEL",
+    "updatedAt": "2026-06-08T17:48:44.601Z"
+  },
+  "chaqueta cocinero arciel l": {
+    "name": "CHAQUETA COCINERO ARCIEL L",
+    "unitCost": 20990,
+    "previousUnitCost": 20990,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "LORENZO GASTON EZEQUIEL",
+    "updatedAt": "2026-06-08T17:48:44.633Z"
+  },
+  "chaqueta cocinero arciel xs": {
+    "name": "CHAQUETA COCINERO ARCIEL XS",
+    "unitCost": 20990,
+    "previousUnitCost": 20990,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "LORENZO GASTON EZEQUIEL",
+    "updatedAt": "2026-06-08T17:48:44.658Z"
+  },
+  "tenedores copetin madera": {
+    "name": "TENEDORES COPETIN MADERA",
+    "unitCost": 175,
+    "previousUnitCost": 175,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "MAGUS DESCARTABLES",
+    "updatedAt": "2026-06-08T17:48:44.688Z"
+  },
+  "aquarius": {
+    "name": "AQUARIUS",
+    "unitCost": 150,
+    "previousUnitCost": 150,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:44.762Z"
+  },
+  "guantes nitrilo azul m x 100": {
+    "name": "GUANTES NITRILO AZUL M X 100",
+    "unitCost": 4377.3,
+    "previousUnitCost": 4377.3,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:44.935Z"
+  },
+  "pincho madera eco 15cm x 50": {
+    "name": "PINCHO MADERA ECO 15CM X 50",
+    "unitCost": 766.03,
+    "previousUnitCost": 766.03,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:44.963Z"
+  },
+  "cafe clasico la virginia x 500 gr": {
+    "name": "CAFE CLASICO LA VIRGINIA X 500 GR",
+    "unitCost": 13129,
+    "previousUnitCost": 13129,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:44.987Z"
+  },
+  "tableta chocolate con leche milka x 20gr": {
+    "name": "TABLETA CHOCOLATE CON LECHE MILKA X 20GR",
+    "unitCost": 1789,
+    "previousUnitCost": 1789,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "CARREFOUR",
+    "updatedAt": "2026-06-08T17:48:45.114Z"
+  },
+  "sertal cto vl cm": {
+    "name": "SERTAL CTO VL CM",
+    "unitCost": 7894,
+    "previousUnitCost": 7894,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FARMACIA BELGRANO",
+    "updatedAt": "2026-06-08T17:48:45.136Z"
+  },
+  "hipoaler clear": {
+    "name": "HIPOALER CLEAR",
+    "unitCost": 4290,
+    "previousUnitCost": 4290,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FARMACIA BELGRANO",
+    "updatedAt": "2026-06-08T17:48:45.164Z"
+  },
+  "barbijo de tela": {
+    "name": "BARBIJO DE TELA",
+    "unitCost": 150,
+    "previousUnitCost": 150,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FARMACIA BELGRANO",
+    "updatedAt": "2026-06-08T17:48:45.188Z"
+  },
+  "ibupirac 600 comx": {
+    "name": "IBUPIRAC 600 COMX",
+    "unitCost": 8969,
+    "previousUnitCost": 8969,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "FARMACIA BELGRANO",
+    "updatedAt": "2026-06-08T17:48:45.214Z"
+  },
+  "bolsa pp 12 x 20 x 100": {
+    "name": "BOLSA PP 12 X 20 X 100",
+    "unitCost": 367,
+    "previousUnitCost": 367,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "DESCARTABLES NAVIDAD",
+    "updatedAt": "2026-06-08T17:48:45.265Z"
+  },
+  "cinta emb transp 48": {
+    "name": "CINTA EMB TRANSP 48",
+    "unitCost": 4915,
+    "previousUnitCost": 4915,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "DESCARTABLES NAVIDAD",
+    "updatedAt": "2026-06-08T17:48:45.288Z"
+  },
+  "servilleta 24 x 24 linea negra": {
+    "name": "SERVILLETA 24 X 24 LINEA NEGRA",
+    "unitCost": 28604.3,
+    "previousUnitCost": 28604.3,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "DESCARTABLES NAVIDAD",
+    "updatedAt": "2026-06-08T17:48:45.314Z"
+  },
+  "vaso enpolex 180cc x 1": {
+    "name": "VASO ENPOLEX 180CC X 1",
+    "unitCost": 44862,
+    "previousUnitCost": 44862,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "DESCARTABLES NAVIDAD",
+    "updatedAt": "2026-06-08T17:48:45.339Z"
+  },
+  "super rollo 80 x 110 x5": {
+    "name": "SUPER ROLLO 80 X 110 X5",
+    "unitCost": 8394,
+    "previousUnitCost": 8394,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "DESCARTABLES NAVIDAD",
+    "updatedAt": "2026-06-08T17:48:45.372Z"
+  },
+  "noquis de papa 1kg": {
+    "name": "ÑOQUIS DE PAPA 1KG",
+    "unitCost": 9015.7025,
+    "previousUnitCost": 272275,
+    "changePercent": -96.69,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LA CUYANITA S.A.",
+    "updatedAt": "2026-06-08T17:48:56.359Z"
+  },
+  "frutos rojos": {
+    "name": "FRUTOS ROJOS",
+    "unitCost": 9500,
+    "previousUnitCost": 9500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "TERRAFRUT",
+    "updatedAt": "2026-06-08T17:48:45.559Z"
+  },
+  "miel xkg": {
+    "name": "MIEL XKG",
+    "unitCost": 9000,
+    "previousUnitCost": 9000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:46.069Z"
+  },
+  "bolsa de choclo": {
+    "name": "BOLSA DE CHOCLO",
+    "unitCost": 7000,
+    "previousUnitCost": 8000,
+    "changePercent": -12.5,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:46.646Z"
+  },
+  "cima": {
+    "name": "CIMA",
+    "unitCost": 1000,
+    "previousUnitCost": 1000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-01",
+    "provider": "TERRAFRUT",
+    "updatedAt": "2026-06-08T17:48:45.658Z"
+  },
+  "aquarius manzana 500c": {
+    "name": "AQUARIUS MANZANA 500C",
+    "unitCost": 2099,
+    "previousUnitCost": 2099,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "FRAT / BRODA SA",
+    "updatedAt": "2026-06-08T17:48:45.799Z"
+  },
+  "aquarius pomelo 500c": {
+    "name": "AQUARIUS POMELO 500C",
+    "unitCost": 1899,
+    "previousUnitCost": 1899,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "FRAT / BRODA SA",
+    "updatedAt": "2026-06-08T17:48:45.830Z"
+  },
+  "aquarius limonada 500c": {
+    "name": "AQUARIUS LIMONADA 500C",
+    "unitCost": 2099,
+    "previousUnitCost": 2099,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "FRAT / BRODA SA",
+    "updatedAt": "2026-06-08T17:48:45.859Z"
+  },
+  "agua saborizada levite pomelo rosado 500c": {
+    "name": "AGUA SABORIZADA LEVITE POMELO ROSADO 500C",
+    "unitCost": 1512,
+    "previousUnitCost": 1512,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "VEA 21 MENDOZA",
+    "updatedAt": "2026-06-08T17:48:45.909Z"
+  },
+  "agua saborizada levite limonada 500c": {
+    "name": "AGUA SABORIZADA LEVITE LIMONADA 500C",
+    "unitCost": 1520,
+    "previousUnitCost": 1520,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "VEA 21 MENDOZA",
+    "updatedAt": "2026-06-08T17:48:45.985Z"
+  },
+  "salsa de soja": {
+    "name": "SALSA DE SOJA",
+    "unitCost": 3500,
+    "previousUnitCost": 3500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:46.034Z"
+  },
+  "caja reforzada 400x300x300 x1": {
+    "name": "CAJA REFORZADA 400X300X300 X1",
+    "unitCost": 3289.26,
+    "previousUnitCost": 3264.46,
+    "changePercent": 0.76,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:54.606Z"
+  },
+  "tapa pote 55cc/80cc/110cc x1": {
+    "name": "TAPA POTE 55CC/80CC/110CC X1",
+    "unitCost": 42,
+    "previousUnitCost": 41.32,
+    "changePercent": 1.65,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:50.004Z"
+  },
+  "papel parafinado 36*40 x 1/2 kg": {
+    "name": "PAPEL PARAFINADO 36*40 X 1/2 KG",
+    "unitCost": 10247.93,
+    "previousUnitCost": 10247.93,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:46.368Z"
+  },
+  "matambre ternera": {
+    "name": "MATAMBRE TERNERA",
+    "unitCost": 16289.58,
+    "previousUnitCost": 16289.58,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "CIMBRA SAS / CARNES DE MI CAMPO",
+    "updatedAt": "2026-06-08T17:48:46.423Z"
+  },
+  "picada especial ternera": {
+    "name": "PICADA ESPECIAL TERNERA",
+    "unitCost": 14479.63,
+    "previousUnitCost": 14479.63,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-02",
+    "provider": "CIMBRA SAS / CARNES DE MI CAMPO",
+    "updatedAt": "2026-06-08T17:48:46.488Z"
+  },
+  "caja de cherry x 5kg": {
+    "name": "CAJA DE CHERRY X 5KG",
+    "unitCost": 7000,
+    "previousUnitCost": 7000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:46.866Z"
+  },
+  "granadas x unidad": {
+    "name": "GRANADAS X UNIDAD",
+    "unitCost": 1050,
+    "previousUnitCost": 1050,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:46.959Z"
+  },
+  "salsa x unidad": {
+    "name": "SALSA X UNIDAD",
+    "unitCost": 1150,
+    "previousUnitCost": 1150,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:47.014Z"
+  },
+  "nuez x kg": {
+    "name": "NUEZ X KG",
+    "unitCost": 18000,
+    "previousUnitCost": 18000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:47.057Z"
+  },
+  "mix clasico fruto seco": {
+    "name": "MIX CLASICO FRUTO SECO",
+    "unitCost": 16000,
+    "previousUnitCost": 16000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "SABORES ANDINOS / FERIA",
+    "updatedAt": "2026-06-08T17:48:47.320Z"
+  },
+  "melon x unidad": {
+    "name": "MELON X UNIDAD",
+    "unitCost": 1900,
+    "previousUnitCost": 1900,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:47.883Z"
+  },
+  "pack de leche ilolay entera": {
+    "name": "PACK DE LECHE ILOLAY ENTERA",
+    "unitCost": 19560,
+    "previousUnitCost": 19560,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:48.019Z"
+  },
+  "ajo x riestra": {
+    "name": "AJO X RIESTRA",
+    "unitCost": 20000,
+    "previousUnitCost": 20000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:48.102Z"
+  },
+  "bolsa coquena chico": {
+    "name": "BOLSA COQUENA CHICO",
+    "unitCost": 6000,
+    "previousUnitCost": 6000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "FERIA",
+    "updatedAt": "2026-06-08T17:48:48.159Z"
+  },
+  "garrafa 10kg": {
+    "name": "GARRAFA 10KG",
+    "unitCost": 30316.7421,
+    "previousUnitCost": 24434.38,
+    "changePercent": 24.07,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "ARIEL",
+    "updatedAt": "2026-06-08T17:48:56.897Z"
+  },
+  "productos varios": {
+    "name": "PRODUCTOS VARIOS",
+    "unitCost": 100,
+    "previousUnitCost": 100,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "BARKA / VOIT ARGENTINA SAS",
+    "updatedAt": "2026-06-08T17:48:48.489Z"
+  },
+  "remolacha x atado": {
+    "name": "REMOLACHA X ATADO",
+    "unitCost": 1500,
+    "previousUnitCost": 1500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "VERDULERIA",
+    "updatedAt": "2026-06-08T17:48:48.589Z"
+  },
+  "colorante en gel rojo": {
+    "name": "COLORANTE EN GEL ROJO",
+    "unitCost": 1700,
+    "previousUnitCost": 1700,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "MORACOCINA / GRUPO HORMIGA SRL",
+    "updatedAt": "2026-06-08T17:48:48.619Z"
+  },
+  "romanito santa maria xkg": {
+    "name": "ROMANITO SANTA MARIA XKG",
+    "unitCost": 16484.05,
+    "previousUnitCost": 16484.05,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:48.801Z"
+  },
+  "vinagre de vino puruvin x 5l": {
+    "name": "VINAGRE DE VINO PURUVIN X 5L",
+    "unitCost": 6828.49,
+    "previousUnitCost": 6828.49,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:48.902Z"
+  },
+  "vinagre de alcohol puruvin x": {
+    "name": "VINAGRE DE ALCOHOL PURUVIN X",
+    "unitCost": 6485.16,
+    "previousUnitCost": 6485.16,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:48.934Z"
+  },
+  "palmitos entero apapulco x 800g": {
+    "name": "PALMITOS ENTERO APAPULCO X 800G",
+    "unitCost": 7106,
+    "previousUnitCost": 7106,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:49.124Z"
+  },
+  "pure de tomate alco x 520g": {
+    "name": "PURE DE TOMATE ALCO X 520G",
+    "unitCost": 729.3,
+    "previousUnitCost": 729.3,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:49.250Z"
+  },
+  "galletas lincoln clasicas x 153g": {
+    "name": "GALLETAS LINCOLN CLASICAS X 153G",
+    "unitCost": 1335.18,
+    "previousUnitCost": 1335.18,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-03",
+    "provider": "DEL MONTE DISTRIBUIDORA",
+    "updatedAt": "2026-06-08T17:48:49.281Z"
+  },
+  "naranja": {
+    "name": "NARANJA",
+    "unitCost": 7000,
+    "previousUnitCost": 7000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-05",
+    "provider": "FACTURAS DE JORGE",
+    "updatedAt": "2026-06-08T17:48:49.314Z"
+  },
+  "santa julia dulce tinto x269cc": {
+    "name": "SANTA JULIA DULCE TINTO X269CC",
+    "unitCost": 1892.5620000000001,
+    "previousUnitCost": 1892.5620000000001,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-07",
+    "provider": "TADICOR LAS HERAS",
+    "updatedAt": "2026-06-08T17:48:49.431Z"
+  },
+  "cerdo (varios cortes)": {
+    "name": "CERDO (VARIOS CORTES)",
+    "unitCost": 212571.42,
+    "previousUnitCost": 212571.42,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-08",
+    "provider": "LA CASA DEL CERDO",
+    "updatedAt": "2026-06-08T17:48:49.481Z"
+  },
+  "estadia en playa": {
+    "name": "ESTADIA EN PLAYA",
+    "unitCost": 3400,
+    "previousUnitCost": 3400,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-10",
+    "provider": "INDEPENDENCIA PROPIEDAD HORIZONTAL SAI",
+    "updatedAt": "2026-06-08T17:48:49.552Z"
+  },
+  "bebidas varias": {
+    "name": "BEBIDAS VARIAS",
+    "unitCost": 99905.32,
+    "previousUnitCost": 12000,
+    "changePercent": 732.54,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "CENTRAL DE BEBIDAS / DISRE",
+    "updatedAt": "2026-06-08T17:48:53.379Z"
+  },
+  "aceite de girasol oleico x lt": {
+    "name": "ACEITE DE GIRASOL OLEICO X LT",
+    "unitCost": 3223.14,
+    "previousUnitCost": 3223,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LA JOYA ACEITES",
+    "updatedAt": "2026-06-08T17:48:56.484Z"
+  },
+  "queso cremoso pizzero d 70": {
+    "name": "QUESO CREMOSO PIZZERO D 70",
+    "unitCost": 6355,
+    "previousUnitCost": 6355,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-11",
+    "provider": "MAYORISTA EL VASCO",
+    "updatedAt": "2026-06-08T17:48:49.666Z"
+  },
+  "keuken x 5kg": {
+    "name": "KEUKEN X 5KG",
+    "unitCost": 20991,
+    "previousUnitCost": 20991,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-11",
+    "provider": "CHITSA MATERIAS PRIMAS",
+    "updatedAt": "2026-06-08T17:48:49.708Z"
+  },
+  "pan arabe hueco por 36u": {
+    "name": "PAN ARABE HUECO POR 36U",
+    "unitCost": 9256,
+    "previousUnitCost": 9256,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-11",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:49.739Z"
+  },
+  "pago qr": {
+    "name": "PAGO QR",
+    "unitCost": 20991.66,
+    "previousUnitCost": 20991.66,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-11",
+    "provider": "MERCADO PAGO",
+    "updatedAt": "2026-06-08T17:48:49.787Z"
+  },
+  "sandwich miga": {
+    "name": "SANDWICH MIGA",
+    "unitCost": 24500,
+    "previousUnitCost": 24500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-11",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:49.824Z"
+  },
+  "sandwich jamon y queso": {
+    "name": "SANDWICH JAMON Y QUESO",
+    "unitCost": 59100,
+    "previousUnitCost": 24500,
+    "changePercent": 141.22,
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:54.016Z"
+  },
+  "carne de cerdo": {
+    "name": "CARNE DE CERDO",
+    "unitCost": 56527,
+    "previousUnitCost": 56527,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-11",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:49.891Z"
+  },
+  "bolsa de papa 5x25 x100": {
+    "name": "BOLSA DE PAPA 5X25 X100",
+    "unitCost": 991,
+    "previousUnitCost": 991,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-12",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:50.036Z"
+  },
+  "jamon crudo tacural x kg": {
+    "name": "JAMON CRUDO TACURAL X KG",
+    "unitCost": 22907,
+    "previousUnitCost": 22907,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "TALASTILLA",
+    "updatedAt": "2026-06-08T18:16:56.936Z"
+  },
+  "corte c/o": {
+    "name": "CORTE C/O",
+    "unitCost": 1,
+    "previousUnitCost": 1,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "TALASTILLA",
+    "updatedAt": "2026-06-08T17:48:50.450Z"
+  },
+  "salsa de tomate vega grande x 1kg": {
+    "name": "SALSA DE TOMATE VEGA GRANDE X 1KG",
+    "unitCost": 1174.55,
+    "previousUnitCost": 1354.25,
+    "changePercent": -13.27,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.952Z"
+  },
+  "aceite de girasol natura x5l": {
+    "name": "ACEITE DE GIRASOL NATURA X5L",
+    "unitCost": 21439,
+    "previousUnitCost": 21439,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "TALASTILLA",
+    "updatedAt": "2026-06-08T17:48:50.530Z"
+  },
+  "azucar individual ledesma x 100 uni": {
+    "name": "AZUCAR INDIVIDUAL LEDESMA X 100 UNI",
+    "unitCost": 18787,
+    "previousUnitCost": 18787,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "TALASTILLA",
+    "updatedAt": "2026-06-08T17:48:50.564Z"
+  },
+  "coca cola zero 500ml": {
+    "name": "COCA COLA ZERO 500ML",
+    "unitCost": 1063.991,
+    "previousUnitCost": 1063.991,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "DANEM SAS / ALMA DEL SUR DISTRIBUCIONES",
+    "updatedAt": "2026-06-08T17:48:50.640Z"
+  },
+  "agua graziani c/g 500cc": {
+    "name": "AGUA GRAZIANI C/G 500CC",
+    "unitCost": 461160,
+    "previousUnitCost": 461160,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "DANEM SAS / ALMA DEL SUR DISTRIBUCIONES",
+    "updatedAt": "2026-06-08T17:48:50.672Z"
+  },
+  "agua graziani s/g 500cc": {
+    "name": "AGUA GRAZIANI S/G 500CC",
+    "unitCost": 307.58,
+    "previousUnitCost": 307.58,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "DANEM SAS / ALMA DEL SUR DISTRIBUCIONES",
+    "updatedAt": "2026-06-08T17:48:50.702Z"
+  },
+  "agua graziani manzana premium 8x500cc": {
+    "name": "AGUA GRAZIANI MANZANA PREMIUM 8X500CC",
+    "unitCost": 501.16,
+    "previousUnitCost": 501.16,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "DANEM SAS / ALMA DEL SUR DISTRIBUCIONES",
+    "updatedAt": "2026-06-08T17:48:50.753Z"
+  },
+  "agua graziani nar-duraz premium 8x500cc": {
+    "name": "AGUA GRAZIANI NAR-DURAZ PREMIUM 8X500CC",
+    "unitCost": 501.6,
+    "previousUnitCost": 501.6,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "DANEM SAS / ALMA DEL SUR DISTRIBUCIONES",
+    "updatedAt": "2026-06-08T17:48:50.796Z"
+  },
+  "agua graziani pomelo premium 8x500cc": {
+    "name": "AGUA GRAZIANI POMELO PREMIUM 8X500CC",
+    "unitCost": 501.6,
+    "previousUnitCost": 501.6,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "DANEM SAS / ALMA DEL SUR DISTRIBUCIONES",
+    "updatedAt": "2026-06-08T17:48:50.844Z"
+  },
+  "estuche 102 pp cotnyl x1": {
+    "name": "ESTUCHE 102 PP COTNYL X1",
+    "unitCost": 1074.38,
+    "previousUnitCost": 309.52,
+    "changePercent": 247.11,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:53.682Z"
+  },
+  "servilleta 24x24 linea verde x1": {
+    "name": "SERVILLETA 24X24 LINEA VERDE X1",
+    "unitCost": 16484.39,
+    "previousUnitCost": 16484.39,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:50.986Z"
+  },
+  "caja 40l t/xs x1": {
+    "name": "CAJA 40L T/XS X1",
+    "unitCost": 8380.3,
+    "previousUnitCost": 8380.3,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:51.026Z"
+  },
+  "estuche 105 pp cotnyl x1": {
+    "name": "ESTUCHE 105 PP COTNYL X1",
+    "unitCost": 297.52,
+    "previousUnitCost": 297.52,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:51.058Z"
+  },
+  "bandeja pp 102 clear pack x1": {
+    "name": "BANDEJA PP 102 CLEAR PACK X1",
+    "unitCost": 575.48,
+    "previousUnitCost": 575.48,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-13",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:51.087Z"
+  },
+  "galletas rex 125g": {
+    "name": "GALLETAS REX 125G",
+    "unitCost": 1816,
+    "previousUnitCost": 1816,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "ATOMO UNIMEV",
+    "updatedAt": "2026-06-08T17:48:51.266Z"
+  },
+  "edulcorante hileret clasico fo": {
+    "name": "EDULCORANTE HILERET CLASICO FO",
+    "unitCost": 3918,
+    "previousUnitCost": 2342,
+    "changePercent": 67.29,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "ATOMO UNIMEV",
+    "updatedAt": "2026-06-08T17:48:51.403Z"
+  },
+  "edulcorante hileret zucra pet": {
+    "name": "EDULCORANTE HILERET ZUCRA PET",
+    "unitCost": 5113,
+    "previousUnitCost": 5113,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "ATOMO UNIMEV",
+    "updatedAt": "2026-06-08T17:48:51.350Z"
+  },
+  "j-q - surt - verduras x6": {
+    "name": "J-Q - SURT - VERDURAS X6",
+    "unitCost": 2066,
+    "previousUnitCost": 2066,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:51.435Z"
+  },
+  "patamuslo pollo 12": {
+    "name": "PATAMUSLO POLLO 12",
+    "unitCost": 2790,
+    "previousUnitCost": 2790,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "GRANJA BENEDETTI / ALMA SRL",
+    "updatedAt": "2026-06-08T17:48:51.517Z"
+  },
+  "punta de espalda": {
+    "name": "PUNTA DE ESPALDA",
+    "unitCost": 5100,
+    "previousUnitCost": 5100,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:51.613Z"
+  },
+  "costilla de 1°": {
+    "name": "COSTILLA DE 1°",
+    "unitCost": 13990,
+    "previousUnitCost": 13990,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:52.798Z"
+  },
+  "servicio": {
+    "name": "SERVICIO",
+    "unitCost": 54434.54,
+    "previousUnitCost": 54434.54,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:51.663Z"
+  },
+  "salsa de tomate x1 kg": {
+    "name": "SALSA DE TOMATE X1 KG",
+    "unitCost": 5451,
+    "previousUnitCost": 5451,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:51.690Z"
+  },
+  "harina economica x 25 kg": {
+    "name": "HARINA ECONOMICA X 25 KG",
+    "unitCost": 14854,
+    "previousUnitCost": 14854,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:51.720Z"
+  },
+  "aceite girasol natural 1.5l": {
+    "name": "ACEITE GIRASOL NATURAL 1.5L",
+    "unitCost": 13440,
+    "previousUnitCost": 13440,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:51.749Z"
+  },
+  "aceite oliva extra virgen 2l": {
+    "name": "ACEITE OLIVA EXTRA VIRGEN 2L",
+    "unitCost": 28867,
+    "previousUnitCost": 28867,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:51.781Z"
+  },
+  "mayonesa doypack x 3 kg": {
+    "name": "MAYONESA DOYPACK X 3 KG",
+    "unitCost": 25362,
+    "previousUnitCost": 25362,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:51.820Z"
+  },
+  "huevo blanco maple": {
+    "name": "HUEVO BLANCO MAPLE",
+    "unitCost": 5600,
+    "previousUnitCost": 5600,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "FRAT / BRODA SA",
+    "updatedAt": "2026-06-08T17:48:51.855Z"
+  },
+  "huevo blanco grande": {
+    "name": "HUEVO BLANCO GRANDE",
+    "unitCost": 17980,
+    "previousUnitCost": 17980,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "FRAT / BRODA SA",
+    "updatedAt": "2026-06-08T17:48:51.913Z"
+  },
+  "huevo colorado": {
+    "name": "HUEVO COLORADO",
+    "unitCost": 2840,
+    "previousUnitCost": 2840,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-14",
+    "provider": "FRAT / BRODA SA",
+    "updatedAt": "2026-06-08T17:48:51.953Z"
+  },
+  "pan casero": {
+    "name": "PAN CASERO",
+    "unitCost": 1500,
+    "previousUnitCost": 1500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-16",
+    "provider": "MARKET MULTIRUBRO M Y M S.A.S",
+    "updatedAt": "2026-06-08T17:48:52.006Z"
+  },
+  "salsa roja libre": {
+    "name": "SALSA ROJA LIBRE",
+    "unitCost": 19500,
+    "previousUnitCost": 19500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-16",
+    "provider": "ANDRES (FRUTOS SECOS)",
+    "updatedAt": "2026-06-08T17:48:52.066Z"
+  },
+  "queso crema la quesera pouch": {
+    "name": "QUESO CREMA LA QUESERA POUCH",
+    "unitCost": 18746.75,
+    "previousUnitCost": 18746.75,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-18",
+    "provider": "TALASTILLA",
+    "updatedAt": "2026-06-08T17:48:52.149Z"
+  },
+  "sandwich triples jyq x 12": {
+    "name": "SANDWICH TRIPLES JYQ X 12",
+    "unitCost": 23988,
+    "previousUnitCost": 23988,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-03-19",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:52.209Z"
+  },
+  "galletas pepas envasado x kg": {
+    "name": "GALLETAS PEPAS ENVASADO X KG",
+    "unitCost": 10991.74,
+    "previousUnitCost": 10991.74,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:55.383Z"
+  },
+  "flores": {
+    "name": "FLORES",
+    "unitCost": 25000,
+    "previousUnitCost": 25000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "FLORES LUNA",
+    "updatedAt": "2026-06-08T17:48:52.916Z"
+  },
+  "mermelada de aji picante": {
+    "name": "MERMELADA DE AJI PICANTE",
+    "unitCost": 7000,
+    "previousUnitCost": 7000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "TIA CLARA DULCES ARTESANALES",
+    "updatedAt": "2026-06-08T17:48:52.971Z"
+  },
+  "higos en almibar": {
+    "name": "HIGOS EN ALMIBAR",
+    "unitCost": 8500,
+    "previousUnitCost": 8500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "TIA CLARA DULCES ARTESANALES",
+    "updatedAt": "2026-06-08T17:48:53.006Z"
+  },
+  "tomate cherry caramelizado": {
+    "name": "TOMATE CHERRY CARAMELIZADO",
+    "unitCost": 7000,
+    "previousUnitCost": 7000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "TIA CLARA DULCES ARTESANALES",
+    "updatedAt": "2026-06-08T17:48:53.037Z"
+  },
+  "naranja en almibar": {
+    "name": "NARANJA EN ALMIBAR",
+    "unitCost": 8000,
+    "previousUnitCost": 8500,
+    "changePercent": -5.88,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "TIA CLARA DULCES ARTESANALES",
+    "updatedAt": "2026-06-08T17:48:55.737Z"
+  },
+  "batata en almibar": {
+    "name": "BATATA EN ALMIBAR",
+    "unitCost": 8500,
+    "previousUnitCost": 8500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-21",
+    "provider": "TIA CLARA DULCES ARTESANALES",
+    "updatedAt": "2026-06-08T17:48:53.090Z"
+  },
+  "carnes": {
+    "name": "CARNES",
+    "unitCost": 3162164,
+    "previousUnitCost": 9500,
+    "changePercent": 33185.94,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "RUBEN CARNE",
+    "updatedAt": "2026-06-08T17:48:55.767Z"
+  },
+  "atado tablas": {
+    "name": "ATADO TABLAS",
+    "unitCost": 3500,
+    "previousUnitCost": 3500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-22",
+    "provider": "VERDULERIA",
+    "updatedAt": "2026-06-08T17:48:53.268Z"
+  },
+  "crema de leche x200": {
+    "name": "CREMA DE LECHE X200",
+    "unitCost": 3275,
+    "previousUnitCost": 3275,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "VARIOS",
+    "updatedAt": "2026-06-08T17:48:53.515Z"
+  },
+  "flete": {
+    "name": "FLETE",
+    "unitCost": 50000,
+    "previousUnitCost": 80000,
+    "changePercent": -37.5,
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "RODRIGO FELTE",
+    "updatedAt": "2026-06-08T17:48:53.988Z"
+  },
+  "film pvc premium 200mts x1": {
+    "name": "FILM PVC PREMIUM 200MTS X1",
+    "unitCost": 18595.04,
+    "previousUnitCost": 18595.04,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:53.622Z"
+  },
+  "estuche 105 pp clear pack x1": {
+    "name": "ESTUCHE 105 PP CLEAR PACK X1",
+    "unitCost": 528.93,
+    "previousUnitCost": 528.93,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:53.650Z"
+  },
+  "tenedor blanco reforzado x50": {
+    "name": "TENEDOR BLANCO REFORZADO X50",
+    "unitCost": 2561.98,
+    "previousUnitCost": 2561.98,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:53.705Z"
+  },
+  "cuchillo blanco reforzado x50": {
+    "name": "CUCHILLO BLANCO REFORZADO X50",
+    "unitCost": 2561.98,
+    "previousUnitCost": 2561.98,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:53.730Z"
+  },
+  "bandeja aluminio real 5 x1": {
+    "name": "BANDEJA ALUMINIO REAL 5 X1",
+    "unitCost": 330.58,
+    "previousUnitCost": 330.58,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:53.750Z"
+  },
+  "canelonera aluminio bal 4 x1": {
+    "name": "CANELONERA ALUMINIO BAL 4 X1",
+    "unitCost": 785.12,
+    "previousUnitCost": 785.12,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:53.771Z"
+  },
+  "tapa canelonera aluminio f-200 x1": {
+    "name": "TAPA CANELONERA ALUMINIO F-200 X1",
+    "unitCost": 708,
+    "previousUnitCost": 708,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:53.793Z"
+  },
+  "jugo citric naranja 1l": {
+    "name": "JUGO CITRIC NARANJA 1L",
+    "unitCost": 5419,
+    "previousUnitCost": 5419,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "MARKET MULTIRUBRO M Y M S.A.S",
+    "updatedAt": "2026-06-08T17:48:53.883Z"
+  },
+  "propina": {
+    "name": "PROPINA",
+    "unitCost": 1274,
+    "previousUnitCost": 1274,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "MARKET MULTIRUBRO M Y M S.A.S",
+    "updatedAt": "2026-06-08T17:48:53.911Z"
+  },
+  "mesa lustrada": {
+    "name": "MESA LUSTRADA",
+    "unitCost": 35000,
+    "previousUnitCost": 35000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "MC COMPANY",
+    "updatedAt": "2026-06-08T17:48:53.937Z"
+  },
+  "flete living": {
+    "name": "FLETE LIVING",
+    "unitCost": 65000,
+    "previousUnitCost": 3500,
+    "changePercent": 1757.14,
+    "lastPurchaseDate": "2026-06-05",
+    "provider": "MC COMPANY",
+    "updatedAt": "2026-06-08T20:19:37.175Z"
+  },
+  "traslado": {
+    "name": "TRASLADO",
+    "unitCost": 7800,
+    "previousUnitCost": 25000,
+    "changePercent": -68.8,
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "UBER",
+    "updatedAt": "2026-06-08T17:48:54.100Z"
+  },
+  "tortitas varias por 6 unid.": {
+    "name": "TORTITAS VARIAS POR 6 UNID.",
+    "unitCost": 3167.4208,
+    "previousUnitCost": 3167.4208,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:54.190Z"
+  },
+  "facturas medialunas por unid.": {
+    "name": "FACTURAS MEDIALUNAS POR UNID.",
+    "unitCost": 950.2262,
+    "previousUnitCost": 950.2262,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:54.219Z"
+  },
+  "facturas de jamon y queso por u.": {
+    "name": "FACTURAS DE JAMON Y QUESO POR U.",
+    "unitCost": 1322.314,
+    "previousUnitCost": 1322.314,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:54.247Z"
+  },
+  "masas humedas": {
+    "name": "MASAS HUMEDAS",
+    "unitCost": 23719.0083,
+    "previousUnitCost": 23719.0083,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:54.287Z"
+  },
+  "espadita bambu 12cm x100": {
+    "name": "ESPADITA BAMBU 12CM X100",
+    "unitCost": 6773.9586776859505,
+    "previousUnitCost": 6773.9586776859505,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "SOLUCION SUSTENTABLE SA",
+    "updatedAt": "2026-06-08T17:48:54.323Z"
+  },
+  "lavandina thames bio-lav x5lts": {
+    "name": "LAVANDINA THAMES BIO-LAV X5LTS",
+    "unitCost": 6758.4235,
+    "previousUnitCost": 6758.4235,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:54.358Z"
+  },
+  "deseng. & descarbonizante hot plus x5lt": {
+    "name": "DESENG. & DESCARBONIZANTE HOT PLUS X5LT",
+    "unitCost": 17790.5645,
+    "previousUnitCost": 17790.5645,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:54.396Z"
+  },
+  "trapo costurado chico gris": {
+    "name": "TRAPO COSTURADO CHICO GRIS",
+    "unitCost": 1225.7849999999999,
+    "previousUnitCost": 1225.7849999999999,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:54.429Z"
+  },
+  "esponja plastica forrada colores varios": {
+    "name": "ESPONJA PLASTICA FORRADA COLORES VARIOS",
+    "unitCost": 686.8025,
+    "previousUnitCost": 686.8025,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:54.558Z"
+  },
+  "caja micro 33x33 m/m 4,5cm x1": {
+    "name": "CAJA MICRO 33X33 M/M 4,5CM X1",
+    "unitCost": 322.31,
+    "previousUnitCost": 322.31,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:54.630Z"
+  },
+  "escarbadientes ensobrados x500": {
+    "name": "ESCARBADIENTES ENSOBRADOS X500",
+    "unitCost": 9256.2,
+    "previousUnitCost": 9256.2,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:54.650Z"
+  },
+  "cofia de pp blanca x1": {
+    "name": "COFIA DE PP BLANCA X1",
+    "unitCost": 90.91,
+    "previousUnitCost": 90.91,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:54.672Z"
+  },
+  "aji molido indias x 1kg": {
+    "name": "AJI MOLIDO INDIAS X 1KG",
+    "unitCost": 7785.5,
+    "previousUnitCost": 7785.5,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.805Z"
+  },
+  "laurel en hojas indias x 10gr": {
+    "name": "LAUREL EN HOJAS INDIAS X 10GR",
+    "unitCost": 741.76,
+    "previousUnitCost": 741.76,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.828Z"
+  },
+  "lentejas cadea x 400g": {
+    "name": "LENTEJAS CADEA X 400G",
+    "unitCost": 1935.13,
+    "previousUnitCost": 1935.13,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.848Z"
+  },
+  "pure de tomate noel x 530g": {
+    "name": "PURE DE TOMATE NOEL X 530G",
+    "unitCost": 803.66,
+    "previousUnitCost": 803.66,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.869Z"
+  },
+  "aceitunas alpujarra calibre 1 x 5kg": {
+    "name": "ACEITUNAS ALPUJARRA CALIBRE 1 X 5KG",
+    "unitCost": 21404.55,
+    "previousUnitCost": 21404.55,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:54.978Z"
+  },
+  "garbanzo inalpa x 300g": {
+    "name": "GARBANZO INALPA X 300G",
+    "unitCost": 683.56,
+    "previousUnitCost": 683.56,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "updatedAt": "2026-06-08T17:48:55.020Z"
+  },
+  "papel aluminio x 1kg": {
+    "name": "PAPEL ALUMINIO X 1KG",
+    "unitCost": 9045.27,
+    "previousUnitCost": 9045.27,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:55.054Z"
+  },
+  "bolsa de arranque ps 60x90 maxim": {
+    "name": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
+    "unitCost": 24628.1,
+    "previousUnitCost": 22586.6,
+    "changePercent": 9.04,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:56.017Z"
+  },
+  "grisines la parra": {
+    "name": "GRISINES LA PARRA",
+    "unitCost": 41809.95,
+    "previousUnitCost": 41809.95,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LA PARRA",
+    "updatedAt": "2026-06-08T17:48:55.143Z"
+  },
+  "queso brie": {
+    "name": "QUESO BRIE",
+    "unitCost": 26925.619834710746,
+    "previousUnitCost": 26925.619834710746,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "TORRENT",
+    "updatedAt": "2026-06-08T17:48:55.222Z"
+  },
+  "membrillo tipo": {
+    "name": "MEMBRILLO TIPO",
+    "unitCost": 2747.9338842975208,
+    "previousUnitCost": 2747.9338842975208,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "TORRENT",
+    "updatedAt": "2026-06-08T17:48:55.252Z"
+  },
+  "mortadela de pstacho": {
+    "name": "MORTADELA DE PSTACHO",
+    "unitCost": 17999.99173553719,
+    "previousUnitCost": 17999.99173553719,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "TORRENT",
+    "updatedAt": "2026-06-08T17:48:55.287Z"
+  },
+  "sandwich jamon y queso x27 u": {
+    "name": "SANDWICH JAMON Y QUESO X27 U",
+    "unitCost": 48842.98,
+    "previousUnitCost": 48842.98,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:55.483Z"
+  },
+  "palemritas envasado x 0,8kg": {
+    "name": "PALEMRITAS ENVASADO X 0,8KG",
+    "unitCost": 10181.82,
+    "previousUnitCost": 10181.82,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:55.414Z"
+  },
+  "hojaldre relleno tipo canoncitos envasado x 1kg": {
+    "name": "HOJALDRE RELLENO TIPO CAÑONCITOS ENVASADO X 1KG",
+    "unitCost": 12727.27,
+    "previousUnitCost": 12727.27,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:55.454Z"
+  },
+  "sandwich de queso y verdura x 27 u": {
+    "name": "SANDWICH DE QUESO Y VERDURA X 27 U",
+    "unitCost": 48842.98,
+    "previousUnitCost": 48842.98,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:55.521Z"
+  },
+  "sandwich de queso y pollo x 27u": {
+    "name": "SANDWICH DE QUESO Y POLLO X 27U",
+    "unitCost": 48842.98,
+    "previousUnitCost": 48842.98,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "updatedAt": "2026-06-08T17:48:55.551Z"
+  },
+  "chaffing": {
+    "name": "CHAFFING",
+    "unitCost": 28000,
+    "previousUnitCost": 28000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAUZEN - ZENON",
+    "updatedAt": "2026-06-08T17:48:55.618Z"
+  },
+  "vajilla": {
+    "name": "VAJILLA",
+    "unitCost": 196000,
+    "previousUnitCost": 912800,
+    "changePercent": -78.53,
+    "lastPurchaseDate": "2026-06-05",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-09T13:35:32.689Z"
+  },
+  "vaso termico 240cc x1": {
+    "name": "VASO TERMICO 240CC X1",
+    "unitCost": 123.77,
+    "previousUnitCost": 123.77,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "updatedAt": "2026-06-08T17:48:56.047Z"
+  },
+  "impresiones": {
+    "name": "IMPRESIONES",
+    "unitCost": 1000,
+    "previousUnitCost": 1000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LIBRERIA LAPIZ Y PAPEL",
+    "updatedAt": "2026-06-08T17:48:56.080Z"
+  },
+  "resma": {
+    "name": "RESMA",
+    "unitCost": 8000,
+    "previousUnitCost": 8000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LIBRERIA LAPIZ Y PAPEL",
+    "updatedAt": "2026-06-08T17:48:56.117Z"
+  },
+  "chinches": {
+    "name": "CHINCHES",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LIBRERIA LAPIZ Y PAPEL",
+    "updatedAt": "2026-06-08T17:48:56.165Z"
+  },
+  "boligrafo": {
+    "name": "BOLIGRAFO",
+    "unitCost": 8000,
+    "previousUnitCost": 8000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LIBRERIA LAPIZ Y PAPEL",
+    "updatedAt": "2026-06-08T17:48:56.211Z"
+  },
+  "marcador": {
+    "name": "MARCADOR",
+    "unitCost": 2800,
+    "previousUnitCost": 2800,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LIBRERIA LAPIZ Y PAPEL",
+    "updatedAt": "2026-06-08T17:48:56.239Z"
+  },
+  "empanadas criollas": {
+    "name": "EMPANADAS CRIOLLAS",
+    "unitCost": 1100,
+    "previousUnitCost": 1100,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "LA CUYANITA S.A.",
+    "updatedAt": "2026-06-08T17:48:56.332Z"
+  },
+  "cortes 9mm": {
+    "name": "CORTES 9MM",
+    "unitCost": 7000,
+    "previousUnitCost": 7000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "FILICON SAS / NOVA MDF",
+    "updatedAt": "2026-06-08T17:48:56.507Z"
+  },
+  "envase p pulverizador x1lt": {
+    "name": "ENVASE P PULVERIZADOR X1LT",
+    "unitCost": 877.11,
+    "previousUnitCost": 1361.84,
+    "changePercent": -35.59,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:56.599Z"
+  },
+  "papel bobina thames 20x800mts x2u": {
+    "name": "PAPEL BOBINA THAMES 20X800MTS X2U",
+    "unitCost": 27761.67,
+    "previousUnitCost": 27761.67,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "updatedAt": "2026-06-08T17:48:56.633Z"
+  },
+  "postres": {
+    "name": "POSTRES",
+    "unitCost": 1205000,
+    "previousUnitCost": 1205000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "ANDREA POSTRES",
+    "updatedAt": "2026-06-08T17:48:56.709Z"
+  },
+  "conservas": {
+    "name": "CONSERVAS",
+    "unitCost": 40000,
+    "previousUnitCost": 40000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "MATI CONSERVAS",
+    "updatedAt": "2026-06-08T17:48:56.746Z"
+  },
+  "muertarios": {
+    "name": "MUERTARIOS",
+    "unitCost": 150000,
+    "previousUnitCost": 150000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "CLAUDIO PAELLAS",
+    "updatedAt": "2026-06-08T17:48:56.780Z"
+  },
+  "porcion paellas": {
+    "name": "PORCION PAELLAS",
+    "unitCost": 18000,
+    "previousUnitCost": 18000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "CLAUDIO PAELLAS",
+    "updatedAt": "2026-06-08T17:48:56.808Z"
+  },
+  "materiales": {
+    "name": "MATERIALES",
+    "unitCost": 30949.35,
+    "previousUnitCost": 30949.35,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "ARIEL",
+    "updatedAt": "2026-06-08T17:48:56.867Z"
+  },
+  "alquiler paneras": {
+    "name": "ALQUILER PANERAS",
+    "unitCost": 9600,
+    "previousUnitCost": 9600,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "PAUZEN - ZENON",
+    "updatedAt": "2026-06-08T17:48:57.034Z"
+  },
+  "menu celiaco": {
+    "name": "MENU CELIACO",
+    "unitCost": 339000,
+    "previousUnitCost": 339000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "ZERO GLUTEN",
+    "updatedAt": "2026-06-08T17:48:57.085Z"
+  },
+  "damajuana": {
+    "name": "DAMAJUANA",
+    "unitCost": 11033.333333333334,
+    "previousUnitCost": 11033.333333333334,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "FEDERICO GIUSEPPONI - CLUB JAFS",
+    "updatedAt": "2026-06-08T17:48:57.114Z"
+  },
+  "bordado chaqueta cheff": {
+    "name": "BORDADO CHAQUETA CHEFF",
+    "unitCost": 6500,
+    "previousUnitCost": 6500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "TERCER MUNDO - MATIAS",
+    "updatedAt": "2026-06-08T17:48:57.151Z"
+  },
+  "delantal gabardina": {
+    "name": "DELANTAL GABARDINA",
+    "unitCost": 30597,
+    "previousUnitCost": 30597,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "TERCER MUNDO - MATIAS",
+    "updatedAt": "2026-06-08T17:48:57.183Z"
+  },
+  "camisa oxsford": {
+    "name": "CAMISA OXSFORD",
+    "unitCost": 36000,
+    "previousUnitCost": 36000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "TERCER MUNDO - MATIAS",
+    "updatedAt": "2026-06-08T17:48:57.215Z"
+  },
+  "agua con gas villavicencio 1,5lt": {
+    "name": "AGUA CON GAS VILLAVICENCIO 1,5LT",
+    "unitCost": 3884.2975206611573,
+    "previousUnitCost": 3884.2975206611573,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "YPF LAMADRID / RUMAOS SA",
+    "updatedAt": "2026-06-08T17:48:57.328Z"
+  },
+  "vaso telgopor 240cc x 25": {
+    "name": "VASO TELGOPOR 240CC X 25",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "CAMPO FIRLOT SAS / NATI DESCARTABLES",
+    "updatedAt": "2026-06-08T17:48:57.355Z"
+  },
+  "vaso cristal 180cc x 100": {
+    "name": "VASO CRISTAL 180CC X 100",
+    "unitCost": 5000,
+    "previousUnitCost": 5000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-04",
+    "provider": "CAMPO FIRLOT SAS / NATI DESCARTABLES",
+    "updatedAt": "2026-06-08T17:48:57.387Z"
+  },
+  "livings": {
+    "name": "LIVINGS",
+    "unitCost": 530000,
+    "previousUnitCost": 302000,
+    "changePercent": 75.5,
+    "lastPurchaseDate": "2026-05-29",
+    "provider": "MC COMPANY",
+    "updatedAt": "2026-06-08T20:07:03.877Z"
+  },
+  "sillas tijera": {
+    "name": "SILLAS TIJERA",
+    "unitCost": 50000,
     "previousUnitCost": 0,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-06-08",
-    "provider": "RUBEN CARNE",
-    "updatedAt": "2026-06-08T02:39:36.246Z"
+    "lastPurchaseDate": "2026-05-27",
+    "provider": "MC COMPANY",
+    "updatedAt": "2026-06-08T20:10:02.086Z"
+  },
+  "sillones nordicos": {
+    "name": "SILLONES NORDICOS",
+    "unitCost": 10000,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-05",
+    "provider": "MC COMPANY",
+    "updatedAt": "2026-06-08T20:16:18.878Z"
+  },
+  "mesas altas": {
+    "name": "MESAS ALTAS",
+    "unitCost": 40000,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-05",
+    "provider": "MC COMPANY",
+    "updatedAt": "2026-06-08T20:16:18.879Z"
   }
 }

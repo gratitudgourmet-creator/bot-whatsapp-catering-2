@@ -1,166 +1,468 @@
-const SHEET_NAME = "Registro_Gastos";
+/**
+ * Webhook de compras para Catering ERP.
+ *
+ * Este archivo REEMPLAZA el Apps Script anterior.
+ * Mantiene la carga historica en Registro_Gastos y agrega:
+ * - crear compras desde el panel
+ * - editar compras desde el panel
+ * - eliminar compras desde el panel
+ * - exportar compras historicas hacia el dashboard
+ * - avisar al dashboard cuando se edita/elimina desde Sheets
+ */
 
-// Configurar en Apps Script > Project Settings > Script properties:
-// DASHBOARD_SYNC_URL = https://tu-dominio.com/api/purchase-sync
-// PURCHASE_SYNC_TOKEN = el mismo valor que uses en el servidor
+const DEFAULT_SPREADSHEET_ID = '1ZAd6hdDq1gftQPr6QdPZWS0yyhPcTG9UJcnt3Fgp3HI';
+const PURCHASE_SHEET_NAME = 'Registro_Gastos';
+const CONFIG_SHEET_NAME = 'Config';
+
+const COL = {
+  FECHA: 1,
+  PROVEEDOR: 2,
+  DESCRIPCION: 3,
+  CANTIDAD: 4,
+  UNITARIO: 5,
+  COMPROBANTE: 7,
+  EVENTO: 8,
+  IVA: 10,
+  ESTADO_PAGO: 13,
+  MEDIO_PAGO: 14,
+  ORIGEN_FONDOS: 15,
+};
+
+const HEADER_ID = 'ID ERP';
+const HEADER_ACCION = 'Accion Sync';
+const HEADER_NOTAS = 'Notas Sync';
 
 function doPost(e) {
-  const payload = JSON.parse(e.postData.contents || "{}");
-  const action = String(payload.action || "upsert").toLowerCase();
-  const purchase = payload.purchase || payload;
-  const sheet = SpreadsheetApp.getActive().getSheetByName(SHEET_NAME);
-  const headers = getHeaders_(sheet);
+  try {
+    const payload = JSON.parse(e.postData.contents || '{}');
+    const action = String(payload.action || 'create').toLowerCase();
+    const spreadsheetId = payload.spreadsheetId || DEFAULT_SPREADSHEET_ID;
+    const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+    const sheet = spreadsheet.getSheetByName(payload.sheetName || PURCHASE_SHEET_NAME);
+    const configSheet = spreadsheet.getSheetByName(CONFIG_SHEET_NAME);
 
-  if (action === "export") {
-    return json_({ ok: true, purchases: readAllPurchases_(sheet, headers) });
-  }
+    if (!sheet) throw new Error('No existe la hoja ' + (payload.sheetName || PURCHASE_SHEET_NAME));
+    if (!configSheet) throw new Error('No existe la hoja ' + CONFIG_SHEET_NAME);
 
-  if (action === "delete") {
-    const row = findRowById_(sheet, headers, purchase.id || payload.id);
-    if (row > 1) sheet.deleteRow(row);
-    return json_({ ok: true, action, id: purchase.id || payload.id });
-  }
+    const helperCols = ensureHelperColumns_(sheet);
 
-  const row = findRowById_(sheet, headers, purchase.id) || sheet.getLastRow() + 1;
-  writePurchaseRow_(sheet, headers, row, purchase);
-  return json_({ ok: true, action, row, id: purchase.id });
-}
-
-function readAllPurchases_(sheet, headers) {
-  const purchases = [];
-  for (let row = 2; row <= sheet.getLastRow(); row += 1) {
-    const purchase = readPurchaseRow_(sheet, headers, row);
-    if (purchase.provider || purchase.description || purchase.totalAmount) {
-      purchases.push(purchase);
+    if (action === 'export') {
+      return jsonResponse_({
+        ok: true,
+        purchases: readAllPurchases_(sheet, helperCols),
+      });
     }
+
+    if (action === 'delete') {
+      const purchase = payload.purchase || payload;
+      const lineItems = normalizeLineItems_(purchase);
+      const row = findExistingPurchaseRow_(sheet, helperCols, purchase.id || payload.id, purchase, lineItems);
+      if (row > 1) sheet.deleteRow(row);
+      return jsonResponse_({ ok: true, action, id: purchase.id || payload.id });
+    }
+
+    const purchase = payload.purchase || payload;
+    const result = upsertPurchase_(sheet, configSheet, helperCols, purchase);
+
+    return jsonResponse_({
+      ok: true,
+      action,
+      row: result.firstRow,
+      rows: result.rows,
+      id: result.id,
+      message: result.rows === 1
+        ? 'Compra guardada en Registro_Gastos fila ' + result.firstRow
+        : 'Compra guardada en Registro_Gastos desde fila ' + result.firstRow + ' (' + result.rows + ' productos)',
+    });
+  } catch (error) {
+    return jsonResponse_({ ok: false, error: error.message });
   }
-  return purchases;
 }
 
 function onEdit(e) {
   const sheet = e.range.getSheet();
-  if (sheet.getName() !== SHEET_NAME || e.range.getRow() === 1) return;
+  if (sheet.getName() !== PURCHASE_SHEET_NAME || e.range.getRow() === 1) return;
 
-  const headers = getHeaders_(sheet);
-  const purchase = readPurchaseRow_(sheet, headers, e.range.getRow());
-  const actionValue = String(getValue_(sheet, headers, e.range.getRow(), ["Accion", "Accion Sync", "Sync"]) || "").trim().toUpperCase();
+  const helperCols = ensureHelperColumns_(sheet);
+  const row = e.range.getRow();
+  const purchase = readPurchaseRow_(sheet, helperCols, row);
+  const actionValue = String(sheet.getRange(row, helperCols.actionCol).getValue() || '').trim().toUpperCase();
 
   if (!purchase.id) {
-    purchase.id = `sheets-${Date.now()}-${e.range.getRow()}`;
-    setValue_(sheet, headers, e.range.getRow(), ["ID"], purchase.id);
+    purchase.id = 'sheets-row-' + row;
+    sheet.getRange(row, helperCols.idCol).setValue(purchase.id);
   }
 
-  if (actionValue === "ELIMINAR" || actionValue === "DELETE") {
-    postToDashboard_("delete", purchase);
-    sheet.deleteRow(e.range.getRow());
+  if (actionValue === 'ELIMINAR' || actionValue === 'DELETE') {
+    postToDashboard_('delete', purchase);
+    sheet.deleteRow(row);
     return;
   }
 
-  postToDashboard_("upsert", purchase);
+  postToDashboard_('upsert', purchase);
+}
+
+function upsertPurchase_(sheet, configSheet, helperCols, payload) {
+  ensureConfigValue_(configSheet, 6, payload.proveedor || payload.provider || '');
+  const lineItems = normalizeLineItems_(payload);
+
+  lineItems.forEach(function(item) {
+    ensureConfigValue_(configSheet, 7, item.description || '');
+  });
+  ensureConfigValue_(configSheet, 1, payload.evento || payload.eventName || '');
+  ensureConfigValue_(configSheet, 3, payload.medioPago || payload.paymentMethod || '');
+  ensureConfigValue_(configSheet, 4, payload.origenFondos || payload.fundsSource || '');
+
+  const id = payload.id || (payload.rowNumber ? 'sheets-row-' + payload.rowNumber : 'dashboard-' + Date.now());
+  const existingRow = findExistingPurchaseRow_(sheet, helperCols, id, payload, lineItems);
+  const firstRow = existingRow > 1 ? existingRow : findFirstEmptyPurchaseRow_(sheet);
+
+  if (existingRow > 1) {
+    clearExistingPurchaseRows_(sheet, helperCols, id, firstRow);
+  }
+
+  const rows = lineItems.map(function(item) {
+    return [
+      parsePanelDate_(payload.fecha || payload.date),
+      payload.proveedor || payload.provider || '',
+      item.description || '',
+      Number(item.quantity || 0),
+      Number(item.unitAmount || 0),
+    ];
+  });
+
+  sheet.getRange(firstRow, 1, rows.length, 5).setValues(rows);
+
+  const comprobanteRows = lineItems.map(function() {
+    return [payload.comprobante || payload.invoiceType || '', payload.evento || payload.eventName || ''];
+  });
+  sheet.getRange(firstRow, COL.COMPROBANTE, comprobanteRows.length, 2).setValues(comprobanteRows);
+
+  const ivaRows = lineItems.map(function() {
+    return [Number(payload.ivaPorcentaje || payload.ivaRate || 0)];
+  });
+  sheet.getRange(firstRow, COL.IVA, ivaRows.length, 1).setValues(ivaRows);
+
+  const paymentRows = lineItems.map(function() {
+    return [
+      payload.estadoPago || payload.paymentStatus || 'Pendiente',
+      payload.medioPago || payload.paymentMethod || '',
+      payload.origenFondos || payload.fundsSource || '',
+    ];
+  });
+  sheet.getRange(firstRow, COL.ESTADO_PAGO, paymentRows.length, 3).setValues(paymentRows);
+
+  const idRows = lineItems.map(function() { return [id]; });
+  sheet.getRange(firstRow, helperCols.idCol, idRows.length, 1).setValues(idRows);
+
+  if (helperCols.notesCol) {
+    const noteRows = lineItems.map(function(_, index) {
+      return [index === 0 ? (payload.observaciones || payload.notes || '') : ''];
+    });
+    sheet.getRange(firstRow, helperCols.notesCol, noteRows.length, 1).setValues(noteRows);
+  }
+
+  return { firstRow, rows: rows.length, id };
+}
+
+function readAllPurchases_(sheet, helperCols) {
+  const purchases = [];
+  const lastRow = sheet.getLastRow();
+  const lastCol = sheet.getLastColumn();
+  if (lastRow < 2) return purchases;
+
+  const values = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+  values.forEach(function(rowValues, index) {
+    const purchase = readPurchaseValues_(rowValues, helperCols, index + 2);
+    if (purchase.provider || purchase.description || purchase.totalAmount) {
+      if (!purchase.id && helperCols.idCol) {
+        purchase.id = 'sheets-row-' + purchase.rowNumber;
+        sheet.getRange(purchase.rowNumber, helperCols.idCol).setValue(purchase.id);
+      }
+      purchases.push(purchase);
+    }
+  });
+  return purchases;
+}
+
+function readPurchaseValues_(rowValues, helperCols, rowNumber) {
+  const quantity = Number(rowValues[COL.CANTIDAD - 1] || 1);
+  const unitAmount = Number(rowValues[COL.UNITARIO - 1] || 0);
+  const totalCell = rowValues[5];
+  const netTotal = Number(totalCell || quantity * unitAmount);
+  const ivaRate = parseIvaRate_(rowValues[COL.IVA - 1]);
+  const ivaAmount = roundNumber_(netTotal * ivaRate);
+  const total = roundNumber_(netTotal + ivaAmount);
+  const description = rowValues[COL.DESCRIPCION - 1];
+
+  return {
+    id: helperCols.idCol ? rowValues[helperCols.idCol - 1] : '',
+    date: formatDate_(rowValues[COL.FECHA - 1]),
+    provider: rowValues[COL.PROVEEDOR - 1],
+    description,
+    eventName: rowValues[COL.EVENTO - 1],
+    invoiceType: rowValues[COL.COMPROBANTE - 1],
+    paymentStatus: rowValues[COL.ESTADO_PAGO - 1] || 'Pendiente',
+    paymentMethod: rowValues[COL.MEDIO_PAGO - 1],
+    fundsSource: rowValues[COL.ORIGEN_FONDOS - 1],
+    notes: helperCols.notesCol ? rowValues[helperCols.notesCol - 1] : '',
+    netAmount: netTotal,
+    ivaRate,
+    ivaAmount,
+    totalAmount: total,
+    rowNumber,
+    items: [{ description, quantity, unitAmount, total: netTotal }],
+  };
+}
+
+function readPurchaseRow_(sheet, helperCols, row) {
+  const quantity = Number(sheet.getRange(row, COL.CANTIDAD).getValue() || 1);
+  const unitAmount = Number(sheet.getRange(row, COL.UNITARIO).getValue() || 0);
+  const totalCell = sheet.getRange(row, 6).getValue();
+  const netTotal = Number(totalCell || quantity * unitAmount);
+  const ivaRate = parseIvaRate_(sheet.getRange(row, COL.IVA).getValue());
+  const ivaAmount = roundNumber_(netTotal * ivaRate);
+  const total = roundNumber_(netTotal + ivaAmount);
+  const description = sheet.getRange(row, COL.DESCRIPCION).getValue();
+
+  return {
+    id: helperCols.idCol ? sheet.getRange(row, helperCols.idCol).getValue() : '',
+    date: formatDate_(sheet.getRange(row, COL.FECHA).getValue()),
+    provider: sheet.getRange(row, COL.PROVEEDOR).getValue(),
+    description,
+    eventName: sheet.getRange(row, COL.EVENTO).getValue(),
+    invoiceType: sheet.getRange(row, COL.COMPROBANTE).getValue(),
+    paymentStatus: sheet.getRange(row, COL.ESTADO_PAGO).getValue() || 'Pendiente',
+    paymentMethod: sheet.getRange(row, COL.MEDIO_PAGO).getValue(),
+    fundsSource: sheet.getRange(row, COL.ORIGEN_FONDOS).getValue(),
+    notes: helperCols.notesCol ? sheet.getRange(row, helperCols.notesCol).getValue() : '',
+    netAmount: netTotal,
+    ivaRate,
+    ivaAmount,
+    totalAmount: total,
+    rowNumber: row,
+    items: [{ description, quantity, unitAmount, total: netTotal }],
+  };
+}
+
+function parseIvaRate_(value) {
+  if (value === '' || value === null || value === undefined) return 0;
+  const number = Number(String(value).replace(',', '.').replace(/[^\d.-]/g, ''));
+  if (!Number.isFinite(number) || number <= 0) return 0;
+  return number > 1 ? number / 100 : number;
+}
+
+function roundNumber_(value) {
+  return Math.round((Number(value || 0) + Number.EPSILON) * 100) / 100;
+}
+
+function clearExistingPurchaseRows_(sheet, helperCols, id, firstRow) {
+  for (let row = sheet.getLastRow(); row >= 2; row -= 1) {
+    if (row === firstRow) continue;
+    if (String(sheet.getRange(row, helperCols.idCol).getValue()) === String(id)) {
+      sheet.deleteRow(row);
+    }
+  }
+}
+
+function normalizeLineItems_(payload) {
+  const items = payload.lineItems || payload.items;
+  if (Array.isArray(items) && items.length) {
+    return items.map(function(item) {
+      return {
+        description: item.description || payload.descripcion || payload.description || '',
+        quantity: Number(item.quantity || 1),
+        unitAmount: Number(item.unitAmount || 0),
+      };
+    });
+  }
+
+  return [{
+    description: payload.descripcion || payload.description || '',
+    quantity: Number(payload.cantidad || payload.quantity || 1),
+    unitAmount: Number(payload.montoUnitario || payload.unitAmount || 0),
+  }];
+}
+
+function ensureHelperColumns_(sheet) {
+  const headers = getHeaderMap_(sheet);
+  const idCol = headers[normalizeHeader_(HEADER_ID)] || ensureHeader_(sheet, HEADER_ID);
+  const actionCol = headers[normalizeHeader_(HEADER_ACCION)] || ensureHeader_(sheet, HEADER_ACCION);
+  const notesCol = headers[normalizeHeader_(HEADER_NOTAS)] || ensureHeader_(sheet, HEADER_NOTAS);
+  return { idCol, actionCol, notesCol };
+}
+
+function ensureHeader_(sheet, header) {
+  const col = sheet.getLastColumn() + 1;
+  sheet.getRange(1, col).setValue(header);
+  return col;
+}
+
+function getHeaderMap_(sheet) {
+  const headers = {};
+  const values = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  values.forEach(function(value, index) {
+    const key = normalizeHeader_(value);
+    if (key) headers[key] = index + 1;
+  });
+  return headers;
+}
+
+function normalizeHeader_(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function findRowById_(sheet, idCol, id) {
+  if (!id || !idCol) return 0;
+  const values = sheet.getRange(2, idCol, Math.max(sheet.getLastRow() - 1, 1), 1).getValues();
+  const index = values.findIndex(function(row) { return String(row[0]) === String(id); });
+  return index >= 0 ? index + 2 : 0;
+}
+
+function findExistingPurchaseRow_(sheet, helperCols, id, payload, lineItems) {
+  const byId = findRowById_(sheet, helperCols.idCol, id);
+  if (byId > 1) return byId;
+
+  const byStableRow = findRowFromStableSheetId_(sheet, id);
+  if (byStableRow > 1 && rowLooksLikePurchase_(sheet, byStableRow)) return byStableRow;
+
+  return findMatchingPurchaseRow_(sheet, payload, lineItems);
+}
+
+function findRowFromStableSheetId_(sheet, id) {
+  const match = String(id || '').match(/^sheets-row-(\d+)$/);
+  if (!match) return 0;
+
+  const row = Number(match[1]);
+  if (!Number.isFinite(row) || row < 2 || row > sheet.getMaxRows()) return 0;
+  return row;
+}
+
+function rowLooksLikePurchase_(sheet, row) {
+  const values = sheet.getRange(row, COL.FECHA, 1, 3).getValues()[0];
+  return values.some(function(value) { return String(value || '').trim() !== ''; });
+}
+
+function findMatchingPurchaseRow_(sheet, payload, lineItems) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return 0;
+
+  const firstItem = lineItems[0] || {};
+  const target = {
+    date: formatDate_(parsePanelDate_(payload.fecha || payload.date)),
+    provider: normalizeText_(payload.proveedor || payload.provider || ''),
+    description: normalizeText_(firstItem.description || payload.descripcion || payload.description || ''),
+    eventName: normalizeText_(payload.evento || payload.eventName || ''),
+    quantity: Number(firstItem.quantity || payload.cantidad || payload.quantity || 0),
+    unitAmount: Number(firstItem.unitAmount || payload.montoUnitario || payload.unitAmount || 0),
+  };
+
+  if (!target.provider || !target.description) return 0;
+
+  const width = Math.max(COL.ORIGEN_FONDOS, sheet.getLastColumn());
+  const values = sheet.getRange(2, 1, lastRow - 1, width).getValues();
+  for (let index = 0; index < values.length; index++) {
+    const row = values[index];
+    const rowDate = formatDate_(row[COL.FECHA - 1]);
+    const sameCore =
+      normalizeText_(row[COL.PROVEEDOR - 1]) === target.provider &&
+      normalizeText_(row[COL.DESCRIPCION - 1]) === target.description &&
+      normalizeText_(row[COL.EVENTO - 1]) === target.eventName;
+
+    const sameNumbers =
+      Number(row[COL.CANTIDAD - 1] || 0) === target.quantity &&
+      Number(row[COL.UNITARIO - 1] || 0) === target.unitAmount;
+
+    if (sameCore && sameNumbers && (!target.date || String(rowDate) === String(target.date))) {
+      return index + 2;
+    }
+  }
+
+  return 0;
 }
 
 function postToDashboard_(action, purchase) {
   const props = PropertiesService.getScriptProperties();
-  const url = props.getProperty("DASHBOARD_SYNC_URL");
+  const url = props.getProperty('DASHBOARD_SYNC_URL');
   if (!url) return;
 
-  const token = props.getProperty("PURCHASE_SYNC_TOKEN") || "";
+  const token = props.getProperty('PURCHASE_SYNC_TOKEN') || '';
   UrlFetchApp.fetch(url, {
-    method: "post",
-    contentType: "application/json",
+    method: 'post',
+    contentType: 'application/json',
     muteHttpExceptions: true,
     payload: JSON.stringify({ action, token, purchase }),
   });
 }
 
-function getHeaders_(sheet) {
-  const values = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  const headers = {};
-  values.forEach((name, index) => {
-    headers[String(name || "").trim().toLowerCase()] = index + 1;
-  });
-  return headers;
-}
+function ensureConfigValue_(sheet, column, value) {
+  const cleanValue = String(value || '').trim();
+  if (!cleanValue) return;
 
-function readPurchaseRow_(sheet, headers, row) {
-  const quantity = Number(getValue_(sheet, headers, row, ["Cantidad"]) || 1);
-  const unitAmount = Number(getValue_(sheet, headers, row, ["Unitario", "Monto unitario", "Precio unitario"]) || 0);
-  const total = Number(getValue_(sheet, headers, row, ["Total", "Monto total"]) || quantity * unitAmount);
-  const description = getValue_(sheet, headers, row, ["Producto", "Descripcion", "Producto / descripcion"]);
+  const startRow = 2;
+  const maxRows = sheet.getMaxRows();
+  const values = sheet.getRange(startRow, column, maxRows - 1, 1).getValues();
+  const normalizedValue = normalizeText_(cleanValue);
 
-  return {
-    id: getValue_(sheet, headers, row, ["ID"]),
-    date: formatDate_(getValue_(sheet, headers, row, ["Fecha"])),
-    provider: getValue_(sheet, headers, row, ["Proveedor"]),
-    description,
-    eventName: getValue_(sheet, headers, row, ["Evento"]),
-    invoiceType: getValue_(sheet, headers, row, ["Comprobante", "Tipo comprobante"]),
-    paymentStatus: getValue_(sheet, headers, row, ["Estado pago", "Pago"]) || "Pendiente",
-    paymentMethod: getValue_(sheet, headers, row, ["Medio pago", "Medio"]),
-    fundsSource: getValue_(sheet, headers, row, ["Origen fondos", "Origen"]),
-    notes: getValue_(sheet, headers, row, ["Observaciones", "Notas"]),
-    items: [{ description, quantity, unitAmount, total }],
-  };
-}
-
-function writePurchaseRow_(sheet, headers, row, purchase) {
-  const item = (purchase.lineItems || purchase.items || [])[0] || {};
-  const description = item.description || purchase.description || purchase.descripcion || "";
-  const quantity = item.quantity || purchase.quantity || purchase.cantidad || 1;
-  const unitAmount = item.unitAmount || purchase.unitAmount || purchase.montoUnitario || 0;
-  const total = item.total || purchase.totalAmount || purchase.montoTotal || quantity * unitAmount;
-
-  setValue_(sheet, headers, row, ["ID"], purchase.id);
-  setValue_(sheet, headers, row, ["Fecha"], purchase.date || purchase.fecha);
-  setValue_(sheet, headers, row, ["Proveedor"], purchase.provider || purchase.proveedor);
-  setValue_(sheet, headers, row, ["Producto", "Descripcion", "Producto / descripcion"], description);
-  setValue_(sheet, headers, row, ["Evento"], purchase.eventName || purchase.evento);
-  setValue_(sheet, headers, row, ["Cantidad"], quantity);
-  setValue_(sheet, headers, row, ["Unitario", "Monto unitario", "Precio unitario"], unitAmount);
-  setValue_(sheet, headers, row, ["Total", "Monto total"], total);
-  setValue_(sheet, headers, row, ["Comprobante", "Tipo comprobante"], purchase.invoiceType || purchase.comprobante);
-  setValue_(sheet, headers, row, ["Estado pago", "Pago"], purchase.paymentStatus || purchase.estadoPago || "Pendiente");
-  setValue_(sheet, headers, row, ["Medio pago", "Medio"], purchase.paymentMethod || purchase.medioPago);
-  setValue_(sheet, headers, row, ["Origen fondos", "Origen"], purchase.fundsSource || purchase.origenFondos);
-  setValue_(sheet, headers, row, ["Observaciones", "Notas"], purchase.notes || purchase.observaciones);
-}
-
-function findRowById_(sheet, headers, id) {
-  if (!id) return 0;
-  const col = findColumn_(headers, ["ID"]);
-  if (!col) return 0;
-  const values = sheet.getRange(2, col, Math.max(sheet.getLastRow() - 1, 1), 1).getValues();
-  const index = values.findIndex((row) => String(row[0]) === String(id));
-  return index >= 0 ? index + 2 : 0;
-}
-
-function getValue_(sheet, headers, row, aliases) {
-  const col = findColumn_(headers, aliases);
-  return col ? sheet.getRange(row, col).getValue() : "";
-}
-
-function setValue_(sheet, headers, row, aliases, value) {
-  const col = findColumn_(headers, aliases);
-  if (col) sheet.getRange(row, col).setValue(value || "");
-}
-
-function findColumn_(headers, aliases) {
-  for (const alias of aliases) {
-    const col = headers[String(alias).trim().toLowerCase()];
-    if (col) return col;
+  for (let index = 0; index < values.length; index++) {
+    if (normalizeText_(String(values[index][0] || '').trim()) === normalizedValue) return;
   }
-  return 0;
+
+  for (let index = 0; index < values.length; index++) {
+    if (!String(values[index][0] || '').trim()) {
+      sheet.getRange(startRow + index, column).setValue(cleanValue);
+      return;
+    }
+  }
+
+  sheet.insertRowAfter(maxRows);
+  sheet.getRange(maxRows + 1, column).setValue(cleanValue);
+}
+
+function normalizeText_(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function findFirstEmptyPurchaseRow_(sheet) {
+  const startRow = 2;
+  const maxRows = sheet.getMaxRows();
+  const values = sheet.getRange(startRow, 1, maxRows - 1, 3).getValues();
+
+  for (let index = 0; index < values.length; index++) {
+    const row = values[index];
+    const hasDateProviderOrDescription = row.some(function(cell) {
+      return String(cell || '').trim() !== '';
+    });
+    if (!hasDateProviderOrDescription) return startRow + index;
+  }
+
+  sheet.insertRowAfter(maxRows);
+  return maxRows + 1;
+}
+
+function parsePanelDate_(value) {
+  if (!value) return new Date();
+  if (Object.prototype.toString.call(value) === '[object Date]') return value;
+
+  const parts = String(value).split('-');
+  if (parts.length === 3) return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  return new Date(value);
 }
 
 function formatDate_(value) {
-  if (Object.prototype.toString.call(value) === "[object Date]") {
-    return Utilities.formatDate(value, Session.getScriptTimeZone(), "yyyy-MM-dd");
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    return Utilities.formatDate(value, Session.getScriptTimeZone(), 'yyyy-MM-dd');
   }
   return value;
 }
 
-function json_(data) {
+function jsonResponse_(payload) {
   return ContentService
-    .createTextOutput(JSON.stringify(data))
+    .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
 }

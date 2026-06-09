@@ -1,8 +1,133 @@
 {
-  "sessions": {},
+  "sessions": {
+    "manual-1780948910260": {
+      "step": 11,
+      "data": {
+        "contactReason": "presupuesto_externo",
+        "channel": "WhatsApp Claudia",
+        "fullName": "ROMINA PROTOCOLO",
+        "eventType": "INFANTIL",
+        "eventDate": "13/06/2026",
+        "guestCount": 30,
+        "venue": "",
+        "serviceType": "SIN ASISTENCIA. MENU INFANTIL + OPCIONES PARA ADULTOS",
+        "eventMoments": "ALMUERZO",
+        "drinkType": "",
+        "operationalNeeds": "",
+        "logistics": "",
+        "selectedMenu": "PIZZETAS, MINI CHORIS, PAPAS FRITAS, ETC",
+        "includesDrinks": "Sin bebidas",
+        "serviceMode": "Bandejeo",
+        "trayServiceType": "Solo finger food",
+        "foodFormat": "",
+        "tableware": "No incluida",
+        "staff": "NO",
+        "kitchenAvailable": "",
+        "schedule": "MEDIODIA",
+        "budgetRange": "",
+        "nextAction": "",
+        "assignedTo": "Claudia",
+        "followUpDate": "2026-06-08",
+        "statusReason": "PRESUPUESTO LISTO",
+        "commercialNotes": "",
+        "dietaryRestrictions": "NO POR AHORA",
+        "notes": "",
+        "externalPhone": "2616988941"
+      }
+    }
+  },
   "pendingReplies": {},
-  "chatRecords": {},
-  "approvedCustomers": [],
+  "chatRecords": {
+    "manual-1780948910260": {
+      "phone": "manual-1780948910260",
+      "status": "ready_to_quote",
+      "statusLabel": "Listo para presupuestar",
+      "channel": "WhatsApp Claudia",
+      "displayPhone": "2616988941",
+      "contactName": "",
+      "knownCustomer": {
+        "id": "2616988941",
+        "phone": "2616988941",
+        "displayPhone": "2616988941",
+        "fullName": "ROMINA PROTOCOLO",
+        "contactName": "",
+        "aliases": [
+          "2616988941",
+          "ROMINA PROTOCOLO"
+        ],
+        "budgetCount": 1,
+        "lastEventType": "INFANTIL",
+        "lastBudgetAt": "2026-06-08T20:01:50.279Z",
+        "lastSeenAt": "2026-06-08T20:01:50.279Z",
+        "preferences": "",
+        "dietaryRestrictions": "",
+        "notes": "",
+        "createdAt": "2026-06-08T20:01:50.279Z",
+        "updatedAt": "2026-06-08T20:01:50.279Z"
+      },
+      "approvalId": "",
+      "lastMessage": "Pedido cargado manualmente",
+      "contactReason": "presupuesto_externo",
+      "step": 11,
+      "stepLabel": "Completado",
+      "progress": 100,
+      "suggestedQuestions": [
+        "El lugar cuenta con cocina o espacio de apoyo, agua, electricidad y lugar para montaje?",
+        "Hay un rango de presupuesto objetivo o nivel de propuesta esperado: basica, premium o signature?"
+      ],
+      "data": {
+        "contactReason": "presupuesto_externo",
+        "channel": "WhatsApp Claudia",
+        "fullName": "ROMINA PROTOCOLO",
+        "eventType": "INFANTIL",
+        "eventDate": "13/06/2026",
+        "guestCount": 30,
+        "venue": "",
+        "serviceType": "SIN ASISTENCIA. MENU INFANTIL + OPCIONES PARA ADULTOS",
+        "eventMoments": "ALMUERZO",
+        "drinkType": "",
+        "operationalNeeds": "",
+        "logistics": "",
+        "selectedMenu": "PIZZETAS, MINI CHORIS, PAPAS FRITAS, ETC",
+        "includesDrinks": "Sin bebidas",
+        "serviceMode": "Bandejeo",
+        "trayServiceType": "Solo finger food",
+        "foodFormat": "",
+        "tableware": "No incluida",
+        "staff": "NO",
+        "kitchenAvailable": "",
+        "schedule": "MEDIODIA",
+        "budgetRange": "",
+        "nextAction": "",
+        "assignedTo": "Claudia",
+        "followUpDate": "2026-06-08",
+        "statusReason": "PRESUPUESTO LISTO",
+        "commercialNotes": "",
+        "dietaryRestrictions": "NO POR AHORA",
+        "notes": "",
+        "externalPhone": "2616988941",
+        "contactName": ""
+      },
+      "assignedTo": "Claudia",
+      "nextAction": "",
+      "followUpDate": "2026-06-08",
+      "isOverdue": false,
+      "isDueToday": true,
+      "history": [
+        {
+          "at": "2026-06-08T20:01:50.325Z",
+          "actor": "Panel",
+          "action": "Oportunidad creada",
+          "detail": "Canal: WhatsApp Claudia"
+        }
+      ],
+      "createdAt": "2026-06-08T20:01:50.312Z",
+      "updatedAt": "2026-06-08T20:01:50.312Z"
+    }
+  },
+  "approvedCustomers": [
+    "manual-1780948910260"
+  ],
   "processedMessageIds": [
     "false_271957413109972@lid_3EB0FC5C3275A33C9C72AB",
     "false_271957413109972@lid_3EB0E82724DC279E62C821",
@@ -81,5 +206,5 @@
     "false_255189810475111@lid_A5F4B0B4338236D4A175F03D1D5C6A2E"
   ],
   "pendingReplyCounter": 16,
-  "updatedAt": "2026-06-05T15:35:32.315Z"
+  "updatedAt": "2026-06-08T20:01:50.327Z"
 }
