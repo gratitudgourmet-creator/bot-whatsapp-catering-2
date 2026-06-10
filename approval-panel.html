@@ -4656,6 +4656,21 @@
       return `${formatCurrency(event.servicePriceTotal || event.quoteTotal || 0)} total`;
     }
 
+    function getEventVenueRecord(event) {
+      const eventVenueKey = normalizeSearch(event.venue || "");
+      if (!eventVenueKey) return null;
+      return (erpData.venues || []).find((venue) => normalizeSearch(venue.name || "") === eventVenueKey) || null;
+    }
+
+    function getEventMapsUrl(event) {
+      const venue = getEventVenueRecord(event) || {};
+      if (venue.latitude && venue.longitude) {
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${venue.latitude},${venue.longitude}`)}`;
+      }
+      const query = [venue.address, venue.mapLabel, event.venue].filter(Boolean).join(" ");
+      return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : "";
+    }
+
     function getEventSuggestedSupplies(event) {
       const text = normalizeSearch([
         event.serviceType,
@@ -4725,6 +4740,7 @@
     function buildOperationalSheetText(event, selectedSupplies = null) {
       const supplies = selectedSupplies || getEventSuggestedSupplies(event);
       const purchases = event.purchases || [];
+      const mapsUrl = getEventMapsUrl(event);
       return [
         `FICHA OPERATIVA - ${event.name || "Evento"}`,
         "",
@@ -4732,6 +4748,7 @@
         `Fecha: ${formatShortDate(event.eventDate) || "Sin fecha"}`,
         `Invitados: ${event.guestCount || 0}`,
         `Lugar: ${event.venue || "Sin lugar"}`,
+        `Ubicacion: ${mapsUrl || "Sin link de mapa"}`,
         `Servicio: ${event.serviceType || "Sin servicio"}`,
         `Precio: ${getEventPriceLabel(event)} | Venta total: ${formatCurrency(event.quoteTotal || 0)}`,
         "",
@@ -4777,10 +4794,12 @@
       if (!event) return;
       const supplies = getEventSuggestedSupplies(event);
       const sheetText = buildOperationalSheetText(event);
+      const mapsUrl = getEventMapsUrl(event);
       document.getElementById("alert-detail-title").textContent = `Ficha operativa`;
       document.getElementById("alert-detail-subtitle").textContent = event.name || "";
       document.getElementById("alert-detail-body").innerHTML = `
         ${field("Venta", `${getEventPriceLabel(event)} · ${formatCurrency(event.quoteTotal || 0)}`)}
+        ${mapsUrl ? `<div class="field"><label>Ubicacion</label><div><a class="filter" href="${escapeAttribute(mapsUrl)}" target="_blank" rel="noopener">Abrir en Google Maps</a></div></div>` : field("Ubicacion", "Sin link de mapa")}
         ${field("Menu completo", event.menuItems?.length ? event.menuItems.map((item) => `${item.name}${item.detail ? `: ${item.detail}` : ""}`).join(" | ") : event.selectedMenu || "A definir")}
         ${field("Bebidas", [event.includesDrinks, event.drinkType].filter(Boolean).join(" · ") || "A definir")}
         ${field("Operacion", [getAssistanceLabel(event), event.tableware, event.staff, event.schedule].filter(Boolean).join(" · ") || "A definir")}
