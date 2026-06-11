@@ -559,12 +559,12 @@
   },
   "queso crema 290g": {
     "name": "QUESO CREMA 290G",
-    "unitCost": 1945.9669,
-    "previousUnitCost": 2425.25854747,
-    "changePercent": -19.76,
-    "lastPurchaseDate": "2026-02-11",
-    "provider": "BLOW MAX",
-    "updatedAt": "2026-06-08T17:48:35.221Z"
+    "unitCost": 3541.44,
+    "previousUnitCost": 1945.9669,
+    "changePercent": 81.99,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-10T15:58:16.717Z"
   },
   "queso barra tybo": {
     "name": "QUESO BARRA TYBO",
@@ -3772,12 +3772,12 @@
   },
   "mortadela de pstacho": {
     "name": "MORTADELA DE PSTACHO",
-    "unitCost": 17999.99173553719,
+    "unitCost": 20039.74,
     "previousUnitCost": 17999.99173553719,
-    "changePercent": 0,
-    "lastPurchaseDate": "2026-05-29",
-    "provider": "TORRENT",
-    "updatedAt": "2026-06-08T17:48:55.287Z"
+    "changePercent": 11.33,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-10T15:58:16.718Z"
   },
   "sandwich jamon y queso x27 u": {
     "name": "SANDWICH JAMON Y QUESO X27 U",
@@ -4111,5 +4111,41 @@
     "lastPurchaseDate": "2026-06-04",
     "provider": "SEBA GUZZO",
     "updatedAt": "2026-06-09T20:10:14.196Z"
+  },
+  "queso finlandia x290g": {
+    "name": "QUESO FINLANDIA X290G",
+    "unitCost": 4406.4,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-10T15:58:16.716Z"
+  },
+  "lomo horneado ahumado": {
+    "name": "LOMO HORNEADO AHUMADO",
+    "unitCost": 17881.98,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-10T15:58:16.718Z"
+  },
+  "papas smiles": {
+    "name": "PAPAS SMILES",
+    "unitCost": 11231.17,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-10T15:58:16.718Z"
+  },
+  "nuggets pollo": {
+    "name": "NUGGETS POLLO",
+    "unitCost": 7437.19,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-10T15:58:16.719Z"
   }
 }

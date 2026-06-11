@@ -663,6 +663,76 @@
       font-size: 18px;
     }
 
+    .debt-board {
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      display: grid;
+      gap: 12px;
+      padding: 0;
+    }
+
+    .debt-board-head {
+      align-items: center;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .debt-list {
+      display: grid;
+      gap: 8px;
+      max-height: min(58vh, 560px);
+      overflow: auto;
+    }
+
+    .debt-row {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      padding: 10px;
+    }
+
+    .debt-row:hover {
+      border-color: #b6c7d6;
+    }
+
+    .debt-amount {
+      font-size: 16px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .debt-detail-list {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      max-height: 280px;
+      overflow: auto;
+    }
+
+    .debt-detail-row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 90px minmax(0, 1fr) 130px 130px;
+      padding: 10px 12px;
+    }
+
+    .debt-detail-row + .debt-detail-row {
+      border-top: 1px solid var(--line);
+    }
+
+    .debt-detail-row.total {
+      background: var(--accent-soft);
+      font-weight: 900;
+      position: sticky;
+      bottom: 0;
+    }
+
     .purchase-panels {
       display: grid;
       gap: 12px;
@@ -2046,6 +2116,7 @@
             <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
               <h2>Dashboard de compras</h2>
               <div class="actions">
+                <button class="filter" onclick="showProviderDebtWindow()">Deudas proveedores</button>
                 <button class="filter" onclick="importPurchasesFromSheets()">Importar Sheets</button>
                 <button class="filter" onclick="showPurchaseForm()">Cargar compra</button>
               </div>
@@ -3049,6 +3120,7 @@
           <label>Estado de pago</label>
           <select name="paymentStatus">
             <option>Pendiente</option>
+            <option>Parcial</option>
             <option>Pagado</option>
           </select>
         </div>
@@ -3665,6 +3737,7 @@
           <select id="purchase-dashboard-status">
             <option value="">Todos los pagos</option>
             <option value="Pagado">Pagado</option>
+            <option value="Parcial">Parcial</option>
             <option value="Pendiente">Pendiente</option>
           </select>
         </div>
@@ -3780,13 +3853,11 @@
 
       purchases.forEach((purchase) => {
         const total = getPurchaseTotal(purchase);
+        const paid = Number(purchase.paidAmount || (purchase.paymentStatus === "Pagado" ? total : 0));
+        const pending = getPurchasePending(purchase);
         summary.totalAmount += total;
-
-        if (purchase.paymentStatus === "Pagado") {
-          summary.paidAmount += total;
-        } else {
-          summary.pendingAmount += total;
-        }
+        summary.paidAmount += paid;
+        summary.pendingAmount += pending;
 
         const provider = purchase.provider || "Sin proveedor";
         providers.add(provider);
@@ -3801,6 +3872,91 @@
       summary.byEvent = sortPurchaseGroups(eventTotals);
       summary.byPaymentMethod = sortPurchaseGroups(paymentTotals);
       return summary;
+    }
+
+    function getPurchasePending(purchase) {
+      if (purchase.pendingAmount !== undefined) return Number(purchase.pendingAmount || 0);
+      return purchase.paymentStatus === "Pagado" ? 0 : getPurchaseTotal(purchase);
+    }
+
+    function buildProviderDebts(purchases = erpData.purchases || []) {
+      const groups = {};
+      purchases.forEach((purchase) => {
+        const pending = getPurchasePending(purchase);
+        if (pending <= 0) return;
+        const total = getPurchaseTotal(purchase);
+        const paid = Number(purchase.paidAmount || 0);
+        const provider = purchase.provider || "Sin proveedor";
+        if (!groups[provider]) {
+          groups[provider] = { provider, totalAmount: 0, paidAmount: 0, totalDebt: 0, purchaseCount: 0, purchases: [] };
+        }
+        groups[provider].totalAmount += total;
+        groups[provider].paidAmount += paid;
+        groups[provider].totalDebt += pending;
+        groups[provider].purchaseCount += 1;
+        groups[provider].purchases.push(purchase);
+      });
+
+      return Object.values(groups)
+        .map((group) => ({
+          ...group,
+          totalAmount: roundClientMoney(group.totalAmount),
+          paidAmount: roundClientMoney(group.paidAmount),
+          totalDebt: roundClientMoney(group.totalDebt),
+        }))
+        .sort((a, b) => b.totalDebt - a.totalDebt);
+    }
+
+    function roundClientMoney(value) {
+      return Math.round((Number(value || 0) + Number.EPSILON) * 100) / 100;
+    }
+
+    function renderProviderDebtBoard(purchases) {
+      const debts = buildProviderDebts(purchases);
+      const totalDebt = debts.reduce((sum, item) => sum + Number(item.totalDebt || 0), 0);
+      return `
+        <section class="debt-board">
+          <div class="debt-board-head">
+            <div>
+              <h3 style="margin:0;">Cuenta corriente de proveedores</h3>
+              <p class="subtitle" style="margin:4px 0 0;">Compras pendientes agrupadas por proveedor.</p>
+            </div>
+            <strong>${formatCurrency(totalDebt)}</strong>
+          </div>
+          <input id="provider-debt-search" class="search" placeholder="Buscar proveedor" oninput="renderProviderDebtRows()">
+          <div class="debt-list">
+            <div id="provider-debt-list">${renderProviderDebtRowsHtml(debts)}</div>
+          </div>
+        </section>
+      `;
+    }
+
+    function showProviderDebtWindow() {
+      document.getElementById("purchase-rank-title").textContent = "Deudas con proveedores";
+      document.getElementById("purchase-rank-subtitle").textContent = "Cuenta corriente por proveedor";
+      document.getElementById("purchase-rank-body").innerHTML = renderProviderDebtBoard(erpData.purchases || []);
+      document.getElementById("purchase-rank-detail").classList.add("open");
+    }
+
+    function renderProviderDebtRows() {
+      const term = normalizeSearch(document.getElementById("provider-debt-search")?.value || "");
+      const debts = buildProviderDebts().filter((debt) => !term || normalizeSearch(debt.provider).includes(term));
+      const container = document.getElementById("provider-debt-list");
+      if (container) container.innerHTML = renderProviderDebtRowsHtml(debts);
+    }
+
+    function renderProviderDebtRowsHtml(debts) {
+      if (!debts.length) return `<div class="empty">No hay deudas pendientes con proveedores.</div>`;
+      return debts.map((debt) => `
+        <article class="debt-row">
+          <div>
+            <div class="primary">${escapeHtml(debt.provider)}</div>
+            <div class="secondary">${escapeHtml(debt.purchaseCount)} compra(s) con saldo pendiente</div>
+          </div>
+          <div class="debt-amount">${formatCurrency(debt.totalDebt)}</div>
+          <button class="filter" type="button" onclick="showProviderDebt('${escapeAttribute(debt.provider)}')">Ver / pagar</button>
+        </article>
+      `).join("");
     }
 
     function getPurchaseTotal(purchase) {
@@ -3833,6 +3989,118 @@
 
     function sortPurchaseGroups(groups) {
       return Object.values(groups).sort((a, b) => b.total - a.total);
+    }
+
+    function showProviderDebt(provider) {
+      const debt = buildProviderDebts().find((item) => item.provider === provider);
+      if (!debt) {
+        showNotice("Ese proveedor no tiene deuda pendiente.", "error");
+        return;
+      }
+      const totalPurchases = roundClientMoney(debt.purchases.reduce((sum, purchase) => sum + getPurchaseTotal(purchase), 0));
+      const totalPaid = roundClientMoney(debt.purchases.reduce((sum, purchase) => sum + Number(purchase.paidAmount || 0), 0));
+      const totalPending = roundClientMoney(debt.purchases.reduce((sum, purchase) => sum + getPurchasePending(purchase), 0));
+
+      document.getElementById("purchase-rank-title").textContent = `Deuda - ${provider}`;
+      document.getElementById("purchase-rank-subtitle").textContent = `${debt.purchaseCount} compra(s) pendientes · saldo ${formatCurrency(totalPending)}`;
+      document.getElementById("purchase-rank-body").innerHTML = `
+        <section class="rank-modal-summary">
+          <div><span>Total compras</span><strong>${formatCurrency(totalPurchases)}</strong></div>
+          <div><span>Pagado</span><strong>${formatCurrency(totalPaid)}</strong></div>
+          <div><span>Saldo deuda</span><strong>${formatCurrency(totalPending)}</strong></div>
+        </section>
+        <form class="form-grid" onsubmit="submitProviderPayment(event, '${escapeAttribute(provider)}')">
+          <div class="form-field">
+            <label>Tipo de pago</label>
+            <select name="mode" onchange="toggleProviderPaymentAmount(this, ${Number(debt.totalDebt || 0)})">
+              <option value="partial">Pago parcial</option>
+              <option value="total">Cancelar deuda total</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Monto</label>
+            <input name="amount" inputmode="decimal" placeholder="${escapeAttribute(formatCurrency(totalPending))}">
+          </div>
+          <div class="form-field">
+            <label>Fecha</label>
+            <input name="date" type="date" value="${escapeAttribute(new Date().toISOString().slice(0, 10))}">
+          </div>
+          <div class="form-field">
+            <label>Medio de pago</label>
+            <input name="paymentMethod" placeholder="Transferencia, efectivo, MP">
+          </div>
+          <div class="form-field">
+            <label>Origen de fondos</label>
+            <input name="fundsSource" placeholder="Cuenta o caja">
+          </div>
+          <div class="form-field full">
+            <label>Nota</label>
+            <input name="notes" placeholder="Referencia, comprobante o aclaracion">
+          </div>
+          <div class="actions full">
+            <button class="approve" type="submit">Registrar pago</button>
+          </div>
+        </form>
+        <h3 style="margin:14px 0 8px;">Compras que componen la deuda</h3>
+        <div class="debt-detail-list">
+          ${debt.purchases.map((purchase) => `
+            <div class="debt-detail-row">
+              <div>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</div>
+              <div>
+                <strong>${escapeHtml(purchase.description || "Compra")}</strong>
+                <div class="secondary">${escapeHtml(purchase.eventName || "Sin evento")}</div>
+              </div>
+              <div><span class="secondary">Total</span><strong>${formatCurrency(getPurchaseTotal(purchase))}</strong></div>
+              <div><span class="secondary">Saldo</span><strong>${formatCurrency(getPurchasePending(purchase))}</strong></div>
+            </div>
+          `).join("")}
+          <div class="debt-detail-row total">
+            <div></div>
+            <div>Total deuda del proveedor</div>
+            <div>${formatCurrency(totalPurchases)}</div>
+            <div>${formatCurrency(totalPending)}</div>
+          </div>
+        </div>
+      `;
+      document.getElementById("purchase-rank-detail").classList.add("open");
+    }
+
+    function toggleProviderPaymentAmount(select, totalDebt) {
+      const input = select.closest("form").elements.amount;
+      if (select.value === "total") {
+        input.value = totalDebt;
+        input.disabled = true;
+      } else {
+        input.disabled = false;
+        input.value = "";
+      }
+    }
+
+    async function submitProviderPayment(event, provider) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      payload.provider = provider;
+      const response = await fetch("/api/provider-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo registrar el pago.", "error");
+        return;
+      }
+
+      erpData.dashboard = result.dashboard || erpData.dashboard;
+      erpData.purchases = result.purchases || erpData.purchases;
+      renderPurchaseDashboard();
+      if (buildProviderDebts().length) {
+        showProviderDebtWindow();
+      } else {
+        hidePurchaseRankDetail();
+      }
+      showNotice(`Pago aplicado: ${formatCurrency(result.result?.appliedAmount || 0)}. Saldo restante: ${formatCurrency(result.result?.debtAfter || 0)}.`, "success");
     }
 
     function normalizePurchaseDate(value) {
@@ -3978,6 +4246,8 @@
                 <th class="number">Cantidad</th>
                 <th class="money">Unitario</th>
                 <th class="money">Total</th>
+                <th class="money">Pagado</th>
+                <th class="money">Saldo</th>
                 <th>Comprobante</th>
                 <th>Estado pago</th>
                 <th>Medio</th>
@@ -3998,6 +4268,8 @@
                     <td class="number">${escapeHtml(item.quantity || "")}</td>
                     <td class="money">${formatCurrency(item.unitAmount || 0)}</td>
                     <td class="money">${formatCurrency(getPurchaseLineTotal(purchase, item) || getPurchaseTotal(purchase) || 0)}</td>
+                    <td class="money">${index === 0 ? formatCurrency(purchase.paidAmount || 0) : ""}</td>
+                    <td class="money">${index === 0 ? formatCurrency(getPurchasePending(purchase)) : ""}</td>
                     <td>${escapeHtml(purchase.invoiceType || "")}</td>
                     <td><span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span></td>
                     <td>${escapeHtml(purchase.paymentMethod || "")}</td>

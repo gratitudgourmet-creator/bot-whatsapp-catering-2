@@ -31,6 +31,8 @@ const COL = {
 const HEADER_ID = 'ID ERP';
 const HEADER_ACCION = 'Accion Sync';
 const HEADER_NOTAS = 'Notas Sync';
+const HEADER_MONTO_PAGADO = 'Monto pagado';
+const HEADER_SALDO_PENDIENTE = 'Saldo pendiente';
 
 function doPost(e) {
   try {
@@ -62,7 +64,7 @@ function doPost(e) {
     }
 
     const purchase = payload.purchase || payload;
-    const result = upsertPurchase_(sheet, configSheet, helperCols, purchase);
+    const result = upsertPurchase_(sheet, configSheet, helperCols, purchase, action);
 
     return jsonResponse_({
       ok: true,
@@ -102,7 +104,7 @@ function onEdit(e) {
   postToDashboard_('upsert', purchase);
 }
 
-function upsertPurchase_(sheet, configSheet, helperCols, payload) {
+function upsertPurchase_(sheet, configSheet, helperCols, payload, action) {
   ensureConfigValue_(configSheet, 6, payload.proveedor || payload.provider || '');
   const lineItems = normalizeLineItems_(payload);
 
@@ -115,6 +117,11 @@ function upsertPurchase_(sheet, configSheet, helperCols, payload) {
 
   const id = payload.id || (payload.rowNumber ? 'sheets-row-' + payload.rowNumber : 'dashboard-' + Date.now());
   const existingRow = findExistingPurchaseRow_(sheet, helperCols, id, payload, lineItems);
+
+  if (String(action || '').toLowerCase() === 'upsert' && existingRow <= 1) {
+    throw new Error('No encontre la fila original para editar la compra ' + id + '. Importe Sheets otra vez o revise la columna ID ERP antes de guardar.');
+  }
+
   const firstRow = existingRow > 1 ? existingRow : findFirstEmptyPurchaseRow_(sheet);
 
   if (existingRow > 1) {
@@ -154,6 +161,20 @@ function upsertPurchase_(sheet, configSheet, helperCols, payload) {
 
   const idRows = lineItems.map(function() { return [id]; });
   sheet.getRange(firstRow, helperCols.idCol, idRows.length, 1).setValues(idRows);
+
+  if (helperCols.paidCol && helperCols.pendingCol) {
+    const paymentAmountRows = lineItems.map(function(_, index) {
+      if (index > 0) return ['', ''];
+      const totalAmount = Number(payload.montoTotal || payload.totalAmount || payload.total || 0);
+      const status = String(payload.estadoPago || payload.paymentStatus || '').trim().toLowerCase();
+      const paidAmount = Number(payload.paidAmount || payload.montoPagado || (status === 'pagado' ? totalAmount : 0));
+      const pendingAmount = payload.pendingAmount !== undefined
+        ? Number(payload.pendingAmount || 0)
+        : Math.max(0, totalAmount - paidAmount);
+      return [paidAmount, pendingAmount];
+    });
+    sheet.getRange(firstRow, helperCols.paidCol, paymentAmountRows.length, 2).setValues(paymentAmountRows);
+  }
 
   if (helperCols.notesCol) {
     const noteRows = lineItems.map(function(_, index) {
@@ -206,6 +227,8 @@ function readPurchaseValues_(rowValues, helperCols, rowNumber) {
     paymentMethod: rowValues[COL.MEDIO_PAGO - 1],
     fundsSource: rowValues[COL.ORIGEN_FONDOS - 1],
     notes: helperCols.notesCol ? rowValues[helperCols.notesCol - 1] : '',
+    paidAmount: helperCols.paidCol ? Number(rowValues[helperCols.paidCol - 1] || 0) : (rowValues[COL.ESTADO_PAGO - 1] === 'Pagado' ? total : 0),
+    pendingAmount: helperCols.pendingCol ? Number(rowValues[helperCols.pendingCol - 1] || 0) : (rowValues[COL.ESTADO_PAGO - 1] === 'Pagado' ? 0 : total),
     netAmount: netTotal,
     ivaRate,
     ivaAmount,
@@ -236,6 +259,8 @@ function readPurchaseRow_(sheet, helperCols, row) {
     paymentMethod: sheet.getRange(row, COL.MEDIO_PAGO).getValue(),
     fundsSource: sheet.getRange(row, COL.ORIGEN_FONDOS).getValue(),
     notes: helperCols.notesCol ? sheet.getRange(row, helperCols.notesCol).getValue() : '',
+    paidAmount: helperCols.paidCol ? Number(sheet.getRange(row, helperCols.paidCol).getValue() || 0) : (sheet.getRange(row, COL.ESTADO_PAGO).getValue() === 'Pagado' ? total : 0),
+    pendingAmount: helperCols.pendingCol ? Number(sheet.getRange(row, helperCols.pendingCol).getValue() || 0) : (sheet.getRange(row, COL.ESTADO_PAGO).getValue() === 'Pagado' ? 0 : total),
     netAmount: netTotal,
     ivaRate,
     ivaAmount,
@@ -289,7 +314,9 @@ function ensureHelperColumns_(sheet) {
   const idCol = headers[normalizeHeader_(HEADER_ID)] || ensureHeader_(sheet, HEADER_ID);
   const actionCol = headers[normalizeHeader_(HEADER_ACCION)] || ensureHeader_(sheet, HEADER_ACCION);
   const notesCol = headers[normalizeHeader_(HEADER_NOTAS)] || ensureHeader_(sheet, HEADER_NOTAS);
-  return { idCol, actionCol, notesCol };
+  const paidCol = headers[normalizeHeader_(HEADER_MONTO_PAGADO)] || ensureHeader_(sheet, HEADER_MONTO_PAGADO);
+  const pendingCol = headers[normalizeHeader_(HEADER_SALDO_PENDIENTE)] || ensureHeader_(sheet, HEADER_SALDO_PENDIENTE);
+  return { idCol, actionCol, notesCol, paidCol, pendingCol };
 }
 
 function ensureHeader_(sheet, header) {

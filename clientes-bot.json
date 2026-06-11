@@ -1,4 +1,24 @@
 {
+  "2613362703": {
+    "id": "2613362703",
+    "phone": "2613362703",
+    "displayPhone": "2613362703",
+    "fullName": "CLAUDIA BONOMI",
+    "contactName": "CLAUDIA BONOMI",
+    "aliases": [
+      "2613362703",
+      "CLAUDIA BONOMI"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "PICADA",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-10T21:04:28.969Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-10T15:41:28.001Z",
+    "updatedAt": "2026-06-10T21:04:28.969Z"
+  },
   "2615406970": {
     "id": "2615406970",
     "phone": "2615406970",
@@ -33,12 +53,12 @@
     "budgetCount": 1,
     "lastEventType": "Almuerzo",
     "lastBudgetAt": "2026-06-08T20:01:50.279Z",
-    "lastSeenAt": "2026-06-09T17:13:11.862Z",
+    "lastSeenAt": "2026-06-10T21:11:14.777Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-08T20:01:50.279Z",
-    "updatedAt": "2026-06-09T17:13:11.862Z"
+    "updatedAt": "2026-06-10T21:11:14.777Z"
   },
   "2619977846": {
     "id": "2619977846",

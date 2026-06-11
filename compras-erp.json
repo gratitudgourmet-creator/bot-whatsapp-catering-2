@@ -17555,7 +17555,7 @@
     "provider": "FLORES LUNA",
     "eventName": "RESIDENCIA 22-5",
     "description": "FLORES",
-    "paymentStatus": "Pendiente",
+    "paymentStatus": "Pagado",
     "paymentMethod": "",
     "fundsSource": "",
     "invoiceType": "Remito",
@@ -17573,7 +17573,19 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:02.630Z",
-    "updatedAt": "2026-06-08T17:48:52.884Z"
+    "updatedAt": "2026-06-10T19:58:51.125Z",
+    "paidAmount": 25000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781121531125-1",
+        "date": "2026-06-10",
+        "amount": 25000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ]
   },
   {
     "id": "sheets-row-649",
@@ -20129,7 +20141,7 @@
     "provider": "AVICOLA RODEO",
     "eventName": "CFI 29-5",
     "description": "SUPREMA",
-    "paymentStatus": "Pendiente",
+    "paymentStatus": "Pagado",
     "paymentMethod": "",
     "fundsSource": "",
     "invoiceType": "",
@@ -20147,7 +20159,19 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:06.108Z",
-    "updatedAt": "2026-06-08T17:48:55.811Z"
+    "updatedAt": "2026-06-10T19:52:22.838Z",
+    "paidAmount": 1665000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781121142838-1",
+        "date": "2026-06-10",
+        "amount": 1665000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ]
   },
   {
     "id": "sheets-row-749",
@@ -20857,7 +20881,7 @@
     "provider": "CLAUDIO PAELLAS",
     "eventName": "CFI 29-5",
     "description": "MUERTARIOS",
-    "paymentStatus": "Pendiente",
+    "paymentStatus": "Pagado",
     "paymentMethod": "",
     "fundsSource": "",
     "invoiceType": "",
@@ -20875,7 +20899,19 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:06.941Z",
-    "updatedAt": "2026-06-08T17:48:56.757Z"
+    "updatedAt": "2026-06-10T19:51:54.728Z",
+    "paidAmount": 300000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781121114728-1",
+        "date": "2026-06-10",
+        "amount": 300000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ]
   },
   {
     "id": "sheets-row-777",
@@ -20883,7 +20919,7 @@
     "provider": "CLAUDIO PAELLAS",
     "eventName": "CFI 29-5",
     "description": "PORCION PAELLAS",
-    "paymentStatus": "Pendiente",
+    "paymentStatus": "Pagado",
     "paymentMethod": "",
     "fundsSource": "",
     "invoiceType": "",
@@ -20901,7 +20937,19 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:06.969Z",
-    "updatedAt": "2026-06-08T17:48:56.791Z"
+    "updatedAt": "2026-06-10T19:51:54.728Z",
+    "paidAmount": 2700000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781121114728-2",
+        "date": "2026-06-10",
+        "amount": 2700000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ]
   },
   {
     "id": "sheets-row-778",
@@ -20909,7 +20957,7 @@
     "provider": "CLAUDIO PAELLAS",
     "eventName": "CFI 29-5",
     "description": "ENVIO",
-    "paymentStatus": "Pendiente",
+    "paymentStatus": "Pagado",
     "paymentMethod": "",
     "fundsSource": "",
     "invoiceType": "",
@@ -20927,7 +20975,19 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:06.998Z",
-    "updatedAt": "2026-06-08T17:48:56.820Z"
+    "updatedAt": "2026-06-10T19:51:54.728Z",
+    "paidAmount": 120000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781121114728-3",
+        "date": "2026-06-10",
+        "amount": 120000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ]
   },
   {
     "id": "sheets-row-779",
@@ -20987,7 +21047,7 @@
     "provider": "DUILIO",
     "eventName": "CFI 29-5",
     "description": "VAJILLA",
-    "paymentStatus": "Pendiente",
+    "paymentStatus": "Pagado",
     "paymentMethod": "",
     "fundsSource": "",
     "invoiceType": "",
@@ -21005,7 +21065,19 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:07.088Z",
-    "updatedAt": "2026-06-08T17:48:56.908Z"
+    "updatedAt": "2026-06-10T19:52:13.230Z",
+    "paidAmount": 1900000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781121133230-1",
+        "date": "2026-06-10",
+        "amount": 1900000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ]
   },
   {
     "id": "sheets-row-782",
@@ -21718,5 +21790,61 @@
     ],
     "createdAt": "2026-06-09T20:10:14.194Z",
     "updatedAt": "2026-06-09T20:10:14.222Z"
+  },
+  {
+    "id": "compra-1781107096641",
+    "date": "2026-06-10",
+    "provider": "MORETTI",
+    "eventName": "INFANTIL ROMI",
+    "description": "QUESO FINLANDIA X290G",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "Factura A",
+    "netAmount": 48420.49,
+    "ivaRate": 0.21,
+    "ivaAmount": 10168.3,
+    "totalAmount": 58588.79,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "QUESO FINLANDIA X290G",
+        "quantity": 1,
+        "unitAmount": 4406.4,
+        "total": 4406.4
+      },
+      {
+        "description": "QUESO CREMA 290G",
+        "quantity": 1,
+        "unitAmount": 3541.44,
+        "total": 3541.44
+      },
+      {
+        "description": "MORTADELA DE PSTACHO",
+        "quantity": 0.36,
+        "unitAmount": 20039.74,
+        "total": 7214.31
+      },
+      {
+        "description": "LOMO HORNEADO AHUMADO",
+        "quantity": 0.4,
+        "unitAmount": 17881.98,
+        "total": 7152.79
+      },
+      {
+        "description": "PAPAS SMILES",
+        "quantity": 1,
+        "unitAmount": 11231.17,
+        "total": 11231.17
+      },
+      {
+        "description": "NUGGETS POLLO",
+        "quantity": 2,
+        "unitAmount": 7437.19,
+        "total": 14874.38
+      }
+    ],
+    "createdAt": "2026-06-10T15:58:16.642Z",
+    "updatedAt": "2026-06-10T15:58:16.802Z"
   }
 ]

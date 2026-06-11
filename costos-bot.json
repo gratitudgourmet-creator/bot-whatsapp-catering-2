@@ -55,9 +55,10 @@
       "Medialunas",
       "Jugo"
     ],
-    "test_service_codex": []
+    "test_service_codex": [],
+    "picada": []
   },
-  "updatedAt": "2026-06-09T19:08:56.276Z",
+  "updatedAt": "2026-06-10T15:45:49.426Z",
   "operationalOptions": {
     "services": [
       "Agape",
@@ -69,6 +70,7 @@
       "Coctel",
       "Coffee",
       "Finger",
+      "PICADA",
       "TEST SERVICE CODEX"
     ],
     "moments": [

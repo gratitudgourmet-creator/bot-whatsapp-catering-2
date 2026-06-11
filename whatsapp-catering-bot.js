@@ -59,6 +59,11 @@ const WHATSAPP_WEB_VERSION =
   getLatestCachedWhatsAppWebVersion();
 const WHATSAPP_CLIENT_ID =
   process.env.WHATSAPP_CLIENT_ID || BOT_CONFIG.whatsappClientId || "catering-luxury-bot";
+const WHATSAPP_AUTH_DIR = path.join(__dirname, ".wwebjs_auth", `session-${WHATSAPP_CLIENT_ID}`);
+const CHROME_EXECUTABLE =
+  process.env.CHROME_EXECUTABLE ||
+  BOT_CONFIG.chromeExecutablePath ||
+  findChromeExecutable();
 const CHROME_USER_AGENT =
   process.env.WHATSAPP_CHROME_USER_AGENT ||
   BOT_CONFIG.whatsappChromeUserAgent ||
@@ -79,7 +84,9 @@ const client = new Client({
   takeoverTimeoutMs: 5000,
   puppeteer: {
     headless: true,
-    executablePath: DEFAULT_CHROME_EXECUTABLE,
+    executablePath: CHROME_EXECUTABLE,
+    protocolTimeout: Number(process.env.WHATSAPP_PROTOCOL_TIMEOUT_MS || 180000),
+    timeout: Number(process.env.WHATSAPP_BROWSER_TIMEOUT_MS || 120000),
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -87,6 +94,12 @@ const client = new Client({
       "--disable-extensions",
       "--disable-gpu",
       "--no-first-run",
+      "--no-default-browser-check",
+      "--disable-background-networking",
+      "--disable-background-timer-throttling",
+      "--disable-renderer-backgrounding",
+      "--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter",
+      "--remote-debugging-port=0",
     ],
   },
 });
@@ -124,6 +137,39 @@ const approvedCustomers = new Set();
 const processedMessageIds = new Set();
 const WHATSAPP_INIT_MAX_ATTEMPTS = Number(process.env.WHATSAPP_INIT_MAX_ATTEMPTS || 3);
 const WHATSAPP_INIT_RETRY_MS = Number(process.env.WHATSAPP_INIT_RETRY_MS || 15000);
+
+function findChromeExecutable() {
+  const candidates = [
+    DEFAULT_CHROME_EXECUTABLE,
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    path.join(process.env.LOCALAPPDATA || "", "Google\\Chrome\\Application\\chrome.exe"),
+    "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+  ].filter(Boolean);
+
+  return candidates.find((candidate) => fs.existsSync(candidate)) || DEFAULT_CHROME_EXECUTABLE;
+}
+
+function cleanupWhatsappChromeLocks() {
+  const lockNames = [
+    "lockfile",
+    "SingletonLock",
+    "SingletonCookie",
+    "SingletonSocket",
+    "DevToolsActivePort",
+    "CrashpadMetrics-active.pma",
+  ];
+
+  for (const name of lockNames) {
+    const target = path.join(WHATSAPP_AUTH_DIR, name);
+    try {
+      if (fs.existsSync(target)) {
+        fs.rmSync(target, { force: true });
+      }
+    } catch (error) {
+      console.warn(`No se pudo limpiar bloqueo de Chrome: ${name}`);
+    }
+  }
+}
 
 // IMPORTANTE: configure aqui el numero que va a autorizar las respuestas.
 // Use formato internacional, sin +, sin espacios. Ejemplo Argentina: 5491123456789
@@ -276,7 +322,9 @@ process.on("uncaughtException", (error) => {
 
 async function startWhatsappClient(attempt = 1) {
   try {
+    cleanupWhatsappChromeLocks();
     console.log(`Conectando WhatsApp (intento ${attempt}/${WHATSAPP_INIT_MAX_ATTEMPTS})...`);
+    console.log(`Chrome configurado: ${CHROME_EXECUTABLE}`);
     await client.initialize();
   } catch (error) {
     if (isTransientWhatsappStartupError(error) && attempt < WHATSAPP_INIT_MAX_ATTEMPTS) {
@@ -304,7 +352,11 @@ function isTransientWhatsappStartupError(error) {
     message.includes("target closed") ||
     message.includes("session closed") ||
     message.includes("cannot find context with specified id") ||
-    message.includes("quedo esperando demasiado tiempo")
+    message.includes("quedo esperando demasiado tiempo") ||
+    message.includes("failed to launch the browser process") ||
+    message.includes("page.navigate timed out") ||
+    message.includes("navigation timeout") ||
+    message.includes("protocolerror")
   );
 }
 
@@ -713,6 +765,16 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/provider-payment") {
+        const body = await readJsonBody(request);
+        try {
+          const result = await applyProviderPayment(body);
+          return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/import-purchases-from-sheets") {
         const result = await importPurchasesFromSheets();
         return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
@@ -912,7 +974,12 @@ function servePanelHtml(response) {
   const panelPath = path.join(__dirname, "approval-panel.html");
   const html = fs.readFileSync(panelPath, "utf8");
 
-  response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+  response.writeHead(200, {
+    "Content-Type": "text/html; charset=utf-8",
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
   response.end(html);
 }
 
@@ -2206,8 +2273,7 @@ function getErpDashboard() {
 
 function getPurchaseDashboard(purchases = getErpPurchaseList()) {
   const totalAmount = purchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
-  const paidPurchases = purchases.filter((purchase) => purchase.paymentStatus === "Pagado");
-  const pendingPurchases = purchases.filter((purchase) => purchase.paymentStatus !== "Pagado");
+  const pendingPurchases = purchases.filter((purchase) => Number(purchase.pendingAmount || 0) > 0);
   const byProvider = groupPurchaseAmount(purchases, "provider");
   const byEvent = groupPurchaseAmount(purchases, "eventName");
   const byPaymentMethod = groupPurchaseAmount(purchases, "paymentMethod");
@@ -2215,8 +2281,8 @@ function getPurchaseDashboard(purchases = getErpPurchaseList()) {
   return {
     count: purchases.length,
     totalAmount: roundMoney(totalAmount),
-    paidAmount: roundMoney(paidPurchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0)),
-    pendingAmount: roundMoney(pendingPurchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0)),
+    paidAmount: roundMoney(purchases.reduce((sum, purchase) => sum + Number(purchase.paidAmount || 0), 0)),
+    pendingAmount: roundMoney(purchases.reduce((sum, purchase) => sum + Number(purchase.pendingAmount || 0), 0)),
     averageTicket: purchases.length ? roundMoney(totalAmount / purchases.length) : 0,
     providersCount: new Set(purchases.map((purchase) => normalizeSearchKey(purchase.provider)).filter(Boolean)).size,
     pendingCount: pendingPurchases.length,
@@ -3030,6 +3096,9 @@ function getBestQuoteForEvent(eventId) {
 function getErpPurchaseList() {
   return erpPurchases.map((purchase) => {
     const amounts = getPurchaseAmounts(purchase);
+    const paidAmount = getPurchasePaidAmount(purchase, amounts.totalAmount);
+    const pendingAmount = getPurchasePendingAmount(purchase, amounts.totalAmount);
+    const paymentStatus = pendingAmount <= 0 ? "Pagado" : (paidAmount > 0 ? "Parcial" : (purchase.paymentStatus || "Pendiente"));
     return {
       ...purchase,
       invoiceType: purchase.invoiceType || "",
@@ -3037,6 +3106,9 @@ function getErpPurchaseList() {
       ivaRate: amounts.ivaRate,
       ivaAmount: amounts.ivaAmount,
       totalAmount: amounts.totalAmount,
+      paidAmount,
+      pendingAmount,
+      paymentStatus,
       notes: purchase.notes || "",
     };
   }).sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
@@ -3060,18 +3132,39 @@ function getPurchaseAmounts(purchase = {}) {
   return { netAmount, ivaRate, ivaAmount, totalAmount };
 }
 
+function getPurchasePaidAmount(purchase = {}, totalAmount = 0) {
+  const explicitPaid = Number(purchase.paidAmount || purchase.montoPagado || 0);
+  if (explicitPaid > 0) return roundMoney(Math.min(explicitPaid, totalAmount));
+  if (normalizeSearchKey(purchase.paymentStatus || purchase.estadoPago) === "pagado") return roundMoney(totalAmount);
+  return 0;
+}
+
+function getPurchasePendingAmount(purchase = {}, totalAmount = 0) {
+  return roundMoney(Math.max(0, Number(totalAmount || 0) - getPurchasePaidAmount(purchase, totalAmount)));
+}
+
 function rememberErpPurchase(purchase) {
   const lineTotal = (purchase.lineItems || []).reduce((sum, item) => sum + Number(item.total || 0), 0);
   const amounts = getPurchaseAmounts({ ...purchase, lineItems: purchase.lineItems || [] });
   const existingIndex = erpPurchases.findIndex((item) => item.id === purchase.id);
   const previous = existingIndex >= 0 ? erpPurchases[existingIndex] : {};
+  const purchaseStatusKey = normalizeSearchKey(purchase.estadoPago || purchase.paymentStatus || "");
+  const preservedPaidAmount = purchaseStatusKey === "pagado"
+    ? amounts.totalAmount
+    : purchaseStatusKey === "pendiente"
+      ? 0
+      : purchase.paidAmount !== undefined
+        ? Number(purchase.paidAmount || 0)
+        : getPurchasePaidAmount(previous, amounts.totalAmount);
+  const paidAmount = roundMoney(Math.min(preservedPaidAmount, amounts.totalAmount));
+  const pendingAmount = roundMoney(Math.max(0, amounts.totalAmount - paidAmount));
   const record = {
     id: purchase.id || `compra-${Date.now()}`,
     date: purchase.fecha || getDateOnly(new Date()),
     provider: purchase.proveedor || "",
     eventName: purchase.evento || "",
     description: purchase.descripcion || "",
-    paymentStatus: purchase.estadoPago || "Pendiente",
+    paymentStatus: pendingAmount <= 0 ? "Pagado" : (paidAmount > 0 ? "Parcial" : (purchase.estadoPago || "Pendiente")),
     paymentMethod: purchase.medioPago || "",
     fundsSource: purchase.origenFondos || "",
     invoiceType: purchase.comprobante || "",
@@ -3079,8 +3172,11 @@ function rememberErpPurchase(purchase) {
     ivaRate: amounts.ivaRate,
     ivaAmount: amounts.ivaAmount,
     totalAmount: amounts.totalAmount,
+    paidAmount,
+    pendingAmount,
     notes: purchase.observaciones || "",
     lineItems: purchase.lineItems || [],
+    paymentLog: Array.isArray(previous.paymentLog) ? previous.paymentLog : [],
     createdAt: previous.createdAt || purchase.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
@@ -3111,6 +3207,101 @@ async function deletePurchaseRecord(id, options = {}) {
   }
 
   return { id: cleanId, deleted: true };
+}
+
+async function applyProviderPayment(input = {}) {
+  const provider = normalizeText(input.provider || "");
+  const mode = normalizeText(input.mode || "partial");
+  const paymentMethod = normalizeText(input.paymentMethod || "");
+  const fundsSource = normalizeText(input.fundsSource || "");
+  const notes = normalizeText(input.notes || "");
+  const paymentDate = normalizePanelDate(input.date || getDateOnly(new Date())) || getDateOnly(new Date());
+
+  if (!provider) {
+    throw new Error("Seleccione el proveedor al que corresponde el pago.");
+  }
+
+  const pendingPurchases = getErpPurchaseList()
+    .filter((purchase) => normalizeSearchKey(purchase.provider) === normalizeSearchKey(provider))
+    .filter((purchase) => Number(purchase.pendingAmount || 0) > 0)
+    .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+
+  if (!pendingPurchases.length) {
+    throw new Error("Ese proveedor no tiene compras pendientes.");
+  }
+
+  const debtTotal = roundMoney(pendingPurchases.reduce((sum, purchase) => sum + Number(purchase.pendingAmount || 0), 0));
+  let remaining = mode === "total" ? debtTotal : roundMoney(parseOptionalNumber(input.amount));
+
+  if (remaining <= 0) {
+    throw new Error("Ingrese un monto de pago mayor a cero.");
+  }
+
+  const applied = [];
+
+  for (const purchase of pendingPurchases) {
+    if (remaining <= 0) break;
+    const amount = Math.min(Number(purchase.pendingAmount || 0), remaining);
+    const index = erpPurchases.findIndex((item) => item.id === purchase.id);
+    if (index < 0 || amount <= 0) continue;
+
+    const current = erpPurchases[index];
+    const currentAmounts = getPurchaseAmounts(current);
+    const nextPaid = roundMoney(getPurchasePaidAmount(current, currentAmounts.totalAmount) + amount);
+    const nextPending = roundMoney(Math.max(0, currentAmounts.totalAmount - nextPaid));
+    const paymentLog = Array.isArray(current.paymentLog) ? current.paymentLog : [];
+
+    erpPurchases[index] = {
+      ...current,
+      paidAmount: nextPaid,
+      pendingAmount: nextPending,
+      paymentStatus: nextPending <= 0 ? "Pagado" : "Parcial",
+      paymentMethod: paymentMethod || current.paymentMethod || "",
+      fundsSource: fundsSource || current.fundsSource || "",
+      notes: [current.notes, notes ? `Pago proveedor ${paymentDate}: ${formatMoneyText(amount)}${notes ? ` - ${notes}` : ""}` : ""].filter(Boolean).join("\n"),
+      paymentLog: [
+        ...paymentLog,
+        {
+          id: `pago-${Date.now()}-${applied.length + 1}`,
+          date: paymentDate,
+          amount: roundMoney(amount),
+          paymentMethod,
+          fundsSource,
+          notes,
+        },
+      ],
+      updatedAt: new Date().toISOString(),
+    };
+
+    applied.push({
+      id: purchase.id,
+      date: purchase.date,
+      description: purchase.description,
+      appliedAmount: roundMoney(amount),
+      pendingAmount: nextPending,
+      status: erpPurchases[index].paymentStatus,
+    });
+    remaining = roundMoney(remaining - amount);
+  }
+
+  saveErpPurchases();
+
+  if (PURCHASE_BIDIRECTIONAL_SYNC_ENABLED) {
+    for (const item of applied) {
+      const purchase = erpPurchases.find((entry) => entry.id === item.id);
+      if (purchase) await syncPurchaseToSheets("upsert", purchase);
+    }
+  }
+
+  return {
+    provider,
+    requestedAmount: mode === "total" ? debtTotal : roundMoney(parseOptionalNumber(input.amount)),
+    appliedAmount: roundMoney(applied.reduce((sum, item) => sum + item.appliedAmount, 0)),
+    remainingCredit: roundMoney(Math.max(0, remaining)),
+    debtBefore: debtTotal,
+    debtAfter: roundMoney(Math.max(0, debtTotal - applied.reduce((sum, item) => sum + item.appliedAmount, 0))),
+    purchases: applied,
+  };
 }
 
 async function importPurchasesFromSheets() {
@@ -4496,6 +4687,7 @@ async function syncPurchaseToSheets(action, purchase) {
     body: JSON.stringify({
       ...purchase,
       action,
+      rowNumber: purchase.rowNumber || "",
       purchase,
     }),
   });
@@ -4570,6 +4762,9 @@ function buildPurchaseRecord(input, options = {}) {
   const requireEvent = options.requireEvent !== false;
   const lineItems = parsePurchaseItems(input);
   const firstItem = lineItems[0];
+  const cleanId = normalizeText(input.id || "");
+  const sheetRowMatch = cleanId.match(/^sheets-row-(\d+)$/);
+  const rowNumber = normalizeText(input.rowNumber || input.row || (sheetRowMatch ? sheetRowMatch[1] : ""));
   const netAmount = roundMoney(
     lineItems.reduce((sum, item) => sum + item.total, 0)
   );
@@ -4579,7 +4774,8 @@ function buildPurchaseRecord(input, options = {}) {
   const totalAmount = roundMoney(netAmount + ivaAmount);
 
   const purchase = {
-    id: input.id || `compra-${Date.now()}`,
+    id: cleanId || `compra-${Date.now()}`,
+    rowNumber,
     source: "panel_compras",
     spreadsheetId: BOT_CONFIG.purchaseSpreadsheetId || "",
     sheetName: BOT_CONFIG.purchaseSheetName || "Registro_Gastos",

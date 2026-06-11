@@ -8,7 +8,13 @@ set "CODEX_NODE=%~dp0.runtime\codex-node\node.exe"
 
 echo Cerrando instancias anteriores del bot en esta carpeta...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$project = (Resolve-Path '%~dp0').Path.TrimEnd('\'); Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -like ('*' + $project + '*whatsapp-catering-bot.js*') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }" >nul 2>nul
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$project = (Resolve-Path '%~dp0').Path.TrimEnd('\'); $auth = Join-Path $project '.wwebjs_auth'; Get-CimInstance Win32_Process | Where-Object { ($_.Name -eq 'chrome.exe' -or $_.Name -eq 'msedge.exe') -and $_.CommandLine -like ('*' + $auth + '*') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }" >nul 2>nul
 timeout /t 2 /nobreak >nul
+
+set "WHATSAPP_INIT_MAX_ATTEMPTS=5"
+set "WHATSAPP_INIT_RETRY_MS=20000"
+set "WHATSAPP_PROTOCOL_TIMEOUT_MS=180000"
+set "WHATSAPP_BROWSER_TIMEOUT_MS=120000"
 
 if exist "%LOCAL_NODE%" (
   "%LOCAL_NODE%" whatsapp-catering-bot.js

@@ -32,7 +32,8 @@
         "commercialNotes": "",
         "dietaryRestrictions": "NO POR AHORA",
         "notes": "",
-        "externalPhone": "2616988941"
+        "externalPhone": "2616988941",
+        "contactName": ""
       }
     }
   },
@@ -40,30 +41,30 @@
   "chatRecords": {
     "manual-1780948910260": {
       "phone": "manual-1780948910260",
-      "status": "ready_to_quote",
-      "statusLabel": "Listo para presupuestar",
+      "status": "proposal_sent",
+      "statusLabel": "Propuesta enviada",
       "channel": "WhatsApp Claudia",
       "displayPhone": "2616988941",
-      "contactName": "",
+      "contactName": "ROMINA PROTOCOLO",
       "knownCustomer": {
         "id": "2616988941",
         "phone": "2616988941",
         "displayPhone": "2616988941",
         "fullName": "ROMINA PROTOCOLO",
-        "contactName": "",
+        "contactName": "ROMINA PROTOCOLO",
         "aliases": [
           "2616988941",
           "ROMINA PROTOCOLO"
         ],
         "budgetCount": 1,
-        "lastEventType": "INFANTIL",
+        "lastEventType": "Almuerzo",
         "lastBudgetAt": "2026-06-08T20:01:50.279Z",
-        "lastSeenAt": "2026-06-08T20:01:50.279Z",
+        "lastSeenAt": "2026-06-09T17:13:11.862Z",
         "preferences": "",
         "dietaryRestrictions": "",
         "notes": "",
         "createdAt": "2026-06-08T20:01:50.279Z",
-        "updatedAt": "2026-06-08T20:01:50.279Z"
+        "updatedAt": "2026-06-09T17:13:11.862Z"
       },
       "approvalId": "",
       "lastMessage": "Pedido cargado manualmente",
@@ -106,14 +107,20 @@
         "dietaryRestrictions": "NO POR AHORA",
         "notes": "",
         "externalPhone": "2616988941",
-        "contactName": ""
+        "contactName": "ROMINA PROTOCOLO"
       },
       "assignedTo": "Claudia",
       "nextAction": "",
       "followUpDate": "2026-06-08",
-      "isOverdue": false,
-      "isDueToday": true,
+      "isOverdue": true,
+      "isDueToday": false,
       "history": [
+        {
+          "at": "2026-06-10T16:10:12.496Z",
+          "actor": "Panel",
+          "action": "Estado actualizado",
+          "detail": "Listo para presupuestar -> Propuesta enviada"
+        },
         {
           "at": "2026-06-08T20:01:50.325Z",
           "actor": "Panel",
@@ -122,7 +129,7 @@
         }
       ],
       "createdAt": "2026-06-08T20:01:50.312Z",
-      "updatedAt": "2026-06-08T20:01:50.312Z"
+      "updatedAt": "2026-06-10T16:10:12.491Z"
     }
   },
   "approvedCustomers": [
@@ -206,5 +213,5 @@
     "false_255189810475111@lid_A5F4B0B4338236D4A175F03D1D5C6A2E"
   ],
   "pendingReplyCounter": 16,
-  "updatedAt": "2026-06-08T20:01:50.327Z"
+  "updatedAt": "2026-06-10T16:10:12.499Z"
 }

@@ -48,7 +48,7 @@
     "mapProvider": "OpenStreetMap",
     "mapPlaceId": "1428911",
     "createdAt": "2026-06-09T17:12:35.198Z",
-    "updatedAt": "2026-06-09T17:13:11.891Z"
+    "updatedAt": "2026-06-10T21:08:50.436Z"
   },
   {
     "id": "lugar-universidad-maza",
@@ -66,5 +66,56 @@
     "mapPlaceId": "1434105",
     "createdAt": "2026-06-09T19:07:35.494Z",
     "updatedAt": "2026-06-09T19:35:10.441Z"
+  },
+  {
+    "id": "lugar-ministerio-publico-fiscal",
+    "name": "MINISTERIO PUBLICO FISCAL",
+    "address": "",
+    "phone": "",
+    "contactName": "",
+    "email": "",
+    "reference": "",
+    "notes": "",
+    "latitude": -32.8895,
+    "longitude": -68.8458,
+    "mapLabel": "",
+    "mapProvider": "",
+    "mapPlaceId": "",
+    "createdAt": "2026-06-10T15:43:16.871Z",
+    "updatedAt": "2026-06-10T21:03:53.403Z"
+  },
+  {
+    "id": "lugar-poder-judicial",
+    "name": "PODER JUDICIAL",
+    "address": "Poder Judicial, Patricias Mendocinas, Ciudad de Mendoza, Sección 2ª Barrio Cívico, Departamento Capital, Mendoza, M5500, Argentina",
+    "phone": "",
+    "contactName": "",
+    "email": "",
+    "reference": "INGRESO POR CALLE VIRGEN DEL CARMEN",
+    "notes": "",
+    "latitude": -32.895348,
+    "longitude": -68.844524,
+    "mapLabel": "Poder Judicial, Patricias Mendocinas, Ciudad de Mendoza, Sección 2ª Barrio Cívico, Departamento Capital, Mendoza, M5500, Argentina",
+    "mapProvider": "OpenStreetMap",
+    "mapPlaceId": "1421523",
+    "createdAt": "2026-06-10T21:04:25.917Z",
+    "updatedAt": "2026-06-10T21:04:29.000Z"
+  },
+  {
+    "id": "lugar-dorrego-mall",
+    "name": "Dorrego Mall",
+    "address": "Alto Dorrego Mall, Paso de los Patos, Barrio Pedro Carro, Distrito Dorrego, Departamento Guaymallén, Mendoza, 5519, Argentina",
+    "phone": "",
+    "contactName": "",
+    "email": "",
+    "reference": "Pelotero",
+    "notes": "",
+    "latitude": -32.916294,
+    "longitude": -68.82472,
+    "mapLabel": "Alto Dorrego Mall, Paso de los Patos, Barrio Pedro Carro, Distrito Dorrego, Departamento Guaymallén, Mendoza, 5519, Argentina",
+    "mapProvider": "OpenStreetMap",
+    "mapPlaceId": "1451632",
+    "createdAt": "2026-06-10T21:11:12.376Z",
+    "updatedAt": "2026-06-10T21:11:14.787Z"
   }
 ]

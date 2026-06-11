@@ -647,7 +647,11 @@
     "SILLONES NORDICOS",
     "MESAS ALTAS",
     "ZANAHORIA XKG",
-    "CEBOLLA XKG"
+    "CEBOLLA XKG",
+    "QUESO FINLANDIA X290G",
+    "LOMO HORNEADO AHUMADO",
+    "PAPAS SMILES",
+    "NUGGETS POLLO"
   ],
   "purchaseEvents": [
     "AGAPE BUSTELO 14-5",
@@ -688,7 +692,9 @@
     "TEST CHECKLIST CODEX",
     "TEST PRECIO CODEX",
     "INFANTIL ROMI",
-    "JESI COFFEE U MAZA"
+    "JESI COFFEE U MAZA",
+    "CASA DE GOBIERNO",
+    "PICADA POLO JUDICIAL"
   ],
   "purchasePaymentMethods": [
     "E-Cheq",
@@ -709,8 +715,11 @@
   "localInvoiceAiUrl": "http://127.0.0.1:11434/api/generate",
   "localInvoiceAiModel": "qwen2.5vl:3b",
   "eventVenues": [
+    "Dorrego Mall",
     "ECOPARQUE",
     "Hiper ChangoMás",
+    "MINISTERIO PUBLICO FISCAL",
+    "PODER JUDICIAL",
     "SALON PATRICIAS",
     "Universidad Maza"
   ]
