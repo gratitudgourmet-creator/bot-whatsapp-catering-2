@@ -19,7 +19,18 @@ const fs = require("fs");
 const http = require("http");
 const path = require("path");
 const crypto = require("crypto");
-const XLSX = require("xlsx");
+let DatabaseSync = null;
+try {
+  ({ DatabaseSync } = require("node:sqlite"));
+} catch (error) {
+  console.warn("SQLite no disponible. Las compras seguiran usando JSON.");
+}
+let XLSX = null;
+try {
+  XLSX = require("xlsx");
+} catch (error) {
+  console.warn("Modulo xlsx no instalado. La exportacion Excel queda deshabilitada.");
+}
 const { recognize } = require("tesseract.js");
 
 console.log("Iniciando bot de WhatsApp...");
@@ -41,9 +52,24 @@ const ERP_QUOTES_FILE = dataPath("presupuestos-erp.json");
 const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
 const ERP_PROVIDERS_FILE = dataPath("proveedores-erp.json");
 const ERP_VENUES_FILE = dataPath("lugares-erp.json");
+const CATERING_DB_FILE = dataPath(process.env.CATERING_DB_FILE || BOT_CONFIG.cateringDbFile || "catering.db");
+const CATERING_BACKUP_DIR = path.resolve(
+  process.env.CATERING_BACKUP_DIR ||
+  BOT_CONFIG.cateringBackupDir ||
+  path.join(DATA_DIR, "backups")
+);
+const CATERING_DB_BACKUP_INTERVAL_MS = Number(
+  process.env.CATERING_DB_BACKUP_INTERVAL_MS ||
+  BOT_CONFIG.cateringDbBackupIntervalMs ||
+  6 * 60 * 60 * 1000
+);
 const PANEL_AUTH_USER = process.env.PANEL_AUTH_USER || BOT_CONFIG.panelAuthUser || "admin";
 const PANEL_AUTH_PASSWORD = process.env.PANEL_AUTH_PASSWORD || BOT_CONFIG.panelAuthPassword || "";
 const PURCHASE_SYNC_TOKEN = process.env.PURCHASE_SYNC_TOKEN || BOT_CONFIG.purchaseSyncToken || "";
+const ACCOUNTANT_PAYMENTS_WEBHOOK_URL =
+  process.env.ACCOUNTANT_PAYMENTS_WEBHOOK_URL || BOT_CONFIG.accountantPaymentsWebhookUrl || "";
+const ACCOUNTANT_PAYMENTS_TOKEN =
+  process.env.ACCOUNTANT_PAYMENTS_TOKEN || BOT_CONFIG.accountantPaymentsToken || PURCHASE_SYNC_TOKEN || "";
 const PURCHASE_BIDIRECTIONAL_SYNC_ENABLED =
   String(process.env.PURCHASE_BIDIRECTIONAL_SYNC_ENABLED || BOT_CONFIG.purchaseBidirectionalSyncEnabled || "").toLowerCase() === "true";
 const PANEL_SESSION_SECRET =
@@ -133,6 +159,8 @@ let erpQuotes = [];
 let erpPurchases = [];
 let erpProviders = [];
 let erpVenues = [];
+let cateringDb = null;
+let lastCateringDbBackupAt = 0;
 const approvedCustomers = new Set();
 const processedMessageIds = new Set();
 const WHATSAPP_INIT_MAX_ATTEMPTS = Number(process.env.WHATSAPP_INIT_MAX_ATTEMPTS || 3);
@@ -780,6 +808,24 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/import-accountant-payments") {
+        try {
+          const result = await importAccountantPaymentsFromSheets();
+          return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/sync-accountant-debts") {
+        try {
+          const result = await syncAccountantDebtsToSheets();
+          return sendJson(response, { ok: true, result });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase-sync") {
         const body = await readJsonBody(request);
         validatePurchaseSyncToken(body);
@@ -917,7 +963,7 @@ function applySecurityHeaders(response) {
   response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   response.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self';"
+    "default-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline' https://unpkg.com; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://unpkg.com;"
   );
 
   if (IS_PRODUCTION) {
@@ -992,6 +1038,17 @@ function sendJson(response, payload, statusCode = 200) {
 }
 
 function sendXlsxExport(response) {
+  if (!XLSX) {
+    return sendJson(
+      response,
+      {
+        ok: false,
+        error: "Falta instalar el modulo xlsx para exportar Excel en esta computadora.",
+      },
+      503
+    );
+  }
+
   const workbook = XLSX.utils.book_new();
   const sheets = buildGoogleSheetsModel();
 
@@ -1265,6 +1322,7 @@ function buildGoogleSheetsModel() {
       "Banco",
       "Tipo cuenta",
       "Nro cuenta",
+      "Titular cuenta",
       "CBU/CVU",
       "Alias",
       "Condicion pago",
@@ -1288,6 +1346,7 @@ function buildGoogleSheetsModel() {
       Banco: provider.bankName,
       "Tipo cuenta": provider.bankAccountType,
       "Nro cuenta": provider.bankAccountNumber,
+      "Titular cuenta": provider.bankAccountHolder,
       "CBU/CVU": provider.cbu,
       Alias: provider.alias,
       "Condicion pago": provider.paymentTerms,
@@ -1478,7 +1537,7 @@ function loadBusinessData() {
   };
   erpEvents = readJsonFile(ERP_EVENTS_FILE, []);
   erpQuotes = readJsonFile(ERP_QUOTES_FILE, []);
-  erpPurchases = readJsonFile(ERP_PURCHASES_FILE, []);
+  erpPurchases = loadErpPurchasesFromStorage();
   erpProviders = readJsonFile(ERP_PROVIDERS_FILE, []);
   erpVenues = readJsonFile(ERP_VENUES_FILE, []);
   syncProvidersFromPurchasesAndConfig();
@@ -1541,6 +1600,236 @@ function pruneJsonBackups(backupDir, baseName, extension) {
   }
 }
 
+function loadErpPurchasesFromStorage() {
+  const jsonPurchases = readJsonFile(ERP_PURCHASES_FILE, []);
+
+  if (!initCateringDatabase()) {
+    return jsonPurchases;
+  }
+
+  const dbPurchases = readPurchasesFromDatabase();
+  if (dbPurchases.length) {
+    backupCateringDatabase({ reason: "startup" });
+    return dbPurchases;
+  }
+
+  if (jsonPurchases.length) {
+    savePurchasesToDatabase(jsonPurchases);
+    backupCateringDatabase({ force: true, reason: "initial-migration" });
+  }
+
+  return jsonPurchases;
+}
+
+function initCateringDatabase() {
+  if (!DatabaseSync) return false;
+  if (cateringDb) return true;
+
+  try {
+    ensureDirectory(path.dirname(CATERING_DB_FILE));
+    cateringDb = new DatabaseSync(CATERING_DB_FILE);
+    cateringDb.exec(`
+      PRAGMA journal_mode = WAL;
+      PRAGMA foreign_keys = ON;
+
+      CREATE TABLE IF NOT EXISTS purchases (
+        id TEXT PRIMARY KEY,
+        date TEXT,
+        provider TEXT,
+        event_name TEXT,
+        description TEXT,
+        payment_status TEXT,
+        paid_amount REAL DEFAULT 0,
+        pending_amount REAL DEFAULT 0,
+        total_amount REAL DEFAULT 0,
+        data_json TEXT NOT NULL,
+        created_at TEXT,
+        updated_at TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS purchase_payments (
+        id TEXT PRIMARY KEY,
+        purchase_id TEXT NOT NULL,
+        provider TEXT,
+        date TEXT,
+        amount REAL DEFAULT 0,
+        payment_method TEXT,
+        funds_source TEXT,
+        notes TEXT,
+        data_json TEXT NOT NULL,
+        created_at TEXT,
+        FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_purchases_provider ON purchases(provider);
+      CREATE INDEX IF NOT EXISTS idx_purchases_date ON purchases(date);
+      CREATE INDEX IF NOT EXISTS idx_purchase_payments_purchase ON purchase_payments(purchase_id);
+    `);
+    return true;
+  } catch (error) {
+    cateringDb = null;
+    console.warn("No se pudo iniciar catering.db. Se usara JSON:", error.message);
+    return false;
+  }
+}
+
+function readPurchasesFromDatabase() {
+  if (!cateringDb) return [];
+
+  try {
+    return cateringDb
+      .prepare("SELECT data_json FROM purchases ORDER BY date DESC, updated_at DESC")
+      .all()
+      .map((row) => JSON.parse(row.data_json));
+  } catch (error) {
+    console.warn("No se pudieron leer compras desde catering.db:", error.message);
+    return [];
+  }
+}
+
+function savePurchasesToDatabase(purchases) {
+  if (!initCateringDatabase()) return false;
+
+  const upsertPurchase = cateringDb.prepare(`
+    INSERT INTO purchases (
+      id, date, provider, event_name, description, payment_status,
+      paid_amount, pending_amount, total_amount, data_json, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      date = excluded.date,
+      provider = excluded.provider,
+      event_name = excluded.event_name,
+      description = excluded.description,
+      payment_status = excluded.payment_status,
+      paid_amount = excluded.paid_amount,
+      pending_amount = excluded.pending_amount,
+      total_amount = excluded.total_amount,
+      data_json = excluded.data_json,
+      updated_at = excluded.updated_at
+  `);
+  const deletePayments = cateringDb.prepare("DELETE FROM purchase_payments WHERE purchase_id = ?");
+  const insertPayment = cateringDb.prepare(`
+    INSERT INTO purchase_payments (
+      id, purchase_id, provider, date, amount, payment_method,
+      funds_source, notes, data_json, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  try {
+    cateringDb.exec("BEGIN");
+    cateringDb.prepare("DELETE FROM purchases").run();
+    for (const purchase of purchases) {
+      const amounts = getPurchaseAmounts(purchase);
+      const paidAmount = getPurchasePaidAmount(purchase, amounts.totalAmount);
+      const pendingAmount = getPurchasePendingAmount(purchase, amounts.totalAmount);
+      const normalized = {
+        ...purchase,
+        totalAmount: amounts.totalAmount,
+        paidAmount,
+        pendingAmount,
+        paymentStatus: pendingAmount <= 0 ? "Pagado" : (paidAmount > 0 ? "Parcial" : (purchase.paymentStatus || "Pendiente")),
+      };
+
+      upsertPurchase.run(
+        normalized.id,
+        normalized.date || "",
+        normalized.provider || "",
+        normalized.eventName || "",
+        normalized.description || "",
+        normalized.paymentStatus || "",
+        Number(normalized.paidAmount || 0),
+        Number(normalized.pendingAmount || 0),
+        Number(normalized.totalAmount || 0),
+        JSON.stringify(normalized),
+        normalized.createdAt || new Date().toISOString(),
+        normalized.updatedAt || new Date().toISOString()
+      );
+
+      deletePayments.run(normalized.id);
+      (normalized.paymentLog || []).forEach((payment, index) => {
+        const paymentId = payment.id || `${normalized.id}-pago-${index + 1}`;
+        insertPayment.run(
+          paymentId,
+          normalized.id,
+          normalized.provider || "",
+          payment.date || "",
+          Number(payment.amount || 0),
+          payment.paymentMethod || "",
+          payment.fundsSource || "",
+          payment.notes || "",
+          JSON.stringify(payment),
+          payment.createdAt || normalized.updatedAt || new Date().toISOString()
+        );
+      });
+    }
+    cateringDb.exec("COMMIT");
+    backupCateringDatabase();
+    return true;
+  } catch (error) {
+    try {
+      cateringDb.exec("ROLLBACK");
+    } catch (rollbackError) {
+      // Ya no habia una transaccion activa.
+    }
+    console.warn("No se pudieron guardar compras en catering.db:", error.message);
+    return false;
+  }
+}
+
+function deletePurchaseFromDatabase(id) {
+  if (!initCateringDatabase()) return false;
+
+  try {
+    cateringDb.prepare("DELETE FROM purchases WHERE id = ?").run(id);
+    backupCateringDatabase();
+    return true;
+  } catch (error) {
+    console.warn("No se pudo eliminar compra de catering.db:", error.message);
+    return false;
+  }
+}
+
+function backupCateringDatabase(options = {}) {
+  if (!cateringDb || !fs.existsSync(CATERING_DB_FILE)) return;
+
+  const now = Date.now();
+  if (!options.force && now - lastCateringDbBackupAt < CATERING_DB_BACKUP_INTERVAL_MS) {
+    return;
+  }
+
+  try {
+    ensureDirectory(CATERING_BACKUP_DIR);
+    cateringDb.exec("PRAGMA wal_checkpoint(FULL)");
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const reason = options.reason ? `-${options.reason}` : "";
+    const backupPath = path.join(CATERING_BACKUP_DIR, `catering-${stamp}${reason}.db`);
+    fs.copyFileSync(CATERING_DB_FILE, backupPath);
+    lastCateringDbBackupAt = now;
+    pruneDatabaseBackups();
+  } catch (error) {
+    console.warn("No se pudo crear backup de catering.db:", error.message);
+  }
+}
+
+function pruneDatabaseBackups() {
+  const keep = Number(process.env.CATERING_DB_BACKUP_KEEP || BOT_CONFIG.cateringDbBackupKeep || 60);
+  if (!fs.existsSync(CATERING_BACKUP_DIR)) return;
+
+  const backups = fs
+    .readdirSync(CATERING_BACKUP_DIR)
+    .filter((fileName) => fileName.startsWith("catering-") && fileName.endsWith(".db"))
+    .map((fileName) => ({
+      fileName,
+      fullPath: path.join(CATERING_BACKUP_DIR, fileName),
+      mtimeMs: fs.statSync(path.join(CATERING_BACKUP_DIR, fileName)).mtimeMs,
+    }))
+    .sort((a, b) => b.mtimeMs - a.mtimeMs);
+
+  for (const backup of backups.slice(keep)) {
+    fs.unlinkSync(backup.fullPath);
+  }
+}
+
 function saveCustomerRecords() {
   writeJsonFile(CUSTOMERS_FILE, customerRecords);
 }
@@ -1566,6 +1855,7 @@ function saveErpQuotes() {
 }
 
 function saveErpPurchases() {
+  savePurchasesToDatabase(erpPurchases);
   writeJsonFile(ERP_PURCHASES_FILE, erpPurchases);
 }
 
@@ -1601,6 +1891,7 @@ function normalizeProviderRecord(provider = {}, stats = {}) {
     bankName: normalizeText(provider.bankName || ""),
     bankAccountType: normalizeText(provider.bankAccountType || ""),
     bankAccountNumber: normalizeText(provider.bankAccountNumber || ""),
+    bankAccountHolder: normalizeText(provider.bankAccountHolder || provider.accountHolder || provider.legalName || ""),
     cbu: normalizeText(provider.cbu || ""),
     alias: normalizeText(provider.alias || ""),
     paymentTerms: normalizeText(provider.paymentTerms || ""),
@@ -3295,7 +3586,7 @@ async function applyProviderPayment(input = {}) {
 
   saveErpPurchases();
 
-  if (PURCHASE_BIDIRECTIONAL_SYNC_ENABLED) {
+  if (input.syncSheets !== false && PURCHASE_BIDIRECTIONAL_SYNC_ENABLED) {
     for (const item of applied) {
       const purchase = erpPurchases.find((entry) => entry.id === item.id);
       if (purchase) await syncPurchaseToSheets("upsert", purchase);
@@ -3311,6 +3602,225 @@ async function applyProviderPayment(input = {}) {
     debtAfter: roundMoney(Math.max(0, debtTotal - applied.reduce((sum, item) => sum + item.appliedAmount, 0))),
     purchases: applied,
   };
+}
+
+async function importAccountantPaymentsFromSheets() {
+  if (!ACCOUNTANT_PAYMENTS_WEBHOOK_URL) {
+    throw new Error("Falta configurar accountantPaymentsWebhookUrl en config-bot.json.");
+  }
+
+  const exportResult = await callAccountantPaymentsWebhook({
+    action: "export",
+  });
+  const rows = exportResult.payments || exportResult.rows || [];
+
+  if (!Array.isArray(rows)) {
+    throw new Error("La planilla del contador no devolvio una lista de pagos pendiente.");
+  }
+
+  let imported = 0;
+  let skipped = 0;
+  const importedRows = [];
+  const errorRows = [];
+  const errors = [];
+
+  for (const row of rows) {
+    const rowNumber = row.rowNumber || row.row || "";
+    const status = normalizeText(row.status || row.estado || "");
+
+    if (status && !["pendiente", "pendiente de importar", "nuevo"].includes(normalizeSearchKey(status))) {
+      skipped += 1;
+      continue;
+    }
+
+    try {
+      const payment = normalizeAccountantPaymentRow(row);
+      const result = await applyProviderPayment({
+        provider: payment.provider,
+        mode: payment.mode,
+        amount: payment.amount,
+        paymentMethod: payment.paymentMethod,
+        fundsSource: payment.fundsSource,
+        notes: payment.notes,
+        date: payment.date,
+        syncSheets: false,
+      });
+
+      imported += 1;
+      importedRows.push({
+        rowNumber,
+        importedAt: new Date().toISOString(),
+        appliedAmount: result.appliedAmount,
+        provider: payment.provider,
+        message: `Importado: ${formatMoneyText(result.appliedAmount)}. Saldo proveedor: ${formatMoneyText(result.debtAfter)}.`,
+      });
+    } catch (error) {
+      skipped += 1;
+      const message = error.message || String(error);
+      if (errors.length < 8) errors.push(message);
+      if (rowNumber) {
+        errorRows.push({
+          rowNumber,
+          message,
+        });
+      }
+    }
+  }
+
+  if (importedRows.length || errorRows.length) {
+    await callAccountantPaymentsWebhook({
+      action: "mark",
+      importedRows,
+      errorRows,
+    });
+  }
+
+  return {
+    imported,
+    skipped,
+    errors,
+    importedRows,
+    errorRows,
+  };
+}
+
+async function syncAccountantDebtsToSheets() {
+  if (!ACCOUNTANT_PAYMENTS_WEBHOOK_URL) {
+    throw new Error("Falta configurar accountantPaymentsWebhookUrl en config-bot.json.");
+  }
+
+  const payload = buildAccountantDebtPayload();
+  const result = await callAccountantPaymentsWebhook({
+    action: "syncdebts",
+    ...payload,
+  });
+
+  return {
+    providers: payload.providers.length,
+    purchases: payload.purchases.length,
+    updatedAt: payload.updatedAt,
+    message: result.message || "Planilla del contador actualizada.",
+  };
+}
+
+function buildAccountantDebtPayload() {
+  const pendingPurchases = getErpPurchaseList()
+    .filter((purchase) => Number(purchase.pendingAmount || 0) > 0)
+    .sort((a, b) =>
+      normalizeSearchKey(a.provider).localeCompare(normalizeSearchKey(b.provider)) ||
+      String(a.date || "").localeCompare(String(b.date || ""))
+    );
+
+  const grouped = {};
+  pendingPurchases.forEach((purchase) => {
+    const provider = purchase.provider || "Sin proveedor";
+    const key = normalizeSearchKey(provider);
+    if (!grouped[key]) {
+      grouped[key] = {
+        provider,
+        purchaseCount: 0,
+        totalDebt: 0,
+        oldestDate: purchase.date || "",
+      };
+    }
+    grouped[key].purchaseCount += 1;
+    grouped[key].totalDebt = roundMoney(grouped[key].totalDebt + Number(purchase.pendingAmount || 0));
+    if (purchase.date && (!grouped[key].oldestDate || String(purchase.date) < String(grouped[key].oldestDate))) {
+      grouped[key].oldestDate = purchase.date;
+    }
+  });
+  const providersByName = new Map(
+    getProviderList().map((provider) => [normalizeSearchKey(provider.name), provider])
+  );
+
+  return {
+    updatedAt: new Date().toISOString(),
+    providers: Object.values(grouped)
+      .sort((a, b) => b.totalDebt - a.totalDebt)
+      .map((item) => {
+        const providerRecord = providersByName.get(normalizeSearchKey(item.provider)) || {};
+        return {
+          provider: item.provider,
+          alias: providerRecord.alias || "",
+          bankName: providerRecord.bankName || "",
+          accountHolder: providerRecord.bankAccountHolder || providerRecord.legalName || providerRecord.name || "",
+          cbu: providerRecord.cbu || "",
+          bankAccountType: providerRecord.bankAccountType || "",
+          bankAccountNumber: providerRecord.bankAccountNumber || "",
+          purchaseCount: item.purchaseCount,
+          totalDebt: roundMoney(item.totalDebt),
+          oldestDate: item.oldestDate,
+        };
+      }),
+    purchases: pendingPurchases.map((purchase) => ({
+      id: purchase.id,
+      date: purchase.date || "",
+      provider: purchase.provider || "",
+      description: purchase.description || "",
+      eventName: purchase.eventName || "",
+      invoiceType: purchase.invoiceType || "",
+      paymentStatus: purchase.paymentStatus || "",
+      totalAmount: roundMoney(purchase.totalAmount || 0),
+      paidAmount: roundMoney(purchase.paidAmount || 0),
+      pendingAmount: roundMoney(purchase.pendingAmount || 0),
+      notes: purchase.notes || "",
+    })),
+  };
+}
+
+function normalizeAccountantPaymentRow(row = {}) {
+  const provider = normalizeText(row.provider || row.proveedor || "");
+  const paymentType = normalizeSearchKey(row.paymentType || row.tipoPago || row.tipo || "");
+  const mode = paymentType.includes("total") ? "total" : "partial";
+  const amount = roundMoney(parseOptionalNumber(row.amount || row.monto || row.montoPagado || row["Monto pagado"]));
+  const date = normalizePanelDate(row.date || row.fecha || row.fechaPago || getDateOnly(new Date())) || getDateOnly(new Date());
+
+  if (!provider) {
+    throw new Error("Hay una fila de pago sin proveedor.");
+  }
+
+  if (mode !== "total" && amount <= 0) {
+    throw new Error(`El pago de ${provider} no tiene un monto valido.`);
+  }
+
+  return {
+    date,
+    provider,
+    mode,
+    amount,
+    paymentMethod: normalizeText(row.paymentMethod || row.medioPago || row.medio || ""),
+    fundsSource: normalizeText(row.fundsSource || row.origenFondos || row.cuenta || row.origen || ""),
+    notes: normalizeText(row.notes || row.nota || row.observaciones || ""),
+  };
+}
+
+async function callAccountantPaymentsWebhook(payload) {
+  const body = {
+    ...payload,
+    token: ACCOUNTANT_PAYMENTS_TOKEN,
+  };
+
+  const response = await fetch(ACCOUNTANT_PAYMENTS_WEBHOOK_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const text = await response.text();
+  let result = {};
+
+  try {
+    result = text ? JSON.parse(text) : {};
+  } catch (error) {
+    result = { raw: text };
+  }
+
+  if (!response.ok || result.ok === false) {
+    throw new Error(result.error || `La planilla del contador respondio con error: ${text}`);
+  }
+
+  return result;
 }
 
 async function importPurchasesFromSheets() {

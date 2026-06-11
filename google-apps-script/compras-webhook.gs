@@ -316,6 +316,7 @@ function ensureHelperColumns_(sheet) {
   const notesCol = headers[normalizeHeader_(HEADER_NOTAS)] || ensureHeader_(sheet, HEADER_NOTAS);
   const paidCol = headers[normalizeHeader_(HEADER_MONTO_PAGADO)] || ensureHeader_(sheet, HEADER_MONTO_PAGADO);
   const pendingCol = headers[normalizeHeader_(HEADER_SALDO_PENDIENTE)] || ensureHeader_(sheet, HEADER_SALDO_PENDIENTE);
+  hideHelperColumns_(sheet, [idCol, actionCol, notesCol, paidCol, pendingCol]);
   return { idCol, actionCol, notesCol, paidCol, pendingCol };
 }
 
@@ -323,6 +324,20 @@ function ensureHeader_(sheet, header) {
   const col = sheet.getLastColumn() + 1;
   sheet.getRange(1, col).setValue(header);
   return col;
+}
+
+function hideHelperColumns_(sheet, columns) {
+  columns
+    .filter(function(col, index, list) {
+      return col && list.indexOf(col) === index;
+    })
+    .forEach(function(col) {
+      try {
+        sheet.hideColumns(col);
+      } catch (error) {
+        // Si la hoja esta protegida o no permite ocultar, el registro igual debe continuar.
+      }
+    });
 }
 
 function getHeaderMap_(sheet) {

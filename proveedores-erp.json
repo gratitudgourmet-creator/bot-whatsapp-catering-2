@@ -2090,18 +2090,18 @@
   {
     "id": "proveedor-papelera-del-oeste-srl",
     "name": "PAPELERA DEL OESTE SRL",
-    "legalName": "",
-    "cuit": "",
+    "legalName": "PAPELERA DEL OESTE SRL",
+    "cuit": "30715701215",
     "ivaCondition": "",
     "contactName": "",
     "phone": "",
     "email": "",
     "address": "",
-    "bankName": "",
-    "bankAccountType": "",
+    "bankName": "MERCADO PAGO",
+    "bankAccountType": "BILLETERA",
     "bankAccountNumber": "",
     "cbu": "",
-    "alias": "",
+    "alias": "PAPELERADELOESTESRL",
     "paymentTerms": "",
     "category": "",
     "notes": "",
@@ -2109,7 +2109,7 @@
     "totalPurchased": 0,
     "lastPurchaseDate": "",
     "createdAt": "2026-06-08T19:19:20.540Z",
-    "updatedAt": "2026-06-08T19:19:20.540Z"
+    "updatedAt": "2026-06-11T20:23:23.582Z"
   },
   {
     "id": "proveedor-parrillada-13",

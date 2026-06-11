@@ -14,6 +14,8 @@
   "purchaseWebhookUrl": "https://script.google.com/macros/s/AKfycbwnOBujlzL1DA3PwVVo6sh9sD-k2I_QCYitehs6MQ-X6klYtVgmqNJZi4w_t21eCSWSqQ/exec",
   "purchaseSyncToken": "",
   "purchaseBidirectionalSyncEnabled": true,
+  "accountantPaymentsWebhookUrl": "https://script.google.com/macros/s/AKfycbyxQcS6JlalvJjXrNe1qMDrG8ItHJ9ZzY8Miy9PDlAFZ-LiJ9_YxMntOy31sOW-DgJtmg/exec",
+  "accountantPaymentsToken": "",
   "purchaseSpreadsheetId": "1ZAd6hdDq1gftQPr6QdPZWS0yyhPcTG9UJcnt3Fgp3HI",
   "purchaseSheetName": "Registro_Gastos",
   "panelPort": 3080,
