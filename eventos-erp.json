@@ -233,7 +233,7 @@
     "priceMode": "per_person",
     "pricePerPerson": 14165,
     "servicePriceTotal": 0,
-    "status": "quoted",
+    "status": "confirmed",
     "owner": "JOAQUIN",
     "role": "",
     "nextAction": "",
@@ -263,7 +263,7 @@
     "operationalMarginPercent": 100,
     "purchases": [],
     "createdAt": "2026-06-09T19:09:09.546Z",
-    "updatedAt": "2026-06-09T19:35:10.425Z"
+    "updatedAt": "2026-06-11T18:33:27.574Z"
   },
   {
     "id": "evento-1781106409434",
@@ -293,7 +293,7 @@
     "priceMode": "total",
     "pricePerPerson": 0,
     "servicePriceTotal": 0,
-    "status": "lead",
+    "status": "confirmed",
     "owner": "CLAUDIA",
     "role": "",
     "nextAction": "",
@@ -323,6 +323,6 @@
     "operationalMarginPercent": 0,
     "purchases": [],
     "createdAt": "2026-06-10T15:46:49.433Z",
-    "updatedAt": "2026-06-10T21:04:28.945Z"
+    "updatedAt": "2026-06-11T18:33:13.163Z"
   }
 ]

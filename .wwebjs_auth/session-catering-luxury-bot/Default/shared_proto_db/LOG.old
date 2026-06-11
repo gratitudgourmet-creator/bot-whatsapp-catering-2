@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 2026/06/11-13:23:11.472 a70 Reusing MANIFEST C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\shared_proto_db/MANIFEST-000001
 2026/06/11-13:23:11.473 a70 Recovering log #3
 2026/06/11-13:23:11.475 a70 Reusing old log C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\shared_proto_db/000003.log 
+=======
+2026/06/11-16:43:06.363 1378 Reusing MANIFEST C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\shared_proto_db/MANIFEST-000001
+2026/06/11-16:43:06.364 1378 Recovering log #3
+2026/06/11-16:43:06.368 1378 Reusing old log C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\shared_proto_db/000003.log 
+>>>>>>> cce529da8b93923d8eb1adbd642da41274f358ef

@@ -2157,6 +2157,8 @@
               <h2>Dashboard de compras</h2>
               <div class="actions">
                 <button class="filter" onclick="showProviderDebtWindow()">Deudas proveedores</button>
+                <button class="filter" onclick="syncAccountantDebts()">Actualizar planilla contador</button>
+                <button class="filter" onclick="importAccountantPayments()">Importar pagos contador</button>
                 <button class="filter" onclick="importPurchasesFromSheets()">Importar Sheets</button>
                 <button class="filter" onclick="showPurchaseForm()">Cargar compra</button>
               </div>
@@ -2629,6 +2631,10 @@
             <div class="form-field">
               <label>Nro cuenta</label>
               <input name="bankAccountNumber">
+            </div>
+            <div class="form-field">
+              <label>Titular de cuenta</label>
+              <input name="bankAccountHolder">
             </div>
             <div class="form-field">
               <label>CBU / CVU</label>
@@ -4349,6 +4355,46 @@
       showNotice(`Compras importadas desde Sheets: ${imported}.${detail}`);
     }
 
+    async function importAccountantPayments() {
+      if (!confirm("Importar los pagos cargados por el contador y aplicarlos a las deudas pendientes?")) return;
+
+      const response = await fetch("/api/import-accountant-payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudieron importar los pagos del contador.", "error");
+        return;
+      }
+
+      await loadErp();
+      const imported = result.result?.imported || 0;
+      const skipped = result.result?.skipped || 0;
+      const firstError = result.result?.errors?.[0] ? ` Primer error: ${result.result.errors[0]}` : "";
+      showNotice(`Pagos importados: ${imported}. Omitidos/con error: ${skipped}.${firstError}`, skipped ? "warning" : "success");
+    }
+
+    async function syncAccountantDebts() {
+      const response = await fetch("/api/sync-accountant-debts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo actualizar la planilla del contador.", "error");
+        return;
+      }
+
+      const providers = result.result?.providers || 0;
+      const purchases = result.result?.purchases || 0;
+      showNotice(`Planilla del contador actualizada: ${providers} proveedor(es), ${purchases} compra(s) pendiente(s).`, "success");
+    }
+
     function renderPipeline() {
       const role = document.getElementById("role-filter").value;
       const container = document.getElementById("pipeline-board");
@@ -6031,6 +6077,7 @@
         "bankName",
         "bankAccountType",
         "bankAccountNumber",
+        "bankAccountHolder",
         "cbu",
         "alias",
         "paymentTerms",
