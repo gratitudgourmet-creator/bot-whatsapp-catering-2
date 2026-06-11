@@ -2637,13 +2637,19 @@ function deleteVenueRecord(id) {
 async function searchMapPlaces(query) {
   const cleanQuery = normalizeText(query || "");
   if (!cleanQuery) return [];
+  const normalizedQuery = normalizeSearchKey(cleanQuery);
+  const mendozaBiasedQuery = /\bmendoza\b|\bargentina\b/.test(normalizedQuery)
+    ? cleanQuery
+    : `${cleanQuery}, Mendoza, Argentina`;
 
   const url = new URL("https://nominatim.openstreetmap.org/search");
   url.searchParams.set("format", "json");
-  url.searchParams.set("limit", "8");
+  url.searchParams.set("limit", "10");
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("accept-language", "es");
-  url.searchParams.set("q", cleanQuery);
+  url.searchParams.set("viewbox", "-69.60,-32.55,-68.45,-33.25");
+  url.searchParams.set("bounded", "0");
+  url.searchParams.set("q", mendozaBiasedQuery);
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -2669,7 +2675,10 @@ async function searchMapPlaces(query) {
       place_id: normalizeText(item.place_id || ""),
       type: normalizeText(item.type || ""),
       category: normalizeText(item.category || ""),
-    })).filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lon));
+      mendozaPriority: normalizeSearchKey(item.display_name || "").includes("mendoza") ? 0 : 1,
+    }))
+      .filter((item) => Number.isFinite(item.lat) && Number.isFinite(item.lon))
+      .sort((a, b) => a.mendozaPriority - b.mendozaPriority);
   } finally {
     clearTimeout(timeout);
   }

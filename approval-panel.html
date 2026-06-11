@@ -718,7 +718,7 @@
     .debt-detail-row {
       display: grid;
       gap: 8px;
-      grid-template-columns: 90px minmax(0, 1fr) 130px 130px;
+      grid-template-columns: 90px minmax(0, 1fr) 130px;
       padding: 10px 12px;
     }
 
@@ -731,6 +731,24 @@
       font-weight: 900;
       position: sticky;
       bottom: 0;
+    }
+
+    .operational-menu-card {
+      background: var(--accent-soft);
+      border: 1px solid #b9ddd3;
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .operational-menu-card ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .operational-menu-card li + li {
+      margin-top: 6px;
     }
 
     .purchase-panels {
@@ -1725,6 +1743,28 @@
       display: grid;
       gap: 10px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-height: min(58vh, 620px);
+      overflow: auto;
+    }
+
+    .event-section-head {
+      align-items: center;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .event-urgent-alert {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      border-radius: 999px;
+      color: #991b1b;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 7px 10px;
+      text-align: right;
+      white-space: nowrap;
     }
 
     .venue-card {
@@ -4005,8 +4045,8 @@
       document.getElementById("purchase-rank-subtitle").textContent = `${debt.purchaseCount} compra(s) pendientes · saldo ${formatCurrency(totalPending)}`;
       document.getElementById("purchase-rank-body").innerHTML = `
         <section class="rank-modal-summary">
-          <div><span>Total compras</span><strong>${formatCurrency(totalPurchases)}</strong></div>
-          <div><span>Pagado</span><strong>${formatCurrency(totalPaid)}</strong></div>
+          <div><span>Compras pendientes</span><strong>${escapeHtml(debt.purchaseCount)}</strong></div>
+          <div><span>Pagado parcial</span><strong>${formatCurrency(totalPaid)}</strong></div>
           <div><span>Saldo deuda</span><strong>${formatCurrency(totalPending)}</strong></div>
         </section>
         <form class="form-grid" onsubmit="submitProviderPayment(event, '${escapeAttribute(provider)}')">
@@ -4048,16 +4088,14 @@
               <div>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</div>
               <div>
                 <strong>${escapeHtml(purchase.description || "Compra")}</strong>
-                <div class="secondary">${escapeHtml(purchase.eventName || "Sin evento")}</div>
+                <div class="secondary">${escapeHtml(purchase.eventName || "Sin evento")} · Total original ${formatCurrency(getPurchaseTotal(purchase))}</div>
               </div>
-              <div><span class="secondary">Total</span><strong>${formatCurrency(getPurchaseTotal(purchase))}</strong></div>
               <div><span class="secondary">Saldo</span><strong>${formatCurrency(getPurchasePending(purchase))}</strong></div>
             </div>
           `).join("")}
           <div class="debt-detail-row total">
             <div></div>
             <div>Total deuda del proveedor</div>
-            <div>${formatCurrency(totalPurchases)}</div>
             <div>${formatCurrency(totalPending)}</div>
           </div>
         </div>
@@ -4723,13 +4761,25 @@
     function renderErpEvents() {
       const container = document.getElementById("erp-event-list");
       const events = erpData.events || [];
-      const activeEvents = events.filter((event) => event.status !== "done");
-      const completedEvents = events.filter((event) => event.status === "done");
+      const activeEvents = events
+        .filter((event) => event.status !== "done")
+        .sort(compareEventsByDate);
+      const completedEvents = events
+        .filter((event) => event.status === "done")
+        .sort(compareEventsByDate);
+      const urgentEvents = activeEvents.filter((event) => isEventWithinHours(event, 48));
 
       if (!events.length) {
         container.innerHTML = `<div class="empty">Todavia no hay eventos cargados.</div>`;
         return;
       }
+
+      const urgentHtml = urgentEvents.length
+        ? `<div class="event-section-head">
+            <div></div>
+            <div class="event-urgent-alert">${urgentEvents.length} evento(s) dentro de 48 hs</div>
+          </div>`
+        : "";
 
       const activeHtml = activeEvents.length
         ? activeEvents.map(renderEventControlCard).join("")
@@ -4744,7 +4794,22 @@
         </details>
       `;
 
-      container.innerHTML = activeHtml + historyHtml;
+      container.innerHTML = urgentHtml + activeHtml + historyHtml;
+    }
+
+    function compareEventsByDate(a, b) {
+      const dateA = normalizePurchaseDate(a.eventDate) || "9999-12-31";
+      const dateB = normalizePurchaseDate(b.eventDate) || "9999-12-31";
+      return dateA.localeCompare(dateB) || String(a.name || "").localeCompare(String(b.name || ""));
+    }
+
+    function isEventWithinHours(event, hours) {
+      const date = normalizePurchaseDate(event.eventDate);
+      if (!date) return false;
+      const eventTime = new Date(`${date}T23:59:59`);
+      const now = new Date();
+      const diff = eventTime.getTime() - now.getTime();
+      return diff >= 0 && diff <= hours * 60 * 60 * 1000;
     }
 
     function renderEventControlCard(event) {
@@ -4943,6 +5008,31 @@
       return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : "";
     }
 
+    function getEventVenueReference(event) {
+      const venue = getEventVenueRecord(event);
+      return venue?.reference || "";
+    }
+
+    function getOperationalMenuItems(event) {
+      if (event.menuItems?.length) return event.menuItems;
+      return String(event.selectedMenu || "")
+        .split(/\r?\n|,/)
+        .map((name) => ({ name: name.trim(), detail: "" }))
+        .filter((item) => item.name);
+    }
+
+    function renderOperationalMenuCard(event) {
+      const items = getOperationalMenuItems(event);
+      return `
+        <div class="operational-menu-card">
+          <strong>Menu operativo</strong>
+          ${items.length
+            ? `<ul>${items.map((item) => `<li><strong>${escapeHtml(item.name)}</strong>${item.detail ? `: ${escapeHtml(item.detail)}` : ""}</li>`).join("")}</ul>`
+            : `<div>A definir</div>`}
+        </div>
+      `;
+    }
+
     function getEventSuggestedSupplies(event) {
       const text = normalizeSearch([
         event.serviceType,
@@ -5013,6 +5103,7 @@
       const supplies = selectedSupplies || getEventSuggestedSupplies(event);
       const purchases = event.purchases || [];
       const mapsUrl = getEventMapsUrl(event);
+      const venueReference = getEventVenueReference(event);
       return [
         `FICHA OPERATIVA - ${event.name || "Evento"}`,
         "",
@@ -5021,14 +5112,15 @@
         `Invitados: ${event.guestCount || 0}`,
         `Lugar: ${event.venue || "Sin lugar"}`,
         `Ubicacion: ${mapsUrl || "Sin link de mapa"}`,
+        ...(venueReference ? [`Referencias: ${venueReference}`] : []),
         `Servicio: ${event.serviceType || "Sin servicio"}`,
         `Precio: ${getEventPriceLabel(event)} | Venta total: ${formatCurrency(event.quoteTotal || 0)}`,
         "",
         "MENU Y BEBIDAS",
         `Momentos: ${event.eventMoments || "A definir"}`,
         "Menu:",
-        ...(event.menuItems?.length
-          ? event.menuItems.map((item) => `- ${item.name}${item.detail ? `: ${item.detail}` : ""}`)
+        ...(getOperationalMenuItems(event).length
+          ? getOperationalMenuItems(event).map((item) => `- ${item.name}${item.detail ? `: ${item.detail}` : ""}`)
           : [`- ${event.selectedMenu || "A definir"}`]),
         `Bebidas: ${[event.includesDrinks, event.drinkType].filter(Boolean).join(" - ") || "A definir"}`,
         "",
@@ -5067,12 +5159,14 @@
       const supplies = getEventSuggestedSupplies(event);
       const sheetText = buildOperationalSheetText(event);
       const mapsUrl = getEventMapsUrl(event);
+      const venueReference = getEventVenueReference(event);
       document.getElementById("alert-detail-title").textContent = `Ficha operativa`;
       document.getElementById("alert-detail-subtitle").textContent = event.name || "";
       document.getElementById("alert-detail-body").innerHTML = `
         ${field("Venta", `${getEventPriceLabel(event)} · ${formatCurrency(event.quoteTotal || 0)}`)}
         ${mapsUrl ? `<div class="field"><label>Ubicacion</label><div><a class="filter" href="${escapeAttribute(mapsUrl)}" target="_blank" rel="noopener">Abrir en Google Maps</a></div></div>` : field("Ubicacion", "Sin link de mapa")}
-        ${field("Menu completo", event.menuItems?.length ? event.menuItems.map((item) => `${item.name}${item.detail ? `: ${item.detail}` : ""}`).join(" | ") : event.selectedMenu || "A definir")}
+        ${venueReference ? field("Referencias del lugar", venueReference) : ""}
+        ${renderOperationalMenuCard(event)}
         ${field("Bebidas", [event.includesDrinks, event.drinkType].filter(Boolean).join(" · ") || "A definir")}
         ${field("Operacion", [getAssistanceLabel(event), event.tableware, event.staff, event.schedule].filter(Boolean).join(" · ") || "A definir")}
         <div class="form-field full">
