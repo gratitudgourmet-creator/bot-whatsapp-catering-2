@@ -1,9 +1,1 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-{"user_experience_metrics.stability.exited_cleanly":false,"variations_crash_streak":23}
-=======
-{"user_experience_metrics.stability.exited_cleanly":false,"variations_crash_streak":27}
->>>>>>> cce529da8b93923d8eb1adbd642da41274f358ef
-=======
-{"user_experience_metrics.stability.exited_cleanly":false,"variations_crash_streak":28}
->>>>>>> 051382ce7f7be0c0f14fcf03e3621d98b6645fc9
+{"user_experience_metrics.stability.exited_cleanly":false,"variations_crash_streak":0}

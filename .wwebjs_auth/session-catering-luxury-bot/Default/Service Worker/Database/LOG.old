@@ -1,15 +1,15 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
-2026/06/11-13:23:11.311 2c9c Reusing MANIFEST C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/MANIFEST-000001
-2026/06/11-13:23:11.312 2c9c Recovering log #3
-2026/06/11-13:23:11.313 2c9c Reusing old log C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/000003.log 
-=======
-2026/06/11-16:43:06.080 798 Reusing MANIFEST C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/MANIFEST-000001
-2026/06/11-16:43:06.081 798 Recovering log #3
-2026/06/11-16:43:06.082 798 Reusing old log C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/000003.log 
->>>>>>> cce529da8b93923d8eb1adbd642da41274f358ef
+2026/06/11-19:03:49.787 2c9c Reusing MANIFEST C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/MANIFEST-000001
+2026/06/11-19:03:49.788 2c9c Recovering log #3
+2026/06/11-19:03:49.815 2c9c Reusing old log C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/000003.log 
 =======
 2026/06/11-16:57:51.943 3700 Reusing MANIFEST C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/MANIFEST-000001
 2026/06/11-16:57:51.952 3700 Recovering log #3
 2026/06/11-16:57:51.955 3700 Reusing old log C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/000003.log 
+>>>>>>> cce529da8b93923d8eb1adbd642da41274f358ef
+=======
+2026/06/11-19:23:24.094 3a18 Reusing MANIFEST C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/MANIFEST-000001
+2026/06/11-19:23:24.095 3a18 Recovering log #3
+2026/06/11-19:23:24.098 3a18 Reusing old log C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Service Worker\Database/000003.log 
 >>>>>>> 051382ce7f7be0c0f14fcf03e3621d98b6645fc9

@@ -1,15 +1,15 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
-2026/06/11-13:23:11.302 1a6c Reusing MANIFEST C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/MANIFEST-000001
-2026/06/11-13:23:11.303 1a6c Recovering log #3
-2026/06/11-13:23:11.304 1a6c Reusing old log C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/000003.log 
-=======
-2026/06/11-16:43:06.064 798 Reusing MANIFEST C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/MANIFEST-000001
-2026/06/11-16:43:06.070 798 Recovering log #3
-2026/06/11-16:43:06.071 798 Reusing old log C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/000003.log 
->>>>>>> cce529da8b93923d8eb1adbd642da41274f358ef
+2026/06/11-19:03:49.746 2dc0 Reusing MANIFEST C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/MANIFEST-000001
+2026/06/11-19:03:49.765 2dc0 Recovering log #3
+2026/06/11-19:03:49.767 2dc0 Reusing old log C:\Users\acer\Documents\GitHub\bot-whatsapp-catering-2\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/000003.log 
 =======
 2026/06/11-16:57:51.929 37c4 Reusing MANIFEST C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/MANIFEST-000001
 2026/06/11-16:57:51.933 37c4 Recovering log #3
 2026/06/11-16:57:51.935 37c4 Reusing old log C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/000003.log 
+>>>>>>> cce529da8b93923d8eb1adbd642da41274f358ef
+=======
+2026/06/11-19:23:24.043 1f3c Reusing MANIFEST C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/MANIFEST-000001
+2026/06/11-19:23:24.061 1f3c Recovering log #3
+2026/06/11-19:23:24.062 1f3c Reusing old log C:\Users\Gratitud\Desktop\Bot Whatsapp Catering\Bot WhatsApp Catering\.wwebjs_auth\session-catering-luxury-bot\Default\Sync Data\LevelDB/000003.log 
 >>>>>>> 051382ce7f7be0c0f14fcf03e3621d98b6645fc9
