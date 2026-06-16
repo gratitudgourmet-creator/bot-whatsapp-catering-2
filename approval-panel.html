@@ -10,7 +10,7 @@
       --bg: #eef1f4;
       --surface: #ffffff;
       --surface-soft: #f7f8fa;
-      --surface-strong: #101820;
+      --surface-strong: #ece2c6;
       --text: #18212b;
       --muted: #66717f;
       --line: #d9dee5;
@@ -33,11 +33,16 @@
       box-sizing: border-box;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
       font-family: "Segoe UI", Arial, sans-serif;
+      overflow-x: hidden;
     }
 
     header {
@@ -48,6 +53,7 @@
     }
 
     .header-inner {
+      color: #775720 ;
       align-items: center;
       display: flex;
       gap: 16px;
@@ -70,12 +76,147 @@
 
     .updated {
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 3px solid rgba(255, 255, 255, 0.14);
       border-radius: 6px;
-      color: #cfd6dd;
+      border-color: #ac823b;
+      font-weight: bold;
+      color: #d1a965;
       font-size: 13px;
       padding: 8px 10px;
       white-space: nowrap;
+    }
+
+    .header-status {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .user-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 3px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      border-color: #ac823b;
+      color: #d1a965;
+      font-weight: bold;
+      font-size: 13px;
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+
+    .logout-button {
+      background: transparent;
+      border: 3px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      border-color: #ac823b;
+      font-weight: bold;
+      color: #d1a965;
+      cursor: pointer;
+      min-height: 34px;
+      padding: 0 10px;
+    }
+
+    .login-screen {
+      align-items: center;
+      background: var(--surface-strong);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 24px;
+      position: fixed;
+      z-index: 10000;
+    }
+
+    .login-screen.open {
+      display: flex;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+      max-width: 420px;
+      padding: 24px;
+      width: 100%;
+    }
+
+    .login-card h2 {
+      margin: 0 0 6px;
+    }
+
+    .login-card .subtitle {
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .audit-layout {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.2fr);
+    }
+
+    .audit-list,
+    .user-list {
+      display: grid;
+      gap: 8px;
+      max-height: 360px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .audit-row,
+    .user-row {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .audit-row strong,
+    .user-row strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .permission-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 10px;
+    }
+
+    .permission-check {
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: grid;
+      gap: 2px 8px;
+      grid-template-columns: auto minmax(0, 1fr);
+      padding: 8px;
+    }
+
+    .permission-check input {
+      grid-row: 1 / span 2;
+      margin-top: 2px;
+    }
+
+    .permission-check span {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .permission-check small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .permission-check.muted-option {
+      opacity: 0.55;
     }
 
     main {
@@ -130,7 +271,12 @@
 
     .new-request {
       background: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
       color: #fff;
+      font-weight: 800;
+      min-height: 36px;
+      padding: 0 14px;
     }
 
     .new-request:hover,
@@ -147,10 +293,11 @@
     .filter {
       background: var(--surface-soft);
       border: 1px solid var(--line);
-      border-radius: 5px;
+      border-radius: 6px;
       color: var(--text);
       cursor: pointer;
       font-size: 14px;
+      font-weight: 700;
       min-height: 36px;
       padding: 0 12px;
     }
@@ -191,6 +338,12 @@
       padding-right: 34px;
     }
 
+    select,
+    .filter-select,
+    .form-field select {
+      cursor: pointer;
+    }
+
     select:focus,
     input:focus,
     textarea:focus {
@@ -203,7 +356,7 @@
       align-items: center;
       display: grid;
       gap: 8px;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr);
       width: 100%;
     }
 
@@ -418,7 +571,7 @@
 
     button {
       border: 0;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 700;
@@ -429,11 +582,13 @@
 
     .approve {
       background: var(--accent);
+      border: 1px solid var(--accent);
       color: #fff;
     }
 
     .reject {
       background: var(--danger-soft);
+      border: 1px solid var(--danger-soft);
       color: var(--danger);
     }
 
@@ -445,6 +600,75 @@
       color: var(--muted);
       padding: 36px;
       text-align: center;
+    }
+
+    .compact-empty {
+      padding: 14px;
+    }
+
+    .admin-summary-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-summary-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .admin-summary-card h3 {
+      font-size: 14px;
+      margin: 0 0 8px;
+    }
+
+    .summary-row {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      display: grid;
+      gap: 3px;
+      margin-bottom: 6px;
+      padding: 8px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .summary-row span {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .event-operational-details {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .event-operational-details summary {
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .event-operational-row {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 24px minmax(0, 1fr) 92px 34px;
+      margin-bottom: 6px;
+      padding: 8px;
+    }
+
+    .event-operational-row input {
+      min-width: 0;
     }
 
     .notice {
@@ -598,7 +822,7 @@
       align-items: start;
       display: grid;
       gap: 8px;
-      grid-template-columns: minmax(0, 1.6fr) 90px 120px 38px;
+      grid-template-columns: minmax(0, 1.6fr) 90px 120px 110px 38px;
     }
 
     .purchase-item input {
@@ -608,6 +832,15 @@
     .purchase-dashboard {
       display: grid;
       gap: 12px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    #view-purchases,
+    #view-purchases .erp-section {
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
     }
 
     .purchase-period-bar {
@@ -937,16 +1170,17 @@
     .purchase-table-wrap {
       border: 1px solid var(--line);
       border-radius: 6px;
-      max-height: min(54vh, 560px);
+      max-height: min(58vh, 620px);
       max-width: 100%;
       overflow: auto;
       overscroll-behavior: contain;
+      width: 100%;
     }
 
     .purchase-table {
       border-collapse: collapse;
       font-size: 12px;
-      min-width: 980px;
+      min-width: 1180px;
       table-layout: fixed;
       width: 100%;
     }
@@ -958,6 +1192,7 @@
       text-align: left;
       vertical-align: top;
       overflow-wrap: anywhere;
+      word-break: normal;
     }
 
     .purchase-table th {
@@ -967,6 +1202,7 @@
       position: sticky;
       top: 0;
       text-transform: uppercase;
+      white-space: nowrap;
       z-index: 2;
     }
 
@@ -978,23 +1214,51 @@
 
     .purchase-table th:nth-child(1),
     .purchase-table td:nth-child(1) {
-      width: 86px;
+      min-width: 92px;
     }
 
     .purchase-table th:nth-child(5),
     .purchase-table td:nth-child(5) {
-      width: 72px;
+      min-width: 78px;
     }
 
     .purchase-table th:nth-child(6),
     .purchase-table td:nth-child(6),
     .purchase-table th:nth-child(7),
     .purchase-table td:nth-child(7) {
-      width: 96px;
+      min-width: 105px;
+    }
+
+    .purchase-table th:nth-child(2),
+    .purchase-table td:nth-child(2),
+    .purchase-table th:nth-child(3),
+    .purchase-table td:nth-child(3),
+    .purchase-table th:nth-child(4),
+    .purchase-table td:nth-child(4) {
+      width: 150px;
+    }
+
+    .purchase-table th:nth-child(10),
+    .purchase-table td:nth-child(10),
+    .purchase-table th:nth-child(11),
+    .purchase-table td:nth-child(11),
+    .purchase-table th:nth-child(12),
+    .purchase-table td:nth-child(12),
+    .purchase-table th:nth-child(13),
+    .purchase-table td:nth-child(13),
+    .purchase-table th:nth-child(14),
+    .purchase-table td:nth-child(14) {
+      width: 110px;
+    }
+
+    .purchase-table th:nth-child(3),
+    .purchase-table td:nth-child(3) {
+      width: 210px;
     }
 
     .workspace-tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 14px;
     }
@@ -1008,7 +1272,7 @@
     .workspace-tab.active {
       background: var(--surface-strong);
       border-color: var(--surface-strong);
-      color: #fff;
+      color: #d1a965;
     }
 
     .workspace-view {
@@ -1040,6 +1304,12 @@
     .compact-list {
       display: grid;
       gap: 10px;
+    }
+
+    .compact-scroll {
+      max-height: min(44vh, 460px);
+      overflow: auto;
+      padding-right: 4px;
     }
 
     .compact-item {
@@ -1198,6 +1468,263 @@
       padding-top: 14px;
     }
 
+    .logistics-list {
+      display: grid;
+      gap: 10px;
+      max-height: min(68vh, 720px);
+      overflow: auto;
+      overflow-x: hidden;
+      padding-right: 4px;
+    }
+
+    .logistics-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding: 14px;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    .logistics-card:hover {
+      border-color: #b8c8c3;
+      box-shadow: 0 10px 22px rgba(16, 24, 32, 0.1);
+    }
+
+    .logistics-title {
+      font-size: 16px;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .logistics-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .progress-pill {
+      align-self: start;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      max-width: 100%;
+      padding: 6px 9px;
+      white-space: nowrap;
+    }
+
+    .progress-pill.not_started {
+      background: #eef2f7;
+      color: #516173;
+    }
+
+    .progress-pill.in_progress {
+      background: #fff1d6;
+      color: #8a5600;
+    }
+
+    .progress-pill.complete {
+      background: #dcf5ea;
+      color: #116846;
+    }
+
+    .progress-track {
+      background: #edf2f5;
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: var(--accent);
+      border-radius: 999px;
+      height: 100%;
+      min-width: 0;
+    }
+
+    .logistics-detail-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      margin-bottom: 14px;
+    }
+
+    .logistics-info {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      padding: 10px;
+    }
+
+    .logistics-info span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .logistics-info strong {
+      display: block;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .logistics-info a {
+      color: var(--accent);
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .logistics-section {
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+
+    .logistics-section h3 {
+      font-size: 15px;
+      margin: 0;
+    }
+
+    .logistics-mini-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .logistics-mini-list .row {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .logistics-tableware-card .secondary {
+      line-height: 1.45;
+      margin-top: 6px;
+      overflow-wrap: anywhere;
+    }
+
+    .logistics-menu-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .logistics-category {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      min-width: 0;
+    }
+
+    .logistics-category-head {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      min-width: 0;
+    }
+
+    .logistics-item-row {
+      align-items: start;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 34px minmax(0, 1fr) 96px 38px;
+      margin-bottom: 8px;
+      padding: 8px;
+      min-width: 0;
+    }
+
+    .logistics-item-row textarea {
+      min-height: 54px;
+      resize: vertical;
+    }
+
+    .logistics-item-row input,
+    .logistics-item-row textarea,
+    .logistics-mini-list .row {
+      box-sizing: border-box;
+      max-width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .logistics-item-row .logistics-item-checked {
+      height: 20px;
+      margin-top: 8px;
+      width: 20px;
+    }
+
+    .logistics-item-quantity {
+      min-width: 0;
+    }
+
+    .logistics-item-actions {
+      position: relative;
+    }
+
+    .logistics-item-menu {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 12px 28px rgba(16, 24, 32, 0.15);
+      display: none;
+      min-width: 150px;
+      padding: 6px;
+      position: absolute;
+      right: 0;
+      top: 42px;
+      z-index: 10;
+    }
+
+    .logistics-item-menu.open {
+      display: grid;
+      gap: 4px;
+    }
+
+    .logistics-item-menu button {
+      background: transparent;
+      color: var(--text);
+      justify-content: flex-start;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .logistics-item-extra {
+      display: none;
+      gap: 8px;
+      grid-column: 2 / 5;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    }
+
+    .logistics-item-extra.open {
+      display: grid;
+    }
+
+    .logistics-leftover-row {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(160px, 1fr) 100px 140px minmax(140px, 0.8fr) minmax(140px, 1fr) 38px;
+      margin-bottom: 8px;
+      min-width: 0;
+    }
+
     .recipe-item {
       align-items: start;
       display: grid;
@@ -1345,6 +1872,11 @@
       border-radius: 8px;
       margin-bottom: 16px;
       padding: 16px;
+    }
+
+    .erp-section.nested-section {
+      box-shadow: none;
+      margin: 16px 0 0;
     }
 
     .erp-section h2 {
@@ -1572,7 +2104,7 @@
       align-items: center;
       display: grid;
       gap: 10px;
-      grid-template-columns: 86px minmax(0, 1.2fr) minmax(0, 1.3fr) 120px 92px;
+      grid-template-columns: 86px minmax(0, 1fr) minmax(0, 1.3fr) 80px 110px 92px;
       padding: 9px 10px;
     }
 
@@ -1589,6 +2121,10 @@
       text-transform: uppercase;
       top: 0;
       z-index: 1;
+    }
+
+    .event-stock-row {
+      grid-template-columns: 86px minmax(0, 1.2fr) 90px 120px 92px;
     }
 
     .event-history {
@@ -1743,8 +2279,18 @@
       display: grid;
       gap: 10px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      max-height: min(58vh, 620px);
+      max-height: min(56vh, 560px);
       overflow: auto;
+      padding-right: 4px;
+    }
+
+    #erp-event-list,
+    #erp-quote-list,
+    #logistics-event-list,
+    #customer-list {
+      max-height: min(62vh, 680px);
+      overflow: auto;
+      padding-right: 4px;
     }
 
     .event-section-head {
@@ -1957,6 +2503,10 @@
       grid-template-columns: minmax(0, 1fr) 90px 120px 42px;
     }
 
+    .menu-line {
+      grid-template-columns: minmax(120px, 0.8fr) minmax(0, 1fr) minmax(0, 1.4fr) 42px;
+    }
+
     .chips-field {
       align-items: center;
       background: #fff;
@@ -2015,6 +2565,48 @@
     }
 
     @media (max-width: 980px) {
+      header {
+        padding: 14px;
+      }
+
+      .header-inner {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .header-status {
+        align-items: stretch;
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        margin: 12px auto;
+        padding: 0 10px 24px;
+        width: 100%;
+      }
+
+      .workspace-tabs {
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+
+      .detail.open {
+        justify-content: stretch;
+        padding: 0;
+      }
+
+      .detail-panel,
+      .detail-panel.wide,
+      .detail-panel.extra-wide {
+        border-radius: 0;
+        max-height: 100vh;
+        max-width: none;
+        overflow-x: hidden;
+        padding: 14px;
+        width: 100%;
+      }
+
       .metrics {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -2061,8 +2653,76 @@
       .recipe-card-stats,
       .provider-card-head,
       .provider-stats,
-      .venue-list {
+      .venue-list,
+      .logistics-card,
+      .logistics-detail-grid,
+      .logistics-leftover-row {
         grid-template-columns: 1fr;
+      }
+
+      .logistics-card {
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .logistics-card .progress-pill {
+        justify-self: start;
+        white-space: normal;
+      }
+
+      .logistics-item-row {
+        grid-template-columns: 30px minmax(0, 1fr) 38px;
+        padding: 8px;
+      }
+
+      .logistics-item-quantity {
+        grid-column: 2 / 3;
+        width: 100%;
+      }
+
+      .logistics-item-actions {
+        grid-column: 3 / 4;
+        grid-row: 2;
+      }
+
+      .logistics-item-extra {
+        grid-column: 1 / 4;
+        grid-template-columns: 1fr;
+      }
+
+      .logistics-category-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .logistics-category-head .filter,
+      .logistics-section .toolbar-actions .filter {
+        width: 100%;
+      }
+
+      .logistics-item-actions {
+        justify-self: end;
+      }
+
+      .logistics-item-menu {
+        left: auto;
+        max-width: calc(100vw - 56px);
+        min-width: 132px;
+        right: 0;
+      }
+
+      .logistics-info,
+      .logistics-mini-list .row,
+      .logistics-category {
+        padding: 9px;
+      }
+
+      .logistics-menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #logistics-detail-body {
+        overflow-x: hidden;
       }
 
       .erp-kpis,
@@ -2078,7 +2738,9 @@
       .rank-row,
       .purchase-period-bar,
       .purchase-kpis,
-      .purchase-panels {
+      .purchase-panels,
+      .audit-layout,
+      .permission-grid {
         grid-template-columns: 1fr;
       }
 
@@ -2097,25 +2759,53 @@
   <header>
     <div class="header-inner">
       <div>
-        <h1>Control Comercial</h1>
-        <p class="subtitle">Seguimiento de oportunidades, presupuestos y derivaciones de eventos.</p>
+        <h1>Gratitud Gourmet</h1>
+        <p class="subtitle">Gestión Integral de Eventos</p>
       </div>
-      <div id="updated" class="updated">Actualizando...</div>
+      <div class="header-status">
+        <div id="session-user" class="user-pill">Sin sesion</div>
+        <div id="updated" class="updated">Actualizando...</div>
+        <button class="logout-button" type="button" onclick="logoutPanel()">Salir</button>
+      </div>
     </div>
   </header>
+
+  <section id="login-screen" class="login-screen open">
+    <form id="login-form" class="login-card">
+      <h2>Ingresar al ERP</h2>
+      <p class="subtitle">Cada movimiento queda asociado a tu usuario.</p>
+      <div class="form-field full">
+        <label>Usuario</label>
+        <input name="username" autocomplete="username" required>
+      </div>
+      <div class="form-field full">
+        <label>Clave</label>
+        <input name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <div id="login-error" class="notice error" style="display:none;"></div>
+      <div class="actions" style="margin-top:14px;">
+        <button class="approve" type="submit">Entrar</button>
+      </div>
+      <p class="secondary" style="margin:14px 0 0;">Usuario inicial: admin. Si no definiste clave, la clave inicial es admin.</p>
+    </form>
+  </section>
 
   <main>
     <div id="notice" class="notice"></div>
 
     <div class="workspace-tabs">
-      <button class="workspace-tab" data-view="erp">ERP</button>
-      <button class="workspace-tab active" data-view="commercial">Comercial</button>
+      <button class="workspace-tab active" data-view="erp">ERP</button>
+      <button class="workspace-tab" data-view="commercial">Comercial</button>
+      <button class="workspace-tab" data-view="purchases">Compras</button>
+      <button class="workspace-tab" data-view="finance">Finanzas</button>
       <button class="workspace-tab" data-view="customers">Clientes</button>
       <button class="workspace-tab" data-view="providers">Proveedores</button>
       <button class="workspace-tab" data-view="recipes">Recetas</button>
+      <button class="workspace-tab" data-view="logistics_event">Logística Evento</button>
+      <button class="workspace-tab" data-view="security" data-permission="users:write">Seguridad</button>
     </div>
 
-    <section id="view-erp" class="workspace-view">
+    <section id="view-erp" class="workspace-view open">
       <section class="erp-kpis">
         <div class="erp-kpi"><span>Eventos proximos</span><strong id="erp-kpi-upcoming">0</strong></div>
         <div class="erp-kpi"><span>Presupuestos abiertos</span><strong id="erp-kpi-open-quotes">0</strong></div>
@@ -2128,74 +2818,28 @@
         <div>
           <section class="erp-section">
             <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-              <h2>Centro de control</h2>
+              <div>
+                <h2>Resumen ejecutivo</h2>
+                <p class="subtitle">Vista general de alertas, ventas, margen y estado del negocio.</p>
+              </div>
               <div class="actions">
                 <button class="filter" onclick="loadErp()">Actualizar</button>
-                <button class="approve" onclick="downloadErpXlsx()">Descargar Excel</button>
+              <button class="approve" onclick="downloadErpXlsx()" data-permission="users:write">Descargar Excel</button>
               </div>
             </div>
             <div class="control-combo" style="margin-bottom:12px;">
               <input id="global-search" class="search" placeholder="Buscar cliente, evento, proveedor, producto o receta">
-              <select id="role-filter">
-                <option value="">Todos los roles</option>
-                <option>Comercial</option>
-                <option>Cocina</option>
-                <option>Compras</option>
-                <option>Administracion</option>
-              </select>
-            </div>
-            <div class="actions" style="margin-bottom:12px;justify-content:flex-end;">
-              <button class="filter" type="button" onclick="showErpEventForm()">Crear evento</button>
-              <button class="filter" type="button" onclick="showErpQuoteForm()">Presupuesto rentable</button>
+              <input id="role-filter" type="hidden" value="">
             </div>
             <div id="global-results" class="global-results"></div>
             <div id="erp-alerts"></div>
           </section>
 
           <section class="erp-section">
-            <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-              <h2>Dashboard de compras</h2>
-              <div class="actions">
-                <button class="filter" onclick="showProviderDebtWindow()">Deudas proveedores</button>
-                <button class="filter" onclick="syncAccountantDebts()">Actualizar planilla contador</button>
-                <button class="filter" onclick="importAccountantPayments()">Importar pagos contador</button>
-                <button class="filter" onclick="importPurchasesFromSheets()">Importar Sheets</button>
-                <button class="filter" onclick="showPurchaseForm()">Cargar compra</button>
-              </div>
-            </div>
-            <div id="purchase-dashboard" class="purchase-dashboard"></div>
+            <h2>Lectura rapida</h2>
+            <div id="erp-executive-summary" class="compact-insight"></div>
           </section>
 
-          <section class="erp-section">
-            <h2>Pipeline comercial</h2>
-            <div id="pipeline-board" class="pipeline"></div>
-          </section>
-
-          <section class="erp-section">
-            <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-              <h2>Lugares</h2>
-              <div class="inline-action-field" style="max-width:520px;">
-                <input id="venue-search" placeholder="Buscar lugar, direccion, referencia o telefono" oninput="renderVenueList()">
-                <button class="filter" type="button" onclick="showVenueForm()">Nuevo lugar</button>
-              </div>
-            </div>
-            <div id="venue-list" class="venue-list"></div>
-          </section>
-
-          <section class="erp-section">
-            <h2>Control de eventos</h2>
-            <div id="erp-event-list"></div>
-          </section>
-
-          <section class="erp-section">
-            <h2>Presupuestos</h2>
-            <div id="erp-quote-list"></div>
-          </section>
-
-          <section class="erp-section">
-            <h2>Insumos con variacion</h2>
-            <div id="product-alert-list"></div>
-          </section>
         </div>
 
         <div id="erp-form-modal" class="detail" onclick="closeErpForms(event)">
@@ -2227,6 +2871,10 @@
                 <input name="eventDate" type="date">
               </div>
               <div class="form-field">
+                <label>Horario</label>
+                <input name="eventTime" type="time">
+              </div>
+              <div class="form-field">
                 <label>Invitados</label>
                 <input name="guestCount" inputmode="decimal">
               </div>
@@ -2254,7 +2902,19 @@
                   <option value="production">Produccion</option>
                   <option value="done">Finalizado</option>
                   <option value="lost">Perdido</option>
+                  <option value="cancelled">Cancelado</option>
                 </select>
+              </div>
+              <div class="form-field">
+                <label>Facturacion</label>
+                <select name="invoiceStatus">
+                  <option value="not_invoiced">No facturado</option>
+                  <option value="invoiced">Facturado</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Nro factura</label>
+                <input name="invoiceNumber" placeholder="Opcional">
               </div>
               <div class="form-field">
                 <label>Responsable</label>
@@ -2312,6 +2972,21 @@
                 <button class="filter" type="button" onclick="addEventMenuLine()">Agregar item</button>
               </div>
               <div class="form-field">
+                <label>Restricciones alimentarias</label>
+                <select name="dietaryRestrictionMode">
+                  <option value="">Sin definir</option>
+                  <option value="no">No</option>
+                  <option value="yes">Si</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Detalle restricciones</label>
+                <div class="inline-action-field">
+                  <input name="dietaryRestrictions" placeholder="Celiaco, vegetariano, sin lactosa">
+                  <button class="filter" type="button" onclick="suggestDietaryRestrictionItems()">Sugerir</button>
+                </div>
+              </div>
+              <div class="form-field">
                 <label>Incluye bebidas</label>
                 <select name="includesDrinks">
                   <option value="">A definir</option>
@@ -2331,6 +3006,26 @@
               <div class="form-field">
                 <label>Vajilla</label>
                 <input name="tableware" placeholder="Cristaleria, manteleria, descartables">
+              </div>
+              <div class="form-field">
+                <label>Cantidades de vajilla</label>
+                <input name="tablewareQuantities" placeholder="Platos x 30, copas x 60">
+              </div>
+              <div class="form-field full">
+                <label>Detalle de vajilla / descartables</label>
+                <div class="inline-action-field">
+                  <input name="tablewareDetail" list="tableware-product-options" placeholder="Ej: copas, platos, servilletas, conservadoras">
+                  <button class="filter" type="button" onclick="addTablewareProductOption()">Agregar producto</button>
+                </div>
+                <datalist id="tableware-product-options"></datalist>
+              </div>
+              <div class="form-field">
+                <label>Contenedores grandes</label>
+                <input name="largeContainers" inputmode="decimal" placeholder="0">
+              </div>
+              <div class="form-field">
+                <label>Contenedores chicos</label>
+                <input name="smallContainers" inputmode="decimal" placeholder="0">
               </div>
               <div class="form-field">
                 <label>Personal</label>
@@ -2363,6 +3058,13 @@
               <div class="form-field full">
                 <label>Detalle checklist</label>
                 <textarea name="checklistDetails" placeholder="Compras: ...&#10;Produccion: ...&#10;Personal: ...&#10;Logistica: ...&#10;Menu: ...&#10;Pagos: ..."></textarea>
+              </div>
+              <div class="form-field full">
+                <label>Checklist detallado para logística</label>
+                <details class="event-operational-details">
+                  <summary>Preparar checklist por rubros</summary>
+                  <div id="event-operational-checklist" class="logistics-mini-list"></div>
+                </details>
               </div>
               <div class="form-field full">
                 <label>Notas</label>
@@ -2470,7 +3172,7 @@
       <datalist id="erp-venue-options"></datalist>
     </section>
 
-    <section id="view-commercial" class="workspace-view open">
+    <section id="view-commercial" class="workspace-view">
       <section class="metrics">
         <div class="metric"><span>Oportunidades</span><strong id="m-total">0</strong></div>
         <div class="metric"><span>Por aprobar</span><strong id="m-pending">0</strong></div>
@@ -2499,8 +3201,8 @@
         </div>
         <div class="toolbar-actions">
           <input id="search" class="search" placeholder="Buscar cliente, telefono, canal o evento">
-          <button class="filter" onclick="showPurchaseForm()">Cargar compra</button>
-          <button class="new-request" onclick="showManualForm()">Nuevo pedido</button>
+          <button class="new-request" onclick="showBlankErpEventForm()" data-permission="events:write">Crear evento</button>
+          <button class="filter" onclick="showManualForm()">Oportunidad manual</button>
         </div>
       </section>
 
@@ -2516,6 +3218,97 @@
           <div>Acciones</div>
         </div>
         <div id="rows"></div>
+      </section>
+
+      <section class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <h2>Pipeline comercial</h2>
+          <div class="actions">
+            <button class="filter" type="button" onclick="showBlankErpEventForm()" data-permission="events:write">Crear evento</button>
+            <button class="filter" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Presupuesto rentable</button>
+          </div>
+        </div>
+        <div id="pipeline-board" class="pipeline"></div>
+      </section>
+
+      <section class="erp-section">
+        <h2>Control de eventos</h2>
+        <div id="erp-event-list"></div>
+      </section>
+
+      <section class="erp-section">
+        <h2>Presupuestos</h2>
+        <div id="erp-quote-list"></div>
+      </section>
+
+      <section class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <h2>Clientes comerciales</h2>
+          <button class="filter" type="button" onclick="showQuickCustomerForm()" data-permission="customers:write">Nuevo cliente</button>
+        </div>
+        <div id="commercial-customer-list" class="compact-list compact-scroll"></div>
+      </section>
+
+      <section class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <h2>Lugares</h2>
+          <div class="inline-action-field" style="max-width:520px;">
+            <input id="venue-search" placeholder="Buscar lugar, direccion, referencia o telefono" oninput="renderVenueList()">
+            <button class="filter" type="button" onclick="showVenueForm()" data-permission="venues:write">Nuevo lugar</button>
+          </div>
+        </div>
+        <div id="venue-list" class="venue-list"></div>
+      </section>
+    </section>
+
+    <section id="view-purchases" class="workspace-view" data-permission="purchases:write">
+      <section class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2>Compras</h2>
+            <p class="subtitle">Planilla de compras, deudas y sincronizacion con Sheets.</p>
+          </div>
+          <div class="actions">
+            <button class="filter" onclick="importPurchasesFromSheets()">Importar Sheets</button>
+            <button class="approve" onclick="showPurchaseForm()">Cargar compra</button>
+          </div>
+        </div>
+        <div id="purchase-dashboard" class="purchase-dashboard"></div>
+        <section class="erp-section nested-section">
+          <h2>Insumos con variacion</h2>
+          <div id="product-alert-list"></div>
+        </section>
+      </section>
+    </section>
+
+    <section id="view-finance" class="workspace-view" data-permission="finance:read">
+      <section class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2>Finanzas</h2>
+            <p class="subtitle">Cuenta corriente de proveedores, pagos pendientes y pagos realizados.</p>
+          </div>
+          <div class="actions">
+            <button class="filter" onclick="loadErp()">Actualizar</button>
+            <button class="filter" onclick="showProviderDebtWindow()">Deudas proveedores</button>
+            <button class="filter" onclick="syncAccountantDebts()" data-permission="finance:write">Actualizar planilla contador</button>
+            <button class="filter" onclick="importAccountantPayments()" data-permission="finance:write">Importar pagos contador</button>
+          </div>
+        </div>
+        <div id="finance-dashboard"></div>
+      </section>
+    </section>
+
+    <section id="view-logistics_event" class="workspace-view" data-permission="logistics:read">
+      <section class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2>Logística Evento</h2>
+            <p class="subtitle">Eventos próximos y confirmados, sin datos financieros.</p>
+          </div>
+          <button class="filter" type="button" onclick="loadLogisticsEvents()">Actualizar</button>
+        </div>
+        <div id="logistics-event-list" class="compact-list"></div>
       </section>
     </section>
 
@@ -2780,6 +3573,70 @@
         </section>
       </div>
     </section>
+
+    <section id="view-security" class="workspace-view" data-permission="users:write">
+      <section class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2>Seguridad</h2>
+            <p class="subtitle">Usuarios, permisos por rol e historial de movimientos.</p>
+          </div>
+          <button class="filter" type="button" onclick="loadSecurityPanel()">Actualizar</button>
+        </div>
+        <div class="audit-layout">
+          <div>
+            <h2>Usuarios</h2>
+            <form id="user-form" class="form-grid" onsubmit="savePanelUser(event)">
+              <input type="hidden" name="id">
+              <div class="form-field full">
+                <label>Nombre</label>
+                <input name="displayName" required placeholder="Ej: Claudia">
+              </div>
+              <div class="form-field full">
+                <label>Usuario</label>
+                <input name="username" required placeholder="Ej: claudia">
+              </div>
+              <div class="form-field full">
+                <label>Rol</label>
+                <select name="role" id="panel-user-role"></select>
+              </div>
+              <div class="form-field full">
+                <label>Clave</label>
+                <input name="password" type="password" placeholder="Solo completar para cambiar">
+              </div>
+              <div class="actions full">
+                <button class="approve" type="submit">Guardar usuario</button>
+                <button class="filter" type="button" onclick="resetPanelUserForm()">Nuevo</button>
+              </div>
+            </form>
+            <div id="user-list" class="user-list" style="margin-top:12px;"></div>
+          </div>
+          <div>
+            <h2>Permisos por rol</h2>
+            <form id="role-permissions-form" onsubmit="saveRolePermissions(event)">
+              <div id="role-permissions-list" class="user-list"></div>
+              <div class="actions" style="margin-top:12px;">
+                <button class="approve" type="submit">Guardar permisos</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="erp-section">
+        <h2>Panel de control admin</h2>
+        <p class="subtitle">Mapa de vistas, funciones, permisos y estadisticas disponibles en el sistema.</p>
+        <div id="admin-control-summary" class="admin-summary-grid"></div>
+      </section>
+
+      <section class="erp-section">
+        <h2>Historial de acciones</h2>
+        <div class="toolbar-actions" style="margin-bottom:10px;">
+          <select id="audit-user-filter" onchange="renderAuditLog()"></select>
+        </div>
+        <div id="audit-list" class="audit-list"></div>
+      </section>
+    </section>
   </main>
 
   <section id="detail" class="detail" onclick="closeDetail(event)">
@@ -2834,6 +3691,19 @@
     </aside>
   </section>
 
+  <section id="logistics-event-detail" class="detail" onclick="closeLogisticsEventDetail(event)">
+    <aside class="detail-panel extra-wide" onclick="event.stopPropagation()">
+      <div class="detail-head">
+        <div>
+          <h2 id="logistics-detail-title" style="margin:0;font-size:24px;">Logística Evento</h2>
+          <p id="logistics-detail-subtitle" class="subtitle"></p>
+        </div>
+        <button class="close" onclick="hideLogisticsEventDetail()">X</button>
+      </div>
+      <div id="logistics-detail-body"></div>
+    </aside>
+  </section>
+
   <section id="recipe-detail" class="detail" onclick="closeRecipeDetail(event)">
     <aside class="detail-panel" onclick="event.stopPropagation()" style="max-width:760px;">
       <div class="detail-head">
@@ -2883,6 +3753,7 @@
             <option value="follow_up">En seguimiento</option>
             <option value="confirmed">Confirmado</option>
             <option value="lost">Perdido</option>
+            <option value="cancelled">Cancelado</option>
             <option value="referred">Derivado</option>
             <option value="test">Prueba</option>
           </select>
@@ -3096,19 +3967,6 @@
 
       <form id="purchase-form" class="form-grid">
         <input type="hidden" name="id">
-        <div class="form-field full">
-          <label>Foto de factura</label>
-          <div class="invoice-reader">
-            <input id="invoice-photo" type="file" accept="image/*">
-            <img id="invoice-preview" class="invoice-preview" alt="Vista previa de factura">
-            <p id="invoice-reader-status" class="reader-status">Lectura gratuita local. Si Ollama esta instalado, usa razonamiento local; si no, usa OCR.</p>
-            <div class="actions">
-              <button id="invoice-read-button" class="filter" type="button" onclick="analyzeInvoicePhoto()">Leer factura gratis</button>
-              <button class="filter" type="button" onclick="clearInvoicePhoto()">Quitar foto</button>
-            </div>
-          </div>
-        </div>
-
         <div class="form-field">
           <label>Fecha</label>
           <input name="date" type="date" required>
@@ -3127,6 +3985,7 @@
 
         <div class="form-field full">
           <label>Productos de la factura</label>
+          <div id="purchase-draft-tools" class="notice" style="margin-bottom:8px;"></div>
           <div id="purchase-items" class="purchase-items"></div>
           <div class="actions">
             <button class="filter" type="button" onclick="addPurchaseItemRow()">Agregar producto</button>
@@ -3148,7 +4007,7 @@
         </div>
 
         <div class="form-field">
-          <label>IVA</label>
+          <label>IVA por defecto</label>
           <select name="ivaRate">
             <option value="0">0%</option>
             <option value="0.105">10.5%</option>
@@ -3225,6 +4084,7 @@
             <option value="follow_up">En seguimiento</option>
             <option value="confirmed">Confirmado</option>
             <option value="lost">Perdido</option>
+            <option value="cancelled">Cancelado</option>
             <option value="referred">Derivado</option>
             <option value="test">Prueba</option>
             <option value="ignored">Ignorado</option>
@@ -3417,6 +4277,31 @@
       quotes: [],
       purchases: [],
     };
+    let currentUser = null;
+    let panelRoles = [];
+    let permissionCatalog = [];
+    let tabCatalog = [];
+    let panelUsers = [];
+    let auditLog = [];
+    let logisticsEvents = [];
+    let logisticsCategories = [];
+    let activeLogisticsEvent = null;
+    let logisticsSaveTimer = null;
+    const operationalCategoryDefaults = [
+      ["alimentos", "Alimentos"],
+      ["vajilla", "Vajilla"],
+      ["utensilios", "Utensilios"],
+      ["bebidas", "Bebidas"],
+      ["manteleria", "Manteleria"],
+      ["mobiliario", "Mobiliario"],
+      ["personal", "Personal"],
+      ["transporte", "Transporte"],
+      ["montaje", "Montaje"],
+      ["desmontaje", "Desmontaje"],
+      ["documentacion", "Documentacion"],
+      ["extras", "Extras / varios"],
+    ].map(([id, label]) => ({ id, label }));
+    let stateRefreshTimer = null;
     let activeFilter = "all";
     let purchaseOptions = {
       providers: [],
@@ -3445,6 +4330,8 @@
     const updated = document.getElementById("updated");
     const notice = document.getElementById("notice");
 
+    ensureGlobalErpFormModal();
+
     document.querySelectorAll("[data-filter]").forEach((button) => {
       button.addEventListener("click", () => {
         document.querySelectorAll("[data-filter]").forEach((item) => item.classList.remove("active"));
@@ -3467,9 +4354,12 @@
     document.getElementById("customer-search").addEventListener("input", renderCustomers);
     document.getElementById("provider-search").addEventListener("input", renderProviders);
     document.getElementById("recipe-search").addEventListener("input", renderRecipes);
+    document.getElementById("login-form").addEventListener("submit", loginPanel);
     document.getElementById("manual-form").addEventListener("submit", createManualBudget);
     document.getElementById("edit-form").addEventListener("submit", updateBudget);
     document.getElementById("purchase-form").addEventListener("submit", createPurchase);
+    document.getElementById("purchase-form").addEventListener("input", savePurchaseDraft);
+    document.getElementById("purchase-form").addEventListener("change", savePurchaseDraft);
     document.getElementById("customer-form").addEventListener("submit", saveCustomer);
     document.getElementById("provider-form").addEventListener("submit", saveProvider);
     document.getElementById("recipe-form").addEventListener("submit", saveRecipe);
@@ -3482,12 +4372,146 @@
     document.getElementById("erp-quote-form").addEventListener("change", updateErpQuotePreview);
     document.getElementById("global-search").addEventListener("input", renderGlobalSearch);
     document.getElementById("role-filter").addEventListener("change", renderErp);
-    document.getElementById("invoice-photo").addEventListener("change", previewInvoicePhoto);
+    document.getElementById("invoice-photo")?.addEventListener("change", previewInvoicePhoto);
     setupAutocomplete("purchase-provider", "purchase-provider-suggestions", () => purchaseOptions.providers || []);
+
+    async function bootstrapPanel() {
+      const response = await fetch("/api/me");
+      const result = await response.json();
+      panelRoles = result.roles || [];
+
+      if (!result.authenticated) {
+        showLoginScreen();
+        return;
+      }
+
+      currentUser = result.user;
+      hideLoginScreen();
+      renderCurrentUser();
+      await loadInitialData();
+    }
+
+    async function loadInitialData() {
+      const tasks = [];
+      if (canAccessTab("commercial")) tasks.push(loadState());
+      if (canAccessTab("purchases")) tasks.push(loadPurchaseOptions());
+      if (canAccessTab("customers")) tasks.push(loadCustomers());
+      if (canAccessTab("recipes")) tasks.push(loadRecipes());
+      if (["erp", "commercial", "purchases", "finance"].some((view) => canAccessTab(view))) tasks.push(loadErp());
+      if (canAccessTab("logistics_event")) tasks.push(loadLogisticsEvents());
+      await Promise.all(tasks);
+      if (stateRefreshTimer) clearInterval(stateRefreshTimer);
+      if (canAccessTab("commercial")) {
+        stateRefreshTimer = setInterval(loadState, 5000);
+      }
+    }
+
+    function showLoginScreen() {
+      document.getElementById("login-screen").classList.add("open");
+      document.getElementById("session-user").textContent = "Sin sesion";
+    }
+
+    function hideLoginScreen() {
+      document.getElementById("login-screen").classList.remove("open");
+    }
+
+    function renderCurrentUser() {
+      document.getElementById("session-user").textContent = currentUser
+        ? `${currentUser.displayName || currentUser.username} | ${currentUser.roleLabel || currentUser.role}`
+        : "Sin sesion";
+      applyPermissionVisibility();
+    }
+
+    async function loginPanel(event) {
+      event.preventDefault();
+      const form = event.target;
+      const errorBox = document.getElementById("login-error");
+      errorBox.style.display = "none";
+
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(Object.fromEntries(new FormData(form).entries())),
+        });
+        const result = await response.json();
+        if (!result.ok) throw new Error(result.error || "No se pudo iniciar sesion.");
+
+        currentUser = result.user;
+        panelRoles = result.roles || panelRoles;
+        form.reset();
+        hideLoginScreen();
+        renderCurrentUser();
+        await loadInitialData();
+      } catch (error) {
+        errorBox.textContent = error.message;
+        errorBox.style.display = "block";
+      }
+    }
+
+    async function logoutPanel() {
+      await fetch("/api/logout", { method: "POST" });
+      currentUser = null;
+      if (stateRefreshTimer) clearInterval(stateRefreshTimer);
+      showLoginScreen();
+    }
+
+    function can(permission) {
+      if (!currentUser) return false;
+      const permissions = currentUser.permissions || [];
+      return permissions.includes("*") || permissions.includes(permission) || permission === "view";
+    }
+
+    function applyPermissionVisibility() {
+      document.querySelectorAll("[data-permission]").forEach((element) => {
+        element.classList.toggle("hidden", !can(element.dataset.permission));
+      });
+      applyTabVisibility();
+    }
+
+    function applyTabVisibility() {
+      const visibleTabs = new Set(currentUser?.tabs?.length ? currentUser.tabs : ["erp", "commercial"]);
+      document.querySelectorAll(".workspace-tab").forEach((button) => {
+        button.classList.toggle("hidden", !visibleTabs.has(button.dataset.view) || !canAccessTab(button.dataset.view));
+      });
+
+      const activeButton = document.querySelector(".workspace-tab.active:not(.hidden)");
+      if (!activeButton) {
+        const firstVisible = document.querySelector(".workspace-tab:not(.hidden)");
+        if (firstVisible) showWorkspaceView(firstVisible.dataset.view);
+      }
+    }
+
+    function canAccessTab(tabId) {
+      if (!currentUser) return false;
+      const permissions = currentUser.permissions || [];
+      if (permissions.includes("*")) return true;
+      const tab = (tabCatalog || []).find((item) => item.id === tabId) || getFallbackTabDefinition(tabId);
+      return (tab.requiredAny || ["view"]).some((permission) => permission === "view" || permissions.includes(permission));
+    }
+
+    function getFallbackTabDefinition(tabId) {
+      return {
+        erp: { requiredAny: ["view"] },
+        commercial: { requiredAny: ["events:read", "events:write", "quotes:write", "customers:write"] },
+        purchases: { requiredAny: ["purchases:write"] },
+        finance: { requiredAny: ["finance:read", "finance:write"] },
+        customers: { requiredAny: ["customers:write"] },
+        providers: { requiredAny: ["providers:write"] },
+        recipes: { requiredAny: ["recipes:read", "recipes:write"] },
+        logistics_event: { requiredAny: ["logistics:read", "logistics:write"] },
+        security: { requiredAny: ["users:write"] },
+      }[tabId] || { requiredAny: ["view"] };
+    }
 
     async function loadState() {
       try {
         const response = await fetch("/api/state");
+        if (response.status === 401) {
+          currentUser = null;
+          showLoginScreen();
+          return;
+        }
         const state = await response.json();
 
         if (!state.ok) {
@@ -3520,6 +4544,12 @@
       fillSelect("purchase-event", purchaseOptions.events || [], "Seleccionar evento");
       fillSelect("purchase-payment-method", purchaseOptions.paymentMethods || [], "Sin definir");
       fillSelect("purchase-funds-source", purchaseOptions.fundsSources || [], "Sin definir");
+      const tablewareOptions = document.getElementById("tableware-product-options");
+      if (tablewareOptions) {
+        tablewareOptions.innerHTML = (purchaseOptions.products || [])
+          .map((item) => `<option value="${escapeAttribute(item)}"></option>`)
+          .join("");
+      }
     }
 
     function fillSelect(id, items, placeholder) {
@@ -3533,6 +4563,13 @@
     }
 
     function showWorkspaceView(view) {
+      if (!canAccessTab(view)) {
+        const firstVisible = document.querySelector(".workspace-tab:not(.hidden)");
+        if (firstVisible && firstVisible.dataset.view !== view) {
+          showWorkspaceView(firstVisible.dataset.view);
+        }
+        return;
+      }
       document.querySelectorAll(".workspace-tab").forEach((button) => {
         button.classList.toggle("active", button.dataset.view === view);
       });
@@ -3543,7 +4580,9 @@
       if (view === "customers") loadCustomers();
       if (view === "providers") loadProviders();
       if (view === "recipes") loadRecipes();
-      if (view === "erp") loadErp();
+      if (["erp", "commercial", "purchases", "finance"].includes(view)) loadErp();
+      if (view === "logistics_event") loadLogisticsEvents();
+      if (view === "security") loadSecurityPanel();
     }
 
     async function loadErp() {
@@ -3556,27 +4595,38 @@
       }
 
       erpData = result;
+      currentUser = result.me || currentUser;
+      panelRoles = result.roles || panelRoles;
       allRecipes = result.recipes || allRecipes;
       allCustomers = result.customers || allCustomers;
+      renderCurrentUser();
       renderErp();
     }
 
     function renderErp() {
       const dashboard = erpData.dashboard || {};
-      document.getElementById("erp-kpi-upcoming").textContent = dashboard.upcomingEvents || 0;
-      document.getElementById("erp-kpi-open-quotes").textContent = dashboard.openQuotes || 0;
-      document.getElementById("erp-kpi-revenue").textContent = formatCurrency(dashboard.estimatedRevenue || 0);
-      document.getElementById("erp-kpi-done").textContent = dashboard.completedEvents || 0;
-      document.getElementById("erp-kpi-margin").textContent =
-        `${formatCurrency(dashboard.estimatedMargin || 0)} (${formatPercent(dashboard.estimatedMarginPercent || 0)})`;
-      renderErpAlerts(dashboard.alerts || []);
-      renderPurchaseDashboard();
-      renderPipeline();
-      renderVenueList();
-      renderProductAlerts();
-      renderGlobalSearch();
-      renderErpEvents();
-      renderErpQuotes();
+      setText("erp-kpi-upcoming", dashboard.upcomingEvents || 0);
+      setText("erp-kpi-open-quotes", dashboard.openQuotes || 0);
+      setText("erp-kpi-revenue", formatCurrency(dashboard.estimatedRevenue || 0));
+      setText("erp-kpi-done", dashboard.completedEvents || 0);
+      setText("erp-kpi-margin", `${formatCurrency(dashboard.estimatedMargin || 0)} (${formatPercent(dashboard.estimatedMarginPercent || 0)})`);
+      if (canAccessTab("erp")) {
+        renderErpAlerts(dashboard.alerts || []);
+        renderExecutiveSummary(dashboard);
+        renderGlobalSearch();
+      }
+      if (canAccessTab("purchases")) {
+        renderPurchaseDashboard();
+        renderProductAlerts();
+      }
+      if (canAccessTab("finance")) renderFinanceDashboard();
+      if (canAccessTab("commercial")) {
+        renderPipeline();
+        renderVenueList();
+        renderErpEvents();
+        renderErpQuotes();
+        renderCommercialCustomers();
+      }
       renderErpQuoteEventOptions();
       renderErpCustomerOptions();
       renderErpVenueOptions();
@@ -3589,8 +4639,79 @@
       }
     }
 
+    function setText(id, value) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = value;
+    }
+
+    function renderExecutiveSummary(dashboard = {}) {
+      const container = document.getElementById("erp-executive-summary");
+      if (!container) return;
+      const purchases = dashboard.purchases || {};
+      const today = new Date().toISOString().slice(0, 10);
+      const upcoming = (erpData.events || [])
+        .filter((event) => event.eventDate && event.eventDate >= today && ["confirmed", "production"].includes(event.status))
+        .sort(compareEventsByDate)
+        .slice(0, 5);
+      const pendingClose = (erpData.events || [])
+        .filter((event) => event.logisticsStatus === "pending_admin_close")
+        .sort(compareEventsByDate);
+      const unpaid = (erpData.purchases || [])
+        .filter((purchase) => getPurchasePending(purchase) > 0)
+        .sort((a, b) => getPurchasePending(b) - getPurchasePending(a))
+        .slice(0, 5);
+      const recentPurchases = (erpData.purchases || [])
+        .slice()
+        .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))
+        .slice(0, 5);
+      container.innerHTML = `
+        <div class="event-finance" style="margin-bottom:12px;">
+          <div class="event-number"><span>Eventos confirmados</span><strong>${escapeHtml(dashboard.confirmedEvents || 0)}</strong></div>
+          <div class="event-number"><span>Compras pendientes</span><strong>${formatCurrency(dashboard.pendingPurchaseAmount || 0)}</strong></div>
+          <div class="event-number"><span>Total compras</span><strong>${formatCurrency(purchases.totalAmount || 0)}</strong></div>
+          <div class="event-number"><span>Cierres por autorizar</span><strong>${escapeHtml(pendingClose.length)}</strong></div>
+        </div>
+        <div class="admin-summary-grid">
+          ${renderAdminSummaryList("Proximos eventos", upcoming, (event) => `
+            <button class="summary-row" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">
+              <strong>${escapeHtml(event.name || "Sin nombre")}</strong>
+              <span>${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} · ${escapeHtml(event.clientName || "Sin cliente")} · ${escapeHtml(event.venue || "Sin lugar")}</span>
+            </button>
+          `)}
+          ${renderAdminSummaryList("Cierres pendientes", pendingClose, (event) => `
+            <button class="summary-row" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">
+              <strong>${escapeHtml(event.name || "Sin nombre")}</strong>
+              <span>Logistica solicito cierre · requiere autorizacion admin</span>
+            </button>
+          `)}
+          ${renderAdminSummaryList("Mayores deudas", unpaid, (purchase) => `
+            <button class="summary-row" type="button" onclick="showProviderDebt('${escapeAttribute(purchase.provider || "Sin proveedor")}')">
+              <strong>${escapeHtml(purchase.provider || "Sin proveedor")} · ${formatCurrency(getPurchasePending(purchase))}</strong>
+              <span>${escapeHtml(purchase.description || "Compra")} · ${escapeHtml(purchase.eventName || "Sin evento")}</span>
+            </button>
+          `)}
+          ${renderAdminSummaryList("Compras recientes", recentPurchases, (purchase) => `
+            <button class="summary-row" type="button" onclick="editPurchase('${escapeAttribute(purchase.id)}')">
+              <strong>${escapeHtml(purchase.provider || "Sin proveedor")} · ${formatCurrency(getPurchaseTotal(purchase))}</strong>
+              <span>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")} · ${escapeHtml(purchase.description || "")}</span>
+            </button>
+          `)}
+        </div>
+      `;
+    }
+
+    function renderAdminSummaryList(title, items, renderer) {
+      return `
+        <section class="admin-summary-card">
+          <h3>${escapeHtml(title)}</h3>
+          ${items.length ? items.map(renderer).join("") : `<div class="empty compact-empty">Sin datos para mostrar.</div>`}
+        </section>
+      `;
+    }
+
     function renderErpAlerts(alerts) {
       const container = document.getElementById("erp-alerts");
+      if (!container) return;
       if (!alerts.length) {
         container.innerHTML = `<div class="empty">Sin alertas criticas. El sistema esta ordenado.</div>`;
         return;
@@ -3608,24 +4729,342 @@
       `).join("")}</div>`;
     }
 
+    function renderSecurityShell() {
+      fillPanelRoleSelect();
+      if (can("users:write")) {
+        loadSecurityPanel();
+        renderAdminControlSummary();
+      }
+    }
+
+    function fillPanelRoleSelect() {
+      const select = document.getElementById("panel-user-role");
+      if (!select) return;
+      select.innerHTML = panelRoles
+        .map((role) => `<option value="${escapeAttribute(role.id)}">${escapeHtml(role.label)}</option>`)
+        .join("");
+    }
+
+    async function loadSecurityPanel() {
+      if (!can("users:write")) return;
+      try {
+        await Promise.all([loadPanelUsers(), loadPanelRoles(), loadAuditLog()]);
+      } catch (error) {
+        showNotice(error.message, "error");
+      }
+    }
+
+    async function loadPanelUsers() {
+      const response = await fetch("/api/users");
+      const result = await readJsonResponse(response);
+      if (!result.ok) throw new Error(result.error || "No se pudieron cargar usuarios.");
+      panelUsers = result.users || [];
+      panelRoles = result.roles || panelRoles;
+      fillPanelRoleSelect();
+      renderPanelUsers();
+    }
+
+    async function loadPanelRoles() {
+      const response = await fetch("/api/roles");
+      const result = await readJsonResponse(response);
+      if (!result.ok) throw new Error(result.error || "No se pudieron cargar permisos.");
+      panelRoles = result.roles || panelRoles;
+      permissionCatalog = result.permissions || [];
+      tabCatalog = result.tabs || [];
+      fillPanelRoleSelect();
+      renderRolePermissions();
+      renderAdminControlSummary();
+    }
+
+    function renderAdminControlSummary() {
+      const container = document.getElementById("admin-control-summary");
+      if (!container) return;
+      const views = tabCatalog.length ? tabCatalog : [
+        { id: "erp", label: "ERP" },
+        { id: "commercial", label: "Comercial" },
+        { id: "purchases", label: "Compras" },
+        { id: "finance", label: "Finanzas" },
+        { id: "customers", label: "Clientes" },
+        { id: "providers", label: "Proveedores" },
+        { id: "recipes", label: "Recetas" },
+        { id: "logistics_event", label: "Logistica Evento" },
+        { id: "security", label: "Seguridad" },
+      ];
+      const metrics = [
+        ["Eventos", erpData.events?.length || 0],
+        ["Compras", erpData.purchases?.length || 0],
+        ["Clientes", erpData.customers?.length || allCustomers.length || 0],
+        ["Proveedores", allProviders.length || erpData.providers?.length || 0],
+        ["Recetas", erpData.recipes?.length || 0],
+        ["Usuarios", panelUsers.length || 0],
+      ];
+      container.innerHTML = `
+        ${renderAdminSummaryList("Vistas del sistema", views, (view) => `
+          <div class="summary-row"><strong>${escapeHtml(view.label || view.id)}</strong><span>${escapeHtml(view.id)}</span></div>
+        `)}
+        ${renderAdminSummaryList("Funciones / permisos", permissionCatalog, (permission) => `
+          <div class="summary-row"><strong>${escapeHtml(permission.label || permission.id)}</strong><span>${escapeHtml(permission.group || "General")} · ${escapeHtml(permission.id)}</span></div>
+        `)}
+        <section class="admin-summary-card">
+          <h3>Opciones editables</h3>
+          <button class="summary-row" type="button" onclick="showCostSettingsForm()">
+            <strong>Servicios, momentos, bebidas e insumos sugeridos</strong>
+            <span>Abre la configuracion operativa del sistema</span>
+          </button>
+          <button class="summary-row" type="button" onclick="showQuickVenueForm()">
+            <strong>Lugares / venues</strong>
+            <span>Alta y edicion de ubicaciones, mapas y referencias</span>
+          </button>
+          <button class="summary-row" type="button" onclick="showProviderManager()">
+            <strong>Proveedores</strong>
+            <span>Datos fiscales, bancarios y contacto</span>
+          </button>
+        </section>
+        ${renderAdminSummaryList("Roles", panelRoles, (role) => `
+          <button class="summary-row" type="button" onclick="document.getElementById('role-permissions-list')?.scrollIntoView({behavior:'smooth'});">
+            <strong>${escapeHtml(role.label || role.id)}</strong>
+            <span>${escapeHtml((role.tabs || []).length)} vistas · ${escapeHtml((role.permissions || []).join(", ") || "Sin permisos")}</span>
+          </button>
+        `)}
+        ${renderAdminSummaryList("Estadisticas", metrics, (metric) => `
+          <div class="summary-row"><strong>${escapeHtml(metric[0])}</strong><span>${escapeHtml(metric[1])}</span></div>
+        `)}
+      `;
+    }
+
+    async function loadAuditLog() {
+      const response = await fetch("/api/audit-log?limit=160");
+      const result = await readJsonResponse(response);
+      if (!result.ok) throw new Error(result.error || "No se pudo cargar el historial.");
+      auditLog = result.audit || [];
+      const filter = document.getElementById("audit-user-filter");
+      if (filter) filter.dataset.ready = "";
+      renderAuditLog();
+    }
+
+    function renderPanelUsers() {
+      const list = document.getElementById("user-list");
+      if (!list) return;
+      if (!panelUsers.length) {
+        list.innerHTML = `<div class="empty">Sin usuarios cargados.</div>`;
+        return;
+      }
+      list.innerHTML = panelUsers.map((user) => `
+        <div class="user-row">
+          <strong>${escapeHtml(user.displayName || user.username)}</strong>
+          <div class="secondary">${escapeHtml(user.username)} | ${escapeHtml(user.roleLabel || user.role)}</div>
+          <div class="actions" style="margin-top:8px;">
+            <button class="filter" type="button" onclick="editPanelUser('${escapeAttribute(user.id)}')">Editar</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderRolePermissions() {
+      const list = document.getElementById("role-permissions-list");
+      if (!list) return;
+      if (!panelRoles.length || !permissionCatalog.length) {
+        list.innerHTML = `<div class="empty">Sin permisos para mostrar.</div>`;
+        return;
+      }
+
+      list.innerHTML = panelRoles.map((role) => {
+        const isAdmin = role.id === "admin";
+        const rolePermissions = new Set(role.permissions || []);
+        const roleTabs = new Set(role.tabs || []);
+        return `
+          <div class="user-row role-permission-card" data-role-id="${escapeAttribute(role.id)}">
+            <strong>${escapeHtml(role.label)}</strong>
+            <div class="secondary">${isAdmin ? "Acceso total protegido" : "Seleccione funciones disponibles para este rol"}</div>
+            <div class="secondary" style="margin-top:8px;">Funciones</div>
+            <div class="permission-grid">
+              ${permissionCatalog.map((permission) => {
+                const checked = isAdmin || rolePermissions.has("*") || rolePermissions.has(permission.id);
+                return `
+                  <label class="permission-check permission-option">
+                    <input type="checkbox" value="${escapeAttribute(permission.id)}" ${checked ? "checked" : ""} ${isAdmin ? "disabled" : ""}>
+                    <span>${escapeHtml(permission.label)}</span>
+                    <small>${escapeHtml(permission.group)}</small>
+                  </label>
+                `;
+              }).join("")}
+            </div>
+            <div class="secondary" style="margin-top:12px;">Pestañas visibles</div>
+            <div class="permission-grid">
+              ${tabCatalog.map((tab) => {
+                const requiredForAdmin = isAdmin && tab.id === "security";
+                const allowed = isAdmin || rolePermissions.has("*") || (tab.requiredAny || []).some((permission) => permission === "view" || rolePermissions.has(permission));
+                const checked = requiredForAdmin || (allowed && roleTabs.has(tab.id));
+                return `
+                  <label class="permission-check tab-option ${allowed ? "" : "muted-option"}">
+                    <input type="checkbox" value="${escapeAttribute(tab.id)}" ${checked ? "checked" : ""} ${requiredForAdmin || !allowed ? "disabled" : ""}>
+                    <span>${escapeHtml(tab.label)}</span>
+                    <small>${requiredForAdmin ? "Siempre visible para administrar" : allowed ? "Disponible para el rol" : "Requiere habilitar funcion"}</small>
+                  </label>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function saveRolePermissions(event) {
+      event.preventDefault();
+      const roles = Array.from(document.querySelectorAll(".role-permission-card")).map((card) => ({
+        id: card.dataset.roleId,
+        permissions: Array.from(card.querySelectorAll(".permission-option input[type='checkbox']:checked")).map((input) => input.value),
+        tabs: Array.from(card.querySelectorAll(".tab-option input[type='checkbox']:checked")).map((input) => input.value),
+      }));
+      const response = await fetch("/api/roles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roles }),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudieron guardar permisos.", "error");
+        return;
+      }
+      panelRoles = result.roles || panelRoles;
+      permissionCatalog = result.permissions || permissionCatalog;
+      renderRolePermissions();
+      await refreshCurrentUser();
+      await loadAuditLog();
+      showNotice("Permisos guardados.", "success");
+    }
+
+    async function refreshCurrentUser() {
+      const response = await fetch("/api/me");
+      const result = await readJsonResponse(response);
+      if (result.ok && result.authenticated) {
+        currentUser = result.user;
+        panelRoles = result.roles || panelRoles;
+        renderCurrentUser();
+      }
+    }
+
+    function renderAuditLog() {
+      const list = document.getElementById("audit-list");
+      if (!list) return;
+      const filter = document.getElementById("audit-user-filter");
+      if (filter && !filter.dataset.ready) {
+        const users = Array.from(new Set(auditLog.map((item) => item.userName || "Sistema").filter(Boolean))).sort();
+        filter.innerHTML = `<option value="">Todos los usuarios</option>${users.map((user) => `<option value="${escapeAttribute(user)}">${escapeHtml(user)}</option>`).join("")}`;
+        filter.dataset.ready = "true";
+      }
+      const selectedUser = filter?.value || "";
+      const visibleAudit = selectedUser ? auditLog.filter((item) => (item.userName || "Sistema") === selectedUser) : auditLog;
+      if (!visibleAudit.length) {
+        list.innerHTML = `<div class="empty">Todavia no hay movimientos registrados.</div>`;
+        return;
+      }
+      list.innerHTML = visibleAudit.map((item) => `
+        <div class="audit-row">
+          <strong>${escapeHtml(getAuditActionLabel(item.action))} | ${escapeHtml(item.label || item.entityType || "")}</strong>
+          <div class="secondary">${escapeHtml(item.userName || "Sistema")} | ${escapeHtml(item.userRole || "")} | ${escapeHtml(formatDate(item.at) || item.at || "")}</div>
+          <div class="secondary">${escapeHtml(getAuditEntityLabel(item.entityType))}${item.entityId ? ` | ${escapeHtml(item.entityId)}` : ""}</div>
+        </div>
+      `).join("");
+    }
+
+    function getAuditActionLabel(action) {
+      return {
+        login: "Ingreso",
+        logout: "Salida",
+        create: "Creacion",
+        update: "Edicion",
+        delete: "Eliminacion",
+        payment: "Pago",
+        import: "Importacion",
+        sync: "Sincronizacion",
+        upsert: "Actualizacion",
+      }[action] || action || "Movimiento";
+    }
+
+    function getAuditEntityLabel(type) {
+      return {
+        event: "Evento",
+        quote: "Presupuesto",
+        purchase: "Compra",
+        provider: "Proveedor",
+        customer: "Cliente",
+        venue: "Lugar",
+        recipe: "Receta",
+        user: "Usuario",
+        session: "Sesion",
+      }[type] || type || "Registro";
+    }
+
+    function editPanelUser(id) {
+      const user = panelUsers.find((item) => item.id === id);
+      if (!user) return;
+      const form = document.getElementById("user-form");
+      setFormValue(form, "id", user.id || "");
+      setFormValue(form, "displayName", user.displayName || "");
+      setFormValue(form, "username", user.username || "");
+      setFormValue(form, "role", user.role || "comercial");
+      setFormValue(form, "password", "");
+    }
+
+    function resetPanelUserForm() {
+      document.getElementById("user-form").reset();
+      document.getElementById("user-form").elements.id.value = "";
+    }
+
+    async function savePanelUser(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const response = await fetch("/api/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el usuario.", "error");
+        return;
+      }
+      panelUsers = result.users || panelUsers;
+      resetPanelUserForm();
+      renderPanelUsers();
+      await loadAuditLog();
+      showNotice("Usuario guardado.", "success");
+    }
+
     function downloadErpXlsx() {
       window.location.href = "/api/export.xlsx";
     }
 
     function showErpEventForm() {
+      ensureGlobalErpFormModal();
       document.getElementById("erp-form-modal-title").textContent = "Crear evento";
       document.getElementById("erp-event-card").classList.remove("hidden");
       document.getElementById("erp-quote-card").classList.add("hidden");
       if (!document.querySelector("#event-menu-items .menu-line")) renderEventMenuLines();
       if (!document.querySelector("#event-stock-items .stock-line")) renderEventStockLines();
+      if (!document.querySelector("#event-operational-checklist .event-operational-category")) renderEventOperationalChecklist();
       document.getElementById("erp-form-modal").classList.add("open");
     }
 
+    function showBlankErpEventForm() {
+      resetErpEventForm();
+      showErpEventForm();
+    }
+
     function showErpQuoteForm() {
+      ensureGlobalErpFormModal();
       document.getElementById("erp-form-modal-title").textContent = "Presupuesto rentable";
       document.getElementById("erp-event-card").classList.add("hidden");
       document.getElementById("erp-quote-card").classList.remove("hidden");
       document.getElementById("erp-form-modal").classList.add("open");
+    }
+
+    function ensureGlobalErpFormModal() {
+      const modal = document.getElementById("erp-form-modal");
+      if (modal && modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
     }
 
     function hideErpForms() {
@@ -3732,6 +5171,7 @@
 
     function renderPurchaseDashboard() {
       const container = document.getElementById("purchase-dashboard");
+      if (!container) return;
       const allPurchases = erpData.purchases || [];
       const visiblePurchases = getVisiblePurchasesByPeriod();
       const summary = buildPurchaseSummary(visiblePurchases);
@@ -3982,6 +5422,180 @@
       document.getElementById("purchase-rank-subtitle").textContent = "Cuenta corriente por proveedor";
       document.getElementById("purchase-rank-body").innerHTML = renderProviderDebtBoard(erpData.purchases || []);
       document.getElementById("purchase-rank-detail").classList.add("open");
+    }
+
+    function renderFinanceDashboard() {
+      const container = document.getElementById("finance-dashboard");
+      if (!container) return;
+      const finance = erpData.financeDashboard || buildClientFinanceDashboard();
+      const summary = finance.summary || {};
+      container.innerHTML = `
+        <section class="rank-modal-summary" style="margin-bottom:14px;">
+          <div><span>Ventas/eventos</span><strong>${formatCurrency(summary.salesTotal || 0)}</strong></div>
+          <div><span>Cobrado</span><strong>${formatCurrency(summary.collectedTotal || 0)}</strong></div>
+          <div><span>Por cobrar</span><strong>${formatCurrency(summary.pendingCollectionTotal || 0)}</strong></div>
+          <div><span>Vencido</span><strong>${formatCurrency(summary.overdueCollectionTotal || 0)}</strong></div>
+          <div><span>Deuda proveedores</span><strong>${formatCurrency(summary.supplierDebt || 0)}</strong></div>
+          <div><span>Saldo proyectado</span><strong>${formatCurrency(summary.projectedBalance || 0)}</strong></div>
+        </section>
+        ${renderFinanceEvents(finance.events || [])}
+        <div style="margin-top:16px;">${renderProviderDebtBoard(erpData.purchases || [])}</div>
+      `;
+    }
+
+    function buildClientFinanceDashboard() {
+      const events = (erpData.events || []).map((event) => {
+        const saleTotal = Number(event.quoteTotal || event.servicePriceTotal || 0);
+        const collectedAmount = Number(event.collectedAmount || 0);
+        const pendingCollectionAmount = Math.max(0, saleTotal - collectedAmount);
+        return {
+          ...event,
+          saleTotal,
+          collectedAmount,
+          pendingCollectionAmount,
+          invoiceStatus: event.invoiceStatus || "not_invoiced",
+          invoiceStatusLabel: getInvoiceStatusLabel(event.invoiceStatus || "not_invoiced"),
+          collectionStatus: event.collectionStatus || (pendingCollectionAmount <= 0 && saleTotal > 0 ? "paid" : collectedAmount > 0 ? "partial" : "pending"),
+          collectionStatusLabel: getFinanceCollectionStatusLabel(event.collectionStatus || (pendingCollectionAmount <= 0 && saleTotal > 0 ? "paid" : collectedAmount > 0 ? "partial" : "pending")),
+        };
+      });
+      const supplierDebt = (erpData.purchases || []).reduce((sum, purchase) => sum + getPurchasePending(purchase), 0);
+      const salesTotal = events.reduce((sum, event) => sum + Number(event.saleTotal || 0), 0);
+      const collectedTotal = events.reduce((sum, event) => sum + Number(event.collectedAmount || 0), 0);
+      const pendingCollectionTotal = events.reduce((sum, event) => sum + Number(event.pendingCollectionAmount || 0), 0);
+      return {
+        summary: {
+          salesTotal,
+          collectedTotal,
+          pendingCollectionTotal,
+          overdueCollectionTotal: 0,
+          supplierDebt,
+          projectedBalance: collectedTotal + pendingCollectionTotal - supplierDebt,
+        },
+        events,
+      };
+    }
+
+    function renderFinanceEvents(events = []) {
+      if (!events.length) {
+        return `<section class="debt-board"><h3 style="margin:0;">Cobros por evento</h3><div class="empty">No hay eventos con venta cargada.</div></section>`;
+      }
+      return `
+        <section class="debt-board">
+          <div class="debt-board-head">
+            <div>
+              <h3 style="margin:0;">Cobros por evento</h3>
+              <p class="subtitle" style="margin:4px 0 0;">Estado de cobros realizados, parciales y pendientes.</p>
+            </div>
+            <strong>${escapeHtml(events.length)} evento(s)</strong>
+          </div>
+          <div class="debt-list">
+            ${events.map((event) => `
+              <article class="debt-row">
+                <div>
+                  <div class="primary">${escapeHtml(event.name || "Evento")}</div>
+                  <div class="secondary">${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} · ${escapeHtml(event.clientName || "Sin cliente")} · ${escapeHtml(event.statusLabel || getErpEventStatusLabel(event.status))}</div>
+                  <div class="secondary">${escapeHtml(event.serviceType || "Sin servicio")} · ${escapeHtml(event.venue || "Sin lugar")} · ${escapeHtml(event.invoiceStatusLabel || getInvoiceStatusLabel(event.invoiceStatus))}${event.invoiceNumber ? ` · ${escapeHtml(event.invoiceNumber)}` : ""}</div>
+                </div>
+                <div class="debt-amount">
+                  <div>${formatCurrency(event.pendingCollectionAmount || 0)}</div>
+                  <span class="badge ${event.collectionStatus === "paid" ? "confirmed" : event.collectionStatus === "partial" ? "ready_to_quote" : "missing_info"}">${escapeHtml(event.collectionStatusLabel || getFinanceCollectionStatusLabel(event.collectionStatus))}</span>
+                </div>
+                <button class="filter" type="button" onclick="showFinanceEventPayment('${escapeAttribute(event.id)}')">Ver / cobro</button>
+              </article>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function getFinanceCollectionStatusLabel(status) {
+      return {
+        pending: "Pendiente",
+        partial: "Parcial",
+        paid: "Cobrado",
+      }[status] || "Pendiente";
+    }
+
+    function showFinanceEventPayment(id) {
+      const finance = erpData.financeDashboard || buildClientFinanceDashboard();
+      const event = (finance.events || []).find((item) => item.id === id);
+      if (!event) return;
+      document.getElementById("purchase-rank-title").textContent = `Cobro - ${event.name || "Evento"}`;
+      document.getElementById("purchase-rank-subtitle").textContent = `${event.clientName || "Sin cliente"} · ${formatShortDate(event.eventDate) || "Sin fecha"}`;
+      document.getElementById("purchase-rank-body").innerHTML = `
+        <section class="rank-modal-summary">
+          <div><span>Venta</span><strong>${formatCurrency(event.saleTotal || 0)}</strong></div>
+          <div><span>Cobrado</span><strong>${formatCurrency(event.collectedAmount || 0)}</strong></div>
+          <div><span>Pendiente</span><strong>${formatCurrency(event.pendingCollectionAmount || 0)}</strong></div>
+          <div><span>Facturacion</span><strong>${escapeHtml(event.invoiceStatusLabel || getInvoiceStatusLabel(event.invoiceStatus))}</strong></div>
+        </section>
+        <form class="form-grid" onsubmit="saveFinanceEventPayment(event)">
+          <input type="hidden" name="id" value="${escapeAttribute(event.id || "")}">
+          <div class="form-field">
+            <label>Estado de cobro</label>
+            <select name="collectionStatus">
+              <option value="pending" ${event.collectionStatus === "pending" ? "selected" : ""}>Pendiente</option>
+              <option value="partial" ${event.collectionStatus === "partial" ? "selected" : ""}>Parcial</option>
+              <option value="paid" ${event.collectionStatus === "paid" ? "selected" : ""}>Cobrado</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Monto cobrado acumulado</label>
+            <input name="collectedAmount" inputmode="decimal" value="${escapeAttribute(event.collectedAmount || 0)}">
+          </div>
+          <div class="form-field">
+            <label>Fecha prevista/proxima</label>
+            <input name="collectionDueDate" type="date" value="${escapeAttribute(event.collectionDueDate || "")}">
+          </div>
+          <div class="form-field">
+            <label>Medio de cobro</label>
+            <input name="collectionMethod" value="${escapeAttribute(event.collectionMethod || "")}" placeholder="Transferencia, efectivo, MP">
+          </div>
+          <div class="form-field">
+            <label>Facturacion</label>
+            <select name="invoiceStatus">
+              <option value="not_invoiced" ${event.invoiceStatus !== "invoiced" ? "selected" : ""}>No facturado</option>
+              <option value="invoiced" ${event.invoiceStatus === "invoiced" ? "selected" : ""}>Facturado</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Nro factura</label>
+            <input name="invoiceNumber" value="${escapeAttribute(event.invoiceNumber || "")}" placeholder="Opcional">
+          </div>
+          <div class="form-field full">
+            <label>Nota para contador</label>
+            <textarea name="collectionNotes">${escapeHtml(event.collectionNotes || "")}</textarea>
+          </div>
+          <div class="actions full">
+            <button class="approve" type="submit">Guardar cobro</button>
+          </div>
+        </form>
+      `;
+      document.getElementById("purchase-rank-detail").classList.add("open");
+    }
+
+    function getInvoiceStatusLabel(status) {
+      return status === "invoiced" ? "Facturado" : "No facturado";
+    }
+
+    async function saveFinanceEventPayment(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const response = await fetch("/api/finance-event-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el cobro.", "error");
+        return;
+      }
+      erpData.financeDashboard = result.financeDashboard || erpData.financeDashboard;
+      renderFinanceDashboard();
+      hidePurchaseRankDetail();
+      showNotice("Cobro del evento actualizado.");
     }
 
     function renderProviderDebtRows() {
@@ -4294,9 +5908,6 @@
                 <th class="money">Saldo</th>
                 <th>Comprobante</th>
                 <th>Estado pago</th>
-                <th>Medio</th>
-                <th>Origen fondos</th>
-                <th>Observaciones</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -4316,9 +5927,6 @@
                     <td class="money">${index === 0 ? formatCurrency(getPurchasePending(purchase)) : ""}</td>
                     <td>${escapeHtml(purchase.invoiceType || "")}</td>
                     <td><span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span></td>
-                    <td>${escapeHtml(purchase.paymentMethod || "")}</td>
-                    <td>${escapeHtml(purchase.fundsSource || "")}</td>
-                    <td>${escapeHtml(index === 0 ? purchase.notes || "" : "")}</td>
                     <td class="number">
                       ${index === 0 ? `
                         <div class="actions" onclick="event.stopPropagation()">
@@ -4395,23 +6003,498 @@
       showNotice(`Planilla del contador actualizada: ${providers} proveedor(es), ${purchases} compra(s) pendiente(s).`, "success");
     }
 
+    async function loadLogisticsEvents() {
+      if (!can("logistics:read")) return;
+      const container = document.getElementById("logistics-event-list");
+      if (container) container.innerHTML = `<div class="empty">Cargando eventos operativos...</div>`;
+
+      try {
+        const response = await fetch("/api/logistics-events");
+        const result = await readJsonResponse(response);
+        if (!result.ok) throw new Error(result.error || "No se pudieron cargar eventos de logistica.");
+        logisticsEvents = result.events || [];
+        renderLogisticsEvents();
+      } catch (error) {
+        if (container) container.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function renderLogisticsEvents() {
+      const container = document.getElementById("logistics-event-list");
+      if (!container) return;
+      container.classList.add("logistics-list");
+      if (!logisticsEvents.length) {
+        container.innerHTML = `<div class="empty">No hay eventos proximos o confirmados para logistica.</div>`;
+        return;
+      }
+
+      container.innerHTML = logisticsEvents.map((event) => {
+        const progress = event.progress || {};
+        return `
+          <article class="logistics-card" onclick="openLogisticsEvent('${escapeAttribute(event.id)}')">
+            <div>
+              <div class="logistics-title">${escapeHtml(event.name || "Evento sin nombre")}</div>
+              <div class="logistics-meta">${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} · ${escapeHtml(event.clientName || "Sin cliente")} · ${escapeHtml(event.venue || "Sin lugar")}</div>
+              <div class="logistics-meta">${escapeHtml(event.guestCount || 0)} invitados · ${escapeHtml(event.serviceType || "Servicio sin definir")} · ${escapeHtml(event.statusLabel || "")}</div>
+              <div class="progress-track" style="margin-top:10px;"><div class="progress-fill" style="width:${Math.max(0, Math.min(100, Number(progress.percent || 0)))}%;"></div></div>
+            </div>
+            <span class="progress-pill ${escapeAttribute(progress.status || "not_started")}">${escapeHtml(getLogisticsProgressLabel(progress.status))} · ${escapeHtml(progress.percent || 0)}%</span>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function getLogisticsProgressLabel(status) {
+      return {
+        not_started: "Sin iniciar",
+        in_progress: "En proceso",
+        complete: "Completo",
+      }[status] || "Sin iniciar";
+    }
+
+    async function openLogisticsEvent(id) {
+      if (!id) return;
+      const response = await fetch(`/api/logistics-event?id=${encodeURIComponent(id)}`);
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo abrir la ficha logistica.", "error");
+        return;
+      }
+      activeLogisticsEvent = result.event;
+      logisticsCategories = result.categories || [];
+      renderLogisticsEventDetail();
+      document.getElementById("logistics-event-detail").classList.add("open");
+    }
+
+    function renderLogisticsEventDetail() {
+      const event = activeLogisticsEvent;
+      if (!event) return;
+      const progress = event.progress || {};
+      document.getElementById("logistics-detail-title").textContent = event.name || "Evento";
+      document.getElementById("logistics-detail-subtitle").textContent =
+        `${event.clientName || "Sin cliente"} · ${formatShortDate(event.eventDate) || "Sin fecha"} · ${event.guestCount || 0} invitados`;
+      document.getElementById("logistics-detail-body").innerHTML = `
+        <div id="logistics-modal-notice" class="notice" style="position:sticky;top:0;margin-bottom:10px;z-index:4;display:none;"></div>
+        <div class="logistics-detail-grid">
+          ${logisticsInfo("Estado operativo", event.statusLabel || "Sin estado")}
+          ${logisticsInfo("Responsable", event.owner || "Sin responsable")}
+          ${logisticsInfo("Cliente", event.clientName || "Sin cliente")}
+          ${logisticsInfoHtml("Telefono cliente", buildPhoneHtml(event.clientPhone))}
+          ${logisticsInfo("Fecha y horario", [formatShortDate(event.eventDate), event.eventTime, event.schedule].filter(Boolean).join(" · ") || "Sin definir")}
+          ${logisticsInfoHtml("Lugar", buildVenueHtml(event))}
+          ${logisticsInfo("Servicio", event.serviceType || "Sin servicio")}
+          ${logisticsInfo("Invitados", event.guestCount || 0)}
+          ${logisticsInfo("Proxima accion", event.nextAction || "Sin definir")}
+          ${logisticsInfo("Avance", `${getLogisticsProgressLabel(progress.status)} · ${progress.completed || 0}/${progress.total || 0}`)}
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${Math.max(0, Math.min(100, Number(progress.percent || 0)))}%;"></div></div>
+        <section class="logistics-section">
+          <h3>Menu y bebidas</h3>
+          <div class="logistics-mini-list">
+            ${renderLogisticsMenu(event)}
+            ${renderLogisticsDrinks(event)}
+            ${renderLogisticsTableware(event)}
+          </div>
+        </section>
+        <section class="logistics-section">
+          <h3>Notas operativas</h3>
+          <div class="logistics-mini-list">
+            <div class="row"><strong>Observaciones</strong><div class="secondary">${escapeHtml(event.notes || "Sin notas")}</div></div>
+            <div class="row"><strong>Restricciones alimentarias</strong><div class="secondary">${escapeHtml(event.dietaryRestrictions || "Sin restricciones cargadas")}</div></div>
+            <div class="row"><strong>Detalle operativo previo</strong><div class="secondary">${escapeHtml(event.checklistDetails || "Sin detalle")}</div></div>
+          </div>
+        </section>
+        <section class="logistics-section">
+          <h3>Aprendizajes operativos</h3>
+          ${renderLogisticsLearnedSuggestions(event.learnedSuggestions || [])}
+          <div class="form-field full">
+            <label>Comentario post-evento</label>
+            <textarea id="logistics-post-event-notes" placeholder="Que no se deberia olvidar en proximos eventos similares" onchange="saveLogisticsSheetNow()">${escapeHtml(event.operationalSheet?.postEventNotes || "")}</textarea>
+          </div>
+          <div class="toolbar-actions" style="justify-content:space-between;">
+            <button class="filter" type="button" onclick="fillLogisticsNoNotes()">Sin comentarios</button>
+            <button class="approve" type="button" onclick="closeLogisticsOperationalEvent()">Solicitar cierre</button>
+          </div>
+        </section>
+        <section class="logistics-section">
+          <div class="toolbar-actions" style="justify-content:space-between;">
+            <h3>Sobrantes / almacenamiento</h3>
+            <button class="filter" type="button" onclick="addLogisticsLeftover()">Agregar sobrante</button>
+          </div>
+          <div id="logistics-leftovers">${renderLogisticsLeftovers(event.operationalSheet?.leftovers || [])}</div>
+        </section>
+        <section class="logistics-section">
+          <h3>Checklist operativo por rubro</h3>
+          <div id="logistics-checklist">${renderLogisticsCategories(event)}</div>
+        </section>
+      `;
+    }
+
+    function logisticsInfo(label, value) {
+      return `<div class="logistics-info"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value || "Sin definir")}</strong></div>`;
+    }
+
+    function logisticsInfoHtml(label, html) {
+      return `<div class="logistics-info"><span>${escapeHtml(label)}</span><strong>${html || "Sin definir"}</strong></div>`;
+    }
+
+    function buildVenueHtml(event) {
+      const venue = event.venueDetail || {};
+      const maps = venue.latitude && venue.longitude
+        ? `https://www.google.com/maps/search/?api=1&query=${venue.latitude},${venue.longitude}`
+        : (venue.address || venue.mapLabel || event.venue)
+          ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([venue.address || venue.mapLabel, event.venue].filter(Boolean).join(" "))}`
+        : "";
+      const lines = [
+        event.venue,
+        venue.address || venue.mapLabel,
+        venue.reference ? `Ref: ${venue.reference}` : "",
+      ].filter(Boolean).map(escapeHtml);
+      return `${lines.join("<br>")}${maps ? `<br><a href="${escapeAttribute(maps)}" target="_blank" rel="noopener">Abrir en Google Maps</a>` : ""}`;
+    }
+
+    function buildPhoneHtml(phone) {
+      const raw = String(phone || "").trim();
+      if (!raw) return "Sin telefono";
+      const digits = raw.replace(/\D+/g, "");
+      if (!digits) return escapeHtml(raw);
+      let whatsappDigits = digits;
+      if (!whatsappDigits.startsWith("54")) {
+        whatsappDigits = whatsappDigits.length >= 10 ? `549${whatsappDigits}` : `54${whatsappDigits}`;
+      } else if (whatsappDigits.startsWith("54261")) {
+        whatsappDigits = whatsappDigits.replace(/^54/, "549");
+      }
+      return `
+        ${escapeHtml(raw)}
+        <br><a href="tel:${escapeAttribute(digits)}">Llamar</a>
+        <br><a href="https://wa.me/${escapeAttribute(whatsappDigits)}" target="_blank" rel="noopener">Enviar WhatsApp</a>
+      `;
+    }
+
+    function renderLogisticsMenu(event) {
+      const items = getLogisticsMenuItemsForDisplay(event);
+      if (!items.length) {
+        return `<div class="row"><strong>Menu</strong><div class="secondary">${escapeHtml(event.selectedMenu || "Sin menu cargado")}</div></div>`;
+      }
+      return `
+        <div class="row">
+          <strong>Menu</strong>
+          <div class="logistics-menu-grid" style="margin-top:8px;">
+            ${items.map((item) => `
+              <div class="row">
+                <strong>${escapeHtml([item.quantity, item.name].filter(Boolean).join(" · ") || "Item")}</strong>
+                ${item.detail ? `<div class="secondary">${escapeHtml(item.detail)}</div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function getLogisticsMenuItemsForDisplay(event) {
+      const items = (event.menuItems || []).filter((item) => item.name || item.detail || item.quantity);
+      if (items.length !== 1 || items[0].quantity || items[0].detail || String(items[0].name || "").length < 120) {
+        return items;
+      }
+      return splitLongMenuText(items[0].name).map((name) => ({ name }));
+    }
+
+    function splitLongMenuText(value) {
+      return String(value || "")
+        .replace(/\s+/g, " ")
+        .split(/\s+(?=[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÑáéíóúñ]{3,})/g)
+        .map((item) => item.trim())
+        .filter((item) => item.length > 2);
+    }
+
+    function renderLogisticsDrinks(event) {
+      const drinks = [event.includesDrinks, event.drinkType].filter(Boolean).join(" · ");
+      return `<div class="row"><strong>Bebidas</strong><div class="secondary">${escapeHtml(drinks || "Sin bebidas definidas")}</div></div>`;
+    }
+
+    function renderLogisticsTableware(event) {
+      const parts = [
+        ["Vajilla", event.tableware],
+        ["Cantidades", event.tablewareQuantities],
+        ["Detalle", event.tablewareDetail],
+        ["Contenedores grandes", event.largeContainers],
+        ["Contenedores chicos", event.smallContainers],
+      ].filter(Boolean);
+      const rows = parts
+        .filter(([, value]) => value)
+        .map(([label, value]) => `<div class="secondary"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</div>`)
+        .join("");
+      return `<div class="row logistics-tableware-card"><strong>Vajilla y contenedores</strong>${rows || `<div class="secondary">Sin detalle</div>`}</div>`;
+    }
+
+    function renderLogisticsLearnedSuggestions(items = []) {
+      if (!items.length) {
+        return `<div class="empty">Sin aprendizajes previos para este tipo de servicio.</div>`;
+      }
+      return `
+        <div class="logistics-mini-list">
+          ${items.map((item) => `
+            <div class="row">
+              <strong>${escapeHtml(item.eventName || "Evento anterior")}</strong>
+              <div class="secondary">${escapeHtml(formatShortDate(item.eventDate) || "")} · ${escapeHtml(item.serviceType || "")}</div>
+              <div>${escapeHtml(item.note || "")}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderLogisticsCategories(event) {
+      const sheet = event.operationalSheet || { categories: {} };
+      return logisticsCategories.map((category) => {
+        const items = sheet.categories?.[category.id] || [];
+        const categoryProgress = event.progress?.byCategory?.[category.id] || {};
+        return `
+          <section class="logistics-category" data-category-id="${escapeAttribute(category.id)}">
+            <div class="logistics-category-head">
+              <div>
+                <strong>${escapeHtml(category.label)}</strong>
+                <div class="secondary">${escapeHtml(categoryProgress.completed || 0)}/${escapeHtml(categoryProgress.total || 0)} completo(s)</div>
+              </div>
+              <button class="filter" type="button" onclick="addLogisticsChecklistItem('${escapeAttribute(category.id)}')">Agregar item</button>
+            </div>
+            <div class="logistics-category-items">
+              ${items.length ? items.map((item) => renderLogisticsChecklistItem(item)).join("") : `<div class="empty">Sin items en este rubro.</div>`}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function renderLogisticsChecklistItem(item = {}) {
+      const hasExtra = item.owner || item.note;
+      return `
+        <div class="logistics-item-row" data-item-id="${escapeAttribute(item.id || "")}">
+          <input class="logistics-item-checked" type="checkbox" ${item.checked ? "checked" : ""} onchange="saveLogisticsSheetNow()">
+          <textarea class="logistics-item-text" placeholder="Observacion o item operativo" onchange="saveLogisticsSheetNow()">${escapeHtml(item.text || "")}</textarea>
+          <input class="logistics-item-quantity" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}" onchange="saveLogisticsSheetNow()">
+          <div class="logistics-item-actions">
+            <button class="filter icon-action" type="button" onclick="toggleLogisticsItemMenu(this)">...</button>
+            <div class="logistics-item-menu">
+              <button type="button" onclick="showLogisticsItemExtra(this)">Agregar nota</button>
+              <button type="button" onclick="removeLogisticsChecklistItem(this)">Eliminar</button>
+            </div>
+          </div>
+          <div class="logistics-item-extra ${hasExtra ? "open" : ""}">
+            <input class="logistics-item-owner" placeholder="Responsable" value="${escapeAttribute(item.owner || "")}" onchange="saveLogisticsSheetNow()">
+            <textarea class="logistics-item-note" placeholder="Nota" onchange="saveLogisticsSheetNow()">${escapeHtml(item.note || "")}</textarea>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderLogisticsLeftovers(items = []) {
+      if (!items.length) return `<div class="empty">Sin sobrantes cargados.</div>`;
+      return items.map((item) => renderLogisticsLeftoverRow(item)).join("");
+    }
+
+    function toggleLogisticsItemMenu(button) {
+      const menu = button.closest(".logistics-item-actions")?.querySelector(".logistics-item-menu");
+      document.querySelectorAll(".logistics-item-menu.open").forEach((item) => {
+        if (item !== menu) item.classList.remove("open");
+      });
+      menu?.classList.toggle("open");
+    }
+
+    function showLogisticsItemExtra(button) {
+      const row = button.closest(".logistics-item-row");
+      row?.querySelector(".logistics-item-extra")?.classList.add("open");
+      row?.querySelector(".logistics-item-menu")?.classList.remove("open");
+    }
+
+    function renderLogisticsLeftoverRow(item = {}) {
+      return `
+        <div class="logistics-leftover-row" data-leftover-id="${escapeAttribute(item.id || "")}">
+          <input class="leftover-food" placeholder="Comida sobrante" value="${escapeAttribute(item.food || "")}" onchange="saveLogisticsSheetNow()">
+          <input class="leftover-quantity" placeholder="Cantidad" value="${escapeAttribute(item.quantity || "")}" onchange="saveLogisticsSheetNow()">
+          <select class="leftover-destination" onchange="saveLogisticsSheetNow()">
+            ${["", "Freezer", "Heladera", "Deposito", "Descartar", "Otro"].map((value) => `<option value="${escapeAttribute(value)}" ${value === (item.destination || "") ? "selected" : ""}>${escapeHtml(value || "Destino")}</option>`).join("")}
+          </select>
+          <input class="leftover-storage" placeholder="Freezer/heladera" value="${escapeAttribute(item.storage || "")}" onchange="saveLogisticsSheetNow()">
+          <input class="leftover-notes" placeholder="Notas" value="${escapeAttribute(item.notes || "")}" onchange="saveLogisticsSheetNow()">
+          <button class="reject icon-action" type="button" onclick="removeLogisticsLeftover(this)">x</button>
+        </div>
+      `;
+    }
+
+    function addLogisticsChecklistItem(categoryId) {
+      const section = document.querySelector(`.logistics-category[data-category-id="${CSS.escape(categoryId)}"] .logistics-category-items`);
+      if (!section) return;
+      if (section.querySelector(".empty")) section.innerHTML = "";
+      section.insertAdjacentHTML("beforeend", renderLogisticsChecklistItem({ id: `item-${Date.now()}` }));
+      section.lastElementChild?.querySelector(".logistics-item-text")?.focus();
+    }
+
+    function removeLogisticsChecklistItem(button) {
+      button.closest(".logistics-item-row")?.remove();
+      saveLogisticsSheetNow();
+    }
+
+    function addLogisticsLeftover() {
+      const container = document.getElementById("logistics-leftovers");
+      if (!container) return;
+      if (container.querySelector(".empty")) container.innerHTML = "";
+      container.insertAdjacentHTML("beforeend", renderLogisticsLeftoverRow({ id: `sobrante-${Date.now()}` }));
+    }
+
+    function removeLogisticsLeftover(button) {
+      button.closest(".logistics-leftover-row")?.remove();
+      saveLogisticsSheetNow();
+    }
+
+    function collectLogisticsOperationalSheet() {
+      const categories = {};
+      for (const category of logisticsCategories) {
+        categories[category.id] = Array.from(document.querySelectorAll(`.logistics-category[data-category-id="${CSS.escape(category.id)}"] .logistics-item-row`))
+          .map((row) => ({
+            id: row.dataset.itemId || `item-${Date.now()}`,
+            text: row.querySelector(".logistics-item-text")?.value.trim() || "",
+            quantity: row.querySelector(".logistics-item-quantity")?.value.trim() || "",
+            checked: row.querySelector(".logistics-item-checked")?.checked || false,
+            owner: row.querySelector(".logistics-item-owner")?.value.trim() || "",
+            note: row.querySelector(".logistics-item-note")?.value.trim() || "",
+            updatedAt: new Date().toISOString(),
+          }))
+          .filter((item) => item.text);
+      }
+      const leftovers = Array.from(document.querySelectorAll("#logistics-leftovers .logistics-leftover-row"))
+        .map((row) => ({
+          id: row.dataset.leftoverId || `sobrante-${Date.now()}`,
+          food: row.querySelector(".leftover-food")?.value.trim() || "",
+          quantity: row.querySelector(".leftover-quantity")?.value.trim() || "",
+          destination: row.querySelector(".leftover-destination")?.value || "",
+          storage: row.querySelector(".leftover-storage")?.value.trim() || "",
+          notes: row.querySelector(".leftover-notes")?.value.trim() || "",
+          updatedAt: new Date().toISOString(),
+        }))
+        .filter((item) => item.food);
+      const postEventNotes = document.getElementById("logistics-post-event-notes")?.value.trim() || "";
+      return { categories, leftovers, postEventNotes, updatedAt: new Date().toISOString() };
+    }
+
+    function saveLogisticsSheetNow() {
+      clearTimeout(logisticsSaveTimer);
+      logisticsSaveTimer = setTimeout(saveLogisticsSheet, 250);
+    }
+
+    function fillLogisticsNoNotes() {
+      const field = document.getElementById("logistics-post-event-notes");
+      if (!field) return;
+      field.value = "Sin comentarios";
+      saveLogisticsSheetNow();
+    }
+
+    function showLogisticsModalNotice(message, type = "error") {
+      const box = document.getElementById("logistics-modal-notice");
+      if (!box) {
+        showNotice(message, type);
+        return;
+      }
+      box.textContent = message;
+      box.className = `notice open ${type === "error" ? "error" : ""}`;
+      box.style.display = "block";
+      box.onclick = () => {
+        box.className = "notice";
+        box.style.display = "none";
+      };
+      box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function scrollLogisticsCategory(categoryId) {
+      const section = document.querySelector(`.logistics-category[data-category-id="${CSS.escape(categoryId)}"]`);
+      section?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function saveLogisticsSheet() {
+      if (!activeLogisticsEvent?.id) return;
+      const operationalSheet = collectLogisticsOperationalSheet();
+      const response = await fetch("/api/logistics-event-checklist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: activeLogisticsEvent.id, operationalSheet }),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar la ficha logistica.", "error");
+        return;
+      }
+      activeLogisticsEvent = result.event;
+      logisticsCategories = result.categories || logisticsCategories;
+      const index = logisticsEvents.findIndex((item) => item.id === activeLogisticsEvent.id);
+      if (index >= 0) logisticsEvents[index] = { ...logisticsEvents[index], progress: activeLogisticsEvent.progress };
+      renderLogisticsEvents();
+      renderLogisticsEventDetail();
+    }
+
+    async function closeLogisticsOperationalEvent() {
+      if (!activeLogisticsEvent?.id) return;
+      clearTimeout(logisticsSaveTimer);
+      const operationalSheet = collectLogisticsOperationalSheet();
+      if (!operationalSheet.postEventNotes) {
+        showLogisticsModalNotice("Antes de cerrar, cargue un comentario post-evento. Puede escribir 'Sin comentarios'.", "error");
+        document.getElementById("logistics-post-event-notes")?.focus();
+        return;
+      }
+      const pendingTeardown = (operationalSheet.categories?.desmontaje || []).filter((item) => !item.checked);
+      if (pendingTeardown.length) {
+        showLogisticsModalNotice("Para cerrar, complete primero Desmontaje y descarga en deposito.", "error");
+        scrollLogisticsCategory("desmontaje");
+        return;
+      }
+
+      const response = await fetch("/api/logistics-event-close", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: activeLogisticsEvent.id, operationalSheet }),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showLogisticsModalNotice(result.error || "No se pudo cerrar el evento.", "error");
+        if (String(result.error || "").toLowerCase().includes("desmontaje")) scrollLogisticsCategory("desmontaje");
+        return;
+      }
+
+      showNotice("Cierre solicitado. Administracion debe autorizarlo para pasarlo a realizado.", "success");
+      hideLogisticsEventDetail();
+      activeLogisticsEvent = null;
+      await loadLogisticsEvents();
+      await loadErp();
+    }
+
+    function hideLogisticsEventDetail() {
+      document.getElementById("logistics-event-detail").classList.remove("open");
+    }
+
+    function closeLogisticsEventDetail(event) {
+      if (event.target.id === "logistics-event-detail") {
+        hideLogisticsEventDetail();
+      }
+    }
+
     function renderPipeline() {
-      const role = document.getElementById("role-filter").value;
       const container = document.getElementById("pipeline-board");
+      if (!container) return;
+      const role = document.getElementById("role-filter")?.value || "";
       const columns = erpData.pipeline?.columns || [];
 
       container.innerHTML = columns.map((column) => {
-        const items = (column.items || []).filter((item) => !role || normalizeSearch(item.owner).includes(normalizeSearch(role)) || normalizeSearch(item.role).includes(normalizeSearch(role)));
+        const items = (column.items || [])
+          .filter((item) => !role || normalizeSearch(item.owner).includes(normalizeSearch(role)) || normalizeSearch(item.role).includes(normalizeSearch(role)))
+          .slice(0, 4);
         return `
-          <section class="pipeline-column">
-            <div class="pipeline-title"><span>${escapeHtml(column.label)}</span><span>${items.length}</span></div>
+          <section class="pipeline-column commercial-status-card">
+            <div class="pipeline-title"><span>${escapeHtml(column.label)}</span><strong>${(column.items || []).length}</strong></div>
             ${items.length ? items.map((item) => `
-              <article class="pipeline-card">
-                <div class="primary">${escapeHtml(item.title)}</div>
-                <div class="secondary">${escapeHtml(item.subtitle || "Sin cliente")}</div>
-                <div class="secondary">${item.date ? escapeHtml(formatShortDate(item.date)) : "Sin fecha"} ${item.amount ? `· ${formatCurrency(item.amount)}` : ""}</div>
-              </article>
-            `).join("") : `<div class="empty">Sin items</div>`}
+              <button class="summary-row" type="button" ${item.source === "event" ? `onclick="showEventOverview('${escapeAttribute(item.id)}')"` : ""}>
+                <strong>${escapeHtml(item.title)}</strong>
+                <span>${escapeHtml(item.subtitle || "Sin cliente")} · ${item.date ? escapeHtml(formatShortDate(item.date)) : "Sin fecha"} ${item.amount ? `· ${formatCurrency(item.amount)}` : ""}</span>
+              </button>
+            `).join("") : `<div class="empty compact-empty">Sin items</div>`}
           </section>
         `;
       }).join("");
@@ -4419,6 +6502,7 @@
 
     function renderVenueList() {
       const container = document.getElementById("venue-list");
+      if (!container) return;
       const term = normalizeSearch(document.getElementById("venue-search")?.value || "");
       const venues = (erpData.venues || []).filter((venue) => {
         const searchable = [venue.name, venue.address, venue.phone, venue.contactName, venue.reference, venue.notes].join(" ");
@@ -4435,6 +6519,23 @@
           <div class="venue-title">${escapeHtml(venue.name || "Lugar sin nombre")}</div>
           <div class="venue-meta">${escapeHtml(venue.address || venue.mapLabel || "Direccion pendiente")}</div>
           <div class="venue-meta">${escapeHtml([venue.phone, venue.contactName].filter(Boolean).join(" · ") || "Contacto pendiente")}</div>
+        </article>
+      `).join("");
+    }
+
+    function renderCommercialCustomers() {
+      const container = document.getElementById("commercial-customer-list");
+      if (!container) return;
+      const customers = (erpData.customers || []).slice(0, 12);
+      if (!customers.length) {
+        container.innerHTML = `<div class="empty">Todavia no hay clientes cargados.</div>`;
+        return;
+      }
+      container.innerHTML = customers.map((customer) => `
+        <article class="compact-item customer-history-card">
+          <div class="primary">${escapeHtml(customer.fullName || customer.contactName || "Cliente sin nombre")}</div>
+          <div class="secondary">${escapeHtml(customer.displayPhone || "Sin telefono")} · ${escapeHtml(customer.eventsCount || 0)} evento(s) · ${escapeHtml(formatPercent(customer.closeRate || 0))} cierre</div>
+          <div class="secondary">${escapeHtml([customer.preferences, customer.dietaryRestrictions].filter(Boolean).join(" · ") || "Sin preferencias registradas")}</div>
         </article>
       `).join("");
     }
@@ -4735,6 +6836,7 @@
 
     function renderProductAlerts() {
       const container = document.getElementById("product-alert-list");
+      if (!container) return;
       const alerts = getSortedProductAlerts();
 
       if (!alerts.length) {
@@ -4806,9 +6908,10 @@
 
     function renderErpEvents() {
       const container = document.getElementById("erp-event-list");
+      if (!container) return;
       const events = erpData.events || [];
       const activeEvents = events
-        .filter((event) => event.status !== "done")
+        .filter((event) => !["done", "lost", "cancelled"].includes(event.status))
         .sort(compareEventsByDate);
       const completedEvents = events
         .filter((event) => event.status === "done")
@@ -4866,7 +6969,10 @@
               <div class="erp-card-title">${escapeHtml(event.name)}</div>
               <div class="erp-card-meta">${escapeHtml(event.clientName || "Sin cliente")} | ${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} | ${escapeHtml(event.guestCount || 0)} invitados ${event.owner ? `| ${escapeHtml(event.owner)}` : ""}</div>
             </div>
-            <span class="erp-status">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
+            <div style="display:grid;gap:6px;justify-items:end;">
+              <span class="erp-status">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
+              ${event.logisticsStatus === "pending_admin_close" ? `<span class="badge missing_info">Cierre logistico pendiente</span>` : ""}
+            </div>
           </div>
           <div class="event-finance">
             <div class="event-number highlight"><span>Venta</span><strong>${formatCurrency(event.quoteTotal || 0)}</strong></div>
@@ -4889,7 +6995,9 @@
           <div class="actions" style="margin-top:10px;" onclick="event.stopPropagation()">
             <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}')">Editar</button>
             <button class="approve" onclick="startErpQuoteForEvent('${escapeAttribute(event.id)}')">Presupuestar</button>
-            <button class="filter" onclick="markErpEventDone('${escapeAttribute(event.id)}')">Realizado</button>
+            ${event.logisticsStatus === "pending_admin_close"
+              ? `<button class="approve" onclick="approveLogisticsEventClose('${escapeAttribute(event.id)}')">Autorizar cierre</button>`
+              : `<button class="filter" onclick="markErpEventDone('${escapeAttribute(event.id)}')">Realizado</button>`}
             <button class="reject" onclick="deleteErpEvent('${escapeAttribute(event.id)}')">Eliminar</button>
           </div>
         </article>
@@ -4914,16 +7022,19 @@
       if (!event) return;
 
       document.getElementById("detail-title").textContent = event.name || "Evento";
-      document.getElementById("detail-subtitle").textContent = `${event.clientName || "Sin cliente"} | ${formatShortDate(event.eventDate) || "Sin fecha"} | ${event.guestCount || 0} invitados`;
+      document.getElementById("detail-subtitle").textContent = `${event.clientName || "Sin cliente"} | ${formatShortDate(event.eventDate) || "Sin fecha"}${event.eventTime ? ` ${event.eventTime}` : ""} | ${event.guestCount || 0} invitados`;
       document.getElementById("detail-fields").innerHTML = `
         <div class="event-detail-grid">
           <div class="event-detail-item"><span>Estado</span><strong>${escapeHtml(getErpEventStatusLabel(event.status))}</strong></div>
+          <div class="event-detail-item"><span>Horario</span><strong>${escapeHtml(event.eventTime || "Sin definir")}</strong></div>
           <div class="event-detail-item"><span>Responsable</span><strong>${escapeHtml(event.owner || "Sin responsable")}</strong></div>
           <div class="event-detail-item"><span>Lugar</span><strong>${escapeHtml(event.venue || "Sin lugar")}</strong></div>
           <div class="event-detail-item"><span>Servicio</span><strong>${escapeHtml(event.serviceType || "Sin servicio")}</strong></div>
           <div class="event-detail-item"><span>Asistencia</span><strong>${escapeHtml(getAssistanceLabel(event))}</strong></div>
+          <div class="event-detail-item"><span>Facturacion</span><strong>${escapeHtml(getInvoiceStatusLabel(event.invoiceStatus))}${event.invoiceNumber ? ` · ${escapeHtml(event.invoiceNumber)}` : ""}</strong></div>
           <div class="event-detail-item"><span>Menu</span>${renderMenuItems(event)}</div>
           <div class="event-detail-item"><span>Bebidas</span><strong>${escapeHtml([event.includesDrinks, event.drinkType].filter(Boolean).join(" · ") || "Sin definir")}</strong></div>
+          <div class="event-detail-item"><span>Vajilla</span><strong>${escapeHtml([event.tableware, event.tablewareQuantities, event.tablewareDetail].filter(Boolean).join(" · ") || "Sin definir")}</strong></div>
           <div class="event-detail-item"><span>Rol operativo</span><strong>${escapeHtml(event.role || "Sin definir")}</strong></div>
           <div class="event-detail-item"><span>Proxima accion</span><strong>${escapeHtml(event.nextAction || "Sin definir")}</strong></div>
         </div>
@@ -4954,14 +7065,18 @@
           <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}'); hideDetail();">Editar</button>
           <button class="filter" onclick="showOperationalSheet('${escapeAttribute(event.id)}')">Ficha operativa</button>
           ${event.status !== "done" ? `<button class="approve" onclick="startErpQuoteForEvent('${escapeAttribute(event.id)}'); hideDetail();">Presupuestar</button>` : ""}
-          ${event.status !== "done" ? `<button class="filter" onclick="markErpEventDone('${escapeAttribute(event.id)}'); hideDetail();">Realizado</button>` : ""}
+          ${event.status !== "done"
+            ? event.logisticsStatus === "pending_admin_close"
+              ? `<button class="approve" onclick="approveLogisticsEventClose('${escapeAttribute(event.id)}'); hideDetail();">Autorizar cierre</button>`
+              : `<button class="filter" onclick="markErpEventDone('${escapeAttribute(event.id)}'); hideDetail();">Realizado</button>`
+            : ""}
         </div>
       `;
       document.getElementById("detail").classList.add("open");
     }
 
     function renderEventPurchases(event) {
-      const purchases = event.purchases || [];
+      const purchases = getEventPurchaseRows(event);
       if (!purchases.length) {
         return `<div class="empty" style="margin-top:12px;">No hay compras imputadas a este evento.</div>`;
       }
@@ -4972,6 +7087,7 @@
             <div>Fecha</div>
             <div>Proveedor</div>
             <div>Compra</div>
+            <div>Cantidad</div>
             <div>Total</div>
             <div>Pago</div>
           </div>
@@ -4980,6 +7096,7 @@
               <div>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</div>
               <div>${escapeHtml(purchase.provider || "Sin proveedor")}</div>
               <div>${escapeHtml(purchase.description || "Sin descripcion")}</div>
+              <div>${escapeHtml(purchase.quantity || "")}</div>
               <div><strong>${formatCurrency(purchase.totalAmount || 0)}</strong></div>
               <div><span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span></div>
             </div>
@@ -4988,10 +7105,34 @@
       `;
     }
 
+    function getEventPurchaseRows(event) {
+      return (event.purchases || []).flatMap((purchase) => {
+        const items = purchase.lineItems || [];
+        if (!items.length) {
+          return [{
+            date: purchase.date,
+            provider: purchase.provider,
+            description: purchase.description,
+            quantity: "",
+            totalAmount: purchase.totalAmount,
+            paymentStatus: purchase.paymentStatus,
+          }];
+        }
+        return items.map((item) => ({
+          date: purchase.date,
+          provider: purchase.provider,
+          description: item.description || purchase.description,
+          quantity: item.quantity,
+          totalAmount: item.total,
+          paymentStatus: purchase.paymentStatus,
+        }));
+      });
+    }
+
     function renderMenuItems(event) {
       const items = event.menuItems || [];
       if (!items.length) return `<strong>${escapeHtml(event.selectedMenu || "Sin menu")}</strong>`;
-      return `<div class="event-mini-list">${items.map((item) => `<div><strong>${escapeHtml(item.name)}</strong>${item.detail ? `<span class="secondary"> ${escapeHtml(item.detail)}</span>` : ""}</div>`).join("")}</div>`;
+      return `<div class="event-mini-list">${items.map((item) => `<div><strong>${escapeHtml([item.quantity, item.name].filter(Boolean).join(" · "))}</strong>${item.detail ? `<span class="secondary"> ${escapeHtml(item.detail)}</span>` : ""}</div>`).join("")}</div>`;
     }
 
     function getAssistanceLabel(event) {
@@ -5008,7 +7149,7 @@
       if (!items.length) return "";
       return `
         <div class="event-purchases">
-          <div class="event-purchase-row header">
+          <div class="event-purchase-row event-stock-row header">
             <div>Tipo</div>
             <div>Mercaderia</div>
             <div>Cantidad</div>
@@ -5016,7 +7157,7 @@
             <div>Origen</div>
           </div>
           ${items.map((item) => `
-            <div class="event-purchase-row">
+            <div class="event-purchase-row event-stock-row">
               <div>Stock</div>
               <div>${escapeHtml(item.description || "Sin detalle")}</div>
               <div>${escapeHtml(item.quantity || "")}</div>
@@ -5047,16 +7188,19 @@
 
     function getEventMapsUrl(event) {
       const venue = getEventVenueRecord(event) || {};
+      if (event.latitude && event.longitude) {
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${event.latitude},${event.longitude}`)}`;
+      }
       if (venue.latitude && venue.longitude) {
         return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${venue.latitude},${venue.longitude}`)}`;
       }
-      const query = [venue.address, venue.mapLabel, event.venue].filter(Boolean).join(" ");
+      const query = [event.venueAddress, event.mapLabel, venue.address, venue.mapLabel, event.venue].filter(Boolean).join(" ");
       return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : "";
     }
 
     function getEventVenueReference(event) {
       const venue = getEventVenueRecord(event);
-      return venue?.reference || "";
+      return event.venueReference || venue?.reference || "";
     }
 
     function getOperationalMenuItems(event) {
@@ -5150,11 +7294,13 @@
       const purchases = event.purchases || [];
       const mapsUrl = getEventMapsUrl(event);
       const venueReference = getEventVenueReference(event);
+      const clientPhone = getEventClientPhone(event);
       return [
         `FICHA OPERATIVA - ${event.name || "Evento"}`,
         "",
         `Cliente: ${event.clientName || "Sin cliente"}`,
-        `Fecha: ${formatShortDate(event.eventDate) || "Sin fecha"}`,
+        `Telefono: ${clientPhone || "Sin telefono"}`,
+        `Fecha: ${[formatShortDate(event.eventDate), event.eventTime].filter(Boolean).join(" - ") || "Sin fecha"}`,
         `Invitados: ${event.guestCount || 0}`,
         `Lugar: ${event.venue || "Sin lugar"}`,
         `Ubicacion: ${mapsUrl || "Sin link de mapa"}`,
@@ -5166,12 +7312,15 @@
         `Momentos: ${event.eventMoments || "A definir"}`,
         "Menu:",
         ...(getOperationalMenuItems(event).length
-          ? getOperationalMenuItems(event).map((item) => `- ${item.name}${item.detail ? `: ${item.detail}` : ""}`)
+          ? getOperationalMenuItems(event).map((item) => `- ${[item.quantity, item.name].filter(Boolean).join(" | ")}${item.detail ? `: ${item.detail}` : ""}`)
           : [`- ${event.selectedMenu || "A definir"}`]),
         `Bebidas: ${[event.includesDrinks, event.drinkType].filter(Boolean).join(" - ") || "A definir"}`,
         "",
         "OPERACION",
         `Vajilla: ${event.tableware || "A definir"}`,
+        `Cantidades vajilla: ${event.tablewareQuantities || "A definir"}`,
+        `Detalle vajilla: ${event.tablewareDetail || "A definir"}`,
+        `Contenedores: grandes ${event.largeContainers || 0} | chicos ${event.smallContainers || 0}`,
         `Asistencia: ${getAssistanceLabel(event)}`,
         `Personal: ${event.staff || "A definir"}`,
         `Horarios: ${event.schedule || "A definir"}`,
@@ -5190,7 +7339,7 @@
         supplies.length ? supplies.map((item) => `- ${item}`).join("\n") : "- Sin sugerencias todavia",
         "",
         "COMPRAS IMPUTADAS",
-        purchases.length ? purchases.map((purchase) => `- ${formatShortDate(purchase.date) || ""} | ${purchase.provider || ""} | ${purchase.description || ""} | ${formatCurrency(purchase.totalAmount || 0)} | ${purchase.paymentStatus || "Pendiente"}`).join("\n") : "- Sin compras imputadas",
+        getEventPurchaseRows(event).length ? getEventPurchaseRows(event).map((purchase) => `- ${formatShortDate(purchase.date) || ""} | ${purchase.provider || ""} | ${purchase.description || ""} | ${purchase.quantity ? `${purchase.quantity} | ` : ""}${formatCurrency(purchase.totalAmount || 0)} | ${purchase.paymentStatus || "Pendiente"}`).join("\n") : "- Sin compras imputadas",
         "",
         "STOCK USADO / COSTO FICTICIO",
         event.stockItems?.length ? event.stockItems.map((item) => `- ${item.description || "Stock"} | ${item.quantity || ""} x ${formatCurrency(item.unitAmount || 0)} | ${formatCurrency(item.total || 0)}`).join("\n") : "- Sin stock imputado",
@@ -5199,7 +7348,20 @@
       ].join("\n");
     }
 
+    function getEventClientPhone(event) {
+      const key = normalizeSearch(event.clientName || "");
+      const customer = (erpData.customers || allCustomers || []).find((item) =>
+        key && [item.fullName, item.contactName, item.displayPhone].some((value) => normalizeSearch(value || "") === key)
+      );
+      return customer?.displayPhone || customer?.phone || "";
+    }
+
     function showOperationalSheet(id) {
+      if (can("logistics:write")) {
+        hideDetail();
+        openLogisticsEvent(id);
+        return;
+      }
       const event = (erpData.events || []).find((item) => item.id === id);
       if (!event) return;
       const supplies = getEventSuggestedSupplies(event);
@@ -5249,6 +7411,7 @@
 
     function renderErpQuotes() {
       const container = document.getElementById("erp-quote-list");
+      if (!container) return;
       const quotes = erpData.quotes || [];
       const eventById = new Map((erpData.events || []).map((event) => [event.id, event]));
       const activeQuotes = quotes.filter((quote) => eventById.get(quote.eventId)?.status !== "done");
@@ -5419,6 +7582,7 @@
     function renderEventMenuLine(item = {}) {
       return `
         <div class="menu-line">
+          <input class="event-menu-quantity" placeholder="Cantidad" value="${escapeAttribute(item.quantity || "")}">
           <input class="event-menu-name" placeholder="Item del menu" value="${escapeAttribute(item.name || "")}">
           <input class="event-menu-detail" placeholder="Detalle opcional" value="${escapeAttribute(item.detail || "")}">
           <button class="reject" type="button" onclick="this.closest('.menu-line').remove()">x</button>
@@ -5433,10 +7597,98 @@
     function getEventMenuItems() {
       return Array.from(document.querySelectorAll("#event-menu-items .menu-line"))
         .map((row) => ({
+          quantity: row.querySelector(".event-menu-quantity")?.value.trim() || "",
           name: row.querySelector(".event-menu-name")?.value.trim() || "",
           detail: row.querySelector(".event-menu-detail")?.value.trim() || "",
         }))
-        .filter((item) => item.name || item.detail);
+        .filter((item) => item.name || item.detail || item.quantity);
+    }
+
+    function getOperationalCategoryList() {
+      return logisticsCategories.length ? logisticsCategories : operationalCategoryDefaults;
+    }
+
+    function renderEventOperationalChecklist(sheet = {}) {
+      const container = document.getElementById("event-operational-checklist");
+      if (!container) return;
+      const categories = sheet.categories || {};
+      container.innerHTML = getOperationalCategoryList().map((category) => {
+        const items = Array.isArray(categories[category.id]) ? categories[category.id] : [];
+        return `
+          <section class="logistics-category event-operational-category" data-category-id="${escapeAttribute(category.id)}">
+            <div class="logistics-category-head">
+              <strong>${escapeHtml(category.label)}</strong>
+              <button class="filter" type="button" onclick="addEventOperationalItem('${escapeAttribute(category.id)}')">Agregar item</button>
+            </div>
+            <div class="event-operational-items">
+              ${items.length ? items.map(renderEventOperationalItem).join("") : `<div class="empty">Sin items cargados.</div>`}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function renderEventOperationalItem(item = {}) {
+      return `
+        <div class="event-operational-row" data-item-id="${escapeAttribute(item.id || `item-${Date.now()}`)}">
+          <input class="event-operational-checked" type="checkbox" ${item.checked ? "checked" : ""}>
+          <input class="event-operational-text" placeholder="Item operativo" value="${escapeAttribute(item.text || "")}">
+          <input class="event-operational-quantity" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}">
+          <button class="reject icon-action" type="button" onclick="removeEventOperationalItem(this)">x</button>
+        </div>
+      `;
+    }
+
+    function addEventOperationalItem(categoryId) {
+      const container = document.querySelector(`.event-operational-category[data-category-id="${CSS.escape(categoryId)}"] .event-operational-items`);
+      if (!container) return;
+      if (container.querySelector(".empty")) container.innerHTML = "";
+      container.insertAdjacentHTML("beforeend", renderEventOperationalItem({ id: `item-${Date.now()}` }));
+      container.lastElementChild?.querySelector(".event-operational-text")?.focus();
+    }
+
+    function removeEventOperationalItem(button) {
+      const container = button.closest(".event-operational-items");
+      button.closest(".event-operational-row")?.remove();
+      if (container && !container.querySelector(".event-operational-row")) {
+        container.innerHTML = `<div class="empty">Sin items cargados.</div>`;
+      }
+    }
+
+    function collectEventOperationalSheet() {
+      const eventId = document.getElementById("erp-event-form")?.elements.id.value || "";
+      const existing = (erpData.events || []).find((item) => item.id === eventId)?.operationalSheet || {};
+      const categories = {};
+      for (const category of getOperationalCategoryList()) {
+        categories[category.id] = Array.from(document.querySelectorAll(`.event-operational-category[data-category-id="${CSS.escape(category.id)}"] .event-operational-row`))
+          .map((row) => ({
+            id: row.dataset.itemId || `item-${Date.now()}`,
+            text: row.querySelector(".event-operational-text")?.value.trim() || "",
+            quantity: row.querySelector(".event-operational-quantity")?.value.trim() || "",
+            checked: row.querySelector(".event-operational-checked")?.checked || false,
+            owner: "",
+            note: "",
+            updatedAt: new Date().toISOString(),
+          }))
+          .filter((item) => item.text);
+      }
+      return { categories, deletedSeeds: existing.deletedSeeds || {}, postEventNotes: existing.postEventNotes || "", leftovers: existing.leftovers || [], updatedAt: new Date().toISOString() };
+    }
+
+    function suggestDietaryRestrictionItems() {
+      const form = document.getElementById("erp-event-form");
+      const field = form?.elements.dietaryRestrictions;
+      if (!field) return;
+      const current = field.value.trim();
+      const menuItems = getEventMenuItems().map((item) => item.name).filter(Boolean);
+      const suggestions = [];
+      if (!current) suggestions.push("Sin TACC / celiacos", "Vegetariano", "Sin lactosa");
+      if (menuItems.length) {
+        suggestions.push(`Preparar alternativa identificada para: ${menuItems.slice(0, 3).join(", ")}`);
+      }
+      field.value = Array.from(new Set([current, ...suggestions].filter(Boolean))).join("; ");
+      form.elements.dietaryRestrictionMode.value = "yes";
+      showNotice("Sugerencias de restricciones agregadas al evento.");
     }
 
     function renderEventStockLines(items = []) {
@@ -5566,6 +7818,16 @@
     async function saveErpEvent(event) {
       event.preventDefault();
       const payload = Object.fromEntries(new FormData(event.target).entries());
+      const selectedVenue = (erpData.venues || []).find((venue) => (
+        normalizeSearch(venue.name || "") === normalizeSearch(payload.venue || "")
+      ));
+      if (selectedVenue) {
+        payload.venueAddress = selectedVenue.address || "";
+        payload.venueReference = selectedVenue.reference || "";
+        payload.latitude = selectedVenue.latitude ?? "";
+        payload.longitude = selectedVenue.longitude ?? "";
+        payload.mapLabel = selectedVenue.mapLabel || "";
+      }
       payload.checklist = {
         purchases: event.target.elements.checklistPurchases.checked,
         production: event.target.elements.checklistProduction.checked,
@@ -5580,6 +7842,7 @@
       payload.menuItems = getEventMenuItems();
       payload.selectedMenu = payload.menuItems.map((item) => [item.name, item.detail].filter(Boolean).join(" - ")).join(", ");
       payload.stockItems = getEventStockItems();
+      payload.operationalSheet = collectEventOperationalSheet();
       const response = await fetch("/api/erp-event", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -5624,16 +7887,39 @@
       await loadErp();
     }
 
+    async function approveLogisticsEventClose(id) {
+      const event = (erpData.events || []).find((item) => item.id === id);
+      if (!event) return;
+      if (!confirm(`Autorizar el cierre logistico de ${event.name || "este evento"} y pasarlo a realizado?`)) return;
+
+      const response = await fetch("/api/approve-logistics-event-close", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo autorizar el cierre.", "error");
+        return;
+      }
+
+      showNotice("Cierre logistico autorizado. Evento marcado como realizado.", "success");
+      await loadErp();
+      if (canAccessTab("logistics_event")) await loadLogisticsEvents();
+    }
+
     function editErpEvent(id) {
       const event = (erpData.events || []).find((item) => item.id === id);
       if (!event) return;
       showErpEventForm();
       const form = document.getElementById("erp-event-form");
-      ["id", "name", "clientName", "eventDate", "guestCount", "priceMode", "pricePerPerson", "servicePriceTotal", "status", "owner", "role", "venue", "assistanceMode", "waiterCount", "includesDrinks", "tableware", "staff", "schedule", "nextAction", "notes", "checklistDetails"]
+      ["id", "name", "clientName", "eventDate", "eventTime", "guestCount", "priceMode", "pricePerPerson", "servicePriceTotal", "status", "invoiceStatus", "invoiceNumber", "owner", "role", "venue", "assistanceMode", "waiterCount", "dietaryRestrictionMode", "dietaryRestrictions", "includesDrinks", "tableware", "tablewareQuantities", "tablewareDetail", "largeContainers", "smallContainers", "staff", "schedule", "nextAction", "notes", "checklistDetails"]
         .forEach((field) => setFormValue(form, field, event[field] || ""));
       renderOperationalOptionInputs(event);
-      renderEventMenuLines(event.menuItems || []);
+      renderEventMenuLines(getEditableEventMenuItems(event));
       renderEventStockLines(event.stockItems || []);
+      renderEventOperationalChecklist(event.operationalSheet || {});
       form.elements.checklistPurchases.checked = Boolean(event.checklist?.purchases);
       form.elements.checklistProduction.checked = Boolean(event.checklist?.production);
       form.elements.checklistStaff.checked = Boolean(event.checklist?.staff);
@@ -5649,6 +7935,7 @@
       renderOperationalOptionInputs();
       renderEventMenuLines();
       renderEventStockLines();
+      renderEventOperationalChecklist();
     }
 
     async function deleteErpEvent(id) {
@@ -5857,6 +8144,7 @@
         production: "Produccion",
         done: "Finalizado",
         lost: "Perdido",
+        cancelled: "Cancelado",
       }[status] || status;
     }
 
@@ -6014,6 +8302,118 @@
 
       allProviders = result.providers || [];
       renderProviders();
+      renderProviderManagerModal();
+    }
+
+    async function showProviderManagerWindow() {
+      document.getElementById("purchase-rank-title").textContent = "Administrar proveedores";
+      document.getElementById("purchase-rank-subtitle").textContent = "Datos fiscales, contacto y cuenta bancaria";
+      document.getElementById("purchase-rank-body").innerHTML = renderProviderManagerHtml();
+      document.getElementById("purchase-rank-detail").classList.add("open");
+      await loadProviders();
+      renderProviderManagerModal();
+    }
+
+    function renderProviderManagerHtml() {
+      return `
+        <div class="panel-grid">
+          <section class="panel-box">
+            <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+              <input id="modal-provider-search" class="search" placeholder="Buscar proveedor, CUIT, banco o alias" oninput="renderProviderManagerModal()">
+              <button class="filter" type="button" onclick="loadProviders()">Actualizar</button>
+            </div>
+            <div id="modal-provider-list" class="compact-list provider-list"></div>
+          </section>
+          <section class="panel-box">
+            <h2 style="margin-top:0;font-size:20px;">Ficha de proveedor</h2>
+            <form id="modal-provider-form" class="form-grid" onsubmit="saveProviderFromModal(event)">
+              <input type="hidden" name="id">
+              <div class="form-field full"><label>Nombre comercial</label><input name="name" required></div>
+              <div class="form-field full"><label>Razon social</label><input name="legalName"></div>
+              <div class="form-field"><label>CUIT</label><input name="cuit" placeholder="20-00000000-0"></div>
+              <div class="form-field"><label>Condicion IVA</label><select name="ivaCondition"><option value="">Sin definir</option><option>Responsable Inscripto</option><option>Monotributo</option><option>Exento</option><option>Consumidor Final</option></select></div>
+              <div class="form-field"><label>Contacto</label><input name="contactName"></div>
+              <div class="form-field"><label>Telefono</label><input name="phone"></div>
+              <div class="form-field"><label>Email</label><input name="email" type="email"></div>
+              <div class="form-field"><label>Categoria</label><input name="category" placeholder="Carnes, verduras, logistica"></div>
+              <div class="form-field full"><label>Direccion</label><input name="address"></div>
+              <div class="form-field"><label>Banco</label><input name="bankName"></div>
+              <div class="form-field"><label>Tipo de cuenta</label><input name="bankAccountType" placeholder="CC, CA, billetera"></div>
+              <div class="form-field"><label>Nro cuenta</label><input name="bankAccountNumber"></div>
+              <div class="form-field"><label>Titular</label><input name="bankAccountHolder"></div>
+              <div class="form-field"><label>CBU / CVU</label><input name="cbu"></div>
+              <div class="form-field"><label>Alias</label><input name="alias"></div>
+              <div class="form-field"><label>Condicion de pago</label><input name="paymentTerms" placeholder="Contado, 7 dias, mensual"></div>
+              <div class="form-field full"><label>Notas</label><textarea name="notes"></textarea></div>
+              <div class="actions full">
+                <button class="approve" type="submit">Guardar proveedor</button>
+                <button class="filter" type="button" onclick="resetModalProviderForm()">Nuevo</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderProviderManagerModal() {
+      const list = document.getElementById("modal-provider-list");
+      if (!list) return;
+      const term = normalizeSearch(document.getElementById("modal-provider-search")?.value || "");
+      const filtered = allProviders.filter((provider) => normalizeSearch([
+        provider.name,
+        provider.legalName,
+        provider.cuit,
+        provider.ivaCondition,
+        provider.bankName,
+        provider.cbu,
+        provider.alias,
+      ].join(" ")).includes(term));
+      list.innerHTML = filtered.length ? filtered.map((provider) => `
+        <article class="provider-card">
+          <div class="provider-card-head">
+            <div>
+              <div class="provider-title">${escapeHtml(provider.name || "Sin nombre")}</div>
+              <div class="provider-meta">${escapeHtml(provider.legalName || "Razon social pendiente")}</div>
+              <div class="provider-meta">${escapeHtml([provider.cuit, provider.ivaCondition].filter(Boolean).join(" · ") || "Datos fiscales pendientes")}</div>
+            </div>
+            <button class="menu-dot" type="button" onclick="editProviderInModal('${escapeAttribute(provider.id)}')">...</button>
+          </div>
+          <div class="provider-meta">${escapeHtml([provider.bankName, provider.alias || provider.cbu].filter(Boolean).join(" · ") || "Datos bancarios pendientes")}</div>
+        </article>
+      `).join("") : `<div class="empty">No hay proveedores para ese filtro.</div>`;
+    }
+
+    function editProviderInModal(id) {
+      const provider = allProviders.find((item) => item.id === id);
+      const form = document.getElementById("modal-provider-form");
+      if (!provider || !form) return;
+      fillProviderForm(form, provider);
+    }
+
+    function resetModalProviderForm() {
+      const form = document.getElementById("modal-provider-form");
+      form?.reset();
+      if (form?.elements.id) form.elements.id.value = "";
+    }
+
+    async function saveProviderFromModal(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const response = await fetch("/api/provider", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el proveedor.", "error");
+        return;
+      }
+      allProviders = result.providers || allProviders;
+      renderProviderManagerModal();
+      renderProviders();
+      await loadPurchaseOptions();
+      showNotice("Proveedor guardado correctamente.");
     }
 
     function renderProviders() {
@@ -6040,22 +8440,22 @@
       }
 
       list.innerHTML = filtered.map((provider) => `
-        <article class="provider-card">
+        <article class="provider-card" onclick="editProvider('${escapeAttribute(provider.id)}')">
           <div class="provider-card-head">
             <div>
               <div class="provider-title">${escapeHtml(provider.name || "Sin nombre")}</div>
               <div class="provider-meta">${escapeHtml(provider.legalName || "Razon social pendiente")}</div>
               <div class="provider-meta">${escapeHtml([provider.cuit, provider.ivaCondition].filter(Boolean).join(" · ") || "Datos fiscales pendientes")}</div>
             </div>
-            <button class="menu-dot" type="button" onclick="editProvider('${escapeAttribute(provider.id)}')">...</button>
+            <button class="menu-dot" type="button" onclick="event.stopPropagation(); editProvider('${escapeAttribute(provider.id)}')">...</button>
           </div>
           <div class="provider-stats">
             <div class="provider-stat"><span>Compras</span><strong>${escapeHtml(provider.purchaseCount || 0)}</strong></div>
             <div class="provider-stat"><span>Total comprado</span><strong>${formatCurrency(provider.totalPurchased || 0)}</strong></div>
             <div class="provider-stat"><span>Ultima compra</span><strong>${escapeHtml(formatShortDate(provider.lastPurchaseDate) || "Sin fecha")}</strong></div>
           </div>
-          <div class="provider-meta">${escapeHtml([provider.bankName, provider.alias || provider.cbu].filter(Boolean).join(" · ") || "Datos bancarios pendientes")}</div>
-          <div class="provider-meta">${escapeHtml([provider.contactName, provider.phone, provider.email].filter(Boolean).join(" · ") || "Contacto pendiente")}</div>
+          <div class="provider-meta"><strong>Banco:</strong> ${escapeHtml([provider.bankName, provider.alias || provider.cbu, provider.bankAccountHolder].filter(Boolean).join(" · ") || "Datos bancarios pendientes")}</div>
+          <div class="provider-meta"><strong>Contacto:</strong> ${escapeHtml([provider.contactName, provider.phone, provider.email].filter(Boolean).join(" · ") || "Contacto pendiente")}</div>
         </article>
       `).join("");
     }
@@ -6064,6 +8464,10 @@
       const provider = allProviders.find((item) => item.id === id);
       if (!provider) return;
       const form = document.getElementById("provider-form");
+      fillProviderForm(form, provider);
+    }
+
+    function fillProviderForm(form, provider) {
       [
         "id",
         "name",
@@ -6108,6 +8512,7 @@
 
       allProviders = result.providers || allProviders;
       renderProviders();
+      if (result.provider) fillProviderForm(event.target, result.provider);
       await loadPurchaseOptions();
       showNotice("Proveedor guardado correctamente.");
     }
@@ -7194,6 +9599,7 @@
       resetPurchaseItems();
       setFormValue(form, "date", new Date().toISOString().slice(0, 10));
       document.getElementById("purchase").classList.add("open");
+      renderPurchaseDraftTools();
     }
 
     async function editPurchase(id) {
@@ -7219,6 +9625,7 @@
       setFormValue(form, "notes", purchase.notes || "");
       resetPurchaseItems(purchase.lineItems || []);
       document.getElementById("purchase").classList.add("open");
+      renderPurchaseDraftTools();
     }
 
     function showPurchaseActions(id) {
@@ -7255,6 +9662,7 @@
       document.getElementById("purchase-form").reset();
       document.getElementById("purchase-title").textContent = "Cargar compra";
       resetPurchaseItems();
+      renderPurchaseDraftTools();
     }
 
     function closePurchase(event) {
@@ -7275,9 +9683,102 @@
       addPurchaseItemRow();
     }
 
+    function getPurchaseDraftPayload() {
+      const form = document.getElementById("purchase-form");
+      return {
+        id: form.elements.id.value || "",
+        date: form.elements.date.value || "",
+        provider: form.elements.provider.value || "",
+        invoiceType: form.elements.invoiceType.value || "",
+        ivaRate: form.elements.ivaRate.value || "",
+        eventName: form.elements.eventName.value || "",
+        paymentStatus: form.elements.paymentStatus.value || "",
+        paymentMethod: form.elements.paymentMethod.value || "",
+        fundsSource: form.elements.fundsSource.value || "",
+        notes: form.elements.notes.value || "",
+        items: getPurchaseItems(),
+      };
+    }
+
+    function hasMeaningfulPurchaseDraft(payload) {
+      return Boolean(
+        payload?.provider ||
+        payload?.eventName ||
+        payload?.notes ||
+        (payload?.items || []).some((item) => item.description || item.unitAmount)
+      );
+    }
+
+    function savePurchaseDraft() {
+      const payload = getPurchaseDraftPayload();
+      if (!hasMeaningfulPurchaseDraft(payload)) return;
+      localStorage.setItem("catering-purchase-draft", JSON.stringify({
+        savedAt: new Date().toISOString(),
+        payload,
+      }));
+      renderPurchaseDraftTools();
+    }
+
+    function getPurchaseDraft() {
+      try {
+        return JSON.parse(localStorage.getItem("catering-purchase-draft") || "null");
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function clearPurchaseDraft() {
+      localStorage.removeItem("catering-purchase-draft");
+      renderPurchaseDraftTools();
+    }
+
+    function renderPurchaseDraftTools() {
+      const box = document.getElementById("purchase-draft-tools");
+      if (!box) return;
+      const draft = getPurchaseDraft();
+      if (!draft?.payload || !hasMeaningfulPurchaseDraft(draft.payload)) {
+        box.className = "notice";
+        box.innerHTML = "";
+        return;
+      }
+      box.className = "notice open";
+      box.innerHTML = `
+        Borrador guardado ${escapeHtml(formatDate(draft.savedAt) || "")}: ${escapeHtml(draft.payload.provider || "Sin proveedor")} · ${(draft.payload.items || []).length} producto(s)
+        <div class="actions" style="margin-top:8px;">
+          <button class="filter" type="button" onclick="restorePurchaseDraft()">Restaurar borrador</button>
+          <button class="reject" type="button" onclick="clearPurchaseDraft()">Descartar</button>
+        </div>
+      `;
+    }
+
+    function restorePurchaseDraft() {
+      const draft = getPurchaseDraft();
+      if (!draft?.payload) return;
+      fillPurchaseForm(draft.payload);
+      showNotice("Borrador de compra restaurado.", "success");
+    }
+
+    function fillPurchaseForm(data = {}) {
+      const form = document.getElementById("purchase-form");
+      setFormValue(form, "id", data.id || "");
+      setFormValue(form, "date", data.date || "");
+      setFormValue(form, "provider", data.provider || "");
+      setFormValue(form, "invoiceType", data.invoiceType || "");
+      setFormValue(form, "ivaRate", data.ivaRate || "0");
+      setFormValue(form, "eventName", data.eventName || "");
+      setFormValue(form, "paymentStatus", data.paymentStatus || "Pendiente");
+      setFormValue(form, "paymentMethod", data.paymentMethod || "");
+      setFormValue(form, "fundsSource", data.fundsSource || "");
+      setFormValue(form, "notes", data.notes || "");
+      resetPurchaseItems(data.items || []);
+      renderPurchaseDraftTools();
+    }
+
     function addPurchaseItemRow(item = {}) {
       const id = `purchase-item-${++purchaseItemCounter}`;
       const container = document.getElementById("purchase-items");
+      const defaultIvaRate = getDefaultPurchaseItemIvaRate();
+      const itemIvaRate = item.ivaRate ?? item.iva ?? defaultIvaRate;
       const row = document.createElement("div");
       row.className = "purchase-item";
       row.innerHTML = `
@@ -7286,7 +9787,13 @@
           <div id="${id}-suggestions" class="autocomplete-list"></div>
         </div>
         <input class="purchase-item-quantity" type="number" min="0.01" step="0.01" placeholder="Cant." value="${escapeAttribute(item.quantity || 1)}" required>
-        <input class="purchase-item-unit" type="number" min="0.01" step="0.01" placeholder="Unitario" value="${escapeAttribute(item.unitAmount || "")}" required>
+        <input class="purchase-item-unit" type="number" min="0.01" step="0.01" placeholder="Unitario s/IVA" value="${escapeAttribute(item.unitAmount || "")}" required>
+        <select class="purchase-item-iva">
+          <option value="0" ${Number(itemIvaRate || 0) === 0 ? "selected" : ""}>IVA 0%</option>
+          <option value="0.105" ${Number(itemIvaRate || 0) === 0.105 ? "selected" : ""}>IVA 10.5%</option>
+          <option value="0.21" ${Number(itemIvaRate || 0) === 0.21 ? "selected" : ""}>IVA 21%</option>
+          <option value="0.27" ${Number(itemIvaRate || 0) === 0.27 ? "selected" : ""}>IVA 27%</option>
+        </select>
         <button class="reject icon-action" type="button" onclick="removePurchaseItemRow(this)">X</button>
       `;
       container.appendChild(row);
@@ -7296,6 +9803,22 @@
         row.querySelector(".autocomplete-list"),
         () => purchaseOptions.products || []
       );
+
+      row.querySelector(".purchase-item-iva").addEventListener("change", syncPurchaseDefaultIvaFromFirstItem);
+      savePurchaseDraft();
+    }
+
+    function getDefaultPurchaseItemIvaRate() {
+      const firstItemIva = document.querySelector("#purchase-items .purchase-item:first-child .purchase-item-iva")?.value;
+      return firstItemIva || document.getElementById("purchase-form")?.elements.ivaRate?.value || "0";
+    }
+
+    function syncPurchaseDefaultIvaFromFirstItem() {
+      const firstItemIva = document.querySelector("#purchase-items .purchase-item:first-child .purchase-item-iva")?.value;
+      const form = document.getElementById("purchase-form");
+      if (firstItemIva && form?.elements.ivaRate) {
+        form.elements.ivaRate.value = firstItemIva;
+      }
     }
 
     function removePurchaseItemRow(button) {
@@ -7307,6 +9830,7 @@
       }
 
       button.closest(".purchase-item").remove();
+      savePurchaseDraft();
     }
 
     function getPurchaseItems() {
@@ -7315,6 +9839,7 @@
           description: row.querySelector(".purchase-item-description").value.trim(),
           quantity: row.querySelector(".purchase-item-quantity").value,
           unitAmount: row.querySelector(".purchase-item-unit").value,
+          ivaRate: row.querySelector(".purchase-item-iva").value,
         }))
         .filter((item) => item.description);
     }
@@ -7386,6 +9911,8 @@
       const form = document.getElementById("purchase-form");
       setFormValue(form, "date", data.date || form.elements.date.value);
       setFormValue(form, "provider", data.provider || form.elements.provider.value);
+      setFormValue(form, "invoiceType", data.invoiceType || form.elements.invoiceType.value);
+      setFormValue(form, "ivaRate", data.ivaRate || form.elements.ivaRate.value);
 
       if (Array.isArray(data.lineItems) && data.lineItems.length) {
         resetPurchaseItems(data.lineItems);
@@ -7394,11 +9921,10 @@
           description: data.description || "",
           quantity: data.quantity || 1,
           unitAmount: data.unitAmount || "",
+          ivaRate: data.ivaRate || form.elements.ivaRate.value,
         }]);
       }
 
-      setFormValue(form, "invoiceType", data.invoiceType || form.elements.invoiceType.value);
-      setFormValue(form, "ivaRate", data.ivaRate || form.elements.ivaRate.value);
       setFormValue(form, "paymentMethod", data.paymentMethod || form.elements.paymentMethod.value);
 
       const notes = [
@@ -7433,18 +9959,28 @@
         return;
       }
 
-      const response = await fetch("/api/purchase", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const result = await readJsonResponse(response);
+      let response;
+      let result;
+      try {
+        response = await fetch("/api/purchase", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        result = await readJsonResponse(response);
+      } catch (error) {
+        savePurchaseDraft();
+        showNotice("El panel local no esta respondiendo. La compra quedo guardada como borrador en este navegador; reinicie el panel y restaure el borrador.", "error");
+        return;
+      }
 
       if (!result.ok) {
+        savePurchaseDraft();
         showNotice(result.error || "No se pudo cargar la compra.", "error");
         return;
       }
 
+      clearPurchaseDraft();
       hidePurchaseForm();
       await loadPurchaseOptions();
       await loadErp();
@@ -7526,6 +10062,37 @@
       }
 
       showNotice(`${labels[type] || "Dato"} guardado correctamente.`);
+    }
+
+    function getEditableEventMenuItems(event) {
+      const items = event.menuItems || [];
+      if (items.length === 1 && !items[0].quantity && !items[0].detail && String(items[0].name || "").length > 120) {
+        return splitLongMenuText(items[0].name).map((name) => ({ name }));
+      }
+      return items;
+    }
+
+    async function addTablewareProductOption() {
+      const form = document.getElementById("erp-event-form");
+      const value = form?.elements.tablewareDetail?.value?.trim() || "";
+      if (!value) {
+        showNotice("Escriba primero el producto de vajilla o descartable.", "error");
+        return;
+      }
+
+      const response = await fetch("/api/purchase-option", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "product", value }),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el producto.", "error");
+        return;
+      }
+      purchaseOptions.products = result.options?.products || purchaseOptions.products || [];
+      renderPurchaseOptions();
+      showNotice("Producto agregado a sugerencias.");
     }
 
     async function createManualBudget(event) {
@@ -7759,6 +10326,7 @@
     function closeOpenModals() {
       document.querySelectorAll(".detail.open").forEach((modal) => modal.classList.remove("open"));
       document.querySelectorAll(".menu-popover.open").forEach((menu) => menu.classList.remove("open"));
+      document.querySelectorAll(".logistics-item-menu.open").forEach((menu) => menu.classList.remove("open"));
     }
 
     document.addEventListener("keydown", (event) => {
@@ -7767,11 +10335,7 @@
       }
     });
 
-    loadState();
-    loadPurchaseOptions();
-    loadCustomers();
-    loadRecipes();
-    setInterval(loadState, 5000);
+    bootstrapPanel();
   </script>
 </body>
 </html>

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "usuario-admin",
+    "username": "admin",
+    "displayName": "Joaquin",
+    "role": "admin",
+    "active": true,
+    "passwordHash": "827777e6179b3bfbdd118d4561aa0f7e2b9f31555ab40aa74688b3bae6f419b6",
+    "passwordSalt": "70e959f6e7eb9f5851d80ba09d18ff50",
+    "createdAt": "2026-06-12T15:48:44.676Z",
+    "updatedAt": "2026-06-12T16:04:02.172Z",
+    "lastLoginAt": "2026-06-16T16:37:02.363Z"
+  },
+  {
+    "id": "usuario-brunours",
+    "username": "brunours",
+    "displayName": "BRUNO",
+    "role": "logistica_evento",
+    "active": true,
+    "passwordHash": "fe452c69309611d51cf03083858af4a69839a84f181ab114115ae0bc250d8844",
+    "passwordSalt": "58f5f467ed7b4884a8b91dfe1c8e0825",
+    "createdAt": "2026-06-12T18:17:21.967Z",
+    "updatedAt": "2026-06-12T18:17:21.967Z",
+    "lastLoginAt": "2026-06-16T16:34:14.786Z"
+  },
+  {
+    "id": "usuario-germangiu",
+    "username": "germangiu",
+    "displayName": "GERMAN",
+    "role": "finanzas",
+    "active": true,
+    "passwordHash": "b22ad30bba1e44a2ce60c86e266fd99adea48a1a110d37f6aa74bd326a8f077f",
+    "passwordSalt": "57d58aef470f7ab8889d4eda80aabccd",
+    "createdAt": "2026-06-12T20:26:57.146Z",
+    "updatedAt": "2026-06-12T20:26:57.146Z",
+    "lastLoginAt": "2026-06-12T20:28:09.002Z"
+  }
+]

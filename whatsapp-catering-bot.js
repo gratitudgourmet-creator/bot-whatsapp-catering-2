@@ -52,6 +52,9 @@ const ERP_QUOTES_FILE = dataPath("presupuestos-erp.json");
 const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
 const ERP_PROVIDERS_FILE = dataPath("proveedores-erp.json");
 const ERP_VENUES_FILE = dataPath("lugares-erp.json");
+const ERP_USERS_FILE = dataPath("usuarios-erp.json");
+const ERP_AUDIT_FILE = dataPath("historial-erp.json");
+const ERP_ROLES_FILE = dataPath("roles-erp.json");
 const CATERING_DB_FILE = dataPath(process.env.CATERING_DB_FILE || BOT_CONFIG.cateringDbFile || "catering.db");
 const CATERING_BACKUP_DIR = path.resolve(
   process.env.CATERING_BACKUP_DIR ||
@@ -159,6 +162,89 @@ let erpQuotes = [];
 let erpPurchases = [];
 let erpProviders = [];
 let erpVenues = [];
+let erpUsers = [];
+let auditRecords = [];
+let panelRoleDefinitions = {};
+const panelSessions = new Map();
+const DEFAULT_ROLE_DEFINITIONS = {
+  admin: {
+    label: "Administracion general",
+    permissions: ["*"],
+    tabs: ["erp", "commercial", "purchases", "finance", "customers", "providers", "recipes", "logistics_event", "security"],
+  },
+  comercial: {
+    label: "Comercial",
+    permissions: ["view", "events:write", "quotes:write", "customers:write", "venues:read"],
+    tabs: ["commercial", "customers"],
+  },
+  compras: {
+    label: "Compras",
+    permissions: ["view", "purchases:write", "providers:write", "venues:read", "events:read"],
+    tabs: ["purchases", "providers"],
+  },
+  cocina: {
+    label: "Cocina",
+    permissions: ["view", "events:read", "events:write", "recipes:write", "venues:read", "logistics:read"],
+    tabs: ["recipes", "logistics_event"],
+  },
+  operacion: {
+    label: "Operacion",
+    permissions: ["view", "events:read", "events:write", "venues:write", "recipes:read", "logistics:read", "logistics:write"],
+    tabs: ["logistics_event"],
+  },
+  logistica_evento: {
+    label: "Logistica Evento",
+    permissions: ["view", "logistics:read", "logistics:write"],
+    tabs: ["logistics_event"],
+  },
+  finanzas: {
+    label: "Finanzas",
+    permissions: ["view", "finance:read", "finance:write"],
+    tabs: ["finance"],
+  },
+};
+const TAB_DEFINITIONS = [
+  { id: "erp", label: "ERP", requiredAny: ["view"] },
+  { id: "commercial", label: "Comercial", requiredAny: ["events:read", "events:write", "quotes:write", "customers:write"] },
+  { id: "purchases", label: "Compras", requiredAny: ["purchases:write"] },
+  { id: "finance", label: "Finanzas", requiredAny: ["finance:read", "finance:write"] },
+  { id: "customers", label: "Clientes", requiredAny: ["customers:write"] },
+  { id: "providers", label: "Proveedores", requiredAny: ["providers:write"] },
+  { id: "recipes", label: "Recetas", requiredAny: ["recipes:read", "recipes:write"] },
+  { id: "logistics_event", label: "Logistica Evento", requiredAny: ["logistics:read", "logistics:write"] },
+  { id: "security", label: "Seguridad", requiredAny: ["users:write"] },
+];
+const PERMISSION_DEFINITIONS = [
+  { id: "users:write", label: "Usuarios, roles e historial", group: "Seguridad" },
+  { id: "finance:read", label: "Ver pagos y deudas", group: "Finanzas" },
+  { id: "finance:write", label: "Registrar pagos de proveedores", group: "Finanzas" },
+  { id: "logistics:read", label: "Ver Logistica Evento", group: "Logistica" },
+  { id: "logistics:write", label: "Editar ficha logistica", group: "Logistica" },
+  { id: "events:write", label: "Crear y editar eventos", group: "Eventos" },
+  { id: "quotes:write", label: "Crear y editar presupuestos", group: "Presupuestos" },
+  { id: "customers:write", label: "Crear y editar clientes", group: "Clientes" },
+  { id: "purchases:write", label: "Compras, pagos y deudas", group: "Compras" },
+  { id: "providers:write", label: "Crear y editar proveedores", group: "Proveedores" },
+  { id: "recipes:write", label: "Crear y editar recetas", group: "Recetas" },
+  { id: "venues:write", label: "Crear y editar lugares", group: "Lugares" },
+  { id: "events:read", label: "Ver eventos", group: "Lectura" },
+  { id: "recipes:read", label: "Ver recetas", group: "Lectura" },
+  { id: "venues:read", label: "Ver lugares", group: "Lectura" },
+];
+const OPERATIONAL_SHEET_CATEGORIES = [
+  ["alimentos", "Alimentos"],
+  ["vajilla", "Vajilla"],
+  ["utensilios", "Utensilios"],
+  ["bebidas", "Bebidas"],
+  ["manteleria", "Manteleria"],
+  ["mobiliario", "Mobiliario"],
+  ["personal", "Personal"],
+  ["transporte", "Transporte"],
+  ["montaje", "Montaje"],
+  ["desmontaje", "Desmontaje"],
+  ["documentacion", "Documentacion"],
+  ["extras", "Extras / varios"],
+];
 let cateringDb = null;
 let lastCateringDbBackupAt = 0;
 const approvedCustomers = new Set();
@@ -621,12 +707,47 @@ function startApprovalPanelServer() {
         });
       }
 
-      if (!isAuthorizedPanelRequest(request)) {
-        return requestPanelAuth(response);
-      }
-
       if (request.method === "GET" && requestUrl.pathname === "/") {
         return servePanelHtml(response);
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/me") {
+        const user = getPanelSessionUser(request);
+        return sendJson(response, {
+          ok: true,
+          authenticated: Boolean(user),
+          user: getPublicUser(user),
+          roles: getPanelRoleList(),
+        });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/login") {
+        const body = await readJsonBody(request);
+        const user = authenticatePanelUser(body.username, body.password);
+        const token = createPanelSession(user);
+        response.setHeader("Set-Cookie", buildSessionCookie(token));
+        recordAudit(user, "login", "session", user.id, "Inicio de sesion");
+        return sendJson(response, { ok: true, user: getPublicUser(user), roles: getPanelRoleList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/logout") {
+        const user = getPanelSessionUser(request);
+        clearPanelSession(request);
+        response.setHeader("Set-Cookie", buildSessionCookie("", 0));
+        recordAudit(user, "logout", "session", user?.id || "", "Cierre de sesion");
+        return sendJson(response, { ok: true });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/purchase-sync") {
+        const body = await readJsonBody(request);
+        validatePurchaseSyncToken(body);
+        const result = applyPurchaseSync(body);
+        recordAudit(null, body.action || "sync", "purchase", body.purchase?.id || body.id || "", "Sincronizacion desde Sheets", null, result);
+        return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
+      }
+
+      if (!isAuthorizedPanelRequest(request)) {
+        return requestPanelAuth(response);
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/state") {
@@ -690,19 +811,155 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/erp") {
+        const sessionUser = getPanelSessionUser(request);
+        const publicUser = getPublicUser(sessionUser);
+        const canSeeEverything = hasPanelPermission(sessionUser, "*");
+        const canSeeCommercial = canSeeEverything || hasPanelPermission(sessionUser, "events:read") || hasPanelPermission(sessionUser, "events:write") || hasPanelPermission(sessionUser, "quotes:write") || hasPanelPermission(sessionUser, "customers:write");
+        const canSeePurchases = canSeeEverything || hasPanelPermission(sessionUser, "purchases:write");
+        const canSeeFinance = canSeeEverything || hasPanelPermission(sessionUser, "finance:read") || hasPanelPermission(sessionUser, "finance:write");
+        const canSeeProviders = canSeeEverything || hasPanelPermission(sessionUser, "providers:write") || canSeePurchases || canSeeFinance;
+        const canSeeRecipes = canSeeEverything || hasPanelPermission(sessionUser, "recipes:read") || hasPanelPermission(sessionUser, "recipes:write");
+        const canSeeCustomers = canSeeEverything || hasPanelPermission(sessionUser, "customers:write");
+        const canSeeVenues = canSeeEverything || hasPanelPermission(sessionUser, "venues:read") || hasPanelPermission(sessionUser, "venues:write");
+        if (publicUser?.role === "logistica_evento") {
+          return sendJson(response, {
+            ok: true,
+            me: publicUser,
+            roles: getPanelRoleList(),
+            dashboard: {},
+            pipeline: { columns: [] },
+            events: [],
+            confirmedEvents: [],
+            quotes: [],
+            purchases: [],
+            providers: [],
+            recipes: [],
+            customers: [],
+            venues: [],
+            productAlerts: [],
+          });
+        }
+        if (publicUser?.role === "finanzas") {
+          const financeDashboard = getFinanceDashboard();
+          return sendJson(response, {
+            ok: true,
+            me: publicUser,
+            roles: getPanelRoleList(),
+            dashboard: financeDashboard.summary,
+            financeDashboard,
+            pipeline: { columns: [] },
+            events: financeDashboard.events,
+            confirmedEvents: [],
+            quotes: [],
+            purchases: getErpPurchaseList(),
+            providers: getProviderList(),
+            recipes: [],
+            customers: [],
+            venues: [],
+            productAlerts: [],
+          });
+        }
         return sendJson(response, {
           ok: true,
-          dashboard: getErpDashboard(),
-          pipeline: getPipelineBoard(),
-          events: getErpEventList(),
-          confirmedEvents: getConfirmedEventList(),
-          quotes: getErpQuoteList(),
-          purchases: getErpPurchaseList(),
-          providers: getProviderList(),
-          recipes: getRecipeList(),
-          customers: getCustomerInsights(),
-          venues: getVenueList(),
-          productAlerts: getProductPriceAlerts(),
+          me: publicUser,
+          roles: getPanelRoleList(),
+          dashboard: canSeeEverything ? getErpDashboard() : {},
+          pipeline: canSeeCommercial ? getPipelineBoard() : { columns: [] },
+          events: canSeeCommercial ? getErpEventList() : [],
+          confirmedEvents: canSeeCommercial ? getConfirmedEventList() : [],
+          quotes: canSeeCommercial ? getErpQuoteList() : [],
+          purchases: canSeePurchases || canSeeFinance ? getErpPurchaseList() : [],
+          providers: canSeeProviders ? getProviderList() : [],
+          recipes: canSeeRecipes ? getRecipeList() : [],
+          customers: canSeeCustomers || canSeeCommercial ? getCustomerInsights() : [],
+          venues: canSeeVenues || canSeeCommercial ? getVenueList() : [],
+          productAlerts: canSeePurchases || canSeeRecipes || canSeeEverything ? getProductPriceAlerts() : [],
+          financeDashboard: canSeeFinance ? getFinanceDashboard() : undefined,
+        });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/logistics-events") {
+        const user = requirePanelPermission(request, response, "logistics:read");
+        if (!user) return;
+        return sendJson(response, { ok: true, events: getLogisticsEventList() });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/logistics-event") {
+        const user = requirePanelPermission(request, response, "logistics:read");
+        if (!user) return;
+        const event = getLogisticsEventDetail(requestUrl.searchParams.get("id"));
+        if (!event) return sendJson(response, { ok: false, error: "No encontre ese evento." }, 404);
+        return sendJson(response, { ok: true, event, categories: getOperationalSheetCategoryList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/logistics-event-checklist") {
+        const user = requirePanelPermission(request, response, "logistics:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const event = updateLogisticsEventChecklist(body, user);
+        return sendJson(response, { ok: true, event, categories: getOperationalSheetCategoryList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/logistics-event-close") {
+        const user = requirePanelPermission(request, response, "logistics:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const event = closeLogisticsEvent(body, user);
+        return sendJson(response, { ok: true, event, categories: getOperationalSheetCategoryList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/approve-logistics-event-close") {
+        const user = requirePanelPermission(request, response, "events:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const event = approveLogisticsEventClose(body, user);
+        return sendJson(response, { ok: true, event });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/audit-log") {
+        const user = requirePanelPermission(request, response, "view");
+        if (!user) return;
+        return sendJson(response, { ok: true, audit: getAuditLog(requestUrl.searchParams.get("limit") || 120) });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/users") {
+        const user = requirePanelPermission(request, response, "users:write");
+        if (!user) return;
+        return sendJson(response, { ok: true, users: getPanelUserList(), roles: getPanelRoleList() });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/roles") {
+        const user = requirePanelPermission(request, response, "users:write");
+        if (!user) return;
+        return sendJson(response, {
+          ok: true,
+          roles: getPanelRoleList(),
+          permissions: PERMISSION_DEFINITIONS,
+          tabs: TAB_DEFINITIONS,
+        });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/user") {
+        const user = requirePanelPermission(request, response, "users:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const saved = savePanelUserRecord(body);
+        recordAudit(user, body.id ? "update" : "create", "user", saved.id, saved.displayName || saved.username, null, getPublicUser(saved));
+        return sendJson(response, { ok: true, user: getPublicUser(saved), users: getPanelUserList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/roles") {
+        const user = requirePanelPermission(request, response, "users:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const before = getPanelRoleList();
+        panelRoleDefinitions = saveRolePermissionConfig(body.roles || []);
+        recordAudit(user, "update", "role", "roles", "Permisos por rol", before, getPanelRoleList());
+        return sendJson(response, {
+          ok: true,
+          roles: getPanelRoleList(),
+          permissions: PERMISSION_DEFINITIONS,
+          tabs: TAB_DEFINITIONS,
         });
       }
 
@@ -782,21 +1039,31 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
         const body = await readJsonBody(request);
         const result = await submitPurchaseRecord(body);
+        recordAudit(user, body.id ? "update" : "create", "purchase", result.purchase?.id, result.purchase?.provider, null, result.purchase);
         return sendJson(response, { ok: true, result });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-purchase") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpPurchases.find((purchase) => purchase.id === body.id);
         const result = await deletePurchaseRecord(body.id, { syncSheets: true });
+        recordAudit(user, "delete", "purchase", body.id, before?.provider || body.id, before, null);
         return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/provider-payment") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "finance:write"]);
+        if (!user) return;
         const body = await readJsonBody(request);
         try {
           const result = await applyProviderPayment(body);
+          recordAudit(user, "payment", "provider", body.provider, body.provider, null, result);
           return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
         } catch (error) {
           return sendJson(response, { ok: false, error: error.message }, 400);
@@ -804,13 +1071,19 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/import-purchases-from-sheets") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
         const result = await importPurchasesFromSheets();
+        recordAudit(user, "import", "purchase", "sheets", "Importar compras desde Sheets", null, result);
         return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/import-accountant-payments") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "finance:write"]);
+        if (!user) return;
         try {
           const result = await importAccountantPaymentsFromSheets();
+          recordAudit(user, "import", "payment", "contador", "Importar pagos contador", null, result);
           return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
         } catch (error) {
           return sendJson(response, { ok: false, error: error.message }, 400);
@@ -818,12 +1091,25 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/sync-accountant-debts") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "finance:write"]);
+        if (!user) return;
         try {
           const result = await syncAccountantDebtsToSheets();
+          recordAudit(user, "sync", "purchase", "contador", "Actualizar planilla contador", null, result);
           return sendJson(response, { ok: true, result });
         } catch (error) {
           return sendJson(response, { ok: false, error: error.message }, 400);
         }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/finance-event-payment") {
+        const user = requireAnyPanelPermission(request, response, ["finance:write", "events:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const before = erpEvents.find((event) => event.id === body.id);
+        const event = updateEventCollectionRecord(body);
+        recordAudit(user, "payment", "event", event.id, `Cobro evento - ${event.name}`, before, event);
+        return sendJson(response, { ok: true, event, financeDashboard: getFinanceDashboard() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase-sync") {
@@ -834,26 +1120,42 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/erp-event") {
+        const user = requirePanelPermission(request, response, "events:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpEvents.find((event) => event.id === body.id);
         const event = saveErpEventRecord(body);
+        recordAudit(user, body.id ? "update" : "create", "event", event.id, event.name, before, event);
         return sendJson(response, { ok: true, event, dashboard: getErpDashboard() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-erp-event") {
+        const user = requirePanelPermission(request, response, "events:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpEvents.find((event) => event.id === body.id);
         deleteErpEventRecord(body.id);
+        recordAudit(user, "delete", "event", body.id, before?.name || body.id, before, null);
         return sendJson(response, { ok: true, dashboard: getErpDashboard() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/erp-quote") {
+        const user = requirePanelPermission(request, response, "quotes:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpQuotes.find((quote) => quote.id === body.id);
         const quote = saveErpQuoteRecord(body);
+        recordAudit(user, body.id ? "update" : "create", "quote", quote.id, quote.eventName, before, quote);
         return sendJson(response, { ok: true, quote, dashboard: getErpDashboard() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-erp-quote") {
+        const user = requirePanelPermission(request, response, "quotes:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpQuotes.find((quote) => quote.id === body.id);
         deleteErpQuoteRecord(body.id);
+        recordAudit(user, "delete", "quote", body.id, before?.eventName || body.id, before, null);
         return sendJson(response, { ok: true, dashboard: getErpDashboard() });
       }
 
@@ -864,14 +1166,22 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/provider") {
+        const user = requirePanelPermission(request, response, "providers:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpProviders.find((provider) => provider.id === body.id);
         const provider = saveProviderRecord(body);
+        recordAudit(user, body.id ? "update" : "create", "provider", provider.id, provider.name, before, provider);
         return sendJson(response, { ok: true, provider, providers: getProviderList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-provider") {
+        const user = requirePanelPermission(request, response, "providers:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpProviders.find((provider) => provider.id === body.id);
         const result = deleteProviderRecord(body.id);
+        recordAudit(user, "delete", "provider", body.id, before?.name || body.id, before, null);
         return sendJson(response, { ok: true, result, providers: getProviderList() });
       }
 
@@ -882,32 +1192,52 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/customer") {
+        const user = requirePanelPermission(request, response, "customers:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = customerRecords[body.id || body.displayPhone || body.phone];
         const customer = saveCustomerFromPanel(body);
+        recordAudit(user, body.id ? "update" : "create", "customer", customer.id, customer.fullName, before, customer);
         return sendJson(response, { ok: true, customer });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-customer") {
+        const user = requirePanelPermission(request, response, "customers:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = customerRecords[body.id];
         const result = deleteCustomerRecord(body.id);
+        recordAudit(user, "delete", "customer", body.id, before?.fullName || body.id, before, null);
         return sendJson(response, { ok: true, result, customers: getCustomerInsights() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/venue") {
+        const user = requirePanelPermission(request, response, "venues:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpVenues.find((venue) => venue.id === body.id);
         const venue = saveVenueOption(body);
+        recordAudit(user, body.id ? "update" : "create", "venue", venue.id, venue.name, before, venue);
         return sendJson(response, { ok: true, venue, venues: getVenueList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-venue") {
+        const user = requirePanelPermission(request, response, "venues:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = erpVenues.find((venue) => venue.id === body.id);
         const result = deleteVenueRecord(body.id);
+        recordAudit(user, "delete", "venue", body.id, before?.name || body.id, before, null);
         return sendJson(response, { ok: true, result, venues: getVenueList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/recipe") {
+        const user = requirePanelPermission(request, response, "recipes:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = recipeRecords.find((recipe) => recipe.id === body.id);
         const recipe = saveRecipeRecord(body);
+        recordAudit(user, body.id ? "update" : "create", "recipe", recipe.id, recipe.name, before, recipe);
         return sendJson(response, { ok: true, recipe });
       }
 
@@ -924,8 +1254,12 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-recipe") {
+        const user = requirePanelPermission(request, response, "recipes:write");
+        if (!user) return;
         const body = await readJsonBody(request);
+        const before = recipeRecords.find((recipe) => recipe.id === body.id);
         deleteRecipeRecord(body.id);
+        recordAudit(user, "delete", "recipe", body.id, before?.name || body.id, before, null);
         return sendJson(response, { ok: true });
       }
 
@@ -972,37 +1306,15 @@ function applySecurityHeaders(response) {
 }
 
 function isAuthorizedPanelRequest(request) {
-  if (!isPanelAuthEnabled()) {
-    return true;
-  }
-
-  const authorization = request.headers.authorization || "";
-  if (!authorization.startsWith("Basic ")) {
-    return false;
-  }
-
-  try {
-    const decoded = Buffer.from(authorization.slice("Basic ".length), "base64").toString("utf8");
-    const separatorIndex = decoded.indexOf(":");
-    const user = decoded.slice(0, separatorIndex);
-    const password = decoded.slice(separatorIndex + 1);
-
-    return timingSafeEqual(user, PANEL_AUTH_USER) && timingSafeEqual(password, PANEL_AUTH_PASSWORD);
-  } catch (error) {
-    return false;
-  }
+  return Boolean(getPanelSessionUser(request));
 }
 
 function isPanelAuthEnabled() {
-  return Boolean(PANEL_AUTH_PASSWORD);
+  return true;
 }
 
 function requestPanelAuth(response) {
-  response.writeHead(401, {
-    "Content-Type": "text/plain; charset=utf-8",
-    "WWW-Authenticate": 'Basic realm="Catering ERP", charset="UTF-8"',
-  });
-  response.end("Autenticacion requerida.");
+  return sendJson(response, { ok: false, error: "Necesita iniciar sesion.", authRequired: true }, 401);
 }
 
 function timingSafeEqual(left, right) {
@@ -1027,6 +1339,99 @@ function servePanelHtml(response) {
     Expires: "0",
   });
   response.end(html);
+}
+
+function buildSessionCookie(token, maxAge = 12 * 60 * 60) {
+  const parts = [
+    `catering_session=${encodeURIComponent(token || "")}`,
+    "Path=/",
+    "HttpOnly",
+    "SameSite=Lax",
+    `Max-Age=${Number(maxAge || 0)}`,
+  ];
+  if (IS_PRODUCTION) parts.push("Secure");
+  return parts.join("; ");
+}
+
+function getPanelRoleList() {
+  return Object.entries(getRoleDefinitions()).map(([id, role]) => ({
+    id,
+    label: role.label,
+    permissions: role.permissions,
+    tabs: role.tabs || [],
+  }));
+}
+
+function getPanelUserList() {
+  return erpUsers.map(getPublicUser);
+}
+
+function savePanelUserRecord(input = {}) {
+  const username = normalizeText(input.username || "").toLowerCase();
+  if (!username) throw new Error("Ingrese el usuario.");
+  if (!getRoleDefinitions()[input.role]) throw new Error("Seleccione un rol valido.");
+
+  const id = normalizeText(input.id || "") || `usuario-${username.replace(/[^a-z0-9]+/g, "-") || Date.now()}`;
+  const duplicate = erpUsers.find((user) => user.id !== id && user.username === username);
+  if (duplicate) throw new Error("Ya existe un usuario con ese nombre.");
+
+  const index = erpUsers.findIndex((user) => user.id === id);
+  const previous = index >= 0 ? erpUsers[index] : {};
+  if (index < 0 && !input.password) throw new Error("Ingrese una clave para el usuario nuevo.");
+
+  const passwordFields = input.password ? hashPanelPassword(input.password) : {
+    passwordHash: previous.passwordHash,
+    passwordSalt: previous.passwordSalt,
+  };
+  const user = normalizePanelUser({
+    ...previous,
+    ...input,
+    ...passwordFields,
+    id,
+    username,
+    displayName: normalizeText(input.displayName || input.name || previous.displayName || username),
+    active: input.active !== false && input.active !== "false",
+    createdAt: previous.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+
+  if (index >= 0) {
+    erpUsers[index] = user;
+  } else {
+    erpUsers.push(user);
+  }
+
+  saveErpUsers();
+  return user;
+}
+
+function saveRolePermissionConfig(rolesInput = []) {
+  const current = getRoleDefinitions();
+  const next = normalizeRoleDefinitions(current);
+  const roles = Array.isArray(rolesInput) ? rolesInput : [];
+
+  for (const roleInput of roles) {
+    const id = normalizeText(roleInput.id || "");
+    if (!next[id]) continue;
+    const permissions = sanitizeRolePermissions(roleInput.permissions || []);
+    const finalPermissions = id === "admin"
+      ? ["*"]
+      : Array.from(new Set(["view", ...permissions.filter((permission) => permission !== "*")]));
+    next[id] = {
+      ...next[id],
+      permissions: finalPermissions,
+      tabs: sanitizeRoleTabs(roleInput.tabs || next[id].tabs || [], finalPermissions, id),
+    };
+  }
+
+  if (!next.admin.permissions.includes("*")) {
+    next.admin.permissions = ["*"];
+  }
+  next.admin.tabs = sanitizeRoleTabs(next.admin.tabs || ["security"], next.admin.permissions, "admin");
+
+  panelRoleDefinitions = next;
+  savePanelRoles();
+  return panelRoleDefinitions;
 }
 
 function sendJson(response, payload, statusCode = 200) {
@@ -1121,6 +1526,7 @@ function buildGoogleSheetsModel() {
       "Evento",
       "Cliente",
       "Fecha",
+      "Horario",
       "Invitados",
       "Modalidad precio",
       "Precio por persona",
@@ -1160,6 +1566,7 @@ function buildGoogleSheetsModel() {
       Evento: event.name,
       Cliente: event.clientName,
       Fecha: event.eventDate,
+      Horario: event.eventTime,
       Invitados: event.guestCount,
       "Modalidad precio": event.priceMode,
       "Precio por persona": event.pricePerPerson,
@@ -1540,6 +1947,10 @@ function loadBusinessData() {
   erpPurchases = loadErpPurchasesFromStorage();
   erpProviders = readJsonFile(ERP_PROVIDERS_FILE, []);
   erpVenues = readJsonFile(ERP_VENUES_FILE, []);
+  panelRoleDefinitions = normalizeRoleDefinitions(readJsonFile(ERP_ROLES_FILE, {}));
+  erpUsers = normalizeUserList(readJsonFile(ERP_USERS_FILE, []));
+  auditRecords = readJsonFile(ERP_AUDIT_FILE, []);
+  ensureDefaultAdminUser();
   syncProvidersFromPurchasesAndConfig();
   syncVenuesFromEventsAndConfig();
 }
@@ -1867,6 +2278,261 @@ function saveErpVenues() {
   writeJsonFile(ERP_VENUES_FILE, erpVenues);
 }
 
+function saveErpUsers() {
+  writeJsonFile(ERP_USERS_FILE, erpUsers);
+}
+
+function saveAuditRecords() {
+  writeJsonFile(ERP_AUDIT_FILE, auditRecords.slice(-1000));
+}
+
+function savePanelRoles() {
+  writeJsonFile(ERP_ROLES_FILE, panelRoleDefinitions);
+}
+
+function getRoleDefinitions() {
+  if (!Object.keys(panelRoleDefinitions || {}).length) {
+    panelRoleDefinitions = normalizeRoleDefinitions({});
+  }
+  return panelRoleDefinitions;
+}
+
+function normalizeRoleDefinitions(input = {}) {
+  const merged = {};
+  for (const [id, role] of Object.entries(DEFAULT_ROLE_DEFINITIONS)) {
+    merged[id] = {
+      label: role.label,
+      permissions: Array.from(new Set(role.permissions || [])),
+      tabs: Array.from(new Set(role.tabs || [])),
+    };
+  }
+
+  if (input && typeof input === "object" && !Array.isArray(input)) {
+    for (const [id, role] of Object.entries(input)) {
+      if (!merged[id]) continue;
+      merged[id] = {
+        label: normalizeText(role.label || merged[id].label),
+        permissions: sanitizeRolePermissions(role.permissions || merged[id].permissions),
+        tabs: sanitizeRoleTabs(role.tabs || merged[id].tabs || [], sanitizeRolePermissions(role.permissions || merged[id].permissions), id),
+      };
+    }
+  }
+
+  for (const [id, role] of Object.entries(merged)) {
+    role.tabs = sanitizeRoleTabs(role.tabs || [], role.permissions || [], id);
+  }
+
+  return merged;
+}
+
+function sanitizeRolePermissions(permissions) {
+  const allowed = new Set(["*", "view", ...PERMISSION_DEFINITIONS.map((item) => item.id)]);
+  const list = Array.isArray(permissions) ? permissions : [];
+  return Array.from(new Set(list.map(String).filter((permission) => allowed.has(permission))));
+}
+
+function sanitizeRoleTabs(tabs, permissions = [], roleId = "") {
+  const allowed = new Set(TAB_DEFINITIONS
+    .filter((tab) => permissions.includes("*") || tab.requiredAny.some((permission) => permission === "view" || permissions.includes(permission)))
+    .map((tab) => tab.id));
+  const list = Array.isArray(tabs) ? tabs : [];
+  const selected = Array.from(new Set(list.map(String).filter((tab) => allowed.has(tab))));
+  if (roleId === "admin" && !selected.includes("security")) {
+    selected.push("security");
+  }
+  return selected.length ? selected : ["erp"].filter((tab) => allowed.has(tab));
+}
+
+function normalizeUserList(users) {
+  if (!Array.isArray(users)) return [];
+  return users
+    .map(normalizePanelUser)
+    .filter((user) => user.username && user.passwordHash);
+}
+
+function normalizePanelUser(user = {}) {
+  const role = getRoleDefinitions()[user.role] ? user.role : "comercial";
+  return {
+    id: normalizeText(user.id || `usuario-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    username: normalizeText(user.username || "").toLowerCase(),
+    displayName: normalizeText(user.displayName || user.name || user.username || ""),
+    role,
+    active: user.active !== false,
+    passwordHash: normalizeText(user.passwordHash || ""),
+    passwordSalt: normalizeText(user.passwordSalt || ""),
+    createdAt: user.createdAt || new Date().toISOString(),
+    updatedAt: user.updatedAt || "",
+    lastLoginAt: user.lastLoginAt || "",
+  };
+}
+
+function ensureDefaultAdminUser() {
+  if (erpUsers.some((user) => user.role === "admin" && user.active)) return;
+
+  const password = PANEL_AUTH_PASSWORD || BOT_CONFIG.panelAdminPassword || "admin";
+  erpUsers.push(normalizePanelUser({
+    id: "usuario-admin",
+    username: PANEL_AUTH_USER || "admin",
+    displayName: "Administrador",
+    role: "admin",
+    active: true,
+    ...hashPanelPassword(password),
+    createdAt: new Date().toISOString(),
+  }));
+  saveErpUsers();
+  console.log(`Usuario admin creado: ${PANEL_AUTH_USER || "admin"}${PANEL_AUTH_PASSWORD ? "" : " / clave: admin"}`);
+}
+
+function hashPanelPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
+  return {
+    passwordSalt: salt,
+    passwordHash: crypto.pbkdf2Sync(String(password || ""), salt, 120000, 32, "sha256").toString("hex"),
+  };
+}
+
+function verifyPanelPassword(user, password) {
+  if (!user?.passwordHash || !user?.passwordSalt) return false;
+  const attempt = hashPanelPassword(password, user.passwordSalt).passwordHash;
+  return timingSafeEqual(attempt, user.passwordHash);
+}
+
+function getPublicUser(user) {
+  if (!user) return null;
+  const role = getRoleDefinitions()[user.role] || getRoleDefinitions().comercial;
+  return {
+    id: user.id,
+    username: user.username,
+    displayName: user.displayName || user.username,
+    role: user.role,
+    roleLabel: role.label,
+    permissions: role.permissions,
+    tabs: role.tabs || [],
+  };
+}
+
+function authenticatePanelUser(username, password) {
+  const cleanUsername = normalizeText(username || "").toLowerCase();
+  const user = erpUsers.find((item) => item.username === cleanUsername && item.active);
+  if (!user || !verifyPanelPassword(user, password)) {
+    throw new Error("Usuario o clave incorrectos.");
+  }
+
+  user.lastLoginAt = new Date().toISOString();
+  user.updatedAt = user.updatedAt || user.lastLoginAt;
+  saveErpUsers();
+  return user;
+}
+
+function createPanelSession(user) {
+  const token = crypto.randomBytes(32).toString("hex");
+  panelSessions.set(token, {
+    userId: user.id,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 12 * 60 * 60 * 1000,
+  });
+  return token;
+}
+
+function getPanelSessionUser(request) {
+  const token = parseCookies(request.headers.cookie || "").catering_session;
+  if (!token) return null;
+  const session = panelSessions.get(token);
+  if (!session || session.expiresAt < Date.now()) {
+    panelSessions.delete(token);
+    return null;
+  }
+  return erpUsers.find((user) => user.id === session.userId && user.active) || null;
+}
+
+function parseCookies(cookieHeader) {
+  return String(cookieHeader || "")
+    .split(";")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .reduce((cookies, part) => {
+      const index = part.indexOf("=");
+      if (index > 0) {
+        cookies[decodeURIComponent(part.slice(0, index))] = decodeURIComponent(part.slice(index + 1));
+      }
+      return cookies;
+    }, {});
+}
+
+function clearPanelSession(request) {
+  const token = parseCookies(request.headers.cookie || "").catering_session;
+  if (token) panelSessions.delete(token);
+}
+
+function hasPanelPermission(user, permission) {
+  if (!permission || permission === "view") return Boolean(user);
+  const permissions = getRoleDefinitions()[user?.role]?.permissions || [];
+  return permissions.includes("*") || permissions.includes(permission);
+}
+
+function requirePanelPermission(request, response, permission) {
+  const user = getPanelSessionUser(request);
+  if (!user) {
+    sendJson(response, { ok: false, error: "Necesita iniciar sesion.", authRequired: true }, 401);
+    return null;
+  }
+  if (!hasPanelPermission(user, permission)) {
+    sendJson(response, { ok: false, error: "Su usuario no tiene permiso para esta accion." }, 403);
+    return null;
+  }
+  return user;
+}
+
+function requireAnyPanelPermission(request, response, permissions = []) {
+  const user = getPanelSessionUser(request);
+  if (!user) {
+    sendJson(response, { ok: false, error: "Necesita iniciar sesion.", authRequired: true }, 401);
+    return null;
+  }
+  if (!permissions.some((permission) => hasPanelPermission(user, permission))) {
+    sendJson(response, { ok: false, error: "Su usuario no tiene permiso para esta accion." }, 403);
+    return null;
+  }
+  return user;
+}
+
+function getAuditLog(limit = 120) {
+  return auditRecords
+    .slice()
+    .reverse()
+    .slice(0, Math.max(1, Math.min(Number(limit || 120), 300)));
+}
+
+function recordAudit(user, action, entityType, entityId, label, before = null, after = null, metadata = {}) {
+  const actor = getPublicUser(user) || { id: "sistema", username: "sistema", displayName: "Sistema", role: "system" };
+  const record = {
+    id: `historial-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    at: new Date().toISOString(),
+    userId: actor.id,
+    userName: actor.displayName || actor.username,
+    userRole: actor.role,
+    action,
+    entityType,
+    entityId: normalizeText(entityId || ""),
+    label: normalizeText(label || ""),
+    before: simplifyAuditValue(before),
+    after: simplifyAuditValue(after),
+    metadata,
+  };
+  auditRecords.push(record);
+  if (auditRecords.length > 1000) auditRecords = auditRecords.slice(-1000);
+  saveAuditRecords();
+  return record;
+}
+
+function simplifyAuditValue(value) {
+  if (!value) return null;
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (error) {
+    return { value: String(value) };
+  }
+}
+
 function getProviderList() {
   syncProvidersFromPurchasesAndConfig();
   const stats = getProviderStats();
@@ -1966,7 +2632,10 @@ function saveProviderRecord(input = {}) {
   );
 
   if (duplicate) {
-    throw new Error("Ya existe un proveedor con ese nombre.");
+    if (!input.id) {
+      throw new Error("Ya existe un proveedor con ese nombre.");
+    }
+    return mergeProviderRecords(id, duplicate.id, input);
   }
 
   const index = erpProviders.findIndex((provider) => provider.id === id);
@@ -1986,9 +2655,76 @@ function saveProviderRecord(input = {}) {
     erpProviders.push(provider);
   }
 
+  if (previous.name && normalizeSearchKey(previous.name) !== normalizeSearchKey(provider.name)) {
+    renameProviderReferences(previous.name, provider.name);
+  }
+
   ensurePurchaseOptionExists("provider", provider.name);
   saveErpProviders();
   return normalizeProviderRecord(provider, getProviderStats()[normalizeSearchKey(provider.name)] || {});
+}
+
+function mergeProviderRecords(sourceId, targetId, input = {}) {
+  const sourceIndex = erpProviders.findIndex((provider) => provider.id === sourceId);
+  const targetIndex = erpProviders.findIndex((provider) => provider.id === targetId);
+  if (sourceIndex < 0 || targetIndex < 0) {
+    throw new Error("No se pudo consolidar proveedores.");
+  }
+
+  const source = erpProviders[sourceIndex];
+  const target = erpProviders[targetIndex];
+  const merged = normalizeProviderRecord({
+    ...target,
+    ...Object.fromEntries(Object.entries(input).filter(([, value]) => normalizeText(value || ""))),
+    id: target.id,
+    name: target.name,
+    createdAt: target.createdAt || source.createdAt,
+    updatedAt: new Date().toISOString(),
+  });
+
+  renameProviderReferences(source.name, merged.name);
+  erpProviders = erpProviders
+    .filter((provider) => provider.id !== sourceId)
+    .map((provider) => provider.id === targetId ? merged : provider);
+  ensurePurchaseOptionExists("provider", merged.name);
+  saveErpProviders();
+  return normalizeProviderRecord(merged, getProviderStats()[normalizeSearchKey(merged.name)] || {});
+}
+
+function renameProviderReferences(previousName, nextName) {
+  const previousKey = normalizeSearchKey(previousName || "");
+  const cleanNextName = normalizeText(nextName || "");
+  if (!previousKey || !cleanNextName) return;
+
+  let purchasesChanged = false;
+  erpPurchases = erpPurchases.map((purchase) => {
+    if (normalizeSearchKey(purchase.provider || purchase.proveedor) !== previousKey) return purchase;
+    purchasesChanged = true;
+    return {
+      ...purchase,
+      provider: cleanNextName,
+      proveedor: cleanNextName,
+      updatedAt: new Date().toISOString(),
+    };
+  });
+  if (purchasesChanged) saveErpPurchases();
+
+  replacePurchaseProviderOption(previousName, cleanNextName);
+}
+
+function replacePurchaseProviderOption(previousName, nextName) {
+  const key = "purchaseProviders";
+  const previousKey = normalizeSearchKey(previousName || "");
+  const cleanNextName = normalizeText(nextName || "");
+  if (!previousKey || !cleanNextName) return;
+  if (!Array.isArray(BOT_CONFIG[key])) BOT_CONFIG[key] = [];
+
+  BOT_CONFIG[key] = BOT_CONFIG[key].filter((item) => normalizeSearchKey(item) !== previousKey);
+  if (!BOT_CONFIG[key].some((item) => normalizeSearchKey(item) === normalizeSearchKey(cleanNextName))) {
+    BOT_CONFIG[key].push(cleanNextName);
+  }
+  BOT_CONFIG[key].sort((a, b) => a.localeCompare(b));
+  saveBotConfig();
 }
 
 function deleteProviderRecord(id) {
@@ -2529,7 +3265,11 @@ function getErpDashboard() {
   const quotes = getErpQuoteList();
   const purchases = getErpPurchaseList();
   const today = getDateOnly(new Date());
-  const upcomingEvents = events.filter((event) => event.eventDate && event.eventDate >= today);
+  const upcomingEvents = events.filter((event) =>
+    event.eventDate &&
+    event.eventDate >= today &&
+    ["confirmed", "production"].includes(event.status)
+  );
   const confirmedEvents = events.filter((event) => ["confirmed", "production"].includes(event.status));
   const completedEvents = events.filter((event) => event.status === "done");
   const openQuotes = quotes.filter((quote) => ["draft", "sent", "negotiation"].includes(quote.status));
@@ -2560,6 +3300,119 @@ function getErpDashboard() {
     })),
     alerts: buildErpAlerts(events, quotes, purchases),
   };
+}
+
+function getFinanceDashboard() {
+  const events = getErpEventList()
+    .filter((event) => ["quoted", "confirmed", "production", "done"].includes(event.status) || Number(event.quoteTotal || 0) > 0)
+    .map(toFinanceEventRecord)
+    .sort((a, b) => String(a.eventDate || "9999-12-31").localeCompare(String(b.eventDate || "9999-12-31")));
+  const purchases = getErpPurchaseList();
+  const supplierDebt = roundMoney(purchases.reduce((sum, purchase) => sum + Number(purchase.pendingAmount || (purchase.paymentStatus === "Pagado" ? 0 : purchase.totalAmount || 0)), 0));
+  const salesTotal = roundMoney(events.reduce((sum, event) => sum + Number(event.saleTotal || 0), 0));
+  const collectedTotal = roundMoney(events.reduce((sum, event) => sum + Number(event.collectedAmount || 0), 0));
+  const pendingCollectionTotal = roundMoney(events.reduce((sum, event) => sum + Number(event.pendingCollectionAmount || 0), 0));
+  const today = getDateOnly(new Date());
+  const overdueCollectionTotal = roundMoney(events
+    .filter((event) => event.collectionStatus !== "paid" && event.collectionDueDate && event.collectionDueDate < today)
+    .reduce((sum, event) => sum + Number(event.pendingCollectionAmount || 0), 0));
+  const upcomingCollectionTotal = roundMoney(events
+    .filter((event) => event.collectionStatus !== "paid" && (!event.collectionDueDate || event.collectionDueDate >= today))
+    .reduce((sum, event) => sum + Number(event.pendingCollectionAmount || 0), 0));
+
+  return {
+    summary: {
+      salesTotal,
+      collectedTotal,
+      pendingCollectionTotal,
+      overdueCollectionTotal,
+      upcomingCollectionTotal,
+      supplierDebt,
+      projectedBalance: roundMoney(collectedTotal + pendingCollectionTotal - supplierDebt),
+      eventsCount: events.length,
+    },
+    events,
+  };
+}
+
+function toFinanceEventRecord(event) {
+  const saleTotal = roundMoney(Number(event.quoteTotal || event.servicePriceTotal || 0));
+  const collectedAmount = roundMoney(Math.min(parseDecimalNumber(event.collectedAmount || event.collectionAmount || 0), saleTotal || Number.MAX_SAFE_INTEGER));
+  const pendingCollectionAmount = roundMoney(Math.max(0, saleTotal - collectedAmount));
+  const collectionStatus = normalizeCollectionStatus(event.collectionStatus || event.paymentStatus, collectedAmount, saleTotal);
+  return {
+    id: event.id,
+    name: event.name,
+    eventDate: event.eventDate,
+    clientName: event.clientName,
+    venue: event.venue,
+    serviceType: event.serviceType,
+    status: event.status,
+    statusLabel: getErpEventStatusLabel(event.status),
+    saleTotal,
+    collectedAmount,
+    pendingCollectionAmount,
+    collectionStatus,
+    collectionStatusLabel: getCollectionStatusLabel(collectionStatus),
+    collectionDueDate: event.collectionDueDate || "",
+    collectionMethod: event.collectionMethod || "",
+    collectionNotes: event.collectionNotes || "",
+    invoiceStatus: event.invoiceStatus || "not_invoiced",
+    invoiceStatusLabel: getEventInvoiceStatusLabel(event.invoiceStatus || "not_invoiced"),
+    invoiceNumber: event.invoiceNumber || "",
+  };
+}
+
+function normalizeCollectionStatus(status, collectedAmount = 0, saleTotal = 0) {
+  const key = normalizeSearchKey(status || "");
+  if (["paid", "pagado", "cobrado", "cancelado"].includes(key)) return "paid";
+  if (["partial", "parcial"].includes(key)) return "partial";
+  if (["pending", "pendiente"].includes(key)) return "pending";
+  if (Number(saleTotal || 0) > 0 && Number(collectedAmount || 0) >= Number(saleTotal || 0)) return "paid";
+  if (Number(collectedAmount || 0) > 0) return "partial";
+  return "pending";
+}
+
+function getCollectionStatusLabel(status) {
+  return {
+    pending: "Pendiente",
+    partial: "Parcial",
+    paid: "Cobrado",
+  }[status] || "Pendiente";
+}
+
+function normalizeEventInvoiceStatus(status) {
+  const key = normalizeSearchKey(status || "");
+  if (["invoiced", "facturado", "facturada"].includes(key)) return "invoiced";
+  return "not_invoiced";
+}
+
+function getEventInvoiceStatusLabel(status) {
+  return normalizeEventInvoiceStatus(status) === "invoiced" ? "Facturado" : "No facturado";
+}
+
+function updateEventCollectionRecord(input = {}) {
+  const id = normalizeText(input.id || "");
+  const index = erpEvents.findIndex((event) => event.id === id);
+  if (index < 0) throw new Error("No encontre ese evento.");
+  const previous = normalizeErpEvent(erpEvents[index]);
+  const saleTotal = Number(previous.quoteTotal || 0);
+  const collectedAmount = roundMoney(Math.max(0, parseDecimalNumber(input.collectedAmount || 0)));
+  const collectionStatus = normalizeCollectionStatus(input.collectionStatus || "", collectedAmount, saleTotal);
+  erpEvents[index] = normalizeErpEvent({
+    ...erpEvents[index],
+    collectedAmount,
+    collectionStatus,
+    collectionDueDate: normalizePanelDate(input.collectionDueDate || "") || "",
+    collectionMethod: normalizeText(input.collectionMethod || ""),
+    collectionNotes: normalizeText(input.collectionNotes || ""),
+    invoiceStatus: normalizeEventInvoiceStatus(input.invoiceStatus || ""),
+    invoiceNumber: normalizeText(input.invoiceNumber || ""),
+    paymentStatus: getCollectionStatusLabel(collectionStatus),
+    updatedAt: new Date().toISOString(),
+  });
+  saveErpEvents();
+  return erpEvents[index];
 }
 
 function getPurchaseDashboard(purchases = getErpPurchaseList()) {
@@ -2761,6 +3614,7 @@ function mapPipelineStatus(status) {
     production: "confirmed",
     done: "done",
     lost: "lost",
+    cancelled: "lost",
     ignored: "lost",
     referred: "lost",
   };
@@ -2785,6 +3639,549 @@ function getConfirmedEventList() {
         ? roundMoney(((Number(event.quoteTotal || 0) - Number(event.finalCostTotal || 0)) / Number(event.quoteTotal || 0)) * 100)
         : 0,
     }));
+}
+
+function getOperationalSheetCategoryList() {
+  return OPERATIONAL_SHEET_CATEGORIES.map(([id, label]) => ({ id, label }));
+}
+
+function getLogisticsEventList() {
+  return getErpEventList()
+    .filter((event) => event.status === "confirmed" && event.logisticsStatus !== "pending_admin_close")
+    .sort(compareEventsByDate)
+    .map((event) => toLogisticsEventSummary(event));
+}
+
+function getLogisticsEventDetail(id) {
+  const event = getErpEventList().find((item) => item.id === id);
+  if (!event) return null;
+  const normalizedSheet = normalizeOperationalSheet(event.operationalSheet, event);
+  const index = erpEvents.findIndex((item) => item.id === event.id);
+  if (index >= 0 && JSON.stringify(erpEvents[index].operationalSheet || {}) !== JSON.stringify(normalizedSheet)) {
+    erpEvents[index] = { ...erpEvents[index], operationalSheet: normalizedSheet, updatedAt: new Date().toISOString() };
+    saveErpEvents();
+  }
+  return toLogisticsEventDetail({ ...event, operationalSheet: normalizedSheet });
+}
+
+function updateLogisticsEventChecklist(input = {}, user = null) {
+  const id = normalizeText(input.id || input.eventId || "");
+  const index = erpEvents.findIndex((event) => event.id === id);
+  if (index < 0) throw new Error("No encontre ese evento.");
+
+  const previous = normalizeErpEvent(erpEvents[index]);
+  const rawSheet = mergeDeletedOperationalSeeds(input.operationalSheet || input.sheet || {}, previous.operationalSheet || {});
+  const sheet = normalizeOperationalSheet(rawSheet, previous);
+  validateOperationalSheet(sheet);
+
+  erpEvents[index] = normalizeErpEvent({
+    ...erpEvents[index],
+    operationalSheet: {
+      ...sheet,
+      updatedAt: new Date().toISOString(),
+    },
+    updatedAt: new Date().toISOString(),
+  });
+  saveErpEvents();
+  recordAudit(user, "update", "event", id, `Ficha logistica - ${previous.name}`, previous.operationalSheet || null, erpEvents[index].operationalSheet);
+  return toLogisticsEventDetail(normalizeErpEvent(erpEvents[index]));
+}
+
+function closeLogisticsEvent(input = {}, user = null) {
+  const id = normalizeText(input.id || input.eventId || "");
+  const index = erpEvents.findIndex((event) => event.id === id);
+  if (index < 0) throw new Error("No encontre ese evento.");
+
+  const previous = normalizeErpEvent(erpEvents[index]);
+  if (previous.status !== "confirmed") {
+    throw new Error("Solo se pueden cerrar desde logistica eventos confirmados.");
+  }
+  if (previous.eventDate && previous.eventDate > new Date().toISOString().slice(0, 10)) {
+    throw new Error("No se puede cerrar un evento con fecha futura.");
+  }
+
+  const rawSheet = mergeDeletedOperationalSeeds(input.operationalSheet || input.sheet || previous.operationalSheet || {}, previous.operationalSheet || {});
+  const sheet = normalizeOperationalSheet(rawSheet, previous);
+  validateOperationalSheet(sheet);
+  validateLogisticsCloseSheet(sheet);
+
+  const updated = normalizeErpEvent({
+    ...erpEvents[index],
+    logisticsStatus: "pending_admin_close",
+    operationalSheet: {
+      ...sheet,
+      logisticsClosedAt: new Date().toISOString(),
+      logisticsClosedBy: user?.name || user?.username || "",
+      updatedAt: new Date().toISOString(),
+    },
+    updatedAt: new Date().toISOString(),
+  });
+
+  erpEvents[index] = updated;
+  saveErpEvents();
+  recordAudit(user, "update", "event", id, `Solicitud de cierre logistico - ${previous.name}`, previous, updated);
+  return toLogisticsEventDetail(updated);
+}
+
+function approveLogisticsEventClose(input = {}, user = null) {
+  const id = normalizeText(input.id || input.eventId || "");
+  const index = erpEvents.findIndex((event) => event.id === id);
+  if (index < 0) throw new Error("No encontre ese evento.");
+
+  const previous = normalizeErpEvent(erpEvents[index]);
+  if (previous.logisticsStatus !== "pending_admin_close") {
+    throw new Error("Este evento no tiene un cierre logistico pendiente de autorizacion.");
+  }
+  const sheet = normalizeOperationalSheet(previous.operationalSheet || {}, previous);
+  validateLogisticsCloseSheet(sheet);
+
+  const updated = normalizeErpEvent({
+    ...erpEvents[index],
+    status: "done",
+    logisticsStatus: "admin_approved_close",
+    operationalSheet: {
+      ...sheet,
+      closedAt: new Date().toISOString(),
+      closedBy: user?.name || user?.username || "",
+      updatedAt: new Date().toISOString(),
+    },
+    updatedAt: new Date().toISOString(),
+  });
+
+  erpEvents[index] = updated;
+  saveErpEvents();
+  recordAudit(user, "update", "event", id, `Autorizacion cierre logistico - ${previous.name}`, previous, updated);
+  return getErpEventList().find((event) => event.id === id) || updated;
+}
+
+function validateLogisticsCloseSheet(sheet = {}) {
+  const notes = normalizeText(sheet.postEventNotes || "");
+  if (!notes) {
+    throw new Error("Antes de cerrar el evento, cargue un comentario post-evento. Puede escribir 'Sin comentarios' si no hubo observaciones.");
+  }
+
+  const teardownItems = sheet.categories?.desmontaje || [];
+  const pendingTeardown = teardownItems.filter((item) => !item.checked);
+  if (pendingTeardown.length) {
+    throw new Error("Para cerrar el evento, complete primero los items de Desmontaje y descarga en deposito.");
+  }
+}
+
+function validateOperationalSheet(sheet = {}) {
+  for (const [categoryId] of OPERATIONAL_SHEET_CATEGORIES) {
+    const items = sheet.categories?.[categoryId] || [];
+    for (const item of items) {
+      if (!normalizeText(item.text || "")) {
+        throw new Error("No se pueden guardar items vacios en la ficha operativa.");
+      }
+    }
+  }
+}
+
+function toLogisticsEventSummary(event) {
+  const progress = getOperationalSheetProgress(event.operationalSheet);
+  return {
+    id: event.id,
+    name: event.name,
+    eventDate: event.eventDate,
+    clientName: event.clientName,
+    venue: event.venue,
+    guestCount: event.guestCount,
+    serviceType: event.serviceType,
+    status: event.status,
+    statusLabel: getErpEventStatusLabel(event.status),
+    progress,
+  };
+}
+
+function toLogisticsEventDetail(event) {
+  const venue = getVenueList().find((item) => normalizeSearchKey(item.name) === normalizeSearchKey(event.venue));
+  const venueDetail = {
+    ...(venue || {}),
+    latitude: event.latitude ?? venue?.latitude ?? null,
+    longitude: event.longitude ?? venue?.longitude ?? null,
+    mapLabel: event.mapLabel || venue?.mapLabel || "",
+    address: event.venueAddress || venue?.address || "",
+    reference: event.venueReference || venue?.reference || "",
+  };
+  const customer = findCustomerForLogisticsEvent(event);
+  const sheet = normalizeOperationalSheet(event.operationalSheet, event);
+  return {
+    ...toLogisticsEventSummary({ ...event, operationalSheet: sheet }),
+    owner: event.owner,
+    role: event.role,
+    eventTime: event.eventTime || "",
+    nextAction: event.nextAction,
+    notes: event.notes,
+    checklistDetails: event.checklistDetails,
+    clientPhone: customer?.displayPhone || customer?.phone || "",
+    eventMoments: event.eventMoments,
+    menuItems: event.menuItems || [],
+    drinkType: event.drinkType || "",
+    includesDrinks: event.includesDrinks || "",
+    tableware: event.tableware || "",
+    tablewareQuantities: event.tablewareQuantities || "",
+    tablewareDetail: event.tablewareDetail || "",
+    largeContainers: event.largeContainers || "",
+    smallContainers: event.smallContainers || "",
+    staff: event.staff || "",
+    schedule: event.schedule || "",
+    dietaryRestrictions: event.dietaryRestrictions || "",
+    venueDetail,
+    operationalSheet: sheet,
+    learnedSuggestions: getSimilarOperationalLearnings(event),
+  };
+}
+
+function findCustomerForLogisticsEvent(event = {}) {
+  const clientKey = normalizeSearchKey(event.clientName || "");
+  const clientId = normalizeText(event.clientId || "");
+  return getCustomerList().find((customer) => {
+    if (clientId && customer.id === clientId) return true;
+    return clientKey && [
+      customer.fullName,
+      customer.contactName,
+      customer.displayPhone,
+    ].some((value) => normalizeSearchKey(value) === clientKey);
+  });
+}
+
+function normalizeOperationalSheet(sheet = {}, event = {}) {
+  const now = new Date().toISOString();
+  const categories = {};
+  const existingCategories = sheet?.categories && typeof sheet.categories === "object" ? sheet.categories : {};
+  const deletedSeeds = normalizeDeletedOperationalSeeds(sheet?.deletedSeeds || {});
+
+  for (const [categoryId] of OPERATIONAL_SHEET_CATEGORIES) {
+    categories[categoryId] = Array.isArray(existingCategories[categoryId])
+      ? existingCategories[categoryId].map(normalizeOperationalSheetItem).filter((item) => item.text)
+      : [];
+  }
+
+  cleanOperationalSheetNoise(categories, event);
+  seedOperationalSheet(categories, event, deletedSeeds);
+
+  return {
+    categories,
+    deletedSeeds,
+    leftovers: normalizeEventLeftovers(sheet.leftovers || event.leftovers || event.leftoverItems || []),
+    postEventNotes: normalizeText(sheet.postEventNotes || sheet.eventComments || ""),
+    updatedAt: sheet.updatedAt || now,
+  };
+}
+
+function normalizeDeletedOperationalSeeds(input = {}) {
+  const deletedSeeds = {};
+  for (const [categoryId] of OPERATIONAL_SHEET_CATEGORIES) {
+    const values = Array.isArray(input?.[categoryId]) ? input[categoryId] : [];
+    deletedSeeds[categoryId] = Array.from(new Set(values.map((value) => normalizeSearchKey(value)).filter(Boolean)));
+  }
+  return deletedSeeds;
+}
+
+function mergeDeletedOperationalSeeds(nextSheet = {}, previousSheet = {}) {
+  const merged = {
+    ...nextSheet,
+    deletedSeeds: normalizeDeletedOperationalSeeds(nextSheet.deletedSeeds || previousSheet.deletedSeeds || {}),
+  };
+  const previousCategories = previousSheet?.categories || {};
+  const nextCategories = nextSheet?.categories || {};
+
+  for (const [categoryId] of OPERATIONAL_SHEET_CATEGORIES) {
+    const previousItems = Array.isArray(previousCategories[categoryId]) ? previousCategories[categoryId] : [];
+    const nextKeys = new Set((Array.isArray(nextCategories[categoryId]) ? nextCategories[categoryId] : [])
+      .map((item) => normalizeSearchKey(item.text || item.name || ""))
+      .filter(Boolean));
+    for (const item of previousItems) {
+      const key = normalizeSearchKey(item.text || item.name || "");
+      if (key && !nextKeys.has(key)) {
+        merged.deletedSeeds[categoryId].push(key);
+      }
+    }
+    merged.deletedSeeds[categoryId] = Array.from(new Set(merged.deletedSeeds[categoryId]));
+  }
+
+  return merged;
+}
+
+function getSimilarOperationalLearnings(event = {}) {
+  const serviceKey = normalizeServiceCategoryKey(event.serviceType || event.eventMoments || "");
+  if (!serviceKey) return [];
+  return getErpEventList()
+    .filter((item) =>
+      item.id !== event.id &&
+      item.status === "done" &&
+      normalizeServiceCategoryKey(item.serviceType || item.eventMoments || "") === serviceKey &&
+      item.operationalSheet?.postEventNotes
+    )
+    .sort((a, b) => String(b.eventDate || "").localeCompare(String(a.eventDate || "")))
+    .slice(0, 5)
+    .map((item) => ({
+      eventName: item.name,
+      eventDate: item.eventDate,
+      serviceType: item.serviceType,
+      note: item.operationalSheet.postEventNotes,
+    }));
+}
+
+function normalizeServiceCategoryKey(value) {
+  const key = normalizeSearchKey(value || "");
+  if (!key) return "";
+  if (key.includes("coffee")) return "coffee";
+  if (key.includes("finger") || key.includes("agape")) return "finger-agape";
+  if (key.includes("cocktail") || key.includes("coctel")) return "cocktail";
+  if (key.includes("cena")) return "cena";
+  if (key.includes("almuerzo")) return "almuerzo";
+  return key.split(" ").slice(0, 3).join("-");
+}
+
+function addDaysToDate(dateValue, days) {
+  const date = new Date(`${dateValue}T00:00:00`);
+  date.setDate(date.getDate() + Number(days || 0));
+  return getDateOnly(date);
+}
+
+function normalizeOperationalSheetItem(item = {}) {
+  return {
+    id: normalizeText(item.id || `item-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    text: normalizeText(item.text || item.name || ""),
+    quantity: normalizeText(item.quantity || item.cantidad || ""),
+    checked: parseBooleanLike(item.checked),
+    owner: normalizeText(item.owner || ""),
+    note: normalizeText(item.note || ""),
+    updatedAt: item.updatedAt || "",
+  };
+}
+
+function seedOperationalSheet(categories, event = {}, deletedSeeds = {}) {
+  const add = (category, text, quantity = "") => {
+    const clean = normalizeText(text || "");
+    if (!clean) return;
+    const cleanKey = normalizeSearchKey(clean);
+    if ((deletedSeeds[category] || []).includes(cleanKey)) return;
+    const exists = categories[category].some((item) => normalizeSearchKey(item.text) === normalizeSearchKey(clean));
+    if (!exists) categories[category].push(normalizeOperationalSheetItem({ text: clean, quantity, checked: false }));
+  };
+
+  for (const item of event.menuItems || []) {
+    const text = [item.name, item.detail].filter(Boolean).join(" - ");
+    const splitItems = !item.quantity && !item.detail ? splitMenuOperationalItems(item.name) : [];
+    if (splitItems.length > 1) {
+      for (const menuItem of splitItems) add("alimentos", menuItem);
+    } else {
+      add("alimentos", text, item.quantity || "");
+    }
+  }
+  if (!(event.menuItems || []).length) {
+    for (const item of splitMenuOperationalItems(event.selectedMenu || "")) {
+      add("alimentos", item);
+    }
+  }
+  for (const restriction of splitOperationalText(event.dietaryRestrictions || "")) {
+    add("alimentos", `Restriccion alimentaria: ${restriction}`);
+  }
+  for (const drink of splitOperationalText(event.drinkType)) {
+    add("bebidas", drink);
+  }
+  for (const item of splitTablewareOperationalItems(event.tableware)) {
+    add("vajilla", item.text, item.quantity);
+  }
+  for (const item of splitTablewareOperationalItems(event.tablewareQuantities)) {
+    add("vajilla", item.text, item.quantity);
+  }
+  for (const item of splitTablewareOperationalItems(event.tablewareDetail)) {
+    add("vajilla", item.text, item.quantity);
+  }
+  if (event.largeContainers) add("transporte", `Contenedores grandes: ${event.largeContainers}`);
+  if (event.smallContainers) add("transporte", `Contenedores chicos: ${event.smallContainers}`);
+  const waiterCount = Number(event.waiterCount || 0) || extractWaiterCount(event.staff);
+  if (waiterCount > 0) {
+    add("personal", "Mozos", String(waiterCount));
+  } else if (event.staff && !normalizeSearchKey(event.staff).includes("mozo")) {
+    add("personal", event.staff);
+  }
+  seedOperationalSuggestions(categories, event, add);
+}
+
+function seedOperationalSuggestions(categories, event = {}, add) {
+  const guests = Number(event.guestCount || 0);
+  const serviceKey = normalizeServiceCategoryKey(event.serviceType || event.eventMoments || "");
+  const assisted = event.assistanceMode === "assisted" || normalizeSearchKey(event.staff).includes("mozo");
+
+  add("utensilios", "Cuchillos de servicio");
+  add("utensilios", "Pinzas de servicio");
+  add("utensilios", "Cucharas de servicio");
+  add("utensilios", "Tablas de apoyo");
+
+  if (serviceKey.includes("coffee")) {
+    add("utensilios", "Termos / dispensers de cafe");
+    add("utensilios", "Jarras para leche/agua");
+    add("bebidas", "Hielo");
+    add("montaje", "Armar estacion de cafe e infusiones");
+  }
+
+  if (serviceKey.includes("finger") || serviceKey.includes("agape") || serviceKey.includes("cocktail")) {
+    add("utensilios", "Bandejas de servicio");
+    add("utensilios", "Pinzas para bocados");
+    add("montaje", "Definir mesa de apoyo para reposicion");
+  }
+
+  if (assisted) {
+    add("montaje", "Briefing de servicio con personal");
+  }
+
+  add("montaje", "Revisar acceso de carga y descarga");
+  add("montaje", "Ubicar mesa principal / estacion de servicio");
+  add("montaje", "Verificar electricidad, agua y espacio de apoyo");
+  add("desmontaje", "Desmontar el servicio completo");
+  add("desmontaje", "Descargar en deposito");
+  add("desmontaje", "Separar sucio, sobrantes y devoluciones");
+  add("desmontaje", "Controlar que no queden vajilla, manteles ni utensilios");
+  add("desmontaje", "Registrar roturas o faltantes");
+  add("documentacion", "Llevar ficha operativa del evento");
+  add("documentacion", "Confirmar contacto del cliente y lugar");
+
+  if (guests > 0) {
+    add("mobiliario", "Mesa de apoyo", guests > 60 ? "2+" : "1");
+    add("manteleria", "Manteles para mesa de apoyo", guests > 60 ? "2+" : "1");
+    add("vajilla", "Servilletas", String(Math.ceil(guests * 1.2)));
+  }
+
+  if (guests >= 90) {
+    add("transporte", "Transporte sugerido: camion");
+    add("transporte", "Revisar volumen de mobiliario, conservadoras y vajilla");
+  } else if (guests >= 30) {
+    add("transporte", "Transporte sugerido: camioneta");
+    add("transporte", "Revisar volumen antes de cargar");
+  } else if (guests > 0) {
+    add("transporte", "Transporte sugerido: auto o camioneta chica");
+  } else {
+    add("transporte", "Definir transporte segun volumen");
+  }
+
+  add("extras", "Cinta, marcador y bolsas");
+  add("extras", "Kit de limpieza basico");
+  add("extras", "Repaso final antes de salir");
+}
+
+function cleanOperationalSheetNoise(categories) {
+  categories.alimentos = (categories.alimentos || []).map((item) => {
+    if (item.quantity) return item;
+    const match = normalizeText(item.text || "").match(/^(\d+(?:[.,]\d+)?(?:\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)?)\s*-\s*(.+)$/);
+    if (!match) return item;
+    return {
+      ...item,
+      quantity: normalizeText(match[1]),
+      text: normalizeText(match[2]),
+    };
+  });
+  const removeByKey = {
+    bebidas: new Set(["con bebidas", "sin bebidas", "a definir"]),
+    personal: new Set(["confirmar cantidad de mozos"]),
+  };
+  for (const [category, keys] of Object.entries(removeByKey)) {
+    categories[category] = (categories[category] || []).filter((item) => !keys.has(normalizeSearchKey(item.text)));
+  }
+  categories.personal = (categories.personal || []).filter((item) => {
+    const key = normalizeSearchKey(item.text);
+    return !/^\d+\s*mozo?s?$/.test(key) && !/^mozo?s?\s*\d+$/.test(key);
+  });
+  for (const [categoryId] of OPERATIONAL_SHEET_CATEGORIES) {
+    const seen = new Set();
+    categories[categoryId] = (categories[categoryId] || []).filter((item) => {
+      const key = `${normalizeSearchKey(item.text)}|${normalizeSearchKey(item.quantity)}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+}
+
+function extractWaiterCount(value) {
+  const text = normalizeSearchKey(value || "");
+  const match = text.match(/(\d+)\s*mozo?s?/) || text.match(/mozo?s?\s*(\d+)/);
+  return match ? Number(match[1] || 0) : 0;
+}
+
+function splitOperationalText(value) {
+  return String(value || "")
+    .split(/[,;\n]+/)
+    .map((item) => normalizeText(item))
+    .filter(Boolean);
+}
+
+function splitMenuOperationalItems(value) {
+  const text = normalizeText(value || "");
+  if (!text) return [];
+  const baseItems = splitOperationalText(text);
+  const source = baseItems.length > 1 ? baseItems : [text];
+  return source
+    .flatMap((item) => {
+      if (item.length < 120) return [item];
+      return item
+        .replace(/\s+/g, " ")
+        .split(/\s+(?=[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÑáéíóúñ]{3,})/g)
+        .map((part) => part.trim())
+        .filter((part) => part.length > 2);
+    })
+    .filter(Boolean);
+}
+
+function splitTablewareOperationalItems(value) {
+  return splitOperationalText(value)
+    .flatMap((item) => item.split(/\s+\|\s+/g))
+    .map((item) => {
+      const text = normalizeText(item);
+      const match = text.match(/^(.+?)(?:\s*[:x-]\s*|\s+)(\d+(?:[.,]\d+)?\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]*)$/);
+      if (!match) return { text, quantity: "" };
+      return {
+        text: normalizeText(match[1]),
+        quantity: normalizeText(match[2]),
+      };
+    })
+    .filter((item) => item.text);
+}
+
+function normalizeEventLeftovers(items = []) {
+  if (!Array.isArray(items)) return [];
+  return items.map((item) => ({
+    id: normalizeText(item.id || `sobrante-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    food: normalizeText(item.food || item.name || ""),
+    quantity: normalizeText(item.quantity || ""),
+    destination: normalizeText(item.destination || ""),
+    storage: normalizeText(item.storage || ""),
+    notes: normalizeText(item.notes || ""),
+    updatedAt: item.updatedAt || "",
+  })).filter((item) => item.food);
+}
+
+function getOperationalSheetProgress(sheet = {}) {
+  const byCategory = {};
+  let total = 0;
+  let completed = 0;
+
+  for (const [categoryId, label] of OPERATIONAL_SHEET_CATEGORIES) {
+    const items = sheet.categories?.[categoryId] || [];
+    const categoryTotal = items.length;
+    const categoryCompleted = items.filter((item) => item.checked).length;
+    total += categoryTotal;
+    completed += categoryCompleted;
+    byCategory[categoryId] = {
+      label,
+      total: categoryTotal,
+      completed: categoryCompleted,
+      percent: categoryTotal ? roundMoney((categoryCompleted / categoryTotal) * 100) : 0,
+    };
+  }
+
+  const percent = total ? roundMoney((completed / total) * 100) : 0;
+  return {
+    total,
+    completed,
+    percent,
+    status: total === 0 ? "not_started" : completed === 0 ? "not_started" : completed >= total ? "complete" : "in_progress",
+    byCategory,
+  };
 }
 
 function getCustomerInsights() {
@@ -3026,17 +4423,28 @@ function normalizeErpEvent(event = {}) {
     clientId: normalizeText(event.clientId || ""),
     clientName: normalizeText(event.clientName || ""),
     eventDate: normalizePanelDate(event.eventDate || event.date || ""),
+    eventTime: normalizeText(event.eventTime || ""),
     guestCount: parseDecimalNumber(event.guestCount || 0),
     venue: normalizeText(event.venue || ""),
+    venueAddress: normalizeText(event.venueAddress || event.address || ""),
+    venueReference: normalizeText(event.venueReference || ""),
+    latitude: event.latitude !== "" && event.latitude !== undefined && event.latitude !== null ? Number(event.latitude) : null,
+    longitude: event.longitude !== "" && event.longitude !== undefined && event.longitude !== null ? Number(event.longitude) : null,
+    mapLabel: normalizeText(event.mapLabel || ""),
     serviceType: normalizeText(event.serviceType || ""),
     assistanceMode: normalizeText(event.assistanceMode || ""),
     waiterCount: parseDecimalNumber(event.waiterCount || 0),
     eventMoments: normalizeText(event.eventMoments || ""),
+    dietaryRestrictionMode: normalizeText(event.dietaryRestrictionMode || ""),
     selectedMenu,
     menuItems,
     includesDrinks: normalizeText(event.includesDrinks || ""),
     drinkType: normalizeText(event.drinkType || ""),
     tableware: normalizeText(event.tableware || ""),
+    tablewareQuantities: normalizeText(event.tablewareQuantities || ""),
+    tablewareDetail: normalizeText(event.tablewareDetail || ""),
+    largeContainers: normalizeText(event.largeContainers || ""),
+    smallContainers: normalizeText(event.smallContainers || ""),
     staff: normalizeText(event.staff || ""),
     schedule: normalizeText(event.schedule || ""),
     budgetRange: normalizeText(event.budgetRange || ""),
@@ -3048,12 +4456,21 @@ function normalizeErpEvent(event = {}) {
     role: normalizeText(event.role || ""),
     nextAction: normalizeText(event.nextAction || ""),
     paymentStatus: normalizeText(event.paymentStatus || ""),
+    collectedAmount: roundMoney(parseDecimalNumber(event.collectedAmount || event.collectionAmount || 0)),
+    collectionStatus: normalizeCollectionStatus(event.collectionStatus || event.paymentStatus, parseDecimalNumber(event.collectedAmount || event.collectionAmount || 0), quoteTotal),
+    collectionDueDate: normalizePanelDate(event.collectionDueDate || "") || "",
+    collectionMethod: normalizeText(event.collectionMethod || ""),
+    collectionNotes: normalizeText(event.collectionNotes || ""),
+    invoiceStatus: normalizeEventInvoiceStatus(event.invoiceStatus || ""),
+    invoiceNumber: normalizeText(event.invoiceNumber || ""),
     productionStatus: normalizeText(event.productionStatus || ""),
     menuStatus: normalizeText(event.menuStatus || ""),
     staffStatus: normalizeText(event.staffStatus || ""),
     logisticsStatus: normalizeText(event.logisticsStatus || ""),
     checklist: normalizeOperationalChecklist(event.checklist || event),
     checklistDetails: normalizeText(event.checklistDetails || ""),
+    operationalSheet: normalizeOperationalSheet(event.operationalSheet || {}, event),
+    dietaryRestrictions: normalizeText(event.dietaryRestrictions || ""),
     notes: normalizeText(event.notes || ""),
     quoteTotal: roundMoney(quoteTotal),
     quoteCostTotal: roundMoney(quoteCostTotal),
@@ -3069,12 +4486,36 @@ function normalizeErpEvent(event = {}) {
       date: purchase.date,
       provider: purchase.provider,
       description: purchase.description,
+      lineItems: (purchase.lineItems || []).map((item) => ({
+        description: item.description,
+        quantity: item.quantity,
+        unitAmount: item.unitAmount,
+        total: item.total,
+        ivaRate: item.ivaRate,
+      })),
       paymentStatus: purchase.paymentStatus,
       totalAmount: purchase.totalAmount,
     })),
     createdAt: event.createdAt || "",
     updatedAt: event.updatedAt || "",
   };
+}
+
+function compareEventsByDate(a, b) {
+  const dateCompare = String(a.eventDate || "9999-12-31").localeCompare(String(b.eventDate || "9999-12-31"));
+  return dateCompare || String(a.name || "").localeCompare(String(b.name || ""));
+}
+
+function getErpEventStatusLabel(status) {
+  return {
+    lead: "Consulta",
+    quoted: "Presupuestado",
+    confirmed: "Confirmado",
+    production: "Produccion",
+    done: "Finalizado",
+    lost: "Perdido",
+    cancelled: "Cancelado",
+  }[status] || status || "Sin estado";
 }
 
 function normalizeEventMenuItems(input) {
@@ -3084,6 +4525,7 @@ function normalizeEventMenuItems(input) {
         if (typeof item === "string") return { name: normalizeText(item) };
         return {
           name: normalizeText(item.name || item.item || item.description || ""),
+          quantity: normalizeText(item.quantity || item.qty || ""),
           detail: normalizeText(item.detail || item.notes || ""),
         };
       })
@@ -3415,19 +4857,25 @@ function getErpPurchaseList() {
 }
 
 function getPurchaseAmounts(purchase = {}) {
-  const lineTotal = (purchase.lineItems || purchase.items || []).reduce(
+  const purchaseItems = purchase.lineItems || purchase.items || [];
+  const lineNetTotal = roundMoney(purchaseItems.reduce(
+    (sum, item) => sum + Number(item.netTotal || (Number(item.quantity || 0) * Number(item.unitAmount || 0)) || item.total || 0),
+    0
+  ));
+  const lineIvaTotal = roundMoney(purchaseItems.reduce((sum, item) => sum + Number(item.ivaAmount || 0), 0));
+  const lineGrossTotal = roundMoney(purchaseItems.reduce(
     (sum, item) => sum + Number(item.total || 0),
     0
-  );
+  ));
   const rawIvaRate = Number(purchase.ivaRate || purchase.ivaPorcentaje || 0);
   const ivaRate = roundMoney(rawIvaRate > 1 ? rawIvaRate / 100 : rawIvaRate);
   const storedIvaAmount = roundMoney(Number(purchase.ivaAmount || purchase.ivaCalculado || 0));
   const storedTotal = roundMoney(Number(purchase.totalAmount || purchase.montoTotal || purchase.total || 0));
   const storedNet = roundMoney(Number(purchase.netAmount || purchase.neto || 0));
-  const netAmount = roundMoney(storedNet || lineTotal || (ivaRate > 0 ? storedTotal / (1 + ivaRate) : storedTotal));
-  const ivaAmount = roundMoney(storedIvaAmount || netAmount * ivaRate);
+  const netAmount = roundMoney(storedNet || lineNetTotal || (ivaRate > 0 ? storedTotal / (1 + ivaRate) : storedTotal));
+  const ivaAmount = roundMoney(storedIvaAmount || lineIvaTotal || netAmount * ivaRate);
   const grossAmount = roundMoney(netAmount + ivaAmount);
-  const totalAmount = ivaRate > 0 && grossAmount > storedTotal ? grossAmount : (storedTotal || grossAmount);
+  const totalAmount = storedTotal || lineGrossTotal || grossAmount;
 
   return { netAmount, ivaRate, ivaAmount, totalAmount };
 }
@@ -3925,8 +5373,9 @@ function applyPurchaseSync(input = {}) {
 }
 
 function normalizeErpEventStatus(status) {
-  const value = normalizeText(status || "").toLowerCase();
-  const allowed = new Set(["lead", "quoted", "confirmed", "production", "done", "lost"]);
+  const value = normalizeSearchKey(status || "");
+  if (["cancelado", "cancelada", "cancelled", "canceled"].includes(value)) return "cancelled";
+  const allowed = new Set(["lead", "quoted", "confirmed", "production", "done", "lost", "cancelled"]);
   return allowed.has(value) ? value : "lead";
 }
 
@@ -5285,12 +6734,11 @@ function buildPurchaseRecord(input, options = {}) {
   const sheetRowMatch = cleanId.match(/^sheets-row-(\d+)$/);
   const rowNumber = normalizeText(input.rowNumber || input.row || (sheetRowMatch ? sheetRowMatch[1] : ""));
   const netAmount = roundMoney(
-    lineItems.reduce((sum, item) => sum + item.total, 0)
+    lineItems.reduce((sum, item) => sum + item.netTotal, 0)
   );
-  const rawIvaRate = parseOptionalNumber(input.ivaRate);
-  const ivaRate = rawIvaRate > 1 ? rawIvaRate / 100 : rawIvaRate;
-  const ivaAmount = roundMoney(netAmount * ivaRate);
-  const totalAmount = roundMoney(netAmount + ivaAmount);
+  const ivaAmount = roundMoney(lineItems.reduce((sum, item) => sum + item.ivaAmount, 0));
+  const totalAmount = roundMoney(lineItems.reduce((sum, item) => sum + item.total, 0));
+  const ivaRate = getDominantIvaRate(lineItems);
 
   const purchase = {
     id: cleanId || `compra-${Date.now()}`,
@@ -5358,6 +6806,7 @@ function buildPurchaseRecord(input, options = {}) {
 
 function parsePurchaseItems(input) {
   let items = input.items || [];
+  const defaultIvaRate = normalizeIvaRate(input.ivaRate);
 
   if (typeof items === "string") {
     try {
@@ -5380,6 +6829,9 @@ function parsePurchaseItems(input) {
       const description = normalizeText(item.description || "");
       const quantity = parsePositiveNumber(item.quantity || 1, `cantidad del producto ${index + 1}`);
       const unitAmount = parsePositiveNumber(item.unitAmount, `monto unitario del producto ${index + 1}`);
+      const ivaRate = normalizeIvaRate(item.ivaRate ?? item.iva ?? defaultIvaRate);
+      const netTotal = roundMoney(quantity * unitAmount);
+      const ivaAmount = roundMoney(netTotal * ivaRate);
 
       if (!description) {
         throw new Error(`Ingrese la descripcion del producto ${index + 1}.`);
@@ -5389,9 +6841,22 @@ function parsePurchaseItems(input) {
         description,
         quantity,
         unitAmount,
-        total: roundMoney(quantity * unitAmount),
+        ivaRate,
+        netTotal,
+        ivaAmount,
+        total: roundMoney(netTotal + ivaAmount),
       };
     });
+}
+
+function normalizeIvaRate(value) {
+  const rate = parseOptionalNumber(value);
+  return rate > 1 ? rate / 100 : rate;
+}
+
+function getDominantIvaRate(lineItems) {
+  const rates = Array.from(new Set((lineItems || []).map((item) => Number(item.ivaRate || 0))));
+  return rates.length === 1 ? rates[0] : 0;
 }
 
 function parsePositiveNumber(value, label) {
@@ -5476,10 +6941,10 @@ async function extractPurchaseInvoiceDataWithOpenAI(input) {
                 "El documento puede ser impreso, fiscal, no fiscal, remito, presupuesto, factura A/B/C, ticket factura A o manuscrito.",
                 "Ejemplos de proveedores esperables: Solucion Sustentable, Baca, Papelera del Oeste, Panaderia La Parra, La Casa del Cerdo, Seba Guzzo, Talastilla, Virgen del Valle, Avicola Rodeo, Lapiz y Papel.",
                 "Campos requeridos: date en formato YYYY-MM-DD si aparece; provider; description; quantity; unitAmount; invoiceType; ivaRate; total; paymentMethod; cuit; invoiceNumber; notes; lineItems.",
-                "lineItems debe ser un array con objetos {description, quantity, unitAmount, total}. Si hay muchos articulos, extrae los principales o todos los legibles.",
+                "lineItems debe ser un array con objetos {description, quantity, unitAmount, ivaRate, total}. Si un articulo indica IVA 10.5, 21 o 27, cargalo en ivaRate de ese articulo.",
                 "description debe ser el producto principal si hay uno solo. Si hay varios productos, usa una descripcion resumida como VARIOS LIMPIEZA, VERDURA, CARNES, PANIFICADOS, LIBRERIA o DESCARTABLES segun corresponda.",
                 "quantity debe ser la cantidad del producto principal. Si hay varios productos y no hay uno principal, usa 1.",
-                "unitAmount debe ser el total si hay varios productos y quantity es 1. Si hay un producto principal con precio unitario claro, usa ese precio unitario.",
+                "unitAmount debe ser precio unitario neto sin IVA cuando el documento separa IVA. El total de cada item debe ser neto + IVA.",
                 "invoiceType debe ser Factura A, Factura B, Factura C, Ticket, Remito, Presupuesto o Sin comprobante.",
                 "ivaRate debe ser 0, 0.105, 0.21 o 0.27.",
                 "Para documentos no fiscales o presupuestos/remitos manuscritos, usa invoiceType Presupuesto o Sin comprobante segun lo que diga el papel.",
@@ -5566,10 +7031,11 @@ function buildLocalInvoicePrompt(ocrText) {
     "Sos un asistente local para cargar compras gastronomicas en una planilla.",
     "Analiza la imagen y el texto OCR. Devolve solo JSON valido, sin markdown.",
     "Campos requeridos: date YYYY-MM-DD si aparece; provider; description; quantity; unitAmount; invoiceType; ivaRate; total; paymentMethod; cuit; invoiceNumber; notes; lineItems.",
-    "lineItems debe ser array de objetos {description, quantity, unitAmount, total}.",
+    "lineItems debe ser array de objetos {description, quantity, unitAmount, ivaRate, total}. Si un articulo indica IVA 10.5, 21 o 27, cargalo en ivaRate de ese articulo.",
     "invoiceType debe ser Factura A, Factura B, Factura C, Ticket, Remito, Presupuesto o Sin comprobante.",
     "ivaRate debe ser 0, 0.105, 0.21 o 0.27.",
     "En Argentina los importes pueden venir como 1.665.000 o 82.610,65.",
+    "unitAmount debe ser precio unitario neto sin IVA cuando el documento separa IVA. El total de cada item debe ser neto + IVA.",
     "Si hay varios productos, extrae todos los legibles. Si no estas seguro, deja el dato vacio o null.",
     "Texto OCR disponible:",
     ocrText.slice(0, 7000),
@@ -6151,6 +7617,7 @@ function normalizeInvoiceLineItems(items) {
       description: normalizeText(item.description || ""),
       quantity: item.quantity ? parseMoneyLikeNumber(item.quantity) : "",
       unitAmount: item.unitAmount ? parseMoneyLikeNumber(item.unitAmount) : "",
+      ivaRate: item.ivaRate === null || item.ivaRate === undefined ? "" : normalizeIvaRate(item.ivaRate),
       total: item.total ? parseMoneyLikeNumber(item.total) : "",
     }))
     .filter((item) => item.description)
@@ -6161,6 +7628,7 @@ function formatInvoiceLineItem(item) {
   const parts = [
     item.quantity ? `${item.quantity} x` : "",
     item.description,
+    item.ivaRate ? `IVA ${roundMoney(Number(item.ivaRate) * 100)}%` : "",
     item.total ? `$${item.total}` : "",
   ];
 

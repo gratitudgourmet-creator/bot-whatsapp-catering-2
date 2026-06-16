@@ -12,33 +12,33 @@
     "budgetCount": 0,
     "lastEventType": "PICADA",
     "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-11T18:33:13.168Z",
+    "lastSeenAt": "2026-06-12T18:34:39.071Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-10T15:41:28.001Z",
-    "updatedAt": "2026-06-11T18:33:13.168Z"
+    "updatedAt": "2026-06-12T18:34:39.071Z"
   },
   "2615406970": {
     "id": "2615406970",
     "phone": "2615406970",
     "displayPhone": "2615406970",
     "fullName": "ESTEFANÍA EBERHARDT",
-    "contactName": "TEFI EBERHARDT",
+    "contactName": "ESTEFANÍA EBERHARDT",
     "aliases": [
       "2615406970",
       "TEFI EBERHARDT",
       "ESTEFANÍA EBERHARDT"
     ],
     "budgetCount": 0,
-    "lastEventType": "",
+    "lastEventType": "Coffee",
     "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-09T14:37:31.840Z",
+    "lastSeenAt": "2026-06-16T17:59:35.621Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-09T14:37:31.840Z",
-    "updatedAt": "2026-06-09T14:37:31.840Z"
+    "updatedAt": "2026-06-16T17:59:35.621Z"
   },
   "2616988941": {
     "id": "2616988941",
@@ -53,12 +53,12 @@
     "budgetCount": 1,
     "lastEventType": "Almuerzo",
     "lastBudgetAt": "2026-06-08T20:01:50.279Z",
-    "lastSeenAt": "2026-06-10T21:11:14.777Z",
+    "lastSeenAt": "2026-06-16T12:56:21.328Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-08T20:01:50.279Z",
-    "updatedAt": "2026-06-10T21:11:14.777Z"
+    "updatedAt": "2026-06-16T12:56:21.328Z"
   },
   "2619977846": {
     "id": "2619977846",
@@ -119,23 +119,6 @@
     "createdAt": "2026-06-05T15:18:13.740Z",
     "updatedAt": "2026-06-05T15:18:18.885Z"
   },
-  "Cliente demo": {
-    "id": "Cliente demo",
-    "phone": "Cliente demo",
-    "displayPhone": "",
-    "fullName": "Cliente demo",
-    "contactName": "Cliente demo",
-    "aliases": [
-      "Cliente demo"
-    ],
-    "budgetCount": 0,
-    "lastEventType": "Cocktail",
-    "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-07T21:29:24.841Z",
-    "notes": "",
-    "createdAt": "2026-06-07T21:29:24.841Z",
-    "updatedAt": "2026-06-07T21:29:24.841Z"
-  },
   "JOAQUIN": {
     "id": "JOAQUIN",
     "phone": "JOAQUIN",
@@ -167,68 +150,11 @@
     "budgetCount": 0,
     "lastEventType": "Coffee",
     "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-11T18:33:27.579Z",
+    "lastSeenAt": "2026-06-16T16:38:42.009Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-08T20:13:42.660Z",
-    "updatedAt": "2026-06-11T18:33:27.579Z"
-  },
-  "TEST": {
-    "id": "TEST",
-    "phone": "TEST",
-    "displayPhone": "",
-    "fullName": "TEST",
-    "contactName": "TEST",
-    "aliases": [
-      "TEST"
-    ],
-    "budgetCount": 0,
-    "lastEventType": "TEST",
-    "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-08T20:29:30.189Z",
-    "preferences": "",
-    "dietaryRestrictions": "",
-    "notes": "",
-    "createdAt": "2026-06-08T20:29:29.489Z",
-    "updatedAt": "2026-06-08T20:29:30.189Z"
-  },
-  "ESTEFANÍA": {
-    "id": "ESTEFANÍA",
-    "phone": "ESTEFANÍA",
-    "displayPhone": "",
-    "fullName": "ESTEFANÍA",
-    "contactName": "ESTEFANÍA",
-    "aliases": [
-      "ESTEFANÍA"
-    ],
-    "budgetCount": 0,
-    "lastEventType": "Coffee",
-    "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-09T15:45:47.732Z",
-    "preferences": "",
-    "dietaryRestrictions": "",
-    "notes": "",
-    "createdAt": "2026-06-09T14:17:06.272Z",
-    "updatedAt": "2026-06-09T15:45:47.732Z"
-  },
-  "Cliente Test": {
-    "id": "Cliente Test",
-    "phone": "Cliente Test",
-    "displayPhone": "",
-    "fullName": "Cliente Test",
-    "contactName": "Cliente Test",
-    "aliases": [
-      "Cliente Test"
-    ],
-    "budgetCount": 0,
-    "lastEventType": "Coffee",
-    "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-09T14:55:03.773Z",
-    "preferences": "",
-    "dietaryRestrictions": "",
-    "notes": "",
-    "createdAt": "2026-06-09T14:28:59.219Z",
-    "updatedAt": "2026-06-09T14:55:03.773Z"
+    "updatedAt": "2026-06-16T16:38:42.009Z"
   }
 }

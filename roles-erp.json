@@ -1,0 +1,99 @@
+{
+  "admin": {
+    "label": "Administracion general",
+    "permissions": [
+      "*"
+    ],
+    "tabs": [
+      "erp",
+      "commercial",
+      "purchases",
+      "finance",
+      "customers",
+      "providers",
+      "recipes",
+      "logistics_event",
+      "security"
+    ]
+  },
+  "comercial": {
+    "label": "Comercial",
+    "permissions": [
+      "view",
+      "events:write",
+      "quotes:write",
+      "customers:write",
+      "venues:read"
+    ],
+    "tabs": [
+      "commercial",
+      "customers"
+    ]
+  },
+  "compras": {
+    "label": "Compras",
+    "permissions": [
+      "view",
+      "purchases:write",
+      "providers:write",
+      "events:read",
+      "venues:read"
+    ],
+    "tabs": [
+      "purchases",
+      "providers"
+    ]
+  },
+  "cocina": {
+    "label": "Cocina",
+    "permissions": [
+      "view",
+      "events:write",
+      "recipes:write",
+      "events:read",
+      "venues:read",
+      "logistics:read"
+    ],
+    "tabs": [
+      "recipes",
+      "logistics_event"
+    ]
+  },
+  "operacion": {
+    "label": "Operacion",
+    "permissions": [
+      "view",
+      "events:write",
+      "venues:write",
+      "events:read",
+      "recipes:read",
+      "logistics:read",
+      "logistics:write"
+    ],
+    "tabs": [
+      "logistics_event"
+    ]
+  },
+  "logistica_evento": {
+    "label": "Logistica Evento",
+    "permissions": [
+      "view",
+      "logistics:read",
+      "logistics:write"
+    ],
+    "tabs": [
+      "logistics_event"
+    ]
+  },
+  "finanzas": {
+    "label": "Finanzas",
+    "permissions": [
+      "view",
+      "finance:read",
+      "finance:write"
+    ],
+    "tabs": [
+      "finance"
+    ]
+  }
+}

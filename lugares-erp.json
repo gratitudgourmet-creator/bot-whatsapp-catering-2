@@ -14,7 +14,7 @@
     "mapProvider": "",
     "mapPlaceId": "",
     "createdAt": "2026-06-09T14:47:09.593Z",
-    "updatedAt": "2026-06-09T15:45:47.745Z"
+    "updatedAt": "2026-06-16T17:59:35.711Z"
   },
   {
     "id": "lugar-ecoparque",
@@ -31,7 +31,7 @@
     "mapProvider": "",
     "mapPlaceId": "",
     "createdAt": "2026-06-09T14:47:09.593Z",
-    "updatedAt": "2026-06-09T14:50:11.940Z"
+    "updatedAt": "2026-06-16T16:38:42.029Z"
   },
   {
     "id": "lugar-hiper-changomas",
@@ -65,7 +65,7 @@
     "mapProvider": "OpenStreetMap",
     "mapPlaceId": "1434105",
     "createdAt": "2026-06-09T19:07:35.494Z",
-    "updatedAt": "2026-06-11T18:33:27.585Z"
+    "updatedAt": "2026-06-12T18:32:31.337Z"
   },
   {
     "id": "lugar-ministerio-publico-fiscal",
@@ -99,7 +99,7 @@
     "mapProvider": "OpenStreetMap",
     "mapPlaceId": "1421523",
     "createdAt": "2026-06-10T21:04:25.917Z",
-    "updatedAt": "2026-06-11T18:33:13.176Z"
+    "updatedAt": "2026-06-12T18:34:39.080Z"
   },
   {
     "id": "lugar-dorrego-mall",
@@ -116,6 +116,6 @@
     "mapProvider": "OpenStreetMap",
     "mapPlaceId": "1451632",
     "createdAt": "2026-06-10T21:11:12.376Z",
-    "updatedAt": "2026-06-10T21:11:14.787Z"
+    "updatedAt": "2026-06-16T12:56:21.350Z"
   }
 ]

@@ -19,12 +19,12 @@
   },
   "envio": {
     "name": "ENVIO",
-    "unitCost": 12000,
-    "previousUnitCost": 18000,
-    "changePercent": -33.33,
-    "lastPurchaseDate": "2026-06-08",
-    "provider": "FLETE FELIPE",
-    "updatedAt": "2026-06-08T17:48:57.479Z"
+    "unitCost": 1229,
+    "previousUnitCost": 4699,
+    "changePercent": -73.85,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-16T13:14:10.535Z"
   },
   "molida int x mayor": {
     "name": "MOLIDA INT X MAYOR",
@@ -91,21 +91,21 @@
   },
   "sandwich jyq x6": {
     "name": "SANDWICH JYQ X6",
-    "unitCost": 14300,
-    "previousUnitCost": 11818.181818181818,
-    "changePercent": 21,
-    "lastPurchaseDate": "2026-03-02",
+    "unitCost": 13388.43,
+    "previousUnitCost": 14300,
+    "changePercent": -6.37,
+    "lastPurchaseDate": "2026-06-12",
     "provider": "VIRGEN DEL VALLE / RACH SA",
-    "updatedAt": "2026-06-08T17:48:46.192Z"
+    "updatedAt": "2026-06-12T17:16:05.709Z"
   },
   "verdura": {
     "name": "VERDURA",
-    "unitCost": 1600,
+    "unitCost": 9760,
     "previousUnitCost": 1600,
-    "changePercent": 0,
-    "lastPurchaseDate": "2026-06-05",
+    "changePercent": 510,
+    "lastPurchaseDate": "2026-06-12",
     "provider": "VERDULERIA",
-    "updatedAt": "2026-06-09T13:20:30.333Z"
+    "updatedAt": "2026-06-12T19:01:54.053Z"
   },
   "maple de huevos": {
     "name": "MAPLE DE HUEVOS",
@@ -361,21 +361,21 @@
   },
   "minifacturas": {
     "name": "MINIFACTURAS",
-    "unitCost": 10413.23,
-    "previousUnitCost": 10413.2231,
+    "unitCost": 10413.22,
+    "previousUnitCost": 10413.23,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-06-04",
+    "lastPurchaseDate": "2026-06-12",
     "provider": "VIRGEN DEL VALLE / RACH SA",
-    "updatedAt": "2026-06-08T17:48:57.242Z"
+    "updatedAt": "2026-06-12T17:16:05.709Z"
   },
   "minitortitas": {
     "name": "MINITORTITAS",
     "unitCost": 7692.31,
-    "previousUnitCost": 7692.3077,
+    "previousUnitCost": 7692.31,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-06-04",
+    "lastPurchaseDate": "2026-06-12",
     "provider": "VIRGEN DEL VALLE / RACH SA",
-    "updatedAt": "2026-06-08T17:48:57.287Z"
+    "updatedAt": "2026-06-12T17:16:05.709Z"
   },
   "lavandina 2l": {
     "name": "LAVANDINA 2L",
@@ -694,12 +694,12 @@
   },
   "pan panini": {
     "name": "PAN PANINI",
-    "unitCost": 9140,
+    "unitCost": 1239.82,
     "previousUnitCost": 9140,
-    "changePercent": 0,
-    "lastPurchaseDate": "2026-06-05",
+    "changePercent": -86.44,
+    "lastPurchaseDate": "2026-06-12",
     "provider": "LA PARRA",
-    "updatedAt": "2026-06-09T13:20:13.957Z"
+    "updatedAt": "2026-06-12T17:13:27.407Z"
   },
   "coca cola 500ml": {
     "name": "COCA COLA 500ML",
@@ -3007,12 +3007,12 @@
   },
   "sandwich jamon y queso": {
     "name": "SANDWICH JAMON Y QUESO",
-    "unitCost": 59100,
-    "previousUnitCost": 24500,
-    "changePercent": 141.22,
-    "lastPurchaseDate": "2026-05-27",
+    "unitCost": 2355.37,
+    "previousUnitCost": 59100,
+    "changePercent": -96.01,
+    "lastPurchaseDate": "2026-06-12",
     "provider": "VIRGEN DEL VALLE / RACH SA",
-    "updatedAt": "2026-06-08T17:48:54.016Z"
+    "updatedAt": "2026-06-12T17:16:05.709Z"
   },
   "carne de cerdo": {
     "name": "CARNE DE CERDO",
@@ -4029,7 +4029,7 @@
     "changePercent": 0,
     "lastPurchaseDate": "2026-05-29",
     "provider": "TERCER MUNDO - MATIAS",
-    "updatedAt": "2026-06-08T17:48:57.215Z"
+    "updatedAt": "2026-06-12T15:42:54.034Z"
   },
   "agua con gas villavicencio 1,5lt": {
     "name": "AGUA CON GAS VILLAVICENCIO 1,5LT",
@@ -4147,5 +4147,275 @@
     "lastPurchaseDate": "2026-06-10",
     "provider": "MORETTI",
     "updatedAt": "2026-06-10T15:58:16.719Z"
+  },
+  "producto 10": {
+    "name": "Producto 10",
+    "unitCost": 100,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "TEST IVA MIXTO",
+    "updatedAt": "2026-06-12T16:17:48.236Z"
+  },
+  "producto 21": {
+    "name": "Producto 21",
+    "unitCost": 100,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "TEST IVA MIXTO",
+    "updatedAt": "2026-06-12T16:17:48.236Z"
+  },
+  "fracc bondiola c pimienta": {
+    "name": "FRACC BONDIOLA C PIMIENTA",
+    "unitCost": 36646.71,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "fracc jamon en mitad grassetto": {
+    "name": "FRACC JAMON EN MITAD GRASSETTO",
+    "unitCost": 31184.87,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "frac jamon cocido natural": {
+    "name": "FRAC JAMON COCIDO NATURAL",
+    "unitCost": 23500.24,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "frac lom. horneado grassetto": {
+    "name": "FRAC LOM. HORNEADO GRASSETTO",
+    "unitCost": 17881.98,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "frac queso gruyerito la quesera": {
+    "name": "FRAC QUESO GRUYERITO LA QUESERA",
+    "unitCost": 28743.79,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "fracc queso azul la quesera": {
+    "name": "FRACC QUESO AZUL LA QUESERA",
+    "unitCost": 20038.16,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "fracc queso morbier lacteos premium": {
+    "name": "FRACC QUESO MORBIER LACTEOS PREMIUM",
+    "unitCost": 23448.97,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "queso mini pepato x 1kg": {
+    "name": "QUESO MINI PEPATO X 1KG",
+    "unitCost": 18026.45,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "camembert la boheme x 100g": {
+    "name": "CAMEMBERT LA BOHEME X 100G",
+    "unitCost": 3270.93,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "pan casero x kg": {
+    "name": "PAN CASERO X KG",
+    "unitCost": 1487.6,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "pan casero chico x 500g": {
+    "name": "PAN CASERO CHICO X 500G",
+    "unitCost": 909.09,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-12T16:52:29.645Z"
+  },
+  "plato postre": {
+    "name": "PLATO POSTRE",
+    "unitCost": 400,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T17:20:02.911Z"
+  },
+  "plato cuadrado": {
+    "name": "PLATO CUADRADO",
+    "unitCost": 700,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T17:20:02.912Z"
+  },
+  "cuchillo comun": {
+    "name": "CUCHILLO COMUN",
+    "unitCost": 350,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T17:20:02.912Z"
+  },
+  "tenedor de postre": {
+    "name": "TENEDOR DE POSTRE",
+    "unitCost": 300,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T17:20:02.912Z"
+  },
+  "jarra de vidrio": {
+    "name": "JARRA DE VIDRIO",
+    "unitCost": 2000,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T17:20:02.912Z"
+  },
+  "copon": {
+    "name": "COPON",
+    "unitCost": 600,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T17:20:02.912Z"
+  },
+  "tablero con caballetes": {
+    "name": "TABLERO CON CABALLETES",
+    "unitCost": 8000,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T19:05:55.579Z"
+  },
+  "mantel imperial": {
+    "name": "MANTEL IMPERIAL",
+    "unitCost": 8000,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T19:05:55.580Z"
+  },
+  "vaso gourmet": {
+    "name": "VASO GOURMET",
+    "unitCost": 450,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T19:05:55.580Z"
+  },
+  "taza de te con cuchara y plato": {
+    "name": "TAZA DE TE CON CUCHARA Y PLATO",
+    "unitCost": 1000,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "updatedAt": "2026-06-12T19:05:55.580Z"
+  },
+  "jamon cocido cagnoli feteado xg": {
+    "name": "JAMON COCIDO CAGNOLI FETEADO XG",
+    "unitCost": 4234.45,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-16T13:01:56.324Z"
+  },
+  "queso cremon doble crema la serenisima 480g": {
+    "name": "QUESO CREMON DOBLE CREMA LA SERENISIMA 480G",
+    "unitCost": 7709.5,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-16T13:01:56.325Z"
+  },
+  "passata de tomate rina matarazzo 500g": {
+    "name": "PASSATA DE TOMATE RINA MATARAZZO 500G",
+    "unitCost": 6315,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-16T13:01:56.325Z"
+  },
+  "tarifa de servicio pedidos ya": {
+    "name": "TARIFA DE SERVICIO PEDIDOS YA",
+    "unitCost": 745,
+    "previousUnitCost": 840,
+    "changePercent": -11.31,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-16T13:14:10.535Z"
+  },
+  "frutos secos mix supremo 50g": {
+    "name": "FRUTOS SECOS MIX SUPREMO 50G",
+    "unitCost": 2835,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-16T13:03:55.934Z"
+  },
+  "edulcorante hileret clasico liquido 500ml": {
+    "name": "EDULCORANTE HILERET CLASICO LÍQUIDO 500ML",
+    "unitCost": 5355,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-16T13:03:55.934Z"
+  },
+  "tomate cherry rie la huerta 300grs": {
+    "name": "TOMATE CHERRY RIE LA HUERTA 300GRS",
+    "unitCost": 6014,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-16T13:03:55.934Z"
   }
 }
