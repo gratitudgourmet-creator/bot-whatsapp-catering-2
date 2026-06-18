@@ -451,6 +451,7 @@
     "clientId": "",
     "clientName": "ESTEFANÍA EBERHARDT",
     "eventDate": "2026-06-19",
+    "eventTime": "",
     "guestCount": 30,
     "venue": "SALON PATRICIAS",
     "venueAddress": "",
@@ -462,17 +463,24 @@
     "assistanceMode": "",
     "waiterCount": 0,
     "eventMoments": "",
+    "dietaryRestrictionMode": "",
     "selectedMenu": "MINI FACTURAS, MINI TORTITAS",
     "menuItems": [
       {
         "name": "MINI FACTURAS",
         "quantity": "60",
-        "detail": ""
+        "detail": "",
+        "category": "",
+        "suggestedQuantity": "",
+        "subItems": []
       },
       {
         "name": "MINI TORTITAS",
         "quantity": "30",
-        "detail": ""
+        "detail": "",
+        "category": "",
+        "suggestedQuantity": "",
+        "subItems": []
       }
     ],
     "includesDrinks": "Con bebidas",
@@ -488,7 +496,7 @@
     "priceMode": "per_person",
     "pricePerPerson": 12131,
     "servicePriceTotal": 0,
-    "status": "cancelled",
+    "status": "confirmed",
     "owner": "CLAUDIA",
     "role": "",
     "nextAction": "",
@@ -504,6 +512,7 @@
     "menuStatus": "",
     "staffStatus": "",
     "logisticsStatus": "",
+    "clientConformity": null,
     "checklist": {
       "purchases": false,
       "production": false,
@@ -518,21 +527,21 @@
         "alimentos": [
           {
             "id": "item-1781623982010-367144de45c99",
-            "text": "60 - MINI FACTURAS",
-            "quantity": "",
+            "text": "MINI FACTURAS",
+            "quantity": "60",
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781623982010-fcf70885c09f5",
-            "text": "30 - MINI TORTITAS",
-            "quantity": "",
+            "text": "MINI TORTITAS",
+            "quantity": "30",
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           }
         ],
         "vajilla": [
@@ -543,7 +552,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781625710599-15274f4daa35f",
@@ -552,7 +561,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781627514939-6085233860515",
@@ -561,7 +570,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781628060029-03605cfe6ddc5",
@@ -570,7 +579,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           }
         ],
         "utensilios": [
@@ -581,7 +590,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781625710598-ada70ecffc77a",
@@ -590,7 +599,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781625710598-a06a382f98e36",
@@ -599,7 +608,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781625710598-765676f7368db",
@@ -608,7 +617,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781625710598-86872aa1761ef",
@@ -617,7 +626,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781625710598-6ad2cf3407d65",
@@ -626,7 +635,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           }
         ],
         "bebidas": [
@@ -637,7 +646,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781288490517-4040387201cba",
@@ -646,7 +655,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           },
           {
             "id": "item-1781625710598-449347518da9e",
@@ -655,7 +664,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.937Z"
           }
         ],
         "manteleria": [
@@ -666,7 +675,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           }
         ],
         "mobiliario": [
@@ -677,7 +686,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           }
         ],
         "personal": [
@@ -688,7 +697,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           }
         ],
         "transporte": [
@@ -699,7 +708,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710599-4e9b555696446",
@@ -708,7 +717,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710599-51ca1014ec4f8",
@@ -717,7 +726,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           }
         ],
         "montaje": [
@@ -728,7 +737,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710598-f531082e90ee7",
@@ -737,7 +746,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710598-1fd5c5345c392",
@@ -746,7 +755,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710598-b46b70bd1f91a",
@@ -755,7 +764,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710598-da3384e31ac93",
@@ -764,7 +773,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           }
         ],
         "desmontaje": [
@@ -775,7 +784,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710598-a9c41a939a41a",
@@ -784,7 +793,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710598-9eff081a032be",
@@ -793,7 +802,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781627656834-6b86032694f2d",
@@ -802,7 +811,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781627656834-6532a60ab27",
@@ -811,7 +820,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           }
         ],
         "documentacion": [
@@ -822,7 +831,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710598-d01c0d0debff5",
@@ -831,7 +840,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           }
         ],
         "extras": [
@@ -842,7 +851,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710599-d2eb959c5272b",
@@ -851,7 +860,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           },
           {
             "id": "item-1781625710599-87312431a4999",
@@ -860,9 +869,23 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-16T17:59:35.542Z"
+            "updatedAt": "2026-06-17T23:45:24.938Z"
           }
         ]
+      },
+      "deletedSeeds": {
+        "alimentos": [],
+        "vajilla": [],
+        "utensilios": [],
+        "bebidas": [],
+        "manteleria": [],
+        "mobiliario": [],
+        "personal": [],
+        "transporte": [],
+        "montaje": [],
+        "desmontaje": [],
+        "documentacion": [],
+        "extras": []
       },
       "leftovers": [
         {
@@ -876,8 +899,9 @@
         }
       ],
       "postEventNotes": "Sin comentarios",
-      "updatedAt": "2026-06-16T17:59:35.542Z"
+      "updatedAt": "2026-06-17T23:45:24.938Z"
     },
+    "dietaryRestrictions": "",
     "notes": "",
     "quoteTotal": 363930,
     "quoteCostTotal": 0,
@@ -890,7 +914,7 @@
     "operationalMarginPercent": 100,
     "purchases": [],
     "createdAt": "2026-06-09T14:17:06.267Z",
-    "updatedAt": "2026-06-16T17:59:35.615Z"
+    "updatedAt": "2026-06-17T23:45:24.944Z"
   },
   {
     "id": "evento-1781025191859",
@@ -1515,5 +1539,809 @@
     ],
     "createdAt": "2026-06-10T15:46:49.433Z",
     "updatedAt": "2026-06-12T19:47:08.749Z"
+  },
+  {
+    "id": "evento-1781739935459",
+    "name": "PROPUESTA REGIONAL FINCA BANDINI",
+    "clientId": "",
+    "clientName": "",
+    "eventDate": "",
+    "eventTime": "",
+    "guestCount": 350,
+    "venue": "Finca Bandini, Mendoza, Argentina",
+    "venueAddress": "",
+    "venueReference": "",
+    "latitude": 0,
+    "longitude": 0,
+    "mapLabel": "",
+    "serviceType": "asado",
+    "assistanceMode": "",
+    "waiterCount": 0,
+    "eventMoments": "",
+    "dietaryRestrictionMode": "",
+    "selectedMenu": "Canastita de Hojaldre, Bruschetta de la Montaña, Tortilla de Campo, Torta frita rellena de jamón crudo y rúcula decorada con emulsión de malbec, Variedad de empanadas, Fritura de Estación, Shot de humita🌱, Cazuelita de tomatican con toston de ajo🌱, Chip de Hebras, Brioche de Autor, Sorrentinos de calabaza y nuez, Peras al vino tinto con crema chantilly🌱, Vacío, Costillar a la llama, Chorizo, Rusa, Papines andinos salteados al ajillo, Crudas, Papas al romero asadas, Cherrys confitados, Focaccias, Ciabattas, Pan de campo, Pan brioche",
+    "menuItems": [
+      {
+        "name": "Canastita de Hojaldre",
+        "quantity": "",
+        "detail": "Corazón de cebolla caramelizada al Malbec, queso azul y lluvia de nueces.🌱",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Bruschetta de la Montaña",
+        "quantity": "",
+        "detail": "Pan de campo tostado con jamón serrano, rúcula y emulsión de tomate.",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Tortilla de Campo",
+        "quantity": "",
+        "detail": "Cubos de tortilla de papas en su punto justo de cocción.🌱🌾",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Torta frita rellena de jamón crudo y rúcula decorada con emulsión de malbec",
+        "quantity": "",
+        "detail": "",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Variedad de empanadas",
+        "quantity": "",
+        "detail": "",
+        "category": "empanadas",
+        "suggestedQuantity": "2-3 unidades por persona en total del grupo",
+        "subItems": [
+          {
+            "name": "Criolla",
+            "quantity": "",
+            "detail": "",
+            "category": "otro",
+            "suggestedQuantity": "",
+            "subItems": []
+          },
+          {
+            "name": "Humita🌱",
+            "quantity": "",
+            "detail": "",
+            "category": "otro",
+            "suggestedQuantity": "",
+            "subItems": []
+          },
+          {
+            "name": "Vegetarianas🌱",
+            "quantity": "",
+            "detail": "",
+            "category": "otro",
+            "suggestedQuantity": "",
+            "subItems": []
+          },
+          {
+            "name": "Pastelitos de carne",
+            "quantity": "",
+            "detail": "",
+            "category": "empanadas",
+            "suggestedQuantity": "2-3 unidades por persona en total del grupo",
+            "subItems": []
+          }
+        ]
+      },
+      {
+        "name": "Fritura de Estación",
+        "quantity": "",
+        "detail": "Buñuelo crocante de vegetales con suave emulsión de zanahoria.🌱",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Shot de humita🌱",
+        "quantity": "",
+        "detail": "",
+        "category": "cazuelas",
+        "suggestedQuantity": "1-2 cazuelas por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Cazuelita de tomatican con toston de ajo🌱",
+        "quantity": "",
+        "detail": "",
+        "category": "cazuelas",
+        "suggestedQuantity": "1-2 cazuelas por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Chip de Hebras",
+        "quantity": "",
+        "detail": "Pollo seleccionado y crema de palta fresca en pan artesanal.",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Brioche de Autor",
+        "quantity": "",
+        "detail": "Focaccia con láminas de mortadela con pistacho y crema de verdeo.",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Sorrentinos de calabaza y nuez",
+        "quantity": "",
+        "detail": "",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      },
+      {
+        "name": "Peras al vino tinto con crema chantilly🌱",
+        "quantity": "",
+        "detail": "",
+        "category": "postre",
+        "suggestedQuantity": "1 porcion por persona",
+        "subItems": []
+      },
+      {
+        "name": "Vacío",
+        "quantity": "",
+        "detail": "",
+        "category": "principal",
+        "suggestedQuantity": "1 porcion por persona",
+        "subItems": []
+      },
+      {
+        "name": "Costillar a la llama",
+        "quantity": "",
+        "detail": "",
+        "category": "principal",
+        "suggestedQuantity": "1 porcion por persona",
+        "subItems": []
+      },
+      {
+        "name": "Chorizo",
+        "quantity": "",
+        "detail": "",
+        "category": "principal",
+        "suggestedQuantity": "1 porcion por persona",
+        "subItems": []
+      },
+      {
+        "name": "Rusa",
+        "quantity": "",
+        "detail": "",
+        "category": "otro",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "Papines andinos salteados al ajillo",
+        "quantity": "",
+        "detail": "",
+        "category": "guarnicion",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "Crudas",
+        "quantity": "",
+        "detail": "Tomate, mix de verdes, zanahoria, cebolla, huevo duro",
+        "category": "guarnicion",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "Papas al romero asadas",
+        "quantity": "",
+        "detail": "",
+        "category": "guarnicion",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "Cherrys confitados",
+        "quantity": "",
+        "detail": "",
+        "category": "otro",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "Focaccias",
+        "quantity": "",
+        "detail": "",
+        "category": "otro",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "Ciabattas",
+        "quantity": "",
+        "detail": "",
+        "category": "otro",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "Pan de campo",
+        "quantity": "",
+        "detail": "",
+        "category": "otro",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "Pan brioche",
+        "quantity": "",
+        "detail": "",
+        "category": "finger_food",
+        "suggestedQuantity": "4-5 unidades por persona en total del grupo",
+        "subItems": []
+      }
+    ],
+    "includesDrinks": "Con bebidas",
+    "drinkType": "Agua sin gas, Gaseosas",
+    "tableware": "",
+    "tablewareQuantities": "",
+    "tablewareDetail": "",
+    "largeContainers": "",
+    "smallContainers": "",
+    "staff": "",
+    "schedule": "",
+    "budgetRange": "",
+    "priceMode": "per_person",
+    "pricePerPerson": 87110,
+    "servicePriceTotal": 30488500,
+    "status": "quoted",
+    "owner": "",
+    "role": "",
+    "nextAction": "",
+    "paymentStatus": "",
+    "collectedAmount": 0,
+    "collectionStatus": "pending",
+    "collectionDueDate": "",
+    "collectionMethod": "",
+    "collectionNotes": "",
+    "invoiceStatus": "not_invoiced",
+    "invoiceNumber": "",
+    "productionStatus": "",
+    "menuStatus": "",
+    "staffStatus": "",
+    "logisticsStatus": "",
+    "clientConformity": null,
+    "checklist": {
+      "purchases": false,
+      "production": false,
+      "staff": false,
+      "logistics": false,
+      "menu": false,
+      "payments": false
+    },
+    "checklistDetails": "Infraestructura y servicios incluidos: - Infraestructura y servicios - Personal: Responsable de servicio, Chef, brigada de cocina y mozos especializados para reposición constante y bandejeo, bartenders, recepcionistas. - Vajilla: Servicio completo en loza blanca, cristalería de vidrio, cerámica, madera y hierro. - Ambientación: Arreglos florales, centros de mesa. - Seguridad: Supervisión bromatológica. - Mobiliario: Armado de islas de expendio con mesas lustradas - Referencias de restricciones alimentarias: Vegetariano: 🌱. Todas nuestras opciones se replican en alimentos Sin TACC - Armado de cocina correspondiente",
+    "operationalSheet": {
+      "categories": {
+        "alimentos": [
+          {
+            "id": "item-1781741310606-da9700e2bdd28",
+            "text": "Canastita de Hojaldre",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "Corazón de cebolla caramelizada al Malbec, queso azul y lluvia de nueces.🌱",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310606-2d0c0d7b534f2",
+            "text": "Bruschetta de la Montaña",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "Pan de campo tostado con jamón serrano, rúcula y emulsión de tomate.",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310606-854beee5a1317",
+            "text": "Tortilla de Campo",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "Cubos de tortilla de papas en su punto justo de cocción.🌱🌾",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310606-933b5276f9cbd",
+            "text": "Torta frita rellena de jamón crudo y rúcula decorada con emulsión de malbec",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-a75e43625de9d8",
+            "text": "Variedad de empanadas - Criolla",
+            "quantity": "175-263 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-f8f41199223528",
+            "text": "Variedad de empanadas - Humita🌱",
+            "quantity": "175-263 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-fc2e55470850a8",
+            "text": "Variedad de empanadas - Vegetarianas🌱",
+            "quantity": "175-263 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-f62d5de5ee36d",
+            "text": "Variedad de empanadas - Pastelitos de carne",
+            "quantity": "175-263 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-591bb2a6317e7",
+            "text": "Fritura de Estación",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "Buñuelo crocante de vegetales con suave emulsión de zanahoria.🌱",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-1214197a454368",
+            "text": "Shot de humita🌱",
+            "quantity": "175-350 porciones aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-53df4431a194d8",
+            "text": "Cazuelita de tomatican con toston de ajo🌱",
+            "quantity": "175-350 porciones aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-6737504df85be8",
+            "text": "Chip de Hebras",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "Pollo seleccionado y crema de palta fresca en pan artesanal.",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-c67d47e52a93e8",
+            "text": "Brioche de Autor",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "Focaccia con láminas de mortadela con pistacho y crema de verdeo.",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-cd1904d8a687c8",
+            "text": "Sorrentinos de calabaza y nuez",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-8d83430dce0b6",
+            "text": "Peras al vino tinto con crema chantilly🌱",
+            "quantity": "350 porciones aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310607-e05ca7418d81f",
+            "text": "Vacío",
+            "quantity": "117 porciones aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-866ca5d766ee98",
+            "text": "Costillar a la llama",
+            "quantity": "117 porciones aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-dad6b979cd11a8",
+            "text": "Chorizo",
+            "quantity": "117 porciones aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-c47c6b318cb3e8",
+            "text": "Rusa",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-2cb8ca64242e9",
+            "text": "Papines andinos salteados al ajillo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-13394df7fb319",
+            "text": "Crudas",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "Tomate, mix de verdes, zanahoria, cebolla, huevo duro",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-f13deb9d78e79",
+            "text": "Papas al romero asadas",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-e5b9540f7b06b",
+            "text": "Cherrys confitados",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-cebc55b471c0b8",
+            "text": "Focaccias",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-b3e27f31ced67",
+            "text": "Ciabattas",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-f7869115b10a2",
+            "text": "Pan de campo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-2bc0badf48ede8",
+            "text": "Pan brioche",
+            "quantity": "156-194 u aprox",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "vajilla": [
+          {
+            "id": "item-1781741310609-aa8f529f46f8b8",
+            "text": "Servilletas",
+            "quantity": "420",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "utensilios": [
+          {
+            "id": "item-1781741310609-4765a1861da2b8",
+            "text": "Cuchillos de servicio",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-a4d31ce27779b8",
+            "text": "Pinzas de servicio",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-6055e707c6572",
+            "text": "Cucharas de servicio",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-113addab788828",
+            "text": "Tablas de apoyo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "bebidas": [
+          {
+            "id": "item-1781741310608-16e659954038e8",
+            "text": "Agua sin gas",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310608-928d6b5f572d",
+            "text": "Gaseosas",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "manteleria": [
+          {
+            "id": "item-1781741310609-76bdfc023769d8",
+            "text": "Manteles para mesa de apoyo",
+            "quantity": "2+",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "mobiliario": [
+          {
+            "id": "item-1781741310609-9391a04bcb8f4",
+            "text": "Mesa de apoyo",
+            "quantity": "2+",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "personal": [],
+        "transporte": [
+          {
+            "id": "item-1781741310609-2cfa49e1911298",
+            "text": "Transporte sugerido: camion",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-5e75b7b001dff8",
+            "text": "Revisar volumen de mobiliario, conservadoras y vajilla",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "montaje": [
+          {
+            "id": "item-1781741310609-887bf1f229e7d8",
+            "text": "Revisar acceso de carga y descarga",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-68079fe28dfe7",
+            "text": "Ubicar mesa principal / estacion de servicio",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-fb486c3668e4",
+            "text": "Verificar electricidad, agua y espacio de apoyo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "desmontaje": [
+          {
+            "id": "item-1781741310609-5640e98a1ea788",
+            "text": "Desmontar el servicio completo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-f00864ba016f28",
+            "text": "Descargar en deposito",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-dfb43cf3f9c5b",
+            "text": "Separar sucio, sobrantes y devoluciones",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-90d6b57ed5f5b8",
+            "text": "Controlar que no queden vajilla, manteles ni utensilios",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-1fcce6a15c917",
+            "text": "Registrar roturas o faltantes",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "documentacion": [
+          {
+            "id": "item-1781741310609-5243efbab3f7d8",
+            "text": "Llevar ficha operativa del evento",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-e437d35371f93",
+            "text": "Confirmar contacto del cliente y lugar",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "extras": [
+          {
+            "id": "item-1781741310609-ec8f173c01a078",
+            "text": "Cinta, marcador y bolsas",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-8eab1678a3df6",
+            "text": "Kit de limpieza basico",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1781741310609-5abff071378008",
+            "text": "Repaso final antes de salir",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ]
+      },
+      "deletedSeeds": {
+        "alimentos": [],
+        "vajilla": [],
+        "utensilios": [],
+        "bebidas": [],
+        "manteleria": [],
+        "mobiliario": [],
+        "personal": [],
+        "transporte": [],
+        "montaje": [],
+        "desmontaje": [],
+        "documentacion": [],
+        "extras": []
+      },
+      "leftovers": [],
+      "postEventNotes": "",
+      "updatedAt": "2026-06-18T00:08:30.605Z"
+    },
+    "dietaryRestrictions": "",
+    "notes": "Importado desde PROPUESTA - REGIONAL FINCA BANDINI.pdf",
+    "quoteTotal": 30488500,
+    "quoteCostTotal": 0,
+    "quoteMarginPercent": 100,
+    "purchaseTotal": 0,
+    "stockCostTotal": 0,
+    "stockItems": [],
+    "finalCostTotal": 0,
+    "operationalMargin": 30488500,
+    "operationalMarginPercent": 100,
+    "purchases": [],
+    "createdAt": "2026-06-17T23:45:35.459Z",
+    "updatedAt": "2026-06-18T00:08:30.591Z"
   }
 ]

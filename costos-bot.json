@@ -1,5 +1,5 @@
 {
-  "laborHourlyCost": 0,
+  "laborHourlyCost": 5000,
   "supplyProfiles": {
     "coffee": [
       "Cafe",
@@ -54,11 +54,9 @@
       "Servilletas",
       "Medialunas",
       "Jugo"
-    ],
-    "test_service_codex": [],
-    "picada": []
+    ]
   },
-  "updatedAt": "2026-06-10T15:45:49.426Z",
+  "updatedAt": "2026-06-17T16:20:26.007Z",
   "operationalOptions": {
     "services": [
       "Agape",

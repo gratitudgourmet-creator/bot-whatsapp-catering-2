@@ -40,6 +40,16 @@ Registrar toda consulta nueva para que ningun cliente quede sin respuesta y para
 
 Claudia o quien este asignado a atencion comercial.
 
+### Areas involucradas y division de tareas
+
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Comercial | Recibir la consulta, responder, pedir datos minimos y cargar el lead. |
+| Administracion | Informar datos fiscales o condiciones generales si el cliente lo solicita. |
+| Cocina | Avisar restricciones preliminares cuando la consulta incluya menu especial, alergias o servicio complejo. |
+| Logistica | Validar viabilidad de zona, distancia u horarios cuando el evento este lejos o tenga accesos dificiles. |
+| Direccion | Intervenir en eventos grandes, urgentes, institucionales o fuera de lo habitual. |
+
 ### Que debe cargar en el sistema
 
 - Nombre del cliente.
@@ -53,15 +63,31 @@ Claudia o quien este asignado a atencion comercial.
 - Proxima accion.
 - Responsable.
 
-### Procedimiento
+### Procedimiento paso a paso por area
 
-1. Responder el mensaje del cliente.
-2. Pedir los datos minimos si faltan.
-3. Crear el evento en el dashboard.
-4. Cargarlo como **Lead**.
-5. Asignar responsable.
-6. Cargar proxima accion.
-7. Agendar seguimiento.
+**Comercial**
+
+- Responder el mensaje del cliente.
+- Pedir los datos minimos si faltan.
+- Crear el evento en el dashboard.
+- Cargarlo como **Lead**.
+- Asignar responsable comercial.
+- Cargar proxima accion.
+- Agendar seguimiento.
+
+**Cocina**
+
+- Intervenir solo si la consulta incluye menu especial, alergias, dietas especificas o produccion fuera de lo habitual.
+- Indicar si el pedido es viable o si requiere ajustes antes de cotizar.
+
+**Logistica**
+
+- Intervenir cuando la zona, horario, acceso o distancia puedan afectar el servicio.
+- Avisar si el evento requiere traslado especial, mas tiempo de armado o vehiculo adicional.
+
+**Administracion**
+
+- Intervenir si el cliente pide datos fiscales, factura, condiciones de pago o documentacion formal.
 
 ### Checklist
 
@@ -86,17 +112,60 @@ Enviar propuestas claras, rentables y registradas.
 
 Claudia. Joaquin valida menu y produccion cuando corresponde.
 
-### Procedimiento
+### Areas involucradas y division de tareas
 
-1. Revisar que el evento tenga datos minimos.
-2. Definir menu o servicio a cotizar.
-3. Cargar costos estimados.
-4. Cargar precio final.
-5. Revisar margen.
-6. Enviar propuesta.
-7. Registrar estado del presupuesto.
-8. Si el cliente acepta, solicitar seña o autorizacion.
-9. Cambiar el evento a **Confirmed** cuando corresponda.
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Comercial | Armar la propuesta, enviar el presupuesto, hacer seguimiento y cerrar condiciones. |
+| Cocina / produccion | Validar menu, tiempos de elaboracion, cantidades, complejidad y factibilidad. |
+| Compras | Revisar costos de insumos criticos o productos especiales cuando haga falta. |
+| Logistica | Estimar traslado, tiempos, necesidad de vehiculo, distancia y restricciones del lugar. |
+| Servicio / mozos | Validar cantidad de personal, horas de servicio y tipo de atencion requerida. |
+| Administracion | Revisar forma de pago, seña, facturacion y saldos. |
+| Direccion | Aprobar descuentos, excepciones, eventos grandes o margenes especiales. |
+
+### Procedimiento paso a paso por area
+
+**Comercial**
+
+- Revisar que el evento tenga datos minimos.
+- Definir con el cliente el tipo de servicio a cotizar.
+- Armar la propuesta comercial.
+- Enviar presupuesto con validez, inclusiones, exclusiones y condiciones.
+- Registrar estado del presupuesto.
+- Hacer seguimiento.
+- Si el cliente acepta, solicitar seña o autorizacion.
+- Cambiar el evento a **Confirmed** cuando corresponda.
+
+**Cocina / produccion**
+
+- Validar el menu propuesto.
+- Confirmar si el menu es posible para la cantidad, horario y formato de evento.
+- Informar tiempos de produccion, necesidades especiales y posibles reemplazos.
+
+**Compras**
+
+- Revisar costos de insumos criticos, especiales o de precio variable.
+- Informar si algun producto requiere compra anticipada o proveedor puntual.
+
+**Logistica**
+
+- Estimar traslado, tiempos de viaje, necesidad de vehiculo y complejidad de acceso.
+- Informar costos logisticos adicionales si corresponde.
+
+**Servicio / mozos**
+
+- Estimar cantidad de mozos, horas de servicio, responsable en sitio y necesidades de uniforme.
+- Avisar si el formato requiere barra, personal extra o apoyo de montaje.
+
+**Administracion**
+
+- Revisar seña, saldo, facturacion, forma de pago y condiciones administrativas.
+- Registrar pagos cuando el cliente confirme.
+
+**Direccion**
+
+- Aprobar descuentos, excepciones, eventos grandes o condiciones especiales.
 
 ### Checklist
 
@@ -123,17 +192,57 @@ Asegurar que cada evento tenga pagos, comprobantes, gastos y rentabilidad contro
 
 Administracion.
 
-### Procedimiento
+### Areas involucradas y division de tareas
 
-1. Solicitar datos fiscales.
-2. Registrar seña o anticipo.
-3. Controlar saldo pendiente.
-4. Emitir factura o recibo.
-5. Cargar comprobantes.
-6. Revisar compras imputadas al evento.
-7. Revisar gastos extra.
-8. Calcular rentabilidad.
-9. Cerrar evento en el sistema.
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Administracion | Facturar, controlar pagos, registrar gastos, calcular rentabilidad y cerrar el evento. |
+| Comercial | Informar condiciones pactadas, adicionales vendidos, descuentos o cambios aprobados. |
+| Compras | Entregar comprobantes, gastos y diferencias de precios vinculadas al evento. |
+| Cocina | Informar mermas, extras de produccion o cambios que impacten costos. |
+| Logistica | Informar gastos de traslado, peajes, combustible, estacionamiento o fletes. |
+| Servicio / mozos | Informar horas trabajadas, adicionales, incidentes o consumos no previstos. |
+| Direccion | Revisar rentabilidad final y aprobar ajustes relevantes. |
+
+### Procedimiento paso a paso por area
+
+**Administracion**
+
+- Revisar pagos recibidos.
+- Revisar saldos pendientes.
+- Emitir factura o comprobante.
+- Cargar gastos del evento.
+- Cargar pagos a proveedores.
+- Cargar pagos al personal.
+- Calcular rentabilidad.
+- Revisar diferencias entre estimado y real.
+- Cerrar evento en el dashboard.
+
+**Comercial**
+
+- Informar condiciones pactadas con el cliente.
+- Informar adicionales, descuentos, cambios de cantidad o bonificaciones.
+
+**Compras**
+
+- Entregar comprobantes y pagos pendientes de proveedores.
+- Informar diferencias entre costo estimado y costo real.
+
+**Cocina**
+
+- Informar mermas, produccion extra o cambios que hayan impactado el costo.
+
+**Logistica**
+
+- Informar gastos de traslado, peajes, combustible, estacionamiento o fletes.
+
+**Servicio / mozos**
+
+- Informar horas reales trabajadas, adicionales e incidentes que generen costo.
+
+**Direccion**
+
+- Revisar rentabilidad final y aprobar ajustes relevantes.
 
 ### Checklist
 
@@ -160,18 +269,52 @@ Producir alimentos en cantidad correcta, con orden, higiene y trazabilidad.
 
 Joaquin y equipo de cocina.
 
-### Procedimiento
+### Areas involucradas y division de tareas
 
-1. Revisar ficha del evento.
-2. Confirmar cantidad final de invitados.
-3. Confirmar menu.
-4. Revisar recetas y cantidades.
-5. Revisar compras disponibles.
-6. Preparar mise en place.
-7. Producir.
-8. Rotular preparaciones.
-9. Separar dietas especiales y alergenos.
-10. Entregar a logistica o montaje segun corresponda.
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Cocina / produccion | Elaborar, porcionar, conservar, rotular y preparar la mise en place. |
+| Compras | Entregar insumos correctos, en tiempo y con calidad aprobada. |
+| Deposito / stock | Informar disponibilidad de insumos, descartables, envases y equipamiento. |
+| Comercial | Confirmar menu vendido, restricciones alimentarias y cambios aprobados por cliente. |
+| Logistica | Informar horario de salida para definir tiempos de produccion, enfriado y empaque. |
+| Servicio / mozos | Comunicar necesidades de presentacion, reposicion y terminacion en evento. |
+| Calidad / BPM | Controlar higiene, rotulado, separacion de alergenos y temperaturas. |
+
+### Procedimiento paso a paso por area
+
+**Cocina / produccion**
+
+- Revisar eventos confirmados.
+- Revisar menu, invitados, horario y formato de servicio.
+- Hacer lista de produccion.
+- Producir segun orden de prioridad.
+- Porcionar y preparar mise en place.
+- Rotular preparaciones.
+- Guardar segun corresponda: frio, freezer, seco o temperatura controlada.
+- Informar al area de carga que la produccion esta lista.
+
+**Compras**
+
+- Revisar faltantes informados por cocina.
+- Confirmar llegada de insumos pendientes antes de iniciar produccion.
+
+**Deposito / stock**
+
+- Revisar stock disponible antes de producir.
+- Entregar envases, etiquetas, descartables y utensilios necesarios.
+
+**Comercial**
+
+- Informar cambios aprobados de menu, invitados o restricciones alimentarias.
+
+**Logistica**
+
+- Informar horario real de salida para ordenar tiempos de empaque y conservacion.
+
+**Calidad / BPM**
+
+- Controlar higiene, rotulado, separacion de alergenos y conservacion.
 
 ### Checklist
 
@@ -198,16 +341,49 @@ Comprar lo necesario en tiempo, calidad y cantidad, dejando cada gasto imputado 
 
 Joaquin para compras operativas. Administracion para pagos y control.
 
-### Procedimiento
+### Areas involucradas y division de tareas
 
-1. Revisar lista de necesidades.
-2. Verificar stock antes de comprar.
-3. Elegir proveedor.
-4. Comprar.
-5. Pedir comprobante.
-6. Cargar compra en el dashboard.
-7. Imputar al evento.
-8. Indicar si esta pagada o pendiente.
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Compras | Consolidar necesidades, pedir precios, elegir proveedor y coordinar entregas. |
+| Cocina | Definir especificaciones de calidad, cantidades y sustitutos aceptables. |
+| Deposito / stock | Informar stock disponible, minimos, vencimientos y faltantes. |
+| Administracion | Autorizar pagos, registrar comprobantes y controlar presupuesto. |
+| Logistica | Coordinar retiros o recepciones cuando la compra no llega al deposito. |
+| Direccion | Aprobar compras extraordinarias, proveedores nuevos o gastos fuera de presupuesto. |
+
+### Procedimiento paso a paso por area
+
+**Compras**
+
+- Revisar lista de necesidades del evento.
+- Verificar stock antes de comprar.
+- Elegir proveedor aprobado o pedir autorizacion si es proveedor nuevo.
+- Comprar segun cantidad, calidad y fecha requerida.
+- Pedir comprobante.
+- Cargar compra en el dashboard.
+- Imputar la compra al evento correcto.
+- Indicar si esta pagada o pendiente.
+
+**Cocina**
+
+- Informar especificaciones de producto: calidad, marca, corte, madurez, peso o formato.
+- Avisar sustitutos aceptables si un insumo no esta disponible.
+
+**Deposito / stock**
+
+- Informar stock existente, vencimientos proximos y faltantes reales.
+- Recibir o preparar espacio para la mercaderia que llega.
+
+**Administracion**
+
+- Autorizar pagos segun politica interna.
+- Registrar comprobantes y controlar gastos contra presupuesto.
+
+**Logistica**
+
+- Coordinar retiro o traslado de compras cuando no haya entrega del proveedor.
+- Avisar horarios de retiro y responsable asignado.
 
 ### Checklist
 
@@ -233,6 +409,18 @@ Cargar todo lo necesario para el evento sin olvidos, roturas ni mezclas, dejando
 ### Responsable
 
 Encargado de deposito, logistica y coordinador del evento.
+
+### Areas involucradas y division de tareas
+
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Deposito / stock | Separar, contar, rotular y entregar materiales, equipamiento, vajilla y consumibles. |
+| Cocina | Entregar alimentos listos, rotulados, protegidos y con condicion de conservacion indicada. |
+| Logistica / chofer | Organizar carga en vehiculo, proteger bultos y respetar orden de descarga. |
+| Carga y descarga | Mover bultos, equipamiento y mobiliario sin roturas ni mezcla de eventos. |
+| Servicio / mozos | Verificar elementos propios del servicio: bandejas, pinzas, copas, servilletas y reposicion. |
+| Coordinacion de evento | Hacer doble control contra ficha del evento y autorizar salida. |
+| Calidad / BPM | Verificar separacion de alimentos, limpieza, frio/calor y productos quimicos separados. |
 
 ### Cuando se aplica
 
@@ -272,39 +460,106 @@ Antes de cada evento, al preparar alimentos, bebidas, vajilla, manteleria, mobil
 - Guantes.
 - Cinta, marcadores y etiquetas.
 
-### Procedimiento paso a paso
+### Procedimiento paso a paso por area
 
-1. Abrir la ficha del evento en el dashboard.
-2. Revisar cantidad de invitados, lugar, horario y tipo de servicio.
-3. Revisar la lista de carga del evento.
-4. Separar primero alimentos y bebidas.
-5. Separar vajilla, cubiertos y cristaleria.
-6. Separar utensilios de servicio y produccion.
-7. Separar artefactos electricos o de calor.
-8. Separar manteleria y elementos de presentacion.
-9. Separar productos de limpieza y bolsas.
-10. Controlar que cada caja, conservadora o bulto este identificado.
-11. Revisar que los artefactos esten limpios, secos y funcionando.
-12. Revisar cables, alargues y enchufes.
-13. Cargar el vehiculo por orden de descarga: lo primero que se necesita debe quedar mas accesible.
-14. Proteger vajilla y cristaleria para evitar roturas.
-15. Separar alimentos de productos de limpieza.
-16. Registrar hora de carga.
-17. Registrar responsable de carga.
-18. Cerrar deposito y dejar pasillos libres.
+**Coordinacion de evento**
 
-### Orden recomendado de carga en el vehiculo
+- Abrir la ficha del evento en el dashboard.
+- Revisar cantidad de invitados, lugar, horario y tipo de servicio.
+- Revisar la lista de carga del evento.
+- Definir prioridades de salida y orden de descarga.
+- Hacer doble control final antes de autorizar la salida.
 
-1. Mobiliario y estructuras pesadas.
-2. Mesas auxiliares y soportes.
-3. Artefactos y equipamiento.
-4. Vajilla y cristaleria protegida.
-5. Manteleria y decoracion.
-6. Conservadoras y alimentos.
-7. Bebidas y hielo.
-8. Caja de herramientas.
-9. Kit de limpieza.
-10. Elementos urgentes o delicados al alcance.
+**Cocina**
+
+- Entregar alimentos terminados o para terminar en sitio.
+- Rotular cada preparacion con nombre, evento y condicion de conservacion.
+- Separar frio, caliente, seco y productos con alergenos.
+- Informar que productos deben ir en conservadora, heladera, caja seca o contenedor termico.
+- Avisar si algun alimento debe cargarse ultimo o descargarse primero.
+
+**Bebidas / barra**
+
+- Separar bebidas, hielo, vasos, copas, insumos de barra y reposiciones.
+- Identificar si algo debe ir refrigerado.
+- Avisar faltantes antes de cerrar la carga.
+
+**Deposito / stock**
+
+- Separar vajilla, cubiertos y cristaleria.
+- Separar manteleria, servilletas y elementos de presentacion.
+- Separar utensilios de servicio y produccion.
+- Separar descartables, bolsas, guantes, cinta, marcadores y etiquetas.
+- Controlar que cada caja, conservadora o bulto este identificado.
+- Registrar faltantes o roturas previas.
+
+**Equipamiento / artefactos**
+
+- Separar hornos, anafes, freidoras, calentadores, cafeteras, termos y alargues.
+- Revisar que los artefactos esten limpios, secos y funcionando.
+- Revisar cables, alargues y enchufes.
+- Separar equipos dañados o dudosos y avisar al coordinador.
+
+**Servicio / mozos**
+
+- Revisar bandejas, pinzas, cuchillos, tablas, bowls, repasadores y elementos de servicio.
+- Confirmar que la vajilla y cristaleria coincidan con el formato vendido.
+- Avisar si faltan elementos chicos necesarios para atender invitados.
+
+**Carga y descarga**
+
+- Cargar el vehiculo por orden de descarga: lo primero que se necesita debe quedar mas accesible.
+- Proteger vajilla y cristaleria para evitar roturas.
+- Separar alimentos de productos de limpieza.
+- Asegurar bultos para que no se muevan durante el viaje.
+
+**Logistica / chofer**
+
+- Confirmar que el vehiculo este limpio y disponible.
+- Registrar hora de carga.
+- Registrar responsable de carga.
+- Verificar que la carga no bloquee puertas ni comprometa seguridad.
+
+**Deposito al cierre**
+
+- Cerrar deposito.
+- Dejar pasillos libres.
+- Dejar registrado lo que salio y lo que quedo pendiente.
+
+### Orden recomendado de carga en el vehiculo por area
+
+**Carga y descarga / mobiliario**
+
+- Cargar primero mobiliario y estructuras pesadas.
+- Cargar mesas auxiliares y soportes.
+- Asegurar peso y estabilidad antes de sumar bultos fragiles.
+
+**Equipamiento**
+
+- Cargar artefactos y equipamiento.
+- Cargar caja de herramientas y elementos tecnicos.
+- Dejar accesible lo que se necesite para montar primero.
+
+**Deposito / servicio**
+
+- Cargar vajilla y cristaleria protegida.
+- Cargar manteleria y decoracion.
+- Cargar elementos urgentes o delicados al alcance.
+
+**Cocina**
+
+- Cargar conservadoras y alimentos segun condicion de conservacion.
+- Evitar que alimentos queden debajo de peso o expuestos al calor.
+
+**Barra / bebidas**
+
+- Cargar bebidas y hielo.
+- Mantener hielo y bebidas frias protegidos.
+
+**Limpieza**
+
+- Cargar kit de limpieza separado de alimentos.
+- Cargar bolsas de residuos y elementos de higiene en bulto identificado.
 
 ### Registros obligatorios
 
@@ -359,26 +614,68 @@ Descargar, contar, clasificar, limpiar y guardar todo lo que vuelve del evento, 
 
 Logistica, deposito, servicio y coordinador del evento.
 
-### Procedimiento paso a paso
+### Areas involucradas y division de tareas
 
-1. Estacionar el vehiculo en zona segura de descarga.
-2. Bajar primero alimentos sobrantes y productos que requieran frio.
-3. Separar sobrantes reutilizables de descarte.
-4. Bajar vajilla, cristaleria y cubiertos.
-5. Separar lo limpio de lo sucio.
-6. Separar roturas o piezas dañadas.
-7. Bajar artefactos y revisar estado.
-8. Bajar manteleria y separar ropa sucia.
-9. Bajar productos de limpieza.
-10. Contar bultos contra la lista original.
-11. Registrar faltantes.
-12. Registrar roturas.
-13. Registrar devoluciones de proveedores si corresponde.
-14. Llevar utensilios y vajilla sucia al area de lavado.
-15. Llevar artefactos al area de limpieza tecnica.
-16. Guardar lo limpio en su lugar.
-17. Dejar deposito despejado.
-18. Actualizar el evento en el dashboard.
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Logistica / chofer | Retornar el vehiculo, descargar en zona segura e informar novedades del traslado. |
+| Carga y descarga | Bajar bultos, mobiliario, conservadoras, vajilla y artefactos con cuidado. |
+| Deposito / stock | Contar, clasificar, registrar faltantes, guardar limpios y separar pendientes. |
+| Cocina | Evaluar sobrantes, definir descarte o conservacion segura y registrar mermas. |
+| Servicio / mozos | Entregar vajilla, cristaleria, manteleria, utensilios y elementos usados. |
+| Limpieza | Recibir utensilios, artefactos y textiles sucios para lavado o derivacion. |
+| Coordinacion de evento | Cerrar novedades fisicas del evento y actualizar dashboard. |
+
+### Procedimiento paso a paso por area
+
+**Logistica / chofer**
+
+- Estacionar el vehiculo en zona segura de descarga.
+- Registrar hora de regreso.
+- Avisar al responsable de deposito que el evento llego.
+- Informar novedades del traslado o demoras.
+
+**Carga y descarga**
+
+- Bajar bultos segun prioridad indicada por deposito.
+- Bajar mobiliario, conservadoras, cajas y artefactos sin mezclar sectores.
+- Separar elementos fragiles para conteo.
+- No llevar vajilla ni cristaleria directo a guardado sin control previo.
+
+**Cocina**
+
+- Recibir alimentos sobrantes y productos que requieran frio.
+- Separar sobrantes reutilizables de descarte.
+- Refrigerar, rotular y registrar lo que pueda conservarse.
+- Descartar y registrar merma cuando no sea seguro reutilizar.
+
+**Servicio / mozos**
+
+- Entregar vajilla, cristaleria, cubiertos, bandejas y utensilios usados.
+- Separar roturas o piezas dañadas.
+- Entregar manteleria usada en bolsas separadas.
+
+**Deposito / stock**
+
+- Contar bultos contra la lista original.
+- Registrar faltantes.
+- Registrar roturas.
+- Registrar devoluciones de proveedores si corresponde.
+- Guardar lo limpio en su lugar.
+- Actualizar stock e inventario si corresponde.
+
+**Limpieza / lavado**
+
+- Recibir vajilla, utensilios y bandejas sucias.
+- Llevar artefactos al area de limpieza tecnica.
+- Separar textiles para lavado.
+- Dejar registrado que queda pendiente de limpieza.
+
+**Coordinacion de evento**
+
+- Revisar faltantes, roturas, sobrantes y mermas.
+- Actualizar el evento en el dashboard.
+- Avisar a administracion si hay costos o reposiciones a imputar.
 
 ### Clasificacion al descargar
 
@@ -440,6 +737,17 @@ Llegar al lugar del evento con todo el material completo, en buen estado, a tiem
 
 Chofer o responsable de logistica. Coordinador del evento controla.
 
+### Areas involucradas y division de tareas
+
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Logistica / chofer | Trasladar la carga, cumplir horarios, cuidar temperatura y avisar demoras. |
+| Carga y descarga | Asegurar bultos, distribuir peso y descargar segun orden operativo. |
+| Deposito / stock | Entregar manifiesto de carga y confirmar que lo cargado coincide con la lista. |
+| Cocina | Indicar productos que requieren frio, calor, cuidado especial o entrega prioritaria. |
+| Servicio / mozos | Viajar con elementos criticos de servicio cuando corresponda y ayudar en descarga. |
+| Coordinacion de evento | Confirmar llegada, contacto del lugar, accesos y prioridad de montaje. |
+
 ### Antes de salir
 
 Verificar:
@@ -456,22 +764,48 @@ Verificar:
 - Alimentos protegidos.
 - Equipamiento asegurado.
 
-### Procedimiento paso a paso
+### Procedimiento paso a paso por area
 
-1. Confirmar que la carga esta completa.
-2. Revisar direccion y ruta.
-3. Confirmar contacto en destino.
-4. Revisar horario de llegada requerido.
-5. Asegurar que los bultos no se muevan durante el viaje.
-6. Separar alimentos calientes, frios y secos segun corresponda.
-7. No transportar productos de limpieza junto a alimentos sin separacion.
-8. Registrar hora de salida.
-9. Avisar salida al coordinador.
-10. Manejar con cuidado para evitar roturas.
-11. Avisar cualquier demora.
-12. Al llegar, registrar hora de llegada.
-13. Ubicar zona de descarga.
-14. Comenzar descarga segun prioridad de montaje.
+**Logistica / chofer**
+
+- Revisar direccion y ruta.
+- Confirmar contacto en destino.
+- Revisar horario de llegada requerido.
+- Revisar estado del vehiculo, combustible y documentacion.
+- Registrar hora de salida.
+- Avisar salida al coordinador.
+- Manejar con cuidado para evitar roturas.
+- Avisar cualquier demora.
+- Al llegar, registrar hora de llegada.
+
+**Carga y descarga**
+
+- Confirmar que la carga esta completa antes de cerrar el vehiculo.
+- Asegurar que los bultos no se muevan durante el viaje.
+- Proteger vajilla, cristaleria y artefactos.
+- Al llegar, ubicar zona de descarga.
+- Comenzar descarga segun prioridad de montaje.
+
+**Cocina**
+
+- Indicar cuales alimentos deben mantenerse frios, calientes o secos.
+- Indicar que bultos contienen productos delicados, alergenos o dietas especiales.
+- Avisar si algun producto debe descargarse primero.
+
+**Deposito / stock**
+
+- Entregar manifiesto o lista de carga cerrada.
+- Confirmar que lo cargado coincide con lo preparado.
+
+**Servicio / mozos**
+
+- Llevar elementos criticos de servicio cuando corresponda.
+- Ayudar en descarga solo sobre elementos de servicio, no sobre alimentos sin indicacion de cocina.
+
+**Coordinacion de evento**
+
+- Confirmar llegada con cliente o contacto del lugar.
+- Validar acceso, zona de descarga y prioridad de montaje.
 
 ### Cuidados durante el traslado
 
@@ -521,6 +855,17 @@ Regresar al deposito con todos los elementos propios, alquilados o reutilizables
 
 Chofer o responsable de logistica. Coordinador del evento controla antes de salir.
 
+### Areas involucradas y division de tareas
+
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Logistica / chofer | Coordinar salida del lugar, cargar retorno y trasladar al deposito. |
+| Carga y descarga | Subir bultos, vajilla, mobiliario, residuos autorizados y equipos sin mezclar. |
+| Servicio / mozos | Entregar todo lo usado, separar roturas y ayudar al orden final. |
+| Cocina | Separar sobrantes, descartes y alimentos que requieren frio inmediato. |
+| Coordinacion de evento | Revisar que no queden elementos en el lugar y registrar incidentes. |
+| Deposito / stock | Prepararse para recibir, contar y clasificar al regreso. |
+
 ### Antes de volver
 
 Verificar:
@@ -535,32 +880,75 @@ Verificar:
 - Los residuos se gestionaron segun lo acordado.
 - Los sobrantes fueron definidos: volver, descartar o entregar.
 
-### Procedimiento paso a paso
+### Procedimiento paso a paso por area
 
-1. Hacer recorrido final del salon, cocina y zonas de apoyo.
-2. Contar bultos principales.
-3. Separar sucio de limpio.
-4. Separar alimentos de productos de limpieza.
-5. Separar roturas.
-6. Guardar vajilla y cristaleria protegida.
-7. Cargar artefactos apagados, frios y seguros.
-8. Cargar manteleria sucia en bolsas separadas.
-9. Cargar residuos solo si corresponde.
-10. Registrar hora de salida del evento.
-11. Avisar salida al responsable.
-12. Trasladar con cuidado.
-13. Al llegar al deposito, registrar hora.
-14. Descargar segun DEP-02.
+**Coordinacion de evento**
 
-### Orden recomendado para cargar la vuelta
+- Hacer recorrido final del salon, cocina, barras, baños, heladeras y zonas de apoyo.
+- Confirmar que no queden elementos propios en el lugar.
+- Registrar roturas, faltantes, sobrantes e incidentes.
+- Autorizar la salida del lugar.
 
-1. Artefactos apagados y seguros.
-2. Vajilla y cristaleria protegida.
-3. Utensilios sucios en contenedores cerrados.
-4. Manteleria sucia embolsada.
-5. Sobrantes definidos para volver.
-6. Elementos de limpieza.
-7. Herramientas y elementos chicos.
+**Cocina en evento**
+
+- Separar sobrantes que vuelven, descartes y alimentos entregados al cliente si fue acordado.
+- Separar alimentos de productos de limpieza.
+- Indicar que alimentos requieren frio inmediato al llegar al deposito.
+
+**Servicio / mozos**
+
+- Recuperar vajilla, cristaleria, cubiertos, bandejas y utensilios de salon, mesas y barras.
+- Separar sucio de limpio.
+- Separar roturas.
+- Entregar manteleria sucia en bolsas separadas.
+
+**Carga y descarga**
+
+- Guardar vajilla y cristaleria protegida.
+- Cargar artefactos apagados, frios y seguros.
+- Cargar bultos principales y elementos chicos.
+- Cargar residuos solo si corresponde.
+
+**Logistica / chofer**
+
+- Registrar hora de salida del evento.
+- Avisar salida al responsable.
+- Trasladar con cuidado.
+- Al llegar al deposito, registrar hora.
+- Dejar el vehiculo listo para descarga segun DEP-02.
+
+**Deposito / stock**
+
+- Preparar espacio de recepcion para conteo, clasificacion y limpieza al regreso.
+
+### Orden recomendado para cargar la vuelta por area
+
+**Cocina en evento**
+
+- Entregar sobrantes definidos para volver.
+- Separar descartes que no vuelven.
+- Indicar alimentos que requieren frio inmediato.
+
+**Servicio / mozos**
+
+- Entregar vajilla y cristaleria protegida.
+- Entregar utensilios sucios en contenedores cerrados.
+- Entregar manteleria sucia embolsada.
+
+**Equipamiento**
+
+- Entregar artefactos apagados, frios y seguros.
+- Separar equipos dañados o con falla.
+
+**Limpieza**
+
+- Entregar elementos de limpieza separados de alimentos y vajilla limpia.
+- Entregar residuos solo si corresponde trasladarlos.
+
+**Carga y descarga**
+
+- Cargar herramientas y elementos chicos en bulto identificado.
+- Asegurar todo antes de iniciar el regreso.
 
 ### Checklist de vuelta
 
@@ -595,6 +983,18 @@ Armar el servicio en el lugar del evento de forma ordenada, puntual, prolija, se
 
 Coordinador del evento y equipo de montaje/servicio.
 
+### Areas involucradas y division de tareas
+
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Coordinacion de evento | Dirigir montaje, definir prioridades, hablar con cliente/lugar y aprobar resultado final. |
+| Carga y descarga | Bajar mobiliario, cajas, alimentos y equipos en el orden indicado. |
+| Logistica | Ubicar vehiculo, controlar accesos, tiempos de descarga y restricciones del lugar. |
+| Servicio / mozos | Montar mesas, vajilla, cristaleria, estaciones, bebidas y areas visibles al cliente. |
+| Cocina en evento | Ubicar alimentos, controlar conservacion, terminacion y separacion de dietas especiales. |
+| Deposito / equipamiento | Resolver faltantes de elementos, repuestos o armado tecnico. |
+| Calidad / BPM | Controlar limpieza, proteccion de alimentos, alergenos y seguridad electrica basica. |
+
 ### Cuando empieza
 
 Empieza cuando el equipo llega al lugar y tiene autorizacion para descargar y montar.
@@ -614,26 +1014,60 @@ Empieza cuando el equipo llega al lugar y tiene autorizacion para descargar y mo
 - Personal asignado.
 - Condiciones especiales.
 
-### Procedimiento paso a paso
+### Procedimiento paso a paso por area
 
-1. Presentarse con el contacto del lugar o cliente.
-2. Confirmar donde se monta cada sector.
-3. Revisar accesos, electricidad, agua, frio y zona de apoyo.
-4. Definir lugar para descarga.
-5. Descargar con orden.
-6. Ubicar mesas de trabajo y apoyo.
-7. Colocar manteleria.
-8. Armar estaciones de comida, bebida o coffee.
-9. Ubicar vajilla, cubiertos, servilletas y cristaleria.
-10. Conectar artefactos solo si estan secos y en buen estado.
-11. Verificar que cables no queden en zonas de paso.
-12. Ubicar alimentos frios y calientes segun necesidad.
-13. Mantener alimentos protegidos hasta el momento de servicio.
-14. Separar productos con alergenos o dietas especiales.
-15. Revisar presentacion general.
-16. Retirar cajas, bolsas y elementos que no deben quedar visibles.
-17. Hacer control final con el coordinador.
-18. Informar que el montaje esta listo.
+**Coordinacion de evento**
+
+- Presentarse con el contacto del lugar o cliente.
+- Confirmar donde se monta cada sector.
+- Definir prioridades de montaje.
+- Hacer control final con el equipo.
+- Informar que el montaje esta listo.
+
+**Logistica**
+
+- Revisar accesos, zona de descarga, estacionamiento y horarios permitidos.
+- Definir lugar para descarga.
+- Resolver restricciones de ingreso o movimiento dentro del lugar.
+
+**Carga y descarga**
+
+- Descargar con orden segun prioridad indicada.
+- Ubicar mobiliario, cajas y artefactos en la zona definida.
+- Retirar cajas, bolsas y elementos que no deben quedar visibles.
+
+**Servicio / mozos**
+
+- Ubicar mesas de servicio, mesas de apoyo y estaciones visibles.
+- Colocar manteleria.
+- Ubicar vajilla, cubiertos, servilletas y cristaleria.
+- Armar estaciones de comida, bebida o coffee segun layout.
+- Revisar presentacion general de las areas visibles al cliente.
+
+**Cocina en evento**
+
+- Ubicar alimentos frios y calientes segun necesidad.
+- Mantener alimentos protegidos hasta el momento de servicio.
+- Separar productos con alergenos o dietas especiales.
+- Preparar zona de apoyo para terminacion, reposicion o regenerado.
+
+**Equipamiento / electricidad**
+
+- Conectar artefactos solo si estan secos y en buen estado.
+- Verificar que cables no queden en zonas de paso.
+- Probar hornos, calentadores, anafes, cafeteras u otros equipos necesarios.
+
+**Limpieza / apoyo**
+
+- Definir zona sucia y zona de residuos.
+- Mantener pasillos y salidas despejadas.
+- Retirar elementos de embalaje que no correspondan.
+
+**Calidad / BPM**
+
+- Verificar superficies limpias.
+- Controlar que los alimentos no apoyen sobre superficies no sanitizadas.
+- Controlar separacion de utensilios por alimento, dulce, salado y alergenos.
 
 ### Zonas a definir en el montaje
 
@@ -702,18 +1136,59 @@ Atender el evento de forma profesional, ordenada y constante, manteniendo limpie
 
 Coordinador y equipo de servicio.
 
-### Procedimiento
+### Areas involucradas y division de tareas
 
-1. Iniciar servicio en el horario acordado.
-2. Mantener buena presencia.
-3. Reponer comida y bebida sin esperar a que falte.
-4. Mantener mesas limpias.
-5. Retirar residuos discretamente.
-6. Controlar temperaturas si corresponde.
-7. Cuidar vajilla, cristaleria y artefactos.
-8. Atender pedidos del cliente canalizados por el coordinador.
-9. Registrar incidentes.
-10. Preparar transicion a desmontaje cuando termina el servicio.
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Coordinacion de evento | Ordenar el servicio, canalizar pedidos del cliente y tomar decisiones durante el evento. |
+| Servicio / mozos | Atender invitados, servir, reponer, retirar vajilla y mantener prolijidad. |
+| Cocina en evento | Terminar, regenerar, emplatar o reponer alimentos segun menu. |
+| Barra / bebidas | Mantener bebidas, hielo, vasos, copas y reposicion cuando aplique. |
+| Logistica | Permanecer disponible para movimientos, busquedas o cambios operativos. |
+| Limpieza / apoyo | Mantener zona de residuos, area sucia y espacios de trabajo ordenados. |
+| Calidad / BPM | Vigilar higiene, temperaturas, utensilios separados y manejo de alergenos. |
+
+### Procedimiento paso a paso por area
+
+**Coordinacion de evento**
+
+- Iniciar servicio en el horario acordado.
+- Hacer briefing breve con el equipo.
+- Canalizar pedidos del cliente.
+- Tomar decisiones ante cambios o imprevistos.
+- Registrar incidentes.
+- Preparar transicion a desmontaje cuando termina el servicio.
+
+**Servicio / mozos**
+
+- Mantener buena presencia.
+- Atender invitados segun formato vendido.
+- Reponer comida en mesa o estaciones cuando corresponda.
+- Retirar vajilla y cristaleria usada sin interferir con los invitados.
+- Mantener mesas limpias.
+- Cuidar vajilla, cristaleria y elementos del evento.
+
+**Cocina en evento**
+
+- Terminar, regenerar o emplatar preparaciones segun menu.
+- Controlar temperaturas si corresponde.
+- Avisar al coordinador si falta comida, si hay exceso de exposicion o si algo debe retirarse.
+
+**Barra / bebidas**
+
+- Reponer bebidas sin esperar a que falten.
+- Controlar hielo, vasos, copas, servilletas y descartables.
+- Mantener limpia la zona de bebidas.
+
+**Limpieza / apoyo**
+
+- Retirar residuos discretamente.
+- Mantener zona sucia ordenada.
+- Reponer bolsas de residuos si hace falta.
+
+**Logistica**
+
+- Permanecer disponible para buscar elementos, mover bultos o resolver necesidades operativas.
 
 ### Checklist
 
@@ -740,43 +1215,107 @@ Retirar el servicio completo sin perder elementos, dejando el lugar ordenado y p
 
 Coordinador del evento y equipo de servicio/logistica.
 
+### Areas involucradas y division de tareas
+
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Coordinacion de evento | Autorizar inicio de desmontaje, hablar con cliente/lugar y controlar cierre. |
+| Servicio / mozos | Retirar vajilla, cristaleria, manteleria, residuos de mesa y elementos visibles. |
+| Cocina en evento | Retirar alimentos, definir sobrantes, apagar equipos y separar descartes. |
+| Carga y descarga | Embalar, mover y cargar bultos, mobiliario, cajas y artefactos. |
+| Logistica / chofer | Ordenar carga de regreso y asegurar salida completa. |
+| Deposito / stock | Recibir luego el retorno para conteo, limpieza y guardado. |
+| Limpieza | Dejar areas usadas en condiciones segun lo pactado. |
+
 ### Cuando empieza
 
 Cuando termina el servicio o cuando el cliente/coordinador autoriza levantar el montaje.
 
-### Procedimiento paso a paso
+### Procedimiento paso a paso por area
 
-1. Confirmar con el coordinador que se puede desmontar.
-2. Retirar primero alimentos expuestos.
-3. Definir sobrantes: descartar, volver o entregar si fue acordado.
-4. Separar alimentos reutilizables de no reutilizables.
-5. Apagar artefactos.
-6. Desenchufar artefactos cuando sea seguro.
-7. Dejar enfriar equipos calientes antes de moverlos.
-8. Retirar vajilla y cristaleria de mesas.
-9. Separar vajilla rota o dañada.
-10. Juntar cubiertos.
-11. Separar utensilios sucios en contenedores.
-12. Retirar manteleria y separarla en bolsas.
-13. Vaciar y ordenar estaciones de bebida.
-14. Juntar residuos segun lo acordado con el lugar.
-15. Limpiar superficies usadas.
-16. Revisar que no queden elementos en cocina, salon, baños, barras, heladeras o deposito del lugar.
-17. Contar bultos principales.
-18. Cargar el vehiculo para retorno.
-19. Registrar roturas, faltantes, sobrantes e incidentes.
-20. Avisar salida del lugar.
+**Coordinacion de evento**
 
-### Orden recomendado de desmontaje
+- Confirmar que se puede desmontar.
+- Avisar al cliente o responsable del lugar que comienza el desmontaje.
+- Definir que vuelve, que se descarta y que se entrega si fue acordado.
+- Revisar que no queden elementos en cocina, salon, baños, barras, heladeras o deposito del lugar.
+- Registrar roturas, faltantes, sobrantes e incidentes.
+- Avisar salida del lugar.
 
-1. Alimentos y bebidas.
-2. Vajilla, cristaleria y cubiertos.
-3. Utensilios.
-4. Artefactos.
-5. Manteleria.
-6. Decoracion.
-7. Mesas y mobiliario.
-8. Residuos y limpieza final.
+**Cocina en evento**
+
+- Retirar alimentos expuestos.
+- Separar alimentos reutilizables de no reutilizables.
+- Apagar artefactos de cocina.
+- Desenchufar artefactos cuando sea seguro.
+- Dejar enfriar equipos calientes antes de moverlos.
+- Separar descartes y sobrantes segun criterio definido.
+
+**Servicio / mozos**
+
+- Retirar vajilla y cristaleria de mesas.
+- Juntar cubiertos.
+- Separar utensilios sucios en contenedores.
+- Retirar manteleria y separarla en bolsas.
+- Vaciar y ordenar estaciones de bebida.
+
+**Barra / bebidas**
+
+- Retirar bebidas, hielo, copas, vasos y elementos de barra.
+- Separar bebidas abiertas, cerradas, descartes y devoluciones.
+
+**Limpieza / apoyo**
+
+- Juntar residuos segun lo acordado con el lugar.
+- Limpiar superficies usadas.
+- Dejar la zona de trabajo en condiciones.
+
+**Carga y descarga**
+
+- Contar bultos principales.
+- Embalar vajilla y cristaleria protegida.
+- Embalar artefactos cuando esten frios y secos.
+- Cargar el vehiculo para retorno segun orden indicado.
+
+**Logistica / chofer**
+
+- Organizar el vehiculo para el regreso.
+- Verificar que la carga quede segura.
+- Registrar hora de salida.
+
+### Orden recomendado de desmontaje por area
+
+**Cocina en evento**
+
+- Retirar alimentos.
+- Definir sobrantes, descartes y conservacion.
+- Apagar equipos de cocina.
+
+**Barra / bebidas**
+
+- Retirar bebidas, hielo, copas, vasos y elementos de barra.
+- Separar devoluciones y descartes.
+
+**Servicio / mozos**
+
+- Retirar vajilla, cristaleria y cubiertos.
+- Separar utensilios usados.
+- Retirar manteleria.
+
+**Equipamiento**
+
+- Desconectar y preparar artefactos cuando esten seguros.
+- Separar equipos con falla o daño.
+
+**Carga y descarga**
+
+- Retirar decoracion, mesas y mobiliario.
+- Embalar y mover bultos hacia el vehiculo.
+
+**Limpieza**
+
+- Gestionar residuos.
+- Hacer limpieza final de las zonas usadas.
 
 ### Cuidados importantes
 
@@ -837,6 +1376,16 @@ Lavar, desinfectar, secar, contar y guardar utensilios usados en eventos para qu
 
 Deposito, cocina o persona asignada a lavado.
 
+### Areas involucradas y division de tareas
+
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Limpieza / lavado | Lavar, desinfectar, secar y ordenar utensilios, vajilla y elementos menores. |
+| Cocina | Separar utensilios propios, indicar grasa adherida o elementos que requieren cuidado especial. |
+| Servicio / mozos | Devolver utensilios agrupados, sin restos grandes y separados de residuos. |
+| Deposito / stock | Guardar elementos limpios y registrar faltantes o roturas. |
+| Calidad / BPM | Controlar que lo lavado quede seco, limpio y sin contaminacion cruzada. |
+
 ### Utensilios incluidos
 
 - Pinzas.
@@ -855,23 +1404,38 @@ Deposito, cocina o persona asignada a lavado.
 - Recipientes plasticos.
 - Contenedores.
 
-### Procedimiento paso a paso
+### Procedimiento paso a paso por area
 
-1. Separar utensilios por tipo.
-2. Retirar restos de comida.
-3. Prelavar con agua.
-4. Lavar con detergente.
-5. Cepillar o frotar zonas con grasa o restos adheridos.
-6. Enjuagar.
-7. Desinfectar segun producto disponible y dosificacion indicada.
-8. Dejar actuar el tiempo necesario.
-9. Enjuagar si el producto lo requiere.
-10. Secar completamente.
-11. Revisar estado: roto, oxidado, flojo, quemado, manchado o incompleto.
-12. Separar elementos dañados.
-13. Contar cantidades.
-14. Guardar por categoria.
-15. Dejar area de lavado limpia.
+**Servicio / mozos**
+
+- Entregar utensilios usados agrupados y sin restos grandes de comida.
+- Separar piezas rotas o dañadas.
+- No mezclar utensilios con residuos.
+
+**Cocina**
+
+- Separar utensilios propios de produccion.
+- Indicar si algun elemento requiere desengrase, remojo o cuidado especial.
+- Revisar cuchillos, tablas y elementos criticos antes de guardarlos.
+
+**Limpieza / lavado**
+
+- Retirar restos visibles.
+- Lavar con producto correspondiente.
+- Enjuagar.
+- Desinfectar si corresponde.
+- Secar correctamente antes de guardar.
+
+**Deposito / stock**
+
+- Contar utensilios limpios.
+- Guardar cada elemento en su lugar.
+- Registrar faltantes, roturas o piezas que quedan pendientes de lavado.
+
+**Calidad / BPM**
+
+- Verificar que no queden restos de comida, grasa ni humedad excesiva.
+- Controlar que elementos limpios no se mezclen con sucios.
 
 ### Reglas importantes
 
@@ -911,6 +1475,16 @@ Limpiar, revisar y guardar correctamente artefactos y equipos usados en eventos,
 
 Deposito, cocina, logistica o persona asignada. Joaquin controla equipos de cocina.
 
+### Areas involucradas y division de tareas
+
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Limpieza / mantenimiento | Limpiar artefactos, retirar grasa, secar y dejar listos para guardar. |
+| Cocina | Revisar hornos, anafes, freidoras, calentadores y equipos de produccion. |
+| Logistica | Informar golpes, fallas o problemas ocurridos durante transporte. |
+| Deposito / equipamiento | Guardar equipos limpios, registrar estado y separar dañados. |
+| Direccion / responsable tecnico | Autorizar reparaciones, reposiciones o baja de equipos. |
+
 ### Artefactos incluidos
 
 - Hornos electricos.
@@ -928,23 +1502,36 @@ Deposito, cocina, logistica o persona asignada. Joaquin controla equipos de coci
 - Zapatillas electricas.
 - Luces o equipos auxiliares.
 
-### Procedimiento paso a paso
+### Procedimiento paso a paso por area
 
-1. Verificar que el artefacto este apagado.
-2. Desenchufar.
-3. Esperar que enfrie si genero calor.
-4. Retirar restos de comida, grasa o liquidos.
-5. Separar partes desmontables.
-6. Lavar piezas desmontables si corresponde.
-7. Limpiar exterior con paño humedo y producto adecuado.
-8. No mojar motores, enchufes ni partes electricas.
-9. Secar completamente.
-10. Revisar cable, ficha, perillas, tapas, resistencias y estado general.
-11. Probar funcionamiento si hubo golpe, falla o duda.
-12. Registrar daño si existe.
-13. Etiquetar como "No usar" si esta dañado.
-14. Guardar con cable enrollado sin tension.
-15. Guardar en lugar seco y asignado.
+**Cocina**
+
+- Informar que artefactos fueron usados y con que tipo de preparacion.
+- Revisar hornos, anafes, freidoras, calentadores y equipos de produccion.
+- Avisar si algun equipo fallo durante el evento.
+
+**Logistica**
+
+- Informar golpes, movimientos bruscos o problemas ocurridos durante transporte.
+- Entregar equipos en el sector definido para limpieza, no directo a guardado.
+
+**Limpieza / mantenimiento**
+
+- Esperar que el artefacto este frio antes de limpiar.
+- Retirar restos de comida, grasa o liquidos.
+- Limpiar exterior e interior segun tipo de equipo.
+- Secar antes de guardar.
+- Separar equipos con cables mojados, dañados o funcionamiento dudoso.
+
+**Deposito / equipamiento**
+
+- Guardar equipos limpios y secos.
+- Registrar estado del equipo.
+- Separar artefactos dañados o pendientes de reparacion.
+
+**Direccion / responsable tecnico**
+
+- Autorizar reparaciones, reposiciones o baja de equipos.
 
 ### Reglas importantes
 
@@ -985,21 +1572,53 @@ Dejar el deposito en condiciones para el siguiente evento, sin acumulacion de su
 
 Deposito y logistica.
 
-### Procedimiento paso a paso
+### Areas involucradas y division de tareas
 
-1. Confirmar que el vehiculo quedo vacio.
-2. Separar sucio, limpio, dañado y para guardar.
-3. Llevar vajilla y utensilios al lavado.
-4. Llevar artefactos a limpieza tecnica.
-5. Separar manteleria para lavado.
-6. Guardar equipamiento limpio.
-7. Actualizar faltantes.
-8. Tirar residuos.
-9. Limpiar superficies de trabajo.
-10. Barrer y dejar pasillos libres.
-11. Dejar cajas y contenedores cerrados.
-12. Revisar que no queden alimentos fuera de frio.
-13. Informar pendientes.
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Deposito / stock | Reubicar materiales, actualizar inventario, liberar pasillos y ordenar sectores. |
+| Logistica | Dejar vehiculo descargado, limpio y listo para proxima salida. |
+| Carga y descarga | Terminar de mover bultos pesados, mobiliario y cajas a su ubicacion. |
+| Limpieza | Barrer, retirar residuos, limpiar derrames y ordenar elementos de higiene. |
+| Cocina | Retirar alimentos o utensilios que no deben quedar en deposito. |
+| Coordinacion de evento | Verificar que el cierre fisico del evento quede completo. |
+
+### Procedimiento paso a paso por area
+
+**Deposito / stock**
+
+- Reubicar materiales limpios en su lugar.
+- Actualizar inventario si hubo faltantes, roturas o consumos.
+- Liberar pasillos.
+- Separar elementos pendientes de limpieza, reparacion o devolucion.
+
+**Logistica**
+
+- Dejar el vehiculo descargado.
+- Retirar elementos sueltos del vehiculo.
+- Avisar si el vehiculo necesita limpieza, combustible o mantenimiento.
+
+**Carga y descarga**
+
+- Terminar de mover bultos pesados, mobiliario y cajas a su ubicacion.
+- No dejar bultos en pasillos ni frente a puertas.
+
+**Limpieza**
+
+- Barrer o limpiar el sector usado.
+- Retirar residuos.
+- Limpiar derrames.
+- Ordenar productos y elementos de higiene.
+
+**Cocina**
+
+- Retirar alimentos, envases o utensilios que no deben quedar en deposito.
+- Confirmar que sobrantes refrigerados hayan sido ubicados correctamente.
+
+**Coordinacion de evento**
+
+- Verificar que el cierre fisico del evento quede completo.
+- Registrar pendientes para el dia siguiente si los hubiera.
 
 ### Checklist
 
@@ -1032,17 +1651,52 @@ Revisar que los eventos activos, compras, pagos, reclamos y margenes esten bajo 
 
 Direccion.
 
-### Procedimiento
+### Areas involucradas y division de tareas
 
-1. Revisar eventos proximos.
-2. Revisar eventos confirmados sin datos completos.
-3. Revisar presupuestos con margen bajo.
-4. Revisar compras pendientes de pago.
-5. Revisar proveedores criticos.
-6. Revisar saldos pendientes de clientes.
-7. Revisar eventos realizados sin cierre.
-8. Revisar reclamos e incidentes.
-9. Asignar responsables y fechas.
+| Area / equipo | Responsabilidad principal |
+|---|---|
+| Direccion | Revisar indicadores, prioridades, rentabilidad, problemas y decisiones de mejora. |
+| Comercial | Informar leads, presupuestos, cierres, eventos perdidos y seguimientos. |
+| Administracion | Presentar pagos, saldos, facturacion, gastos y rentabilidad. |
+| Cocina | Informar produccion, mermas, problemas de menu, calidad y capacidad. |
+| Compras | Informar precios, proveedores, faltantes y compras urgentes. |
+| Deposito / stock | Informar stock critico, roturas, faltantes y vencimientos. |
+| Logistica / servicio | Informar puntualidad, incidentes, problemas de montaje, mozos y transporte. |
+
+### Procedimiento paso a paso por area
+
+**Direccion**
+
+- Revisar eventos realizados, eventos activos y eventos proximos.
+- Revisar rentabilidad, problemas, prioridades y decisiones pendientes.
+- Definir acciones correctivas y responsables.
+- Controlar que las acciones anteriores se hayan cumplido.
+
+**Comercial**
+
+- Informar leads nuevos, presupuestos enviados, cierres y eventos perdidos.
+- Informar seguimientos pendientes y oportunidades importantes.
+
+**Administracion**
+
+- Presentar pagos recibidos, saldos pendientes, facturacion, gastos y rentabilidad.
+- Informar eventos sin cierre administrativo.
+
+**Cocina**
+
+- Informar produccion, mermas, problemas de menu, capacidad y necesidades de mejora.
+
+**Compras**
+
+- Informar precios relevantes, proveedores, faltantes y compras urgentes.
+
+**Deposito / stock**
+
+- Informar stock critico, roturas, faltantes y vencimientos.
+
+**Logistica / servicio**
+
+- Informar puntualidad, incidentes, problemas de montaje, mozos, transporte y carga.
 
 ### Checklist
 
@@ -1071,4 +1725,3 @@ Los procedimientos mas importantes para operacion fisica son:
 | Orden y limpieza de utensilios utilizados | Orden, limpieza y mantenimiento |
 | Orden y limpieza de artefactos utilizados | Orden, limpieza y mantenimiento |
 | Orden y limpieza del deposito despues del evento | Orden, limpieza y mantenimiento |
-

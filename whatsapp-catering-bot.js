@@ -19,6 +19,7 @@ const fs = require("fs");
 const http = require("http");
 const path = require("path");
 const crypto = require("crypto");
+const zlib = require("zlib");
 let DatabaseSync = null;
 try {
   ({ DatabaseSync } = require("node:sqlite"));
@@ -55,6 +56,7 @@ const ERP_VENUES_FILE = dataPath("lugares-erp.json");
 const ERP_USERS_FILE = dataPath("usuarios-erp.json");
 const ERP_AUDIT_FILE = dataPath("historial-erp.json");
 const ERP_ROLES_FILE = dataPath("roles-erp.json");
+const ERP_CONFORMITIES_DIR = dataPath("conformidades-eventos");
 const CATERING_DB_FILE = dataPath(process.env.CATERING_DB_FILE || BOT_CONFIG.cateringDbFile || "catering.db");
 const CATERING_BACKUP_DIR = path.resolve(
   process.env.CATERING_BACKUP_DIR ||
@@ -916,6 +918,20 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, event });
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/event-conformity") {
+        const user = requirePanelPermission(request, response, "events:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const event = saveEventConformity(body, user);
+        return sendJson(response, { ok: true, event, dashboard: getErpDashboard() });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/event-conformity") {
+        const user = requireAnyPanelPermission(request, response, ["events:read", "events:write"]);
+        if (!user) return;
+        return sendEventConformityPdf(response, requestUrl.searchParams.get("id"));
+      }
+
       if (request.method === "GET" && requestUrl.pathname === "/api/audit-log") {
         const user = requirePanelPermission(request, response, "view");
         if (!user) return;
@@ -1147,6 +1163,15 @@ function startApprovalPanelServer() {
         const quote = saveErpQuoteRecord(body);
         recordAudit(user, body.id ? "update" : "create", "quote", quote.id, quote.eventName, before, quote);
         return sendJson(response, { ok: true, quote, dashboard: getErpDashboard() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/import-quote") {
+        const user = requirePanelPermission(request, response, "quotes:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const result = await importQuoteFromDocument(body);
+        recordAudit(user, "import", "quote", "", result.eventName || result.fileName || "Presupuesto importado", null, result.summary);
+        return sendJson(response, { ok: true, result });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-erp-quote") {
@@ -1545,6 +1570,8 @@ function buildGoogleSheetsModel() {
       "Estado",
       "Responsable",
       "Proxima accion",
+      "Conformidad cliente",
+      "Conformidad subida",
       "Presupuesto aceptado",
       "Costo presupuesto",
       "Compras imputadas",
@@ -1585,6 +1612,8 @@ function buildGoogleSheetsModel() {
       Estado: event.status,
       Responsable: event.owner,
       "Proxima accion": event.nextAction,
+      "Conformidad cliente": event.clientConformity?.originalName || "",
+      "Conformidad subida": event.clientConformity?.uploadedAt || "",
       "Presupuesto aceptado": event.quoteTotal,
       "Costo presupuesto": event.quoteCostTotal,
       "Compras imputadas": event.purchaseTotal,
@@ -2593,10 +2622,22 @@ function getProviderStats() {
 function syncProvidersFromPurchasesAndConfig() {
   const existing = new Map();
   let changed = false;
+  const purchaseNameKeys = new Set(erpPurchases.map((purchase) => normalizeSearchKey(purchase.provider)).filter(Boolean));
   erpProviders = (Array.isArray(erpProviders) ? erpProviders : [])
     .map((provider) => normalizeProviderRecord(provider))
     .filter((provider) => provider.name);
 
+  const providersById = new Map();
+  erpProviders.forEach((provider) => {
+    const idKey = provider.id || createProviderId(provider.name);
+    if (providersById.has(idKey)) {
+      providersById.set(idKey, mergeDuplicateProviderData(providersById.get(idKey), provider, purchaseNameKeys));
+      changed = true;
+    } else {
+      providersById.set(idKey, provider);
+    }
+  });
+  erpProviders = Array.from(providersById.values());
   erpProviders.forEach((provider) => existing.set(normalizeSearchKey(provider.name), provider));
 
   [
@@ -2616,6 +2657,40 @@ function syncProvidersFromPurchasesAndConfig() {
   if (changed) {
     saveErpProviders();
   }
+}
+
+function mergeDuplicateProviderData(current = {}, incoming = {}, purchaseNameKeys = new Set()) {
+  const currentKey = normalizeSearchKey(current.name);
+  const incomingKey = normalizeSearchKey(incoming.name);
+  const preferredName = purchaseNameKeys.has(incomingKey)
+    ? incoming.name
+    : purchaseNameKeys.has(currentKey)
+    ? current.name
+    : current.name || incoming.name;
+  const merged = { ...incoming, ...current, name: preferredName };
+  [
+    "legalName",
+    "cuit",
+    "ivaCondition",
+    "contactName",
+    "phone",
+    "email",
+    "address",
+    "bankName",
+    "bankAccountType",
+    "bankAccountNumber",
+    "bankAccountHolder",
+    "cbu",
+    "alias",
+    "paymentTerms",
+    "category",
+    "notes",
+  ].forEach((field) => {
+    merged[field] = normalizeText(current[field] || incoming[field] || "");
+  });
+  merged.createdAt = [current.createdAt, incoming.createdAt].filter(Boolean).sort()[0] || new Date().toISOString();
+  merged.updatedAt = [current.updatedAt, incoming.updatedAt].filter(Boolean).sort().pop() || merged.createdAt;
+  return normalizeProviderRecord(merged);
 }
 
 function saveProviderRecord(input = {}) {
@@ -3130,7 +3205,7 @@ function normalizeRecipeItem(item) {
     recipeId: type === "recipe" ? normalizeText(item.recipeId || "") : "",
     name: normalizeText(item.name || ""),
     quantity: parseDecimalNumber(item.quantity || 0),
-    unit: normalizeText(item.unit || ""),
+    unit: normalizeRecipeIngredientUnit(item.unit || ""),
     unitCost: parseDecimalNumber(item.unitCost || 0),
     wastePercent: parseDecimalNumber(item.wastePercent || 0),
   };
@@ -3143,8 +3218,8 @@ function normalizeRecipeProcessRow(row) {
   return {
     type,
     label: normalizeText(row.label || ""),
-    quantity: parseDecimalNumber(row.quantity || 0),
-    unit: normalizeText(row.unit || ""),
+    quantity: type === "note" ? 0 : parseDecimalNumber(row.quantity || 0),
+    unit: type === "note" ? "" : normalizeRecipeIngredientUnit(row.unit || ""),
     notes: normalizeText(row.notes || ""),
   };
 }
@@ -3224,12 +3299,24 @@ function normalizeRecipeYieldUnit(value) {
   return allowed.has(unit) ? unit : "unidad";
 }
 
+function normalizeRecipeIngredientUnit(value) {
+  const unit = normalizeText(value || "").toLowerCase();
+  if (["g", "gr", "gramo", "gramos"].includes(unit)) return "gramos";
+  if (["l", "lt", "lts", "litro", "litros"].includes(unit)) return "litros";
+  if (["u", "un", "unidad", "unidades"].includes(unit)) return "unidad";
+  if (["kg", "kilo", "kilos"].includes(unit)) return "kg";
+  if (unit === "ml") return "ml";
+  if (unit === "min") return "min";
+  if (unit === "hs") return "hs";
+  return unit || "kg";
+}
+
 function findRecipeById(id) {
   return recipeRecords.find((recipe) => recipe.id === id) || null;
 }
 
 function getRecipeCostQuantity(quantity, unit) {
-  const normalizedUnit = normalizeText(unit || "").toLowerCase();
+  const normalizedUnit = normalizeRecipeIngredientUnit(unit || "");
 
   if (normalizedUnit === "gramos") return quantity / 1000;
   if (normalizedUnit === "ml") return quantity / 1000;
@@ -3279,6 +3366,14 @@ function getErpDashboard() {
   const estimatedRevenue = marginEvents.reduce((sum, event) => sum + Number(event.quoteTotal || 0), 0);
   const estimatedCost = marginEvents.reduce((sum, event) => sum + Number(event.finalCostTotal || 0), 0);
   const pendingPurchaseAmount = pendingPurchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
+  const statusCounts = events.reduce((counts, event) => {
+    counts[event.status] = (counts[event.status] || 0) + 1;
+    return counts;
+  }, {});
+  const conformityUploaded = events.filter((event) => event.clientConformity?.fileName).length;
+  const conformityPending = events.filter((event) =>
+    ["confirmed", "production", "done"].includes(event.status) && !event.clientConformity?.fileName
+  ).length;
 
   return {
     eventsTotal: events.length,
@@ -3292,6 +3387,9 @@ function getErpDashboard() {
     estimatedMargin: roundMoney(estimatedRevenue - estimatedCost),
     estimatedMarginPercent: estimatedRevenue > 0 ? roundMoney(((estimatedRevenue - estimatedCost) / estimatedRevenue) * 100) : 0,
     pendingPurchaseAmount: roundMoney(pendingPurchaseAmount),
+    statusCounts,
+    conformityUploaded,
+    conformityPending,
     purchases: getPurchaseDashboard(purchases),
     pipeline: getPipelineBoard().columns.map((column) => ({
       id: column.id,
@@ -3732,6 +3830,7 @@ function approveLogisticsEventClose(input = {}, user = null) {
   if (previous.logisticsStatus !== "pending_admin_close") {
     throw new Error("Este evento no tiene un cierre logistico pendiente de autorizacion.");
   }
+  validateEventConformityForClose(previous);
   const sheet = normalizeOperationalSheet(previous.operationalSheet || {}, previous);
   validateLogisticsCloseSheet(sheet);
 
@@ -3765,6 +3864,102 @@ function validateLogisticsCloseSheet(sheet = {}) {
   if (pendingTeardown.length) {
     throw new Error("Para cerrar el evento, complete primero los items de Desmontaje y descarga en deposito.");
   }
+}
+
+function validateEventConformityForClose(event = {}) {
+  if (!event.clientConformity?.fileName) {
+    throw new Error("Para cerrar el evento, primero suba la conformidad del cliente en PDF.");
+  }
+}
+
+function normalizeEventConformity(input = {}) {
+  if (!input || typeof input !== "object") return null;
+  const fileName = normalizeText(input.fileName || "");
+  if (!fileName) return null;
+  return {
+    fileName,
+    originalName: normalizeText(input.originalName || "conformidad-cliente.pdf"),
+    mimeType: normalizeText(input.mimeType || "application/pdf"),
+    size: Number(input.size || 0),
+    uploadedAt: input.uploadedAt || "",
+    uploadedBy: normalizeText(input.uploadedBy || ""),
+  };
+}
+
+function saveEventConformity(input = {}, user = null) {
+  const id = normalizeText(input.id || input.eventId || "");
+  const index = erpEvents.findIndex((event) => event.id === id);
+  if (index < 0) throw new Error("No encontre ese evento.");
+
+  const dataUrl = String(input.dataUrl || "");
+  const match = dataUrl.match(/^data:application\/pdf;base64,([A-Za-z0-9+/=\r\n]+)$/);
+  if (!match) throw new Error("La conformidad debe ser un archivo PDF valido.");
+
+  const buffer = Buffer.from(match[1].replace(/\s+/g, ""), "base64");
+  if (!buffer.length || buffer.slice(0, 4).toString("utf8") !== "%PDF") {
+    throw new Error("El archivo seleccionado no parece ser un PDF valido.");
+  }
+  if (buffer.length > 10 * 1024 * 1024) {
+    throw new Error("La conformidad PDF no puede superar 10 MB.");
+  }
+
+  ensureDirectory(ERP_CONFORMITIES_DIR);
+  const previous = normalizeErpEvent(erpEvents[index]);
+  const safeId = normalizeSearchKey(id).replace(/[^a-z0-9]+/g, "-") || `evento-${Date.now()}`;
+  const fileName = `${safeId}-${Date.now()}.pdf`;
+  const targetPath = path.join(ERP_CONFORMITIES_DIR, fileName);
+  fs.writeFileSync(targetPath, buffer);
+
+  if (previous.clientConformity?.fileName) {
+    const previousPath = path.join(ERP_CONFORMITIES_DIR, path.basename(previous.clientConformity.fileName));
+    if (previousPath !== targetPath && fs.existsSync(previousPath)) {
+      try {
+        fs.unlinkSync(previousPath);
+      } catch (error) {
+        console.warn("No se pudo eliminar conformidad anterior:", error.message);
+      }
+    }
+  }
+
+  const updated = normalizeErpEvent({
+    ...erpEvents[index],
+    clientConformity: {
+      fileName,
+      originalName: normalizeText(input.fileName || "conformidad-cliente.pdf"),
+      mimeType: "application/pdf",
+      size: buffer.length,
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: user?.displayName || user?.username || user?.name || "",
+    },
+    updatedAt: new Date().toISOString(),
+  });
+
+  erpEvents[index] = updated;
+  saveErpEvents();
+  recordAudit(user, "upload", "event", id, `Conformidad cliente - ${updated.name}`, previous.clientConformity || null, updated.clientConformity);
+  return getErpEventList().find((event) => event.id === id) || updated;
+}
+
+function sendEventConformityPdf(response, id) {
+  const cleanId = normalizeText(id || "");
+  const event = getErpEventList().find((item) => item.id === cleanId);
+  if (!event) return sendJson(response, { ok: false, error: "No encontre ese evento." }, 404);
+  if (!event.clientConformity?.fileName) {
+    return sendJson(response, { ok: false, error: "Ese evento no tiene conformidad cargada." }, 404);
+  }
+
+  const filePath = path.join(ERP_CONFORMITIES_DIR, path.basename(event.clientConformity.fileName));
+  if (!fs.existsSync(filePath)) {
+    return sendJson(response, { ok: false, error: "No encontre el PDF de conformidad en disco." }, 404);
+  }
+
+  const safeName = `${normalizeSearchKey(event.name || event.id).replace(/[^a-z0-9]+/g, "-") || "evento"}-conformidad.pdf`;
+  response.writeHead(200, {
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename="${safeName}"`,
+    "Cache-Control": "no-store",
+  });
+  fs.createReadStream(filePath).pipe(response);
 }
 
 function validateOperationalSheet(sheet = {}) {
@@ -3954,25 +4149,26 @@ function normalizeOperationalSheetItem(item = {}) {
 }
 
 function seedOperationalSheet(categories, event = {}, deletedSeeds = {}) {
-  const add = (category, text, quantity = "") => {
+  const add = (category, text, quantity = "", note = "") => {
     const clean = normalizeText(text || "");
     if (!clean) return;
     const cleanKey = normalizeSearchKey(clean);
     if ((deletedSeeds[category] || []).includes(cleanKey)) return;
     const exists = categories[category].some((item) => normalizeSearchKey(item.text) === normalizeSearchKey(clean));
-    if (!exists) categories[category].push(normalizeOperationalSheetItem({ text: clean, quantity, checked: false }));
+    if (!exists) categories[category].push(normalizeOperationalSheetItem({ text: clean, quantity, note, checked: false }));
   };
 
-  for (const item of event.menuItems || []) {
-    const text = [item.name, item.detail].filter(Boolean).join(" - ");
-    const splitItems = !item.quantity && !item.detail ? splitMenuOperationalItems(item.name) : [];
+  const menuEntries = buildOperationalMenuEntries(event);
+  for (const entry of menuEntries) {
+    const splitItems = !entry.quantity && !entry.detail ? splitMenuOperationalItems(entry.text) : [];
+    const quantity = entry.quantity || getOperationalMenuEntryQuantity(entry, menuEntries, event);
     if (splitItems.length > 1) {
       for (const menuItem of splitItems) add("alimentos", menuItem);
     } else {
-      add("alimentos", text, item.quantity || "");
+      add("alimentos", entry.text, quantity, entry.detail);
     }
   }
-  if (!(event.menuItems || []).length) {
+  if (!menuEntries.length) {
     for (const item of splitMenuOperationalItems(event.selectedMenu || "")) {
       add("alimentos", item);
     }
@@ -4001,6 +4197,57 @@ function seedOperationalSheet(categories, event = {}, deletedSeeds = {}) {
     add("personal", event.staff);
   }
   seedOperationalSuggestions(categories, event, add);
+}
+
+function buildOperationalMenuEntries(event = {}) {
+  const entries = [];
+  for (const item of event.menuItems || []) {
+    const itemName = normalizeText(item.name || "");
+    const category = normalizeText(item.category || classifyImportedMenuItem(`${itemName} ${item.detail || ""}`));
+    const subItems = Array.isArray(item.subItems) ? item.subItems.filter((subItem) => subItem.name) : [];
+
+    if (subItems.length) {
+      for (const subItem of subItems) {
+        entries.push({
+          text: [itemName, subItem.name].filter(Boolean).join(" - "),
+          detail: normalizeText(subItem.detail || item.detail || ""),
+          quantity: normalizeText(subItem.quantity || ""),
+          category,
+          parentName: itemName,
+        });
+      }
+      continue;
+    }
+
+    entries.push({
+      text: itemName,
+      detail: normalizeText(item.detail || ""),
+      quantity: normalizeText(item.quantity || ""),
+      category,
+      parentName: "",
+    });
+  }
+  return entries.filter((entry) => entry.text);
+}
+
+function getOperationalMenuEntryQuantity(entry, entries, event = {}) {
+  const guests = Number(event.guestCount || 0);
+  if (!guests) return normalizeText(entry.quantity || "");
+  const category = normalizeSearchKey(entry.category || "");
+  const countByCategory = (categoryKey) => entries.filter((item) => normalizeSearchKey(item.category) === categoryKey).length || 1;
+  const range = (minPerGuest, maxPerGuest, categoryKey, unit = "u aprox") => {
+    const count = countByCategory(categoryKey);
+    const min = Math.round((guests * minPerGuest) / count);
+    const max = Math.round((guests * maxPerGuest) / count);
+    return min === max ? `${min} ${unit}` : `${min}-${max} ${unit}`;
+  };
+
+  if (category === "finger_food") return range(4, 5, "finger_food");
+  if (category === "empanadas") return range(2, 3, "empanadas");
+  if (category === "cazuelas") return range(1, 2, "cazuelas", "porciones aprox");
+  if (category === "principal") return range(1, 1, "principal", "porciones aprox");
+  if (category === "postre") return range(1, 1, "postre", "porciones aprox");
+  return normalizeText(entry.quantity || "");
 }
 
 function seedOperationalSuggestions(categories, event = {}, add) {
@@ -4064,7 +4311,7 @@ function seedOperationalSuggestions(categories, event = {}, add) {
   add("extras", "Repaso final antes de salir");
 }
 
-function cleanOperationalSheetNoise(categories) {
+function cleanOperationalSheetNoise(categories, event = {}) {
   categories.alimentos = (categories.alimentos || []).map((item) => {
     if (item.quantity) return item;
     const match = normalizeText(item.text || "").match(/^(\d+(?:[.,]\d+)?(?:\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)?)\s*-\s*(.+)$/);
@@ -4075,6 +4322,9 @@ function cleanOperationalSheetNoise(categories) {
       text: normalizeText(match[2]),
     };
   });
+  if ((event.menuItems || []).length) {
+    categories.alimentos = (categories.alimentos || []).filter((item) => !isCorruptedImportedText(item.text));
+  }
   const removeByKey = {
     bebidas: new Set(["con bebidas", "sin bebidas", "a definir"]),
     personal: new Set(["confirmar cantidad de mozos"]),
@@ -4089,12 +4339,17 @@ function cleanOperationalSheetNoise(categories) {
   for (const [categoryId] of OPERATIONAL_SHEET_CATEGORIES) {
     const seen = new Set();
     categories[categoryId] = (categories[categoryId] || []).filter((item) => {
-      const key = `${normalizeSearchKey(item.text)}|${normalizeSearchKey(item.quantity)}`;
+      const key = normalizeSearchKey(item.text);
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
   }
+}
+
+function isCorruptedImportedText(value) {
+  const text = String(value || "");
+  return text.includes("�") || /\?\?/.test(text);
 }
 
 function extractWaiterCount(value) {
@@ -4467,6 +4722,7 @@ function normalizeErpEvent(event = {}) {
     menuStatus: normalizeText(event.menuStatus || ""),
     staffStatus: normalizeText(event.staffStatus || ""),
     logisticsStatus: normalizeText(event.logisticsStatus || ""),
+    clientConformity: normalizeEventConformity(event.clientConformity || event.conformity || {}),
     checklist: normalizeOperationalChecklist(event.checklist || event),
     checklistDetails: normalizeText(event.checklistDetails || ""),
     operationalSheet: normalizeOperationalSheet(event.operationalSheet || {}, event),
@@ -4522,11 +4778,14 @@ function normalizeEventMenuItems(input) {
   if (Array.isArray(input)) {
     return input
       .map((item) => {
-        if (typeof item === "string") return { name: normalizeText(item) };
+        if (typeof item === "string") return { name: normalizeText(item), quantity: "", detail: "", category: "", suggestedQuantity: "", subItems: [] };
         return {
           name: normalizeText(item.name || item.item || item.description || ""),
           quantity: normalizeText(item.quantity || item.qty || ""),
           detail: normalizeText(item.detail || item.notes || ""),
+          category: normalizeText(item.category || item.type || ""),
+          suggestedQuantity: normalizeText(item.suggestedQuantity || item.suggestion || ""),
+          subItems: normalizeEventMenuItems(item.subItems || item.children || item.varieties || []),
         };
       })
       .filter((item) => item.name);
@@ -4594,6 +4853,9 @@ function saveErpEventRecord(input) {
   if (event.status === "done" && event.eventDate && event.eventDate > new Date().toISOString().slice(0, 10)) {
     throw new Error("No se puede marcar como realizado un evento con fecha futura.");
   }
+  if (event.status === "done") {
+    validateEventConformityForClose(event);
+  }
 
   if (existingIndex >= 0) {
     erpEvents[existingIndex] = event;
@@ -4625,6 +4887,536 @@ function deleteErpEventRecord(id) {
 
 function getErpQuoteList() {
   return erpQuotes.map(normalizeErpQuote).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
+}
+
+async function importQuoteFromDocument(input = {}) {
+  const fileName = normalizeText(input.fileName || "presupuesto");
+  const text = await extractQuoteDocumentText(input);
+  if (!text || text.length < 20) {
+    throw new Error("No pude leer texto suficiente del presupuesto. Si es una imagen o PDF escaneado, conviertalo a texto/PDF con texto o carguelo manualmente.");
+  }
+
+  const parsed = parseImportedQuoteText(text, fileName);
+  return {
+    ...parsed,
+    fileName,
+    sourceText: text.slice(0, 12000),
+    summary: {
+      menuItems: parsed.menuItems.length,
+      drinks: parsed.drinkItems.length,
+      priceTotal: parsed.priceTotal,
+      guestCount: parsed.guestCount,
+    },
+  };
+}
+
+async function extractQuoteDocumentText(input = {}) {
+  const dataUrl = String(input.dataUrl || "");
+  const textInput = normalizeText(input.text || "");
+  if (textInput) return normalizeImportedDocumentText(textInput);
+
+  const match = dataUrl.match(/^data:([^;]+);base64,([A-Za-z0-9+/=\r\n]+)$/);
+  if (!match) {
+    throw new Error("Suba un archivo valido para importar.");
+  }
+
+  const mimeType = match[1].toLowerCase();
+  const buffer = Buffer.from(match[2].replace(/\s+/g, ""), "base64");
+  if (buffer.length > 8 * 1024 * 1024) {
+    throw new Error("El presupuesto no puede superar 8 MB.");
+  }
+
+  if (mimeType.includes("pdf")) {
+    return normalizeImportedDocumentText(await extractTextFromPdfBuffer(buffer));
+  }
+
+  if (mimeType.includes("text") || mimeType.includes("csv") || mimeType.includes("json")) {
+    return normalizeImportedDocumentText(buffer.toString("utf8"));
+  }
+
+  return normalizeImportedDocumentText(buffer.toString("utf8"));
+}
+
+async function extractTextFromPdfBuffer(buffer) {
+  const parsed = await extractTextWithPdfParse(buffer);
+  if (parsed && parsed.length > 40) {
+    return parsed;
+  }
+
+  const raw = buffer.toString("latin1");
+  const chunks = [raw];
+  const streamRegex = /<<(?:.|\r|\n)*?>>\s*stream\r?\n?([\s\S]*?)\r?\n?endstream/g;
+  let streamMatch;
+  while ((streamMatch = streamRegex.exec(raw))) {
+    const streamStart = streamMatch.index;
+    const dictionary = raw.slice(Math.max(0, streamStart - 800), streamStart);
+    const streamBytes = Buffer.from(streamMatch[1], "latin1");
+    if (dictionary.includes("/FlateDecode")) {
+      try {
+        chunks.push(zlib.inflateSync(streamBytes).toString("latin1"));
+      } catch (error) {
+        try {
+          chunks.push(zlib.inflateRawSync(streamBytes).toString("latin1"));
+        } catch (_) {
+          chunks.push(streamBytes.toString("latin1"));
+        }
+      }
+    } else {
+      chunks.push(streamBytes.toString("latin1"));
+    }
+  }
+
+  return chunks.map(extractPdfTextTokens).join("\n");
+}
+
+async function extractTextWithPdfParse(buffer) {
+  try {
+    const { PDFParse } = await import("pdf-parse");
+    const parser = new PDFParse({ data: buffer });
+    try {
+      const result = await parser.getText();
+      return result?.text || "";
+    } finally {
+      await parser.destroy();
+    }
+  } catch (error) {
+    console.warn("No se pudo leer PDF con pdf-parse:", error.message);
+    return "";
+  }
+}
+
+function extractPdfTextTokens(text) {
+  const tokens = [];
+  const literalRegex = /\((?:\\.|[^\\)])*\)/g;
+  let match;
+  while ((match = literalRegex.exec(text))) {
+    const value = decodePdfLiteral(match[0].slice(1, -1));
+    if (looksLikeReadableText(value)) tokens.push(value);
+  }
+
+  const hexRegex = /<([0-9A-Fa-f]{4,})>/g;
+  while ((match = hexRegex.exec(text))) {
+    const value = decodePdfHex(match[1]);
+    if (looksLikeReadableText(value)) tokens.push(value);
+  }
+  return tokens.join("\n");
+}
+
+function decodePdfLiteral(value) {
+  return String(value || "")
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\n")
+    .replace(/\\t/g, " ")
+    .replace(/\\([()\\])/g, "$1")
+    .replace(/\\([0-7]{1,3})/g, (_, octal) => String.fromCharCode(parseInt(octal, 8)));
+}
+
+function decodePdfHex(hex) {
+  const clean = hex.length % 2 ? `${hex}0` : hex;
+  const bytes = Buffer.from(clean, "hex");
+  if (bytes.length >= 2 && bytes[0] === 0xfe && bytes[1] === 0xff) {
+    const chars = [];
+    for (let index = 2; index + 1 < bytes.length; index += 2) {
+      chars.push(String.fromCharCode(bytes.readUInt16BE(index)));
+    }
+    return chars.join("");
+  }
+  return bytes.toString("utf8");
+}
+
+function looksLikeReadableText(value) {
+  const clean = normalizeText(value || "");
+  return clean.length >= 2 && /[a-zA-ZáéíóúñÁÉÍÓÚÑ0-9]/.test(clean);
+}
+
+function normalizeImportedDocumentText(text) {
+  return String(text || "")
+    .replace(/\u0000/g, "")
+    .replace(/\r/g, "\n")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function parseImportedQuoteText(text, fileName = "") {
+  const lines = getImportedLogicalLines(text);
+  const compact = lines.join("\n");
+  const eventName = pickLabeledValue(lines, ["evento", "nombre del evento", "propuesta"]) || cleanFileTitle(fileName);
+  const clientName = pickLabeledValue(lines, ["cliente", "contacto"]) || "";
+  const venue = pickLabeledValue(lines, ["ubicacion", "ubicación", "lugar", "venue"]) || "";
+  const serviceType = pickLabeledValue(lines, ["servicio", "tipo de servicio"]) || inferServiceTypeFromText(compact);
+  const guestCount = parseDecimalNumber((compact.match(/(\d+(?:[.,]\d+)?)\s*(?:invitados|personas|pax|comensales)/i) || [])[1] || 0);
+  const eventDate = normalizePanelDate((compact.match(/(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}|\d{4}-\d{1,2}-\d{1,2})/) || [])[1] || "");
+  const eventTime = (compact.match(/(?:hora|horario)\s*:?\s*([0-2]?\d[:.][0-5]\d)/i) || [])[1] || "";
+  const pricePerPerson = parseMoneyFromText(
+    (compact.match(/(?:precio|inversion|valor)?\s*[:\-]?\s*\$?\s*([\d\.\,]+)\s*(?:x|por)\s*(?:persona|pax)/i) || [])[1]
+    || (compact.match(/(?:precio|valor)\s+(?:por\s+)?(?:persona|pax)\s*:?\s*\$?\s*([\d\.\,]+)/i) || [])[1]
+    || ""
+  );
+  const totalMatch = compact.match(/(?:venta total|total propuesta|inversion total|precio total|total)\s*:?\s*\$?\s*([\d\.\,]+)/i);
+  const priceTotal = parseMoneyFromText(totalMatch?.[1] || "") || (pricePerPerson && guestCount ? roundMoney(pricePerPerson * guestCount) : 0);
+  const menuItems = splitImportedItems(extractImportedSection(lines, ["menu", "menu y bebidas", "menú", "menú y bebidas"], ["bebidas", "operacion", "operación", "precio", "condiciones", "notas"]));
+  const inlineMenu = splitImportedItems(pickLabeledValue(lines, ["menu", "menú"]));
+  const structured = extractStructuredImportedQuoteItems(lines);
+  const bulletMenu = structured.menuItems;
+  const drinkItems = splitImportedItems([
+    ...extractImportedSection(lines, ["bebidas", "detalle bebidas"], ["operacion", "operación", "precio", "condiciones", "notas", "vajilla"]),
+    pickLabeledValue(lines, ["bebidas", "detalle bebidas"]),
+    ...extractImportedDrinkItems(lines),
+  ].filter(Boolean).join("\n"));
+  const notes = extractImportedSection(lines, ["observaciones", "notas"], ["condiciones", "precio"]).join("\n");
+  const fallbackMenuItems = uniqueImportedItems(menuItems.length ? menuItems : inlineMenu)
+    .map((name) => enrichImportedMenuItem(splitImportedTitleDetail(name)));
+
+  return {
+    eventName,
+    clientName,
+    venue,
+    eventDate,
+    eventTime,
+    guestCount,
+    serviceType,
+    priceMode: pricePerPerson ? "per_person" : "total",
+    pricePerPerson,
+    priceTotal,
+    menuItems: structured.menuItems.length ? structured.menuItems : fallbackMenuItems,
+    includedServices: structured.includedServices,
+    drinkItems: uniqueImportedItems(drinkItems),
+    includesDrinks: drinkItems.length ? "Con bebidas" : "",
+    notes,
+  };
+}
+
+function getImportedLogicalLines(text) {
+  const rawLines = String(text || "")
+    .split(/\n+/)
+    .map((line) => normalizeText(line))
+    .filter(Boolean);
+  const lines = [];
+
+  for (const line of rawLines) {
+    if (/^--\s*\d+\s+of\s+\d+\s*--$/i.test(line)) continue;
+    const previous = lines[lines.length - 1] || "";
+    const startsNewBlock = /^[●○■•\-]\s*/.test(line)
+      || /^[ivx]+\.\s/i.test(line)
+      || /^(principal|postre|bandejeo|estaci[oó]n|infraestructura|personal|vajilla|ambientaci[oó]n|seguridad|mobiliario|referencias|armado de cocina|precio|aclaraciones|condiciones)\b/i.test(line);
+    const isContinuation = previous
+      && !startsNewBlock
+      && /^[a-záéíóúñ0-9(]/.test(line)
+      && !/[.;:]$/.test(previous);
+
+    if (isContinuation) {
+      lines[lines.length - 1] = `${previous} ${line}`.trim();
+    } else {
+      lines.push(line);
+    }
+  }
+
+  return lines;
+}
+
+function pickLabeledValue(lines, labels) {
+  const labelPattern = labels.map(escapeRegExp).join("|");
+  const regex = new RegExp(`^(?:${labelPattern})\\s*[:\\-]\\s*(.+)$`, "i");
+  const line = lines.find((item) => regex.test(item));
+  return line ? normalizeText(line.match(regex)?.[1] || "") : "";
+}
+
+function extractImportedSection(lines, startLabels, endLabels) {
+  const startKeys = startLabels.map(normalizeSearchKey);
+  const endKeys = endLabels.map(normalizeSearchKey);
+  const output = [];
+  let active = false;
+  for (const line of lines) {
+    const key = normalizeSearchKey(line.replace(/:$/, ""));
+    const isStart = startKeys.some((label) => key === label || key.startsWith(`${label}:`));
+    if (isStart) {
+      active = true;
+      const inline = line.includes(":") ? line.split(":").slice(1).join(":").trim() : "";
+      if (inline) output.push(inline);
+      continue;
+    }
+    if (active && endKeys.some((label) => key === label || key.startsWith(`${label}:`))) break;
+    if (active) output.push(line);
+  }
+  return output;
+}
+
+function splitImportedItems(value) {
+  const text = Array.isArray(value) ? value.join("\n") : String(value || "");
+  return text
+    .split(/\n|•|- |\u2022|●|○|■|;|,(?=\s*[A-ZÁÉÍÓÚÑ])/)
+    .flatMap((line) => line.split(/\.\s+(?=[A-ZÁÉÍÓÚÑ])/))
+    .map((item) => normalizeText(item.replace(/^(menu|menú|bebidas?)\s*:?\s*/i, "")))
+    .map((item) => item.replace(/[.;,\s]+$/, ""))
+    .filter((item) => item.length > 2 && !/^(a definir|sin bebidas|sin menu)$/i.test(item));
+}
+
+function extractImportedBulletMenuItems(lines) {
+  const stopPattern = /^(precio|aclaraciones|condiciones|infraestructura|personal|vajilla|ambientacion|ambientación|seguridad|mobiliario|referencias|armado de cocina)\b/i;
+  const skipPattern = /^(propuesta|ubicacion|ubicación|servicio de|una secuencia|principal|i\.|ii\.|iii\.|estacion|estación|bandejeo|clasicos|clásicos|frescura|delicadeza|postre regional|cortes de|embutidos|ensaladas|panificados)\b/i;
+  const items = [];
+  let active = false;
+  for (const originalLine of lines) {
+    const line = normalizeText(originalLine);
+    if (/recepcion|recepción|welcome|bandejeo|principal|asado|menu|menú/i.test(line)) {
+      active = true;
+    }
+    if (!active) continue;
+    if (stopPattern.test(line)) break;
+    const hadBullet = /^[●○■•\-]\s*/.test(line);
+    const clean = line
+      .replace(/^[●○■•\-]\s*/, "")
+      .replace(/^--\s*\d+\s+of\s+\d+\s*--$/i, "")
+      .trim();
+    if (!clean || skipPattern.test(clean)) continue;
+    if (!hadBullet && !/:\s+.+/.test(clean)) continue;
+    if (/^(agua mineral|linea clasica|línea clásica|gaseosas)/i.test(clean)) continue;
+    items.push(clean.replace(/:$/, ""));
+  }
+  return splitImportedItems(items.join("\n"));
+}
+
+function extractStructuredImportedQuoteItems(lines) {
+  const menuItems = [];
+  const includedServices = [];
+  let activeMenu = false;
+  let activeInfrastructure = false;
+  let current = null;
+  const menuHeadingPattern = /recepcion|recepción|welcome|bandejeo|principal|asado|menu|menú|postre|picada|finger|cazuela/i;
+  const sectionHeadingPattern = /^(i+\.|[ivx]+\.)\s|^(principal|postre|bandejeo|estaci[oó]n|cortes|embutidos|ensaladas|panificados)\b/i;
+  const stopPattern = /^(precio|aclaraciones|condiciones)\b/i;
+
+  for (const rawLine of lines) {
+    const line = normalizeText(rawLine);
+    if (!line || /^--\s*\d+\s+of\s+\d+\s*--$/i.test(line)) continue;
+    if (stopPattern.test(line)) break;
+    const cleanRouteLine = cleanImportedBulletLine(line);
+
+    if (isImportedInfrastructureLine(cleanRouteLine)) {
+      activeInfrastructure = true;
+      activeMenu = false;
+      current = null;
+      includedServices.push(cleanRouteLine);
+      continue;
+    }
+
+    if (activeInfrastructure) {
+      const service = cleanImportedBulletLine(line);
+      if (service) includedServices.push(service);
+      continue;
+    }
+
+    if (menuHeadingPattern.test(line)) {
+      activeMenu = true;
+      current = null;
+      continue;
+    }
+
+    if (!activeMenu) continue;
+    if (sectionHeadingPattern.test(line) && !/^[●○■•\-]/.test(line)) {
+      current = null;
+      continue;
+    }
+
+    const bulletLevel = getImportedBulletLevel(line);
+    const clean = cleanImportedBulletLine(line);
+    if (!clean) continue;
+    if (isImportedInfrastructureLine(clean)) {
+      activeInfrastructure = true;
+      activeMenu = false;
+      current = null;
+      includedServices.push(clean);
+      continue;
+    }
+    if (isImportedNarrativeLine(clean)) continue;
+    if (/^(agua mineral|linea clasica|línea clásica|gaseosas)/i.test(clean)) continue;
+    if (isImportedMenuGroupHeading(clean, bulletLevel)) {
+      if (shouldKeepImportedMenuParent(clean)) {
+        current = enrichImportedMenuItem(splitImportedTitleDetail(clean));
+        current.subItems = current.subItems || [];
+        expandImportedParentDetail(current);
+        menuItems.push(current);
+      } else {
+        current = null;
+      }
+      continue;
+    }
+    if (!bulletLevel && !clean.includes(":")) continue;
+
+    const item = enrichImportedMenuItem(splitImportedTitleDetail(clean));
+    if (bulletLevel >= 2 && current && shouldKeepImportedMenuParent(current.name)) {
+      current.subItems = current.subItems || [];
+      current.subItems.push(item);
+    } else {
+      menuItems.push(item);
+      current = item;
+    }
+  }
+
+  return { menuItems: compactImportedMenuTree(menuItems), includedServices: uniqueImportedItems(includedServices) };
+}
+
+function getImportedBulletLevel(line) {
+  if (/^[■]\s*/.test(line)) return 3;
+  if (/^[○]\s*/.test(line)) return 2;
+  if (/^[●•\-]\s*/.test(line)) return 1;
+  return 0;
+}
+
+function cleanImportedBulletLine(line) {
+  return normalizeText(line || "")
+    .replace(/^[●○■•\-]\s*/, "")
+    .replace(/:$/, "")
+    .trim();
+}
+
+function isImportedInfrastructureLine(line) {
+  return /^(infraestructura|infraestructura y servicios|servicios incluidos|personal|vajilla|manteler[ií]a|ambientaci[oó]n|seguridad|mobiliario|referencias|armado de cocina|sonido|iluminaci[oó]n|ba[ñn]os|generador|grupo electr[oó]geno)\b/i.test(line || "");
+}
+
+function isImportedMenuGroupHeading(line, bulletLevel = 0) {
+  const key = normalizeSearchKey(line || "").replace(/:$/, "");
+  if (isImportedInfrastructureLine(line)) return true;
+  if (/^(clasicos reversionados|clasicos|frescura y vegetales|frescura|delicadeza en masa|delicadeza|postre regional|cortes de ternera|cortes de carne|embutidos parrilleros|embutidos|ensaladas|panificados|guarniciones)$/.test(key)) {
+    return true;
+  }
+  return bulletLevel === 1
+    && !shouldKeepImportedMenuParent(line)
+    && !line.includes(":")
+    && line.split(/\s+/).length <= 4;
+}
+
+function shouldKeepImportedMenuParent(line) {
+  return /empanad|picada|tabla|cazuela|principal|asado criollo|plato principal|postre/i.test(line || "");
+}
+
+function expandImportedParentDetail(item) {
+  if (!item.detail || item.subItems?.length) return;
+  const pieces = splitImportedItems(item.detail);
+  if (pieces.length < 2) return;
+  item.subItems = pieces.map((name) => enrichImportedMenuItem({ name }));
+  item.detail = "";
+}
+
+function isImportedNarrativeLine(line) {
+  return /^(servicio de|una secuencia|pensada para|y sabores|tradicional con|asegurar|todas nuestras|el presente|los valores|para congelar|el pago)/i.test(line);
+}
+
+function splitImportedTitleDetail(value) {
+  const clean = normalizeText(value || "");
+  const colonIndex = clean.indexOf(":");
+  if (colonIndex > 2 && colonIndex < clean.length - 2) {
+    return {
+      name: clean.slice(0, colonIndex).trim(),
+      detail: clean.slice(colonIndex + 1).trim(),
+    };
+  }
+  return { name: clean, detail: "" };
+}
+
+function enrichImportedMenuItem(item = {}) {
+  const name = normalizeText(item.name || "");
+  const detail = normalizeText(item.detail || "");
+  const category = classifyImportedMenuItem(`${name} ${detail}`);
+  return {
+    name,
+    detail,
+    category,
+    suggestedQuantity: getImportedMenuQuantitySuggestion(category, `${name} ${detail}`),
+    quantity: "",
+    subItems: Array.isArray(item.subItems) ? item.subItems : [],
+  };
+}
+
+function classifyImportedMenuItem(value) {
+  const key = normalizeSearchKey(value || "");
+  if (/empanad|pastelit/.test(key)) return "empanadas";
+  if (/cazuel|shot/.test(key)) return "cazuelas";
+  if (/bruschetta|canastita|buñuelo|bunuelo|chip|brioche|torta frita|tortilla|sorrentino|finger|bocado/.test(key)) return "finger_food";
+  if (/picada|fiambre|queso|mortadela|jamon|salame/.test(key)) return "picada";
+  if (/asado|vacio|costillar|chorizo|principal|ternera|carne/.test(key)) return "principal";
+  if (/postre|pera|dulce|chocolate|torta/.test(key)) return "postre";
+  if (/ensalada|papin|vegetal|tomate|zanahoria|papa/.test(key)) return "guarnicion";
+  return "otro";
+}
+
+function getImportedMenuQuantitySuggestion(category, value = "") {
+  const key = normalizeSearchKey(value);
+  if (category === "finger_food") return "4-5 unidades por persona en total del grupo";
+  if (category === "empanadas") {
+    return /humita|vegetarian|verdura/.test(key)
+      ? "Menos que carne/criolla; ajustar mix"
+      : "2-3 unidades por persona en total del grupo";
+  }
+  if (category === "cazuelas") return "1-2 cazuelas por persona en total del grupo";
+  if (category === "picada") return "Definir gramos por persona segun mix";
+  if (category === "principal") return "1 porcion por persona";
+  if (category === "postre") return "1 porcion por persona";
+  return "";
+}
+
+function compactImportedMenuTree(items) {
+  return items
+    .map((item) => ({
+      ...item,
+      subItems: Array.isArray(item.subItems) ? item.subItems.filter((subItem) => subItem.name) : [],
+    }))
+    .filter((item) => item.name);
+}
+
+function extractImportedDrinkItems(lines) {
+  const drinks = [];
+  let active = false;
+  for (const originalLine of lines) {
+    const line = normalizeText(originalLine);
+    if (/bebidas|welcome drink/i.test(line)) {
+      active = true;
+    }
+    if (active && /^(bandejeo|principal|precio|aclaraciones)\b/i.test(line)) break;
+    if (!active) continue;
+    if (/agua/i.test(line)) {
+      if (/con gas/i.test(line)) drinks.push("Agua con gas");
+      if (/sin gas/i.test(line)) drinks.push("Agua sin gas");
+      if (!/con gas|sin gas/i.test(line)) drinks.push("Agua mineral");
+    }
+    if (/gaseosa/i.test(line)) drinks.push("Gaseosas");
+    if (/vino/i.test(line)) drinks.push("Vinos");
+    if (/barra/i.test(line)) drinks.push("Barra");
+  }
+  return uniqueImportedItems(drinks);
+}
+
+function uniqueImportedItems(items) {
+  const seen = new Set();
+  return items.filter((item) => {
+    const key = normalizeSearchKey(item);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function parseMoneyFromText(value) {
+  const number = parseMoneyLikeNumber(value);
+  return Number.isFinite(number) ? roundMoney(number) : 0;
+}
+
+function cleanFileTitle(fileName) {
+  return normalizeText(String(fileName || "")
+    .replace(/\.[a-z0-9]+$/i, "")
+    .replace(/[_-]+/g, " "))
+    .toUpperCase();
+}
+
+function inferServiceTypeFromText(text) {
+  const key = normalizeSearchKey(text);
+  const services = ["coffee", "finger", "agape", "cocktail", "coctel", "cena", "almuerzo", "asado", "brunch"];
+  return services.find((service) => key.includes(service)) || "";
+}
+
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function normalizeErpQuote(quote = {}) {

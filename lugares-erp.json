@@ -14,7 +14,7 @@
     "mapProvider": "",
     "mapPlaceId": "",
     "createdAt": "2026-06-09T14:47:09.593Z",
-    "updatedAt": "2026-06-16T17:59:35.711Z"
+    "updatedAt": "2026-06-17T23:45:24.965Z"
   },
   {
     "id": "lugar-ecoparque",
@@ -117,5 +117,39 @@
     "mapPlaceId": "1451632",
     "createdAt": "2026-06-10T21:11:12.376Z",
     "updatedAt": "2026-06-16T12:56:21.350Z"
+  },
+  {
+    "id": "lugar-finca-bandini-mendoza-argentina-350-pax",
+    "name": "Finca Bandini, Mendoza, Argentina | 350 PAX",
+    "address": "",
+    "phone": "",
+    "contactName": "",
+    "email": "",
+    "reference": "",
+    "notes": "",
+    "latitude": 0,
+    "longitude": 0,
+    "mapLabel": "",
+    "mapProvider": "",
+    "mapPlaceId": "",
+    "createdAt": "2026-06-17T23:45:35.484Z",
+    "updatedAt": "2026-06-17T23:45:35.484Z"
+  },
+  {
+    "id": "lugar-finca-bandini-mendoza-argentina",
+    "name": "Finca Bandini, Mendoza, Argentina",
+    "address": "",
+    "phone": "",
+    "contactName": "",
+    "email": "",
+    "reference": "",
+    "notes": "",
+    "latitude": 0,
+    "longitude": 0,
+    "mapLabel": "",
+    "mapProvider": "",
+    "mapPlaceId": "",
+    "createdAt": "2026-06-17T23:47:20.294Z",
+    "updatedAt": "2026-06-18T00:08:30.609Z"
   }
 ]

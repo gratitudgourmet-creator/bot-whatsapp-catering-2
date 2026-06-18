@@ -414,6 +414,54 @@
       padding: 6px 10px;
     }
 
+    .file-action {
+      cursor: pointer;
+      display: inline-flex;
+      position: relative;
+    }
+
+    .file-action input[type="file"] {
+      height: 1px;
+      opacity: 0;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+
+    .conformity-box {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-top: 6px;
+      padding: 10px;
+    }
+
+    .conformity-box.not-required {
+      background: var(--neutral-soft);
+      color: var(--muted);
+    }
+
+    .status-tile {
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .status-tile:hover,
+    .summary-row:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(18, 94, 79, 0.08);
+    }
+
+    .event-status-table {
+      min-width: 760px;
+    }
+
     .search {
       min-width: 260px;
     }
@@ -609,7 +657,8 @@
     .admin-summary-grid {
       display: grid;
       gap: 12px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      min-width: 0;
     }
 
     .admin-summary-card {
@@ -617,6 +666,7 @@
       border-radius: 8px;
       padding: 12px;
       min-width: 0;
+      overflow: hidden;
     }
 
     .admin-summary-card h3 {
@@ -633,15 +683,23 @@
       display: grid;
       gap: 3px;
       margin-bottom: 6px;
+      min-width: 0;
       padding: 8px;
       text-align: left;
       width: 100%;
     }
 
+    .summary-row strong,
+    .summary-row span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .summary-row span {
       color: var(--muted);
       font-size: 12px;
-      overflow-wrap: anywhere;
     }
 
     .event-operational-details {
@@ -1616,8 +1674,53 @@
 
     .logistics-menu-grid {
       display: grid;
-      gap: 8px;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+
+    .logistics-menu-group {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+    }
+
+    .logistics-menu-group h4 {
+      align-items: center;
+      display: flex;
+      font-size: 13px;
+      justify-content: space-between;
+      margin: 0 0 4px;
+      text-transform: uppercase;
+    }
+
+    .logistics-menu-item {
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 3px;
+      padding-top: 7px;
+    }
+
+    .logistics-menu-item:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .logistics-menu-subitems {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 3px;
+    }
+
+    .logistics-menu-subitems span {
+      background: #eef7f4;
+      border: 1px solid #cfe5de;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 7px;
     }
 
     .logistics-category {
@@ -1737,6 +1840,15 @@
       display: grid;
       gap: 8px;
       grid-template-columns: 128px minmax(180px, 1fr) 92px 104px minmax(140px, 1fr) 38px;
+    }
+
+    .recipe-process-item.is-note {
+      grid-template-columns: 128px minmax(220px, 1fr) minmax(180px, 1fr) 38px;
+    }
+
+    .recipe-process-item.is-note .recipe-process-quantity,
+    .recipe-process-item.is-note .recipe-process-unit {
+      display: none;
     }
 
     .budget-recipe-row {
@@ -2049,8 +2161,9 @@
     .event-finance {
       display: grid;
       gap: 8px;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       margin-top: 12px;
+      min-width: 0;
     }
 
     .event-number {
@@ -2219,6 +2332,48 @@
       grid-template-columns: minmax(180px, 1fr) 90px 42px;
     }
 
+    .quote-import-menu-row,
+    #event-menu-items .menu-line {
+      align-items: start;
+      grid-template-columns: 90px minmax(150px, 1.1fr) minmax(180px, 1.4fr) 130px minmax(120px, 0.8fr) minmax(140px, 1fr) 38px;
+    }
+
+    .quote-import-menu-row {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      grid-template-columns: minmax(170px, 1fr) minmax(220px, 1.4fr) 140px 130px 38px;
+      padding: 8px;
+    }
+
+    .quote-import-menu-row label {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .quote-import-menu-row label span {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .quote-import-menu-row textarea.quote-import-menu-detail {
+      min-height: 54px;
+      resize: vertical;
+    }
+
+    .quote-import-menu-subitems,
+    .event-menu-subitems {
+      min-height: 42px;
+    }
+
+    .quote-import-menu-subitems-wrap,
+    .quote-import-menu-suggestion-wrap {
+      grid-column: 1 / -2;
+    }
+
     .erp-quote-line select,
     .erp-quote-line input {
       width: 100%;
@@ -2227,9 +2382,10 @@
     .pipeline {
       display: grid;
       gap: 10px;
-      grid-auto-columns: 210px;
+      grid-auto-columns: minmax(150px, 210px);
       grid-auto-flow: column;
       grid-template-columns: none;
+      max-width: 100%;
       overflow-x: auto;
       padding-bottom: 6px;
       scrollbar-width: thin;
@@ -2241,6 +2397,7 @@
       border-radius: 8px;
       min-height: 250px;
       max-height: 300px;
+      min-width: 0;
       overflow-y: auto;
       padding: 10px;
     }
@@ -2260,6 +2417,8 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       margin-bottom: 8px;
+      min-width: 0;
+      overflow: hidden;
       padding: 10px;
     }
 
@@ -2835,10 +2994,16 @@
             <div id="erp-alerts"></div>
           </section>
 
-          <section class="erp-section">
-            <h2>Lectura rapida</h2>
-            <div id="erp-executive-summary" class="compact-insight"></div>
-          </section>
+      <section class="erp-section">
+        <h2>Lectura rapida</h2>
+        <div id="erp-executive-summary" class="compact-insight"></div>
+      </section>
+
+      <section class="erp-section">
+        <h2>Estados de eventos</h2>
+        <p class="subtitle">Eventos activos, realizados, perdidos y cancelados con estado de conformidad.</p>
+        <div id="event-status-dashboard"></div>
+      </section>
 
         </div>
 
@@ -3226,6 +3391,8 @@
           <div class="actions">
             <button class="filter" type="button" onclick="showBlankErpEventForm()" data-permission="events:write">Crear evento</button>
             <button class="filter" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Presupuesto rentable</button>
+            <button class="approve" type="button" onclick="document.getElementById('quote-import-file').click()" data-permission="quotes:write">Importar presupuesto</button>
+            <input id="quote-import-file" type="file" accept=".pdf,.txt,text/plain,application/pdf" class="hidden" onchange="importQuoteDocument(this)">
           </div>
         </div>
         <div id="pipeline-board" class="pipeline"></div>
@@ -4287,6 +4454,7 @@
     let logisticsCategories = [];
     let activeLogisticsEvent = null;
     let logisticsSaveTimer = null;
+    let pendingQuoteImport = null;
     const operationalCategoryDefaults = [
       ["alimentos", "Alimentos"],
       ["vajilla", "Vajilla"],
@@ -4613,6 +4781,7 @@
       if (canAccessTab("erp")) {
         renderErpAlerts(dashboard.alerts || []);
         renderExecutiveSummary(dashboard);
+        renderEventStatusDashboard(dashboard);
         renderGlobalSearch();
       }
       if (canAccessTab("purchases")) {
@@ -4709,6 +4878,110 @@
       `;
     }
 
+    function renderEventStatusDashboard(dashboard = {}) {
+      const container = document.getElementById("event-status-dashboard");
+      if (!container) return;
+      const events = erpData.events || [];
+      const statusGroups = [
+        ["lead", "Consulta"],
+        ["quoted", "Presupuestado"],
+        ["confirmed", "Confirmado"],
+        ["production", "Produccion"],
+        ["done", "Realizado"],
+        ["lost", "Perdido"],
+        ["cancelled", "Cancelado"],
+      ];
+      const counts = dashboard.statusCounts || {};
+      const sortedEvents = events
+        .slice()
+        .sort((a, b) => String(b.eventDate || "").localeCompare(String(a.eventDate || "")));
+      container.innerHTML = `
+        <div class="event-finance">
+          <button class="event-number status-tile" type="button" onclick="filterEventStatusRows('all')">
+            <span>Todos</span>
+            <strong>${escapeHtml(events.length || 0)}</strong>
+          </button>
+          ${statusGroups.map(([status, label]) => `
+            <button class="event-number status-tile" type="button" onclick="filterEventStatusRows('${escapeAttribute(status)}')">
+              <span>${escapeHtml(label)}</span>
+              <strong>${escapeHtml(counts[status] || 0)}</strong>
+            </button>
+          `).join("")}
+          <button class="event-number status-tile" type="button" onclick="filterEventStatusRows('missing_conformity')">
+            <span>Sin conformidad</span>
+            <strong>${escapeHtml(dashboard.conformityPending || 0)}</strong>
+          </button>
+        </div>
+        <div class="purchase-table-wrap event-status-table-wrap" style="margin-top:12px;">
+          <table class="purchase-table event-status-table">
+            <thead>
+              <tr>
+                <th>Evento</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Conformidad</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="event-status-rows">
+              ${renderEventStatusRows(sortedEvents)}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderEventStatusRows(events) {
+      if (!events.length) {
+        return `<tr><td colspan="6"><div class="empty compact-empty">Sin eventos para mostrar.</div></td></tr>`;
+      }
+      return events.map((event) => `
+        <tr data-status="${escapeAttribute(event.status || "")}" data-conformity="${getEventConformityState(event)}">
+          <td>${escapeHtml(event.name || "Sin nombre")}</td>
+          <td>${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")}</td>
+          <td>${escapeHtml(event.clientName || "Sin cliente")}</td>
+          <td><span class="badge ${event.status === "done" ? "confirmed" : event.status === "lost" || event.status === "cancelled" ? "lost" : "missing_info"}">${escapeHtml(getErpEventStatusLabel(event.status))}</span></td>
+          <td>${renderEventConformityBadge(event)}</td>
+          <td>
+            <div class="actions">
+              <button class="filter" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">Ver</button>
+              ${event.clientConformity?.fileName ? `<button class="filter" type="button" onclick="downloadEventConformity('${escapeAttribute(event.id)}')">PDF</button>` : ""}
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function eventRequiresConformity(event = {}) {
+      return ["confirmed", "production", "done"].includes(event.status);
+    }
+
+    function getEventConformityState(event = {}) {
+      if (!eventRequiresConformity(event)) return "not_required";
+      return event.clientConformity?.fileName ? "uploaded" : "missing";
+    }
+
+    function renderEventConformityBadge(event = {}) {
+      const state = getEventConformityState(event);
+      if (state === "not_required") return `<span class="badge referred">No aplica</span>`;
+      if (state === "uploaded") return `<span class="badge confirmed">PDF cargado</span>`;
+      return `<span class="badge missing_info">Pendiente</span>`;
+    }
+
+    function filterEventStatusRows(status) {
+      const rows = Array.from(document.querySelectorAll("#event-status-rows tr"));
+      rows.forEach((row) => {
+        if (!row.dataset.status) return;
+        const visible = status === "all"
+          ? true
+          : status === "missing_conformity"
+          ? row.dataset.conformity === "missing"
+          : row.dataset.status === status;
+        row.classList.toggle("hidden", !visible);
+      });
+    }
+
     function renderErpAlerts(alerts) {
       const container = document.getElementById("erp-alerts");
       if (!container) return;
@@ -4800,10 +5073,10 @@
       ];
       container.innerHTML = `
         ${renderAdminSummaryList("Vistas del sistema", views, (view) => `
-          <div class="summary-row"><strong>${escapeHtml(view.label || view.id)}</strong><span>${escapeHtml(view.id)}</span></div>
+          <button class="summary-row" type="button" onclick="showWorkspaceView('${escapeAttribute(view.id)}')"><strong>${escapeHtml(view.label || view.id)}</strong><span>${escapeHtml(view.id)}</span></button>
         `)}
         ${renderAdminSummaryList("Funciones / permisos", permissionCatalog, (permission) => `
-          <div class="summary-row"><strong>${escapeHtml(permission.label || permission.id)}</strong><span>${escapeHtml(permission.group || "General")} · ${escapeHtml(permission.id)}</span></div>
+          <button class="summary-row" type="button" onclick="document.getElementById('role-permissions-list')?.scrollIntoView({behavior:'smooth'});"><strong>${escapeHtml(permission.label || permission.id)}</strong><span>${escapeHtml(permission.group || "General")} · ${escapeHtml(permission.id)}</span></button>
         `)}
         <section class="admin-summary-card">
           <h3>Opciones editables</h3>
@@ -4979,6 +5252,7 @@
         import: "Importacion",
         sync: "Sincronizacion",
         upsert: "Actualizacion",
+        upload: "Carga de archivo",
       }[action] || action || "Movimiento";
     }
 
@@ -6176,19 +6450,49 @@
       if (!items.length) {
         return `<div class="row"><strong>Menu</strong><div class="secondary">${escapeHtml(event.selectedMenu || "Sin menu cargado")}</div></div>`;
       }
+      const grouped = items.reduce((groups, item) => {
+        const key = item.category || "otro";
+        groups[key] = groups[key] || [];
+        groups[key].push(item);
+        return groups;
+      }, {});
       return `
         <div class="row">
           <strong>Menu</strong>
           <div class="logistics-menu-grid" style="margin-top:8px;">
-            ${items.map((item) => `
-              <div class="row">
-                <strong>${escapeHtml([item.quantity, item.name].filter(Boolean).join(" · ") || "Item")}</strong>
-                ${item.detail ? `<div class="secondary">${escapeHtml(item.detail)}</div>` : ""}
+            ${Object.entries(grouped).map(([category, categoryItems]) => `
+              <div class="logistics-menu-group">
+                <h4>
+                  <span>${escapeHtml(getMenuCategoryLabel(category))}</span>
+                  <small>${escapeHtml(categoryItems.length)} item(s)</small>
+                </h4>
+                ${categoryItems.map((item) => `
+                  <div class="logistics-menu-item">
+                    <strong>${escapeHtml([item.quantity, item.name].filter(Boolean).join(" · ") || "Item")}</strong>
+                    ${item.suggestedQuantity ? `<div class="secondary">${escapeHtml(item.suggestedQuantity)}</div>` : ""}
+                    ${item.detail ? `<div class="secondary">${escapeHtml(item.detail)}</div>` : ""}
+                    ${item.subItems?.length ? `<div class="logistics-menu-subitems">${item.subItems.map((subItem) => `<span>${escapeHtml([subItem.quantity, subItem.name, subItem.detail].filter(Boolean).join(" · "))}</span>`).join("")}</div>` : ""}
+                  </div>
+                `).join("")}
               </div>
             `).join("")}
           </div>
         </div>
       `;
+    }
+
+    function getMenuCategoryLabel(category) {
+      return {
+        finger_food: "Finger food",
+        empanadas: "Empanadas",
+        cazuelas: "Cazuelas",
+        picada: "Picada",
+        principal: "Principal",
+        postre: "Postre",
+        guarnicion: "Guarniciones",
+        panificados: "Panificados",
+        otro: "Otros",
+      }[category] || category || "Otros";
     }
 
     function getLogisticsMenuItemsForDisplay(event) {
@@ -7050,6 +7354,7 @@
         <div class="event-finance" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
           <div class="event-number"><span>Momentos</span><strong>${escapeHtml(event.eventMoments || "Sin definir")}</strong></div>
         </div>
+        ${renderEventConformityPanel(event)}
         ${renderEventPurchases(event)}
         ${renderEventStockItems(event)}
         <div class="event-checks">
@@ -7073,6 +7378,73 @@
         </div>
       `;
       document.getElementById("detail").classList.add("open");
+    }
+
+    function renderEventConformityPanel(event) {
+      const conformity = event.clientConformity || {};
+      if (!eventRequiresConformity(event)) {
+        return `
+          <section class="event-detail-item" style="margin-top:12px;">
+            <span>Conformidad del cliente</span>
+            <div class="conformity-box not-required">
+              <div>
+                <strong>No aplica</strong>
+                <div class="secondary">Los eventos perdidos o cancelados no requieren conformidad.</div>
+              </div>
+              ${conformity.fileName ? `<button class="filter" type="button" onclick="downloadEventConformity('${escapeAttribute(event.id)}')">Descargar PDF</button>` : ""}
+            </div>
+          </section>
+        `;
+      }
+      return `
+        <section class="event-detail-item" style="margin-top:12px;">
+          <span>Conformidad del cliente</span>
+          <div class="conformity-box">
+            <div>
+              <strong>${conformity.fileName ? escapeHtml(conformity.originalName || "Conformidad cargada") : "PDF pendiente"}</strong>
+              <div class="secondary">${conformity.uploadedAt ? `Subida ${escapeHtml(formatDate(conformity.uploadedAt) || conformity.uploadedAt)}${conformity.uploadedBy ? ` por ${escapeHtml(conformity.uploadedBy)}` : ""}` : "Obligatoria para cerrar el evento."}</div>
+            </div>
+            <div class="actions">
+              <label class="filter file-action">
+                Subir PDF
+                <input type="file" accept="application/pdf" onchange="uploadEventConformity('${escapeAttribute(event.id)}', this)">
+              </label>
+              ${conformity.fileName ? `<button class="filter" type="button" onclick="downloadEventConformity('${escapeAttribute(event.id)}')">Descargar PDF</button>` : ""}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    async function uploadEventConformity(id, input) {
+      const file = input.files?.[0];
+      if (!file) return;
+      if (file.type && file.type !== "application/pdf") {
+        showNotice("La conformidad debe subirse en PDF.", "error");
+        input.value = "";
+        return;
+      }
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        const response = await fetch("/api/event-conformity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, fileName: file.name, dataUrl }),
+        });
+        const result = await readJsonResponse(response);
+        if (!result.ok) throw new Error(result.error || "No se pudo subir la conformidad.");
+        showNotice("Conformidad cargada correctamente.", "success");
+        await loadErp();
+        showEventOverview(id);
+      } catch (error) {
+        showNotice(error.message, "error");
+      } finally {
+        input.value = "";
+      }
+    }
+
+    function downloadEventConformity(id) {
+      window.location.href = `/api/event-conformity?id=${encodeURIComponent(id)}`;
     }
 
     function renderEventPurchases(event) {
@@ -7132,7 +7504,14 @@
     function renderMenuItems(event) {
       const items = event.menuItems || [];
       if (!items.length) return `<strong>${escapeHtml(event.selectedMenu || "Sin menu")}</strong>`;
-      return `<div class="event-mini-list">${items.map((item) => `<div><strong>${escapeHtml([item.quantity, item.name].filter(Boolean).join(" · "))}</strong>${item.detail ? `<span class="secondary"> ${escapeHtml(item.detail)}</span>` : ""}</div>`).join("")}</div>`;
+      return `<div class="event-mini-list">${items.map((item) => `
+        <div>
+          <strong>${escapeHtml([item.quantity, item.name].filter(Boolean).join(" · "))}</strong>
+          ${item.category ? `<span class="secondary"> ${escapeHtml(item.category)}</span>` : ""}
+          ${item.detail ? `<span class="secondary"> ${escapeHtml(item.detail)}</span>` : ""}
+          ${item.subItems?.length ? `<div class="secondary">${escapeHtml(item.subItems.map((subItem) => subItem.name).join(", "))}</div>` : ""}
+        </div>
+      `).join("")}</div>`;
     }
 
     function getAssistanceLabel(event) {
@@ -7463,6 +7842,298 @@
       ].join("");
     }
 
+    async function importQuoteDocument(input) {
+      const file = input.files?.[0];
+      if (!file) return;
+      try {
+        showNotice("Leyendo presupuesto...");
+        const dataUrl = await fileToDataUrl(file);
+        const response = await fetch("/api/import-quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: file.name, dataUrl }),
+        });
+        const result = await readJsonResponse(response);
+        if (!result.ok) {
+          showNotice(result.error || "No se pudo importar el presupuesto.", "error");
+          return;
+        }
+        pendingQuoteImport = result.result;
+        showImportedQuoteReview(result.result);
+      } finally {
+        input.value = "";
+      }
+    }
+
+    function showImportedQuoteReview(data = {}) {
+      const panel = document.querySelector("#detail .detail-panel");
+      panel?.classList.add("wide");
+      document.getElementById("detail-title").textContent = "Revisar presupuesto importado";
+      document.getElementById("detail-subtitle").textContent = data.fileName || "Revise antes de guardar";
+      document.getElementById("detail-fields").innerHTML = `
+        <form id="quote-import-review-form" class="form-grid" onsubmit="saveImportedQuote(event)">
+          <div class="form-field full">
+            <label>Asociar a evento existente</label>
+            <select name="eventId">
+              <option value="">Crear evento nuevo</option>
+              ${(erpData.events || []).map((event) => `<option value="${escapeAttribute(event.id)}">${escapeHtml(event.name || "Sin nombre")} · ${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")}</option>`).join("")}
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Evento</label>
+            <input name="eventName" value="${escapeAttribute(data.eventName || "")}" required>
+          </div>
+          <div class="form-field">
+            <label>Cliente</label>
+            <input name="clientName" value="${escapeAttribute(data.clientName || "")}">
+          </div>
+          <div class="form-field">
+            <label>Lugar</label>
+            <input name="venue" value="${escapeAttribute(data.venue || "")}" placeholder="Lugar o direccion">
+          </div>
+          <div class="form-field">
+            <label>Fecha</label>
+            <input name="eventDate" type="date" value="${escapeAttribute(data.eventDate || "")}">
+          </div>
+          <div class="form-field">
+            <label>Horario</label>
+            <input name="eventTime" value="${escapeAttribute(data.eventTime || "")}" placeholder="Ej: 20:30">
+          </div>
+          <div class="form-field">
+            <label>Invitados</label>
+            <input name="guestCount" inputmode="decimal" value="${escapeAttribute(data.guestCount || "")}">
+          </div>
+          <div class="form-field">
+            <label>Servicio</label>
+            <input name="serviceType" value="${escapeAttribute(data.serviceType || "")}">
+          </div>
+          <div class="form-field">
+            <label>Precio por persona</label>
+            <input name="pricePerPerson" inputmode="decimal" value="${escapeAttribute(data.pricePerPerson || "")}">
+          </div>
+          <div class="form-field">
+            <label>Venta total</label>
+            <input name="priceTotal" inputmode="decimal" value="${escapeAttribute(data.priceTotal || "")}">
+          </div>
+          <div class="form-field full">
+            <label>Menu detectado</label>
+            <div id="quote-import-menu" class="erp-quote-lines">
+              ${(data.menuItems?.length ? data.menuItems : [{ name: "" }]).map(renderImportedMenuRow).join("")}
+            </div>
+            <button class="filter" type="button" onclick="addImportedMenuRow()">Agregar item de menu</button>
+          </div>
+          <div class="form-field full">
+            <label>Infraestructura y servicios incluidos</label>
+            <textarea name="includedServices" placeholder="Personal, vajilla, ambientacion, mobiliario, seguridad...">${escapeHtml((data.includedServices || []).join("\n"))}</textarea>
+          </div>
+          <div class="form-field full">
+            <label>Bebidas</label>
+            <input name="drinks" value="${escapeAttribute((data.drinkItems || []).join(", "))}" placeholder="Agua con gas, gaseosas, vinos">
+          </div>
+          <div class="form-field full">
+            <label>Notas importadas</label>
+            <textarea name="notes">${escapeHtml(data.notes || "")}</textarea>
+          </div>
+          <details class="full">
+            <summary>Texto detectado</summary>
+            <textarea readonly style="margin-top:8px;min-height:180px;">${escapeHtml(data.sourceText || "")}</textarea>
+          </details>
+          <div class="actions full">
+            <button class="approve" type="submit">Guardar evento y presupuesto</button>
+            <button class="filter" type="button" onclick="fillEventFormFromImportedQuote()">Editar como evento</button>
+            <button class="reject" type="button" onclick="hideDetail()">Cancelar</button>
+          </div>
+        </form>
+      `;
+      document.getElementById("detail").classList.add("open");
+    }
+
+    function renderImportedMenuRow(item = {}) {
+      const subItemsText = Array.isArray(item.subItems)
+        ? item.subItems.map((subItem) => [subItem.name, subItem.detail].filter(Boolean).join(": ")).join("\n")
+        : "";
+      return `
+        <div class="menu-line quote-import-menu-row">
+          <label>
+            <span>Item del menu</span>
+            <input class="quote-import-menu-name" placeholder="Ej: Variedad de empanadas" value="${escapeAttribute(item.name || "")}">
+          </label>
+          <label>
+            <span>Detalle opcional</span>
+            <textarea class="quote-import-menu-detail" placeholder="Descripcion del item">${escapeHtml(item.detail || "")}</textarea>
+          </label>
+          <label>
+            <span>Categoria</span>
+            <select class="quote-import-menu-category">
+              ${[
+                ["finger_food", "Finger food"],
+                ["empanadas", "Empanadas"],
+                ["cazuelas", "Cazuelas"],
+                ["picada", "Picada"],
+                ["principal", "Principal"],
+                ["postre", "Postre"],
+                ["guarnicion", "Guarnicion"],
+                ["otro", "Otro"],
+              ].map(([value, label]) => `<option value="${value}" ${item.category === value ? "selected" : ""}>${label}</option>`).join("")}
+            </select>
+          </label>
+          <label>
+            <span>Cantidad final</span>
+            <input class="quote-import-menu-quantity" placeholder="Ej: 2 p/p" value="${escapeAttribute(item.quantity || "")}">
+          </label>
+          <button class="reject" type="button" onclick="this.closest('.quote-import-menu-row').remove()">x</button>
+          <label class="quote-import-menu-suggestion-wrap">
+            <span>Sugerencia editable</span>
+            <input class="quote-import-menu-suggestion" placeholder="Sugerencia del sistema" value="${escapeAttribute(item.suggestedQuantity || "")}">
+          </label>
+          <label class="quote-import-menu-subitems-wrap">
+            <span>Subitems / variedades</span>
+            <textarea class="quote-import-menu-subitems" placeholder="Uno por linea">${escapeHtml(subItemsText)}</textarea>
+          </label>
+        </div>
+      `;
+    }
+
+    function addImportedMenuRow(item = {}) {
+      document.getElementById("quote-import-menu")?.insertAdjacentHTML("beforeend", renderImportedMenuRow(item));
+    }
+
+    function collectImportedQuoteReview() {
+      const form = document.getElementById("quote-import-review-form");
+      const menuItems = Array.from(document.querySelectorAll(".quote-import-menu-row"))
+        .map((row) => ({
+          quantity: row.querySelector(".quote-import-menu-quantity")?.value.trim() || "",
+          name: row.querySelector(".quote-import-menu-name")?.value.trim() || "",
+          detail: row.querySelector(".quote-import-menu-detail")?.value.trim() || "",
+          category: row.querySelector(".quote-import-menu-category")?.value || "",
+          suggestedQuantity: row.querySelector(".quote-import-menu-suggestion")?.value.trim() || "",
+          subItems: parseImportedMenuSubItems(row.querySelector(".quote-import-menu-subitems")?.value || ""),
+        }))
+        .filter((item) => item.name || item.detail || item.quantity);
+      const drinks = form.elements.drinks.value.split(",").map((item) => item.trim()).filter(Boolean);
+      const includedServices = form.elements.includedServices.value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+      const pricePerPerson = parseDecimal(form.elements.pricePerPerson.value || 0);
+      const priceTotal = parseDecimal(form.elements.priceTotal.value || 0);
+      return {
+        eventId: form.elements.eventId.value,
+        eventName: form.elements.eventName.value.trim(),
+        clientName: form.elements.clientName.value.trim(),
+        venue: form.elements.venue.value.trim(),
+        eventDate: form.elements.eventDate.value,
+        eventTime: form.elements.eventTime.value.trim(),
+        guestCount: form.elements.guestCount.value,
+        serviceType: form.elements.serviceType.value.trim(),
+        priceMode: pricePerPerson > 0 ? "per_person" : "total",
+        pricePerPerson,
+        priceTotal,
+        menuItems,
+        drinkItems: drinks,
+        includedServices,
+        includesDrinks: drinks.length ? "Con bebidas" : "Sin bebidas",
+        notes: form.elements.notes.value.trim(),
+      };
+    }
+
+    function parseImportedMenuSubItems(value) {
+      return String(value || "")
+        .split(/\r?\n/)
+        .map((line) => {
+          const [name, ...detailParts] = line.split(":");
+          return {
+            name: name.trim(),
+            detail: detailParts.join(":").trim(),
+            quantity: "",
+          };
+        })
+        .filter((item) => item.name);
+    }
+
+    async function saveImportedQuote(event) {
+      event.preventDefault();
+      const data = collectImportedQuoteReview();
+      if (!data.eventName) {
+        showNotice("Ingrese el nombre del evento.", "error");
+        return;
+      }
+      const selectedEvent = (erpData.events || []).find((item) => item.id === data.eventId);
+      const eventPayload = {
+        ...(selectedEvent || {}),
+        id: data.eventId || "",
+        name: data.eventName,
+        clientName: data.clientName,
+        venue: data.venue,
+        eventDate: data.eventDate,
+        eventTime: data.eventTime,
+        guestCount: data.guestCount,
+        serviceType: data.serviceType,
+        priceMode: data.priceMode,
+        pricePerPerson: data.pricePerPerson,
+        servicePriceTotal: data.priceTotal,
+        status: selectedEvent?.status && selectedEvent.status !== "lead" ? selectedEvent.status : "quoted",
+        includesDrinks: data.includesDrinks,
+        drinkType: data.drinkItems.join(", "),
+        menuItems: data.menuItems,
+        selectedMenu: data.menuItems.map((item) => [item.quantity, item.name, item.detail].filter(Boolean).join(" - ")).join(", "),
+        checklistDetails: data.includedServices.length ? `Infraestructura y servicios incluidos:\n${data.includedServices.map((item) => `- ${item}`).join("\n")}` : selectedEvent?.checklistDetails || "",
+        notes: [selectedEvent?.notes, data.notes].filter(Boolean).join("\n"),
+      };
+      const eventResponse = await fetch("/api/erp-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(eventPayload),
+      });
+      const eventResult = await readJsonResponse(eventResponse);
+      if (!eventResult.ok) {
+        showNotice(eventResult.error || "No se pudo guardar el evento importado.", "error");
+        return;
+      }
+      const savedEvent = eventResult.event;
+      const quoteResponse = await fetch("/api/erp-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId: savedEvent.id,
+          eventName: savedEvent.name,
+          clientName: savedEvent.clientName,
+          guestCount: savedEvent.guestCount,
+          status: "sent",
+          version: "importado",
+          targetMarginPercent: 35,
+          manualPrice: data.priceTotal,
+          notes: ["Importado desde presupuesto.", data.notes].filter(Boolean).join("\n"),
+          recipes: [],
+        }),
+      });
+      const quoteResult = await readJsonResponse(quoteResponse);
+      if (!quoteResult.ok) {
+        showNotice(quoteResult.error || "El evento se guardo, pero no se pudo crear el presupuesto.", "error");
+        await loadErp();
+        return;
+      }
+      showNotice("Presupuesto importado y asociado al evento.", "success");
+      hideDetail();
+      await loadErp();
+    }
+
+    function fillEventFormFromImportedQuote() {
+      const data = collectImportedQuoteReview();
+      hideDetail();
+      showBlankErpEventForm();
+      const form = document.getElementById("erp-event-form");
+      setFormValue(form, "name", data.eventName);
+      setFormValue(form, "clientName", data.clientName);
+      setFormValue(form, "eventDate", data.eventDate);
+      setFormValue(form, "eventTime", data.eventTime);
+      setFormValue(form, "guestCount", data.guestCount);
+      setFormValue(form, "priceMode", data.priceMode);
+      setFormValue(form, "pricePerPerson", data.pricePerPerson || "");
+      setFormValue(form, "servicePriceTotal", data.priceTotal || "");
+      setFormValue(form, "includesDrinks", data.includesDrinks);
+      setFormValue(form, "notes", data.notes);
+      renderOperationalOptionInputs({ serviceType: data.serviceType, drinkType: data.drinkItems.join(", ") });
+      renderEventMenuLines(data.menuItems);
+    }
+
     function renderErpCustomerOptions() {
       document.getElementById("erp-customer-options").innerHTML = (allCustomers || [])
         .map((customer) => `<option value="${escapeAttribute(customer.fullName || customer.contactName || customer.displayPhone || "")}"></option>`)
@@ -7580,11 +8251,17 @@
     }
 
     function renderEventMenuLine(item = {}) {
+      const subItemsText = Array.isArray(item.subItems)
+        ? item.subItems.map((subItem) => [subItem.name, subItem.detail].filter(Boolean).join(": ")).join("\n")
+        : "";
       return `
         <div class="menu-line">
           <input class="event-menu-quantity" placeholder="Cantidad" value="${escapeAttribute(item.quantity || "")}">
           <input class="event-menu-name" placeholder="Item del menu" value="${escapeAttribute(item.name || "")}">
           <input class="event-menu-detail" placeholder="Detalle opcional" value="${escapeAttribute(item.detail || "")}">
+          <input class="event-menu-category" placeholder="Categoria" value="${escapeAttribute(item.category || "")}">
+          <input class="event-menu-suggestion" placeholder="Sugerencia" value="${escapeAttribute(item.suggestedQuantity || "")}">
+          <textarea class="event-menu-subitems" placeholder="Subitems / variedades">${escapeHtml(subItemsText)}</textarea>
           <button class="reject" type="button" onclick="this.closest('.menu-line').remove()">x</button>
         </div>
       `;
@@ -7600,6 +8277,9 @@
           quantity: row.querySelector(".event-menu-quantity")?.value.trim() || "",
           name: row.querySelector(".event-menu-name")?.value.trim() || "",
           detail: row.querySelector(".event-menu-detail")?.value.trim() || "",
+          category: row.querySelector(".event-menu-category")?.value.trim() || "",
+          suggestedQuantity: row.querySelector(".event-menu-suggestion")?.value.trim() || "",
+          subItems: parseImportedMenuSubItems(row.querySelector(".event-menu-subitems")?.value || ""),
         }))
         .filter((item) => item.name || item.detail || item.quantity);
     }
@@ -7870,6 +8550,11 @@
         showNotice("No se puede marcar como realizado un evento con fecha futura.", "error");
         return;
       }
+      if (!event.clientConformity?.fileName) {
+        showNotice("Para cerrar el evento primero suba la conformidad del cliente en PDF.", "error");
+        showEventOverview(id);
+        return;
+      }
 
       const response = await fetch("/api/erp-event", {
         method: "POST",
@@ -7890,6 +8575,11 @@
     async function approveLogisticsEventClose(id) {
       const event = (erpData.events || []).find((item) => item.id === id);
       if (!event) return;
+      if (!event.clientConformity?.fileName) {
+        showNotice("Para autorizar el cierre primero suba la conformidad del cliente en PDF.", "error");
+        showEventOverview(id);
+        return;
+      }
       if (!confirm(`Autorizar el cierre logistico de ${event.name || "este evento"} y pasarlo a realizado?`)) return;
 
       const response = await fetch("/api/approve-logistics-event-close", {
@@ -8912,7 +9602,7 @@
             <div class="primary">${escapeHtml(row.label)}</div>
             <div class="secondary">${escapeHtml(getProcessTypeLabel(row.type))}${row.notes ? ` | ${escapeHtml(row.notes)}` : ""}</div>
           </div>
-          <div class="primary">${escapeHtml(formatRecipeQuantity(row.quantity, row.unit))}</div>
+          <div class="primary">${row.type === "note" ? "" : escapeHtml(formatRecipeQuantity(row.quantity, row.unit))}</div>
           <div class="secondary"></div>
         </div>
       `).join("");
@@ -9050,6 +9740,7 @@
     function addRecipeProcessRow(item = {}) {
       const row = document.createElement("div");
       row.className = "recipe-process-item";
+      const selectedUnit = normalizeRecipeUnit(item.unit || "kg");
       row.innerHTML = `
         <select class="recipe-process-type">
           ${[
@@ -9065,13 +9756,25 @@
         <input class="recipe-process-label" placeholder="Ej: cebolla pelada, receta terminada" value="${escapeAttribute(item.label || "")}">
         <input class="recipe-process-quantity" inputmode="decimal" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}">
         <select class="recipe-process-unit">
-          ${["kg", "gramos", "litros", "ml", "unidad", "min", "hs"].map((unit) => `<option value="${unit}" ${String(item.unit || "kg").toLowerCase() === unit ? "selected" : ""}>${unit}</option>`).join("")}
+          ${["kg", "gramos", "litros", "ml", "unidad", "min", "hs"].map((unit) => `<option value="${unit}" ${selectedUnit === unit ? "selected" : ""}>${unit}</option>`).join("")}
         </select>
         <input class="recipe-process-notes" placeholder="Notas" value="${escapeAttribute(item.notes || "")}">
         <button class="reject icon-action" type="button" onclick="removeRecipeProcessRow(this)">X</button>
       `;
       document.getElementById("recipe-process-rows").appendChild(row);
+      row.querySelector(".recipe-process-type").addEventListener("change", () => updateRecipeProcessRowState(row));
+      updateRecipeProcessRowState(row);
       recipeProcessCounter += 1;
+    }
+
+    function updateRecipeProcessRowState(row) {
+      const isNote = row.querySelector(".recipe-process-type")?.value === "note";
+      row.classList.toggle("is-note", isNote);
+      row.querySelector(".recipe-process-quantity").disabled = isNote;
+      row.querySelector(".recipe-process-unit").disabled = isNote;
+      if (isNote) {
+        row.querySelector(".recipe-process-quantity").value = "";
+      }
     }
 
     function removeRecipeProcessRow(button) {
@@ -9082,13 +9785,16 @@
 
     function getRecipeProcessRows() {
       return Array.from(document.querySelectorAll(".recipe-process-item"))
-        .map((row) => ({
-          type: row.querySelector(".recipe-process-type").value,
-          label: row.querySelector(".recipe-process-label").value.trim(),
-          quantity: row.querySelector(".recipe-process-quantity").value,
-          unit: row.querySelector(".recipe-process-unit").value,
-          notes: row.querySelector(".recipe-process-notes").value.trim(),
-        }))
+        .map((row) => {
+          const type = row.querySelector(".recipe-process-type").value;
+          return {
+            type,
+            label: row.querySelector(".recipe-process-label").value.trim(),
+            quantity: type === "note" ? "" : row.querySelector(".recipe-process-quantity").value,
+            unit: type === "note" ? "" : row.querySelector(".recipe-process-unit").value,
+            notes: row.querySelector(".recipe-process-notes").value.trim(),
+          };
+        })
         .filter((item) => item.label);
     }
 
@@ -9097,6 +9803,10 @@
       const row = document.createElement("div");
       row.className = "recipe-item";
       const itemType = item.type || "product";
+      const selectedUnit = normalizeRecipeUnit(item.unit || "kg");
+      if (item.unit) {
+        row.dataset.unitTouched = "1";
+      }
       row.innerHTML = `
         <select class="recipe-item-type">
           <option value="product" ${itemType === "product" ? "selected" : ""}>Insumo</option>
@@ -9109,7 +9819,7 @@
         </div>
         <input class="recipe-item-quantity" inputmode="decimal" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}" required>
         <select class="recipe-item-unit">
-          ${["kg", "gramos", "litros", "ml", "unidad"].map((unit) => `<option value="${unit}" ${String(item.unit || "kg").toLowerCase() === unit ? "selected" : ""}>${unit}</option>`).join("")}
+          ${["kg", "gramos", "litros", "ml", "unidad"].map((unit) => `<option value="${unit}" ${selectedUnit === unit ? "selected" : ""}>${unit}</option>`).join("")}
         </select>
         <input class="recipe-item-unit-cost" inputmode="decimal" placeholder="$ x kg/unidad" value="${escapeAttribute(item.unitCost || "")}" required>
         <input class="recipe-item-waste" inputmode="decimal" placeholder="Merma %" value="${escapeAttribute(item.wastePercent || "")}">
@@ -9123,7 +9833,10 @@
         row.querySelector(".recipe-item-unit-cost").value = "";
         updateRecipeTotals();
       });
-      row.querySelector(".recipe-item-unit").addEventListener("change", updateRecipeTotals);
+      row.querySelector(".recipe-item-unit").addEventListener("change", () => {
+        row.dataset.unitTouched = "1";
+        updateRecipeTotals();
+      });
       row.querySelector(".recipe-item-name").addEventListener("blur", () => applyRecipeSelection(row, row.querySelector(".recipe-item-name").value));
       row.querySelector(".recipe-item-name").addEventListener("input", () => applyRecipeSelection(row, row.querySelector(".recipe-item-name").value));
       setupAutocompleteForElement(
@@ -9132,7 +9845,9 @@
         () => getRecipeItemSuggestions(row),
         (value) => applyRecipeSelection(row, value)
       );
-      applyRecipeSelection(row, row.querySelector(".recipe-item-name").value);
+      if (!item.name) {
+        applyRecipeSelection(row, row.querySelector(".recipe-item-name").value);
+      }
       updateRecipeTotals();
     }
 
@@ -9188,7 +9903,7 @@
 
     function getCostQuantity(quantityValue, unit) {
       const quantity = parseDecimal(quantityValue);
-      const normalizedUnit = String(unit || "").toLowerCase();
+      const normalizedUnit = normalizeRecipeUnit(unit);
 
       if (normalizedUnit === "gramos") return quantity / 1000;
       if (normalizedUnit === "ml") return quantity / 1000;
@@ -9233,8 +9948,22 @@
       row.querySelector(".recipe-item-name").value = recipe.name;
       row.querySelector(".recipe-item-recipe-id").value = recipe.id;
       row.querySelector(".recipe-item-unit-cost").value = recipe.costPerPortion || "";
-      row.querySelector(".recipe-item-unit").value = mapYieldUnitToIngredientUnit(recipe.yieldUnit || "unidad");
+      if (row.dataset.unitTouched !== "1") {
+        row.querySelector(".recipe-item-unit").value = mapYieldUnitToIngredientUnit(recipe.yieldUnit || "unidad");
+      }
       updateRecipeTotals();
+    }
+
+    function normalizeRecipeUnit(unit) {
+      const normalizedUnit = String(unit || "").toLowerCase().trim();
+      if (["g", "gr", "gramo", "gramos"].includes(normalizedUnit)) return "gramos";
+      if (["l", "lt", "lts", "litro", "litros"].includes(normalizedUnit)) return "litros";
+      if (["u", "un", "unidad", "unidades"].includes(normalizedUnit)) return "unidad";
+      if (["kg", "kilo", "kilos"].includes(normalizedUnit)) return "kg";
+      if (normalizedUnit === "ml") return "ml";
+      if (normalizedUnit === "min") return "min";
+      if (normalizedUnit === "hs") return "hs";
+      return normalizedUnit || "kg";
     }
 
     function mapYieldUnitToIngredientUnit(unit) {
@@ -10277,6 +11006,7 @@
 
     function hideDetail() {
       document.getElementById("detail").classList.remove("open");
+      document.querySelector("#detail .detail-panel")?.classList.remove("wide");
     }
 
     function closeDetail(event) {
