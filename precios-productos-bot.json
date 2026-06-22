@@ -1,12 +1,12 @@
 {
   "jengibre x rama": {
     "name": "JENGIBRE X RAMA",
-    "unitCost": 1650,
-    "previousUnitCost": 1650,
+    "unitCost": 2500,
+    "previousUnitCost": 2500,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-02-28",
-    "provider": "FERIA",
-    "updatedAt": "2026-06-08T17:48:41.221Z"
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T15:33:15.538Z"
   },
   "trapo convencional gris": {
     "name": "TRAPO CONVENCIONAL GRIS",
@@ -19,21 +19,21 @@
   },
   "envio": {
     "name": "ENVIO",
-    "unitCost": 1229,
+    "unitCost": 4099,
     "previousUnitCost": 4699,
-    "changePercent": -73.85,
-    "lastPurchaseDate": "2026-06-16",
+    "changePercent": -12.77,
+    "lastPurchaseDate": "2026-06-19",
     "provider": "PEDIDOS YA",
-    "updatedAt": "2026-06-16T13:14:10.535Z"
+    "updatedAt": "2026-06-19T19:15:01.258Z"
   },
   "molida int x mayor": {
     "name": "MOLIDA INT X MAYOR",
     "unitCost": 8500,
     "previousUnitCost": 8500,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-05-27",
+    "lastPurchaseDate": "2026-06-19",
     "provider": "RUBEN CARNE",
-    "updatedAt": "2026-06-08T17:48:53.816Z"
+    "updatedAt": "2026-06-19T21:09:05.266Z"
   },
   "fiambre muestra palco": {
     "name": "FIAMBRE MUESTRA PALCO",
@@ -496,12 +496,12 @@
   },
   "cherry x kg": {
     "name": "CHERRY X KG",
-    "unitCost": 10000,
-    "previousUnitCost": 1500,
-    "changePercent": 566.67,
-    "lastPurchaseDate": "2026-02-28",
-    "provider": "VERDULERIA BELGRANO",
-    "updatedAt": "2026-06-08T17:48:41.179Z"
+    "unitCost": 3600,
+    "previousUnitCost": 3600,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T21:16:02.686Z"
   },
   "cajon de naranjas": {
     "name": "CAJON DE NARANJAS",
@@ -749,11 +749,11 @@
   "empanadas hojaldre": {
     "name": "EMPANADAS HOJALDRE",
     "unitCost": 1200,
-    "previousUnitCost": 192284,
-    "changePercent": -99.38,
-    "lastPurchaseDate": "2026-05-29",
+    "previousUnitCost": 1200,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
     "provider": "LA CUYANITA S.A.",
-    "updatedAt": "2026-06-08T17:48:56.302Z"
+    "updatedAt": "2026-06-19T21:15:31.029Z"
   },
   "pascualina rectangular": {
     "name": "PASCUALINA RECTANGULAR",
@@ -910,12 +910,12 @@
   },
   "rucula xat": {
     "name": "RUCULA XAT",
-    "unitCost": 333.33,
-    "previousUnitCost": 350,
-    "changePercent": -4.76,
-    "lastPurchaseDate": "2026-03-01",
-    "provider": "FERIA",
-    "updatedAt": "2026-06-08T17:48:45.735Z"
+    "unitCost": 500,
+    "previousUnitCost": 500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T15:33:15.538Z"
   },
   "perejil xat": {
     "name": "PEREJIL XAT",
@@ -982,12 +982,12 @@
   },
   "pepino xun": {
     "name": "PEPINO XUN",
-    "unitCost": 1300,
-    "previousUnitCost": 1300,
+    "unitCost": 1243,
+    "previousUnitCost": 1243,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-03-03",
-    "provider": "FERIA",
-    "updatedAt": "2026-06-08T17:48:47.838Z"
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T15:33:15.538Z"
   },
   "ajo xcab": {
     "name": "AJO XCAB",
@@ -1021,9 +1021,9 @@
     "unitCost": 2000,
     "previousUnitCost": 2000,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-03-01",
-    "provider": "PUESTO 134 / BUENAVIDA",
-    "updatedAt": "2026-06-08T17:48:42.668Z"
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T15:33:15.538Z"
   },
   "folios a4 x 100": {
     "name": "FOLIOS A4 X 100",
@@ -1090,12 +1090,12 @@
   },
   "aceite de girasol natura 1.5l": {
     "name": "ACEITE DE GIRASOL NATURA 1.5L",
-    "unitCost": 4748.9,
+    "unitCost": 7465,
     "previousUnitCost": 4748.9,
-    "changePercent": 0,
-    "lastPurchaseDate": "2026-02-20",
-    "provider": "DEL MONTE DISTRIBUIDORA",
-    "updatedAt": "2026-06-08T17:48:37.171Z"
+    "changePercent": 57.19,
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-19T19:16:56.776Z"
   },
   "harina economica 0000 x 25kg": {
     "name": "HARINA ECONOMICA 0000 X 25KG",
@@ -1243,12 +1243,12 @@
   },
   "peras xkg": {
     "name": "PERAS XKG",
-    "unitCost": 2500,
-    "previousUnitCost": 2500,
+    "unitCost": 1500,
+    "previousUnitCost": 1500,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-03-01",
-    "provider": "PUESTO 134 / BUENAVIDA",
-    "updatedAt": "2026-06-08T17:48:42.639Z"
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T21:16:02.686Z"
   },
   "camote xkg": {
     "name": "CAMOTE XKG",
@@ -1306,12 +1306,12 @@
   },
   "albahaca x atado": {
     "name": "ALBAHACA X ATADO",
-    "unitCost": 1499.98,
-    "previousUnitCost": 750,
-    "changePercent": 100,
-    "lastPurchaseDate": "2026-06-04",
-    "provider": "SEBA GUZZO",
-    "updatedAt": "2026-06-09T20:09:18.849Z"
+    "unitCost": 1000,
+    "previousUnitCost": 1000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T15:33:15.538Z"
   },
   "caldo de verdura en polvo": {
     "name": "CALDO DE VERDURA EN POLVO",
@@ -1342,12 +1342,12 @@
   },
   "cebolla morada xkg": {
     "name": "CEBOLLA MORADA XKG",
-    "unitCost": 1000,
-    "previousUnitCost": 2000,
-    "changePercent": -50,
-    "lastPurchaseDate": "2026-03-12",
-    "provider": "PUESTO 134 / BUENAVIDA",
-    "updatedAt": "2026-06-08T17:48:50.153Z"
+    "unitCost": 1500,
+    "previousUnitCost": 1500,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T21:16:02.686Z"
   },
   "palta xkg": {
     "name": "PALTA XKG",
@@ -1648,12 +1648,12 @@
   },
   "pote 55cc natural x1": {
     "name": "POTE 55CC NATURAL X1",
-    "unitCost": 76,
-    "previousUnitCost": 74.38,
-    "changePercent": 2.18,
-    "lastPurchaseDate": "2026-03-12",
+    "unitCost": 132.23,
+    "previousUnitCost": 76,
+    "changePercent": 73.99,
+    "lastPurchaseDate": "2026-06-19",
     "provider": "PAPELERA DEL OESTE SRL",
-    "updatedAt": "2026-06-08T17:48:49.972Z"
+    "updatedAt": "2026-06-19T19:13:08.832Z"
   },
   "tomillo fresco x atado": {
     "name": "TOMILLO FRESCO X ATADO",
@@ -1846,12 +1846,12 @@
   },
   "manzana x kg": {
     "name": "MANZANA X KG",
-    "unitCost": 10000,
-    "previousUnitCost": 10000,
+    "unitCost": 3800,
+    "previousUnitCost": 3800,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-02-28",
-    "provider": "VERDULERIA BELGRANO",
-    "updatedAt": "2026-06-08T17:48:41.199Z"
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T21:16:02.686Z"
   },
   "fritolin clasico cocinero": {
     "name": "FRITOLIN CLASICO COCINERO",
@@ -2044,12 +2044,12 @@
   },
   "banana xkg": {
     "name": "BANANA XKG",
-    "unitCost": 2500,
-    "previousUnitCost": 2500,
+    "unitCost": 2300,
+    "previousUnitCost": 2300,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-03-03",
-    "provider": "FERIA",
-    "updatedAt": "2026-06-08T17:48:47.690Z"
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T21:16:02.686Z"
   },
   "te grisella mora arandano x20 uni": {
     "name": "TE GRISELLA MORA ARANDANO X20 UNI",
@@ -2152,12 +2152,12 @@
   },
   "kiwi": {
     "name": "KIWI",
-    "unitCost": 8200,
-    "previousUnitCost": 8200,
+    "unitCost": 1.06,
+    "previousUnitCost": 1.06,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-03-01",
-    "provider": "PUESTO 134 / BUENAVIDA",
-    "updatedAt": "2026-06-08T17:48:43.438Z"
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T21:16:02.686Z"
   },
   "lechuga rulito": {
     "name": "LECHUGA RULITO",
@@ -2701,12 +2701,12 @@
   },
   "tapa pote 55cc/80cc/110cc x1": {
     "name": "TAPA POTE 55CC/80CC/110CC X1",
-    "unitCost": 42,
-    "previousUnitCost": 41.32,
-    "changePercent": 1.65,
-    "lastPurchaseDate": "2026-03-12",
+    "unitCost": 82.64,
+    "previousUnitCost": 42,
+    "changePercent": 96.76,
+    "lastPurchaseDate": "2026-06-19",
     "provider": "PAPELERA DEL OESTE SRL",
-    "updatedAt": "2026-06-08T17:48:50.004Z"
+    "updatedAt": "2026-06-19T19:13:08.831Z"
   },
   "papel parafinado 36*40 x 1/2 kg": {
     "name": "PAPEL PARAFINADO 36*40 X 1/2 KG",
@@ -4169,11 +4169,11 @@
   "fracc bondiola c pimienta": {
     "name": "FRACC BONDIOLA C PIMIENTA",
     "unitCost": 36646.71,
-    "previousUnitCost": 0,
+    "previousUnitCost": 36646.71,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-06-12",
+    "lastPurchaseDate": "2026-06-16",
     "provider": "MORETTI",
-    "updatedAt": "2026-06-12T16:52:29.645Z"
+    "updatedAt": "2026-06-18T15:38:09.622Z"
   },
   "fracc jamon en mitad grassetto": {
     "name": "FRACC JAMON EN MITAD GRASSETTO",
@@ -4232,11 +4232,11 @@
   "queso mini pepato x 1kg": {
     "name": "QUESO MINI PEPATO X 1KG",
     "unitCost": 18026.45,
-    "previousUnitCost": 0,
+    "previousUnitCost": 18026.45,
     "changePercent": 0,
-    "lastPurchaseDate": "2026-06-12",
+    "lastPurchaseDate": "2026-06-16",
     "provider": "MORETTI",
-    "updatedAt": "2026-06-12T16:52:29.645Z"
+    "updatedAt": "2026-06-18T15:38:09.622Z"
   },
   "camembert la boheme x 100g": {
     "name": "CAMEMBERT LA BOHEME X 100G",
@@ -4384,12 +4384,12 @@
   },
   "tarifa de servicio pedidos ya": {
     "name": "TARIFA DE SERVICIO PEDIDOS YA",
-    "unitCost": 745,
-    "previousUnitCost": 840,
-    "changePercent": -11.31,
-    "lastPurchaseDate": "2026-06-16",
+    "unitCost": 600,
+    "previousUnitCost": 600,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
     "provider": "PEDIDOS YA",
-    "updatedAt": "2026-06-16T13:14:10.535Z"
+    "updatedAt": "2026-06-19T22:10:49.314Z"
   },
   "frutos secos mix supremo 50g": {
     "name": "FRUTOS SECOS MIX SUPREMO 50G",
@@ -4417,5 +4417,86 @@
     "lastPurchaseDate": "2026-06-16",
     "provider": "PEDIDOS YA",
     "updatedAt": "2026-06-16T13:03:55.934Z"
+  },
+  "salame fuet labratto x150g": {
+    "name": "SALAME FUET LABRATTO X150G",
+    "unitCost": 5142.24,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-18T15:38:09.622Z"
+  },
+  "frac holanda lactear x250g": {
+    "name": "FRAC HOLANDA LACTEAR X250G",
+    "unitCost": 21957.5,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-18T15:38:09.622Z"
+  },
+  "fracc j crudo parma paladini": {
+    "name": "FRACC J CRUDO PARMA PALADINI",
+    "unitCost": 42316,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-16",
+    "provider": "MORETTI",
+    "updatedAt": "2026-06-18T15:38:09.622Z"
+  },
+  "naranja para jugo xkg": {
+    "name": "NARANJA PARA JUGO XKG",
+    "unitCost": 1800,
+    "previousUnitCost": 1800,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-10",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T15:33:15.538Z"
+  },
+  "mandarina xkg": {
+    "name": "MANDARINA XKG",
+    "unitCost": 2000,
+    "previousUnitCost": 2000,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "ROBERTA FERIA",
+    "updatedAt": "2026-06-19T21:16:02.686Z"
+  },
+  "bolsa de lechugas verdes rojas y cherry 200g": {
+    "name": "BOLSA DE LECHUGAS VERDES ROJAS Y CHERRY 200G",
+    "unitCost": 3999,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-19T19:16:56.776Z"
+  },
+  "levadura calsa fresca familiar 50g": {
+    "name": "LEVADURA CALSA FRESCA FAMILIAR 50G",
+    "unitCost": 625,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-19T19:16:56.776Z"
+  },
+  "queso reggianito la paulina 350g": {
+    "name": "QUESO REGGIANITO LA PAULINA 350G",
+    "unitCost": 11325,
+    "previousUnitCost": 0,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-19T19:16:56.776Z"
+  },
+  "empanadas hojaldre x22u": {
+    "name": "EMPANADAS HOJALDRE x22u",
+    "unitCost": 3835,
+    "previousUnitCost": 3835,
+    "changePercent": 0,
+    "lastPurchaseDate": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "updatedAt": "2026-06-19T22:10:49.314Z"
   }
 }

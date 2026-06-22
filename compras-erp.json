@@ -1,162 +1,479 @@
 [
   {
-    "id": "compra-1781284802842",
-    "date": "2026-06-12",
-    "provider": "SEBA SUAREZ",
-    "eventName": "JESI COFFEE U MAZA",
-    "description": "TABLERO CON CABALLETES",
-    "paymentStatus": "Pendiente",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 110000,
+    "id": "compra-1781896616738",
+    "date": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "eventName": "EFICIENCIA 20-6",
+    "description": "BOLSA DE LECHUGAS VERDES ROJAS Y CHERRY 200G",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "MP Claudia",
+    "invoiceType": "Ticket",
+    "netAmount": 29039,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 110000,
-    "paidAmount": 0,
-    "pendingAmount": 110000,
+    "totalAmount": 29039,
+    "paidAmount": 29039,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
     "notes": "",
     "lineItems": [
       {
-        "description": "TABLERO CON CABALLETES",
+        "description": "BOLSA DE LECHUGAS VERDES ROJAS Y CHERRY 200G",
+        "quantity": 1,
+        "unitAmount": 3999,
+        "ivaRate": 0,
+        "netTotal": 3999,
+        "ivaAmount": 0,
+        "total": 3999
+      },
+      {
+        "description": "LEVADURA CALSA FRESCA FAMILIAR 50G",
+        "quantity": 10,
+        "unitAmount": 625,
+        "ivaRate": 0,
+        "netTotal": 6250,
+        "ivaAmount": 0,
+        "total": 6250
+      },
+      {
+        "description": "ACEITE DE GIRASOL NATURA 1.5L",
+        "quantity": 1,
+        "unitAmount": 7465,
+        "ivaRate": 0,
+        "netTotal": 7465,
+        "ivaAmount": 0,
+        "total": 7465
+      },
+      {
+        "description": "QUESO REGGIANITO LA PAULINA 350G",
+        "quantity": 1,
+        "unitAmount": 11325,
+        "ivaRate": 0,
+        "netTotal": 11325,
+        "ivaAmount": 0,
+        "total": 11325
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-19T19:16:56.738Z",
+    "updatedAt": "2026-06-19T19:16:56.788Z"
+  },
+  {
+    "id": "compra-1781896501257",
+    "date": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "eventName": "EFICIENCIA 20-6",
+    "description": "ENVIO",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "Remito",
+    "netAmount": 4099,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 4099,
+    "paidAmount": 4099,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
+    "notes": "envio roberta frutas eficiencia",
+    "lineItems": [
+      {
+        "description": "ENVIO",
+        "quantity": 1,
+        "unitAmount": 4099,
+        "ivaRate": 0,
+        "netTotal": 4099,
+        "ivaAmount": 0,
+        "total": 4099
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-19T19:15:01.257Z",
+    "updatedAt": "2026-06-19T19:15:01.270Z"
+  },
+  {
+    "id": "compra-1781896431346",
+    "date": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "eventName": "EFICIENCIA 20-6",
+    "description": "ENVIO",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "Ticket",
+    "netAmount": 4699,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 4699,
+    "paidAmount": 4699,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
+    "notes": "envio papelera pote 55cc",
+    "lineItems": [
+      {
+        "description": "ENVIO",
+        "quantity": 1,
+        "unitAmount": 4699,
+        "ivaRate": 0,
+        "netTotal": 4699,
+        "ivaAmount": 0,
+        "total": 4699
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-19T19:13:51.346Z",
+    "updatedAt": "2026-06-19T19:13:51.360Z"
+  },
+  {
+    "id": "compra-1781896388829",
+    "date": "2026-06-19",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "EFICIENCIA 20-6",
+    "description": "TAPA POTE 55CC/80CC/110CC X1",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Factura A",
+    "netAmount": 21487,
+    "ivaRate": 0.21,
+    "ivaAmount": 4512.27,
+    "totalAmount": 25999.27,
+    "paidAmount": 0,
+    "pendingAmount": 25999.27,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "TAPA POTE 55CC/80CC/110CC X1",
+        "quantity": 100,
+        "unitAmount": 82.64,
+        "ivaRate": 0.21,
+        "netTotal": 8264,
+        "ivaAmount": 1735.44,
+        "total": 9999.44
+      },
+      {
+        "description": "POTE 55CC NATURAL X1",
+        "quantity": 100,
+        "unitAmount": 132.23,
+        "ivaRate": 0.21,
+        "netTotal": 13223,
+        "ivaAmount": 2776.83,
+        "total": 15999.83
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-19T19:13:08.829Z",
+    "updatedAt": "2026-06-19T19:13:08.860Z"
+  },
+  {
+    "id": "compra-1781895689520",
+    "date": "2026-06-19",
+    "provider": "PEDIDOS YA",
+    "eventName": "CUMPLE LUCCA",
+    "description": "EMPANADAS HOJALDRE x22u",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "Ticket",
+    "netAmount": 23610,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 23610,
+    "paidAmount": 23610,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "EMPANADAS HOJALDRE x22u",
+        "quantity": 6,
+        "unitAmount": 3835,
+        "ivaRate": 0,
+        "netTotal": 23010,
+        "ivaAmount": 0,
+        "total": 23010
+      },
+      {
+        "description": "TARIFA DE SERVICIO PEDIDOS YA",
+        "quantity": 1,
+        "unitAmount": 600,
+        "ivaRate": 0,
+        "netTotal": 600,
+        "ivaAmount": 0,
+        "total": 600
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-19T19:01:29.520Z",
+    "updatedAt": "2026-06-19T22:10:49.324Z"
+  },
+  {
+    "id": "compra-1781797089563",
+    "date": "2026-06-16",
+    "provider": "MORETTI",
+    "eventName": "PICADA",
+    "description": "SALAME FUET LABRATTO X150G",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "German",
+    "invoiceType": "Factura A",
+    "netAmount": 38129.07,
+    "ivaRate": 0.21,
+    "ivaAmount": 8007.11,
+    "totalAmount": 46136.18,
+    "paidAmount": 46136.18,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "SALAME FUET LABRATTO X150G",
         "quantity": 2,
-        "unitAmount": 8000,
-        "ivaRate": 0,
-        "netTotal": 16000,
-        "ivaAmount": 0,
-        "total": 16000
+        "unitAmount": 5142.24,
+        "ivaRate": 0.21,
+        "netTotal": 10284.48,
+        "ivaAmount": 2159.74,
+        "total": 12444.22
       },
       {
-        "description": "MANTEL IMPERIAL",
+        "description": "FRAC HOLANDA LACTEAR X250G",
+        "quantity": 0.33,
+        "unitAmount": 21957.5,
+        "ivaRate": 0.21,
+        "netTotal": 7245.98,
+        "ivaAmount": 1521.66,
+        "total": 8767.64
+      },
+      {
+        "description": "FRACC J CRUDO PARMA PALADINI",
+        "quantity": 0.17,
+        "unitAmount": 42316,
+        "ivaRate": 0.21,
+        "netTotal": 7193.72,
+        "ivaAmount": 1510.68,
+        "total": 8704.4
+      },
+      {
+        "description": "QUESO MINI PEPATO X 1KG",
+        "quantity": 0.52,
+        "unitAmount": 18026.45,
+        "ivaRate": 0.21,
+        "netTotal": 9373.75,
+        "ivaAmount": 1968.49,
+        "total": 11342.24
+      },
+      {
+        "description": "FRACC BONDIOLA C PIMIENTA",
+        "quantity": 0.11,
+        "unitAmount": 36646.71,
+        "ivaRate": 0.21,
+        "netTotal": 4031.14,
+        "ivaAmount": 846.54,
+        "total": 4877.68
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-18T15:38:09.563Z",
+    "updatedAt": "2026-06-18T15:38:09.678Z"
+  },
+  {
+    "id": "compra-1781615650534",
+    "date": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "eventName": "PICADA POLO JUDICIAL",
+    "description": "ENVIO",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "Ticket",
+    "netAmount": 1974,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 1974,
+    "paidAmount": 1974,
+    "pendingAmount": 0,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "ENVIO",
+        "quantity": 1,
+        "unitAmount": 1229,
+        "ivaRate": 0,
+        "netTotal": 1229,
+        "ivaAmount": 0,
+        "total": 1229
+      },
+      {
+        "description": "TARIFA DE SERVICIO PEDIDOS YA",
+        "quantity": 1,
+        "unitAmount": 745,
+        "ivaRate": 0,
+        "netTotal": 745,
+        "ivaAmount": 0,
+        "total": 745
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-16T13:14:10.534Z",
+    "updatedAt": "2026-06-16T13:14:10.546Z"
+  },
+  {
+    "id": "compra-1781615094963",
+    "date": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "eventName": "PICADA POLO JUDICIAL",
+    "description": "ENVIO",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "Ticket",
+    "netAmount": 4699,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 4699,
+    "paidAmount": 4699,
+    "pendingAmount": 0,
+    "notes": "ENVIO PANERAS CASA MARTIN A CLAUDIA",
+    "lineItems": [
+      {
+        "description": "ENVIO",
+        "quantity": 1,
+        "unitAmount": 4699,
+        "ivaRate": 0,
+        "netTotal": 4699,
+        "ivaAmount": 0,
+        "total": 4699
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-16T13:04:54.963Z",
+    "updatedAt": "2026-06-16T13:04:54.975Z"
+  },
+  {
+    "id": "compra-1781615035900",
+    "date": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "eventName": "PICADA POLO JUDICIAL",
+    "description": "FRUTOS SECOS MIX SUPREMO 50G",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "Factura C",
+    "netAmount": 28723,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 28723,
+    "paidAmount": 28723,
+    "pendingAmount": 0,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "FRUTOS SECOS MIX SUPREMO 50G",
+        "quantity": 4,
+        "unitAmount": 2835,
+        "ivaRate": 0,
+        "netTotal": 11340,
+        "ivaAmount": 0,
+        "total": 11340
+      },
+      {
+        "description": "EDULCORANTE HILERET CLASICO LÍQUIDO 500ML",
+        "quantity": 1,
+        "unitAmount": 5355,
+        "ivaRate": 0,
+        "netTotal": 5355,
+        "ivaAmount": 0,
+        "total": 5355
+      },
+      {
+        "description": "TOMATE CHERRY RIE LA HUERTA 300GRS",
         "quantity": 2,
-        "unitAmount": 8000,
+        "unitAmount": 6014,
         "ivaRate": 0,
-        "netTotal": 16000,
+        "netTotal": 12028,
         "ivaAmount": 0,
-        "total": 16000
+        "total": 12028
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-16T13:03:55.900Z",
+    "updatedAt": "2026-06-16T13:03:55.946Z"
+  },
+  {
+    "id": "compra-1781614916236",
+    "date": "2026-06-16",
+    "provider": "PEDIDOS YA",
+    "eventName": "INFANTIL ROMI",
+    "description": "JAMON COCIDO CAGNOLI FETEADO XG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "Factura C",
+    "netAmount": 34352.45,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 34352.45,
+    "paidAmount": 34352.45,
+    "pendingAmount": 0,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "JAMON COCIDO CAGNOLI FETEADO XG",
+        "quantity": 1,
+        "unitAmount": 4234.45,
+        "ivaRate": 0,
+        "netTotal": 4234.45,
+        "ivaAmount": 0,
+        "total": 4234.45
       },
       {
-        "description": "VASO GOURMET",
-        "quantity": 40,
-        "unitAmount": 450,
+        "description": "QUESO CREMON DOBLE CREMA LA SERENISIMA 480G",
+        "quantity": 2,
+        "unitAmount": 7709.5,
         "ivaRate": 0,
-        "netTotal": 18000,
+        "netTotal": 15419,
         "ivaAmount": 0,
-        "total": 18000
+        "total": 15419
       },
       {
-        "description": "TAZA DE TE CON CUCHARA Y PLATO",
-        "quantity": 40,
-        "unitAmount": 1000,
+        "description": "PASSATA DE TOMATE RINA MATARAZZO 500G",
+        "quantity": 2,
+        "unitAmount": 6315,
         "ivaRate": 0,
-        "netTotal": 40000,
+        "netTotal": 12630,
         "ivaAmount": 0,
-        "total": 40000
+        "total": 12630
       },
       {
         "description": "ENVIO",
         "quantity": 1,
-        "unitAmount": 20000,
+        "unitAmount": 1229,
         "ivaRate": 0,
-        "netTotal": 20000,
+        "netTotal": 1229,
         "ivaAmount": 0,
-        "total": 20000
-      }
-    ],
-    "paymentLog": [],
-    "createdAt": "2026-06-12T17:20:02.843Z",
-    "updatedAt": "2026-06-12T19:05:55.596Z"
-  },
-  {
-    "id": "compra-1781290914045",
-    "date": "2026-06-12",
-    "provider": "VERDULERIA",
-    "eventName": "PICADA POLO JUDICIAL",
-    "description": "VERDURA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 9760,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 9760,
-    "paidAmount": 9760,
-    "pendingAmount": 0,
-    "notes": "",
-    "lineItems": [
+        "total": 1229
+      },
       {
-        "description": "VERDURA",
+        "description": "TARIFA DE SERVICIO PEDIDOS YA",
         "quantity": 1,
-        "unitAmount": 9760,
+        "unitAmount": 840,
         "ivaRate": 0,
-        "netTotal": 9760,
+        "netTotal": 840,
         "ivaAmount": 0,
-        "total": 9760
+        "total": 840
       }
     ],
     "paymentLog": [],
-    "createdAt": "2026-06-12T19:01:54.046Z",
-    "updatedAt": "2026-06-12T19:01:54.080Z"
-  },
-  {
-    "id": "compra-1781284565704",
-    "date": "2026-06-12",
-    "provider": "VIRGEN DEL VALLE / RACH SA",
-    "eventName": "JESI COFFEE U MAZA",
-    "description": "MINITORTITAS",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Factura A",
-    "netAmount": 31031.02,
-    "ivaRate": 0,
-    "ivaAmount": 5934.98,
-    "totalAmount": 36966,
-    "paidAmount": 36966,
-    "pendingAmount": 0,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "MINITORTITAS",
-        "quantity": 0.72,
-        "unitAmount": 7692.31,
-        "ivaRate": 0.105,
-        "netTotal": 5538.46,
-        "ivaAmount": 581.54,
-        "total": 6120
-      },
-      {
-        "description": "MINIFACTURAS",
-        "quantity": 0.71,
-        "unitAmount": 10413.22,
-        "ivaRate": 0.21,
-        "netTotal": 7393.39,
-        "ivaAmount": 1552.61,
-        "total": 8946
-      },
-      {
-        "description": "SANDWICH JYQ X6",
-        "quantity": 1,
-        "unitAmount": 13388.43,
-        "ivaRate": 0.21,
-        "netTotal": 13388.43,
-        "ivaAmount": 2811.57,
-        "total": 16200
-      },
-      {
-        "description": "SANDWICH JAMON Y QUESO",
-        "quantity": 2,
-        "unitAmount": 2355.37,
-        "ivaRate": 0.21,
-        "netTotal": 4710.74,
-        "ivaAmount": 989.26,
-        "total": 5700
-      }
-    ],
-    "paymentLog": [],
-    "createdAt": "2026-06-12T17:16:05.704Z",
-    "updatedAt": "2026-06-12T17:16:05.729Z"
+    "createdAt": "2026-06-16T13:01:56.236Z",
+    "updatedAt": "2026-06-16T13:01:56.382Z"
   },
   {
     "id": "compra-1781284407399",
@@ -174,7 +491,7 @@
     "totalAmount": 1370,
     "paidAmount": 1370,
     "pendingAmount": 0,
-    "notes": "",
+    "notes": "Reintegro Joaquin 2026-06-19: $ 1.370",
     "lineItems": [
       {
         "description": "PAN PANINI",
@@ -188,7 +505,18 @@
     ],
     "paymentLog": [],
     "createdAt": "2026-06-12T17:13:27.399Z",
-    "updatedAt": "2026-06-12T17:13:27.445Z"
+    "updatedAt": "2026-06-19T15:38:57.775Z",
+    "reimbursementPaidAmount": 1370,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537775-18",
+        "date": "2026-06-19",
+        "amount": 1370,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
   },
   {
     "id": "compra-1781283149516",
@@ -206,7 +534,7 @@
     "totalAmount": 88193.47,
     "paidAmount": 88193.47,
     "pendingAmount": 0,
-    "notes": "",
+    "notes": "Reintegro Joaquin 2026-06-19: $ 88.193",
     "lineItems": [
       {
         "description": "FRACC BONDIOLA C PIMIENTA",
@@ -310,7 +638,278 @@
     ],
     "paymentLog": [],
     "createdAt": "2026-06-12T16:52:29.516Z",
-    "updatedAt": "2026-06-12T16:52:29.663Z"
+    "updatedAt": "2026-06-19T15:38:57.775Z",
+    "reimbursementPaidAmount": 88193.47,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537775-19",
+        "date": "2026-06-19",
+        "amount": 88193.47,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "compra-1781290914045",
+    "date": "2026-06-12",
+    "provider": "VERDULERIA",
+    "eventName": "PICADA POLO JUDICIAL",
+    "description": "VERDURA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 9760,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 9760,
+    "paidAmount": 9760,
+    "pendingAmount": 0,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 9.760",
+    "lineItems": [
+      {
+        "description": "VERDURA",
+        "quantity": 1,
+        "unitAmount": 9760,
+        "ivaRate": 0,
+        "netTotal": 9760,
+        "ivaAmount": 0,
+        "total": 9760
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-12T19:01:54.046Z",
+    "updatedAt": "2026-06-19T15:38:57.774Z",
+    "reimbursementPaidAmount": 9760,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537774-16",
+        "date": "2026-06-19",
+        "amount": 9760,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "compra-1781284565704",
+    "date": "2026-06-12",
+    "provider": "VIRGEN DEL VALLE / RACH SA",
+    "eventName": "JESI COFFEE U MAZA",
+    "description": "MINITORTITAS",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Factura A",
+    "netAmount": 31031.02,
+    "ivaRate": 0,
+    "ivaAmount": 5934.98,
+    "totalAmount": 36966,
+    "paidAmount": 36966,
+    "pendingAmount": 0,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 36.966",
+    "lineItems": [
+      {
+        "description": "MINITORTITAS",
+        "quantity": 0.72,
+        "unitAmount": 7692.31,
+        "ivaRate": 0.105,
+        "netTotal": 5538.46,
+        "ivaAmount": 581.54,
+        "total": 6120
+      },
+      {
+        "description": "MINIFACTURAS",
+        "quantity": 0.71,
+        "unitAmount": 10413.22,
+        "ivaRate": 0.21,
+        "netTotal": 7393.39,
+        "ivaAmount": 1552.61,
+        "total": 8946
+      },
+      {
+        "description": "SANDWICH JYQ X6",
+        "quantity": 1,
+        "unitAmount": 13388.43,
+        "ivaRate": 0.21,
+        "netTotal": 13388.43,
+        "ivaAmount": 2811.57,
+        "total": 16200
+      },
+      {
+        "description": "SANDWICH JAMON Y QUESO",
+        "quantity": 2,
+        "unitAmount": 2355.37,
+        "ivaRate": 0.21,
+        "netTotal": 4710.74,
+        "ivaAmount": 989.26,
+        "total": 5700
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-12T17:16:05.704Z",
+    "updatedAt": "2026-06-19T15:38:57.774Z",
+    "reimbursementPaidAmount": 36966,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537774-17",
+        "date": "2026-06-19",
+        "amount": 36966,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "compra-1781284802842",
+    "date": "2026-06-12",
+    "provider": "SEBA SUAREZ",
+    "eventName": "JESI COFFEE U MAZA",
+    "description": "TABLERO CON CABALLETES",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 110000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 110000,
+    "paidAmount": 0,
+    "pendingAmount": 110000,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "TABLERO CON CABALLETES",
+        "quantity": 2,
+        "unitAmount": 8000,
+        "ivaRate": 0,
+        "netTotal": 16000,
+        "ivaAmount": 0,
+        "total": 16000
+      },
+      {
+        "description": "MANTEL IMPERIAL",
+        "quantity": 2,
+        "unitAmount": 8000,
+        "ivaRate": 0,
+        "netTotal": 16000,
+        "ivaAmount": 0,
+        "total": 16000
+      },
+      {
+        "description": "VASO GOURMET",
+        "quantity": 40,
+        "unitAmount": 450,
+        "ivaRate": 0,
+        "netTotal": 18000,
+        "ivaAmount": 0,
+        "total": 18000
+      },
+      {
+        "description": "TAZA DE TE CON CUCHARA Y PLATO",
+        "quantity": 40,
+        "unitAmount": 1000,
+        "ivaRate": 0,
+        "netTotal": 40000,
+        "ivaAmount": 0,
+        "total": 40000
+      },
+      {
+        "description": "ENVIO",
+        "quantity": 1,
+        "unitAmount": 20000,
+        "ivaRate": 0,
+        "netTotal": 20000,
+        "ivaAmount": 0,
+        "total": 20000
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-12T17:20:02.843Z",
+    "updatedAt": "2026-06-12T19:05:55.596Z"
+  },
+  {
+    "id": "compra-1781883030871",
+    "date": "2026-06-10",
+    "provider": "ROBERTA FERIA",
+    "eventName": "PICADA POLO JUDICIAL",
+    "description": "ALBAHACA X ATADO",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 11843,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 11843,
+    "paidAmount": 0,
+    "pendingAmount": 11843,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "ALBAHACA X ATADO",
+        "quantity": 2,
+        "unitAmount": 1000,
+        "ivaRate": 0,
+        "netTotal": 2000,
+        "ivaAmount": 0,
+        "total": 2000
+      },
+      {
+        "description": "RUCULA XAT",
+        "quantity": 1,
+        "unitAmount": 500,
+        "ivaRate": 0,
+        "netTotal": 500,
+        "ivaAmount": 0,
+        "total": 500
+      },
+      {
+        "description": "NARANJA PARA JUGO XKG",
+        "quantity": 2,
+        "unitAmount": 1800,
+        "ivaRate": 0,
+        "netTotal": 3600,
+        "ivaAmount": 0,
+        "total": 3600
+      },
+      {
+        "description": "NARANJA XKG",
+        "quantity": 1,
+        "unitAmount": 2000,
+        "ivaRate": 0,
+        "netTotal": 2000,
+        "ivaAmount": 0,
+        "total": 2000
+      },
+      {
+        "description": "PEPINO XUN",
+        "quantity": 1,
+        "unitAmount": 1243,
+        "ivaRate": 0,
+        "netTotal": 1243,
+        "ivaAmount": 0,
+        "total": 1243
+      },
+      {
+        "description": "JENGIBRE X RAMA",
+        "quantity": 1,
+        "unitAmount": 2500,
+        "ivaRate": 0,
+        "netTotal": 2500,
+        "ivaAmount": 0,
+        "total": 2500
+      }
+    ],
+    "paymentLog": [],
+    "createdAt": "2026-06-19T15:30:30.871Z",
+    "updatedAt": "2026-06-19T15:33:15.555Z"
   },
   {
     "id": "compra-1781107096641",
@@ -447,6 +1046,44 @@
     ]
   },
   {
+    "id": "compra-1780885389716",
+    "date": "2026-06-05",
+    "provider": "MC COMPANY",
+    "eventName": "CFI 29-5",
+    "description": "FLETE LIVING",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Sin comprobante",
+    "netAmount": 65000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 65000,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "FLETE LIVING",
+        "quantity": 1,
+        "unitAmount": 65000,
+        "total": 65000
+      }
+    ],
+    "createdAt": "2026-06-08T02:23:09.728Z",
+    "updatedAt": "2026-06-11T18:36:41.413Z",
+    "paidAmount": 65000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781203001413-6",
+        "date": "2026-06-11",
+        "amount": 65000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ]
+  },
+  {
     "id": "compra-1780949778851",
     "date": "2026-06-05",
     "provider": "MC COMPANY",
@@ -484,44 +1121,6 @@
         "id": "pago-1781203001413-7",
         "date": "2026-06-11",
         "amount": 440000,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "compra-1780885389716",
-    "date": "2026-06-05",
-    "provider": "MC COMPANY",
-    "eventName": "CFI 29-5",
-    "description": "FLETE LIVING",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Sin comprobante",
-    "netAmount": 65000,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 65000,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "FLETE LIVING",
-        "quantity": 1,
-        "unitAmount": 65000,
-        "total": 65000
-      }
-    ],
-    "createdAt": "2026-06-08T02:23:09.728Z",
-    "updatedAt": "2026-06-11T18:36:41.413Z",
-    "paidAmount": 65000,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781203001413-6",
-        "date": "2026-06-11",
-        "amount": 65000,
         "paymentMethod": "",
         "fundsSource": "",
         "notes": ""
@@ -613,6 +1212,44 @@
     "pendingAmount": 0
   },
   {
+    "id": "compra-1781035814194",
+    "date": "2026-06-04",
+    "provider": "SEBA GUZZO",
+    "eventName": "JESI ECOPARQUE 5-6",
+    "description": "CEBOLLA XKG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Remito",
+    "netAmount": 1300,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 1300,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CEBOLLA XKG",
+        "quantity": 1,
+        "unitAmount": 1300,
+        "total": 1300
+      }
+    ],
+    "createdAt": "2026-06-09T20:10:14.194Z",
+    "updatedAt": "2026-06-12T15:42:07.206Z",
+    "paidAmount": 1300,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278927206-5",
+        "date": "2026-06-12",
+        "amount": 1300,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
     "id": "compra-1781035758844",
     "date": "2026-06-04",
     "provider": "SEBA GUZZO",
@@ -674,44 +1311,6 @@
         "id": "pago-1781278927206-6",
         "date": "2026-06-12",
         "amount": 13099.98,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "compra-1781035814194",
-    "date": "2026-06-04",
-    "provider": "SEBA GUZZO",
-    "eventName": "JESI ECOPARQUE 5-6",
-    "description": "CEBOLLA XKG",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Remito",
-    "netAmount": 1300,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 1300,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "CEBOLLA XKG",
-        "quantity": 1,
-        "unitAmount": 1300,
-        "total": 1300
-      }
-    ],
-    "createdAt": "2026-06-09T20:10:14.194Z",
-    "updatedAt": "2026-06-12T15:42:07.206Z",
-    "paidAmount": 1300,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278927206-5",
-        "date": "2026-06-12",
-        "amount": 1300,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -859,6 +1458,92 @@
     "pendingAmount": 0
   },
   {
+    "id": "sheets-row-789",
+    "date": "2026-05-29",
+    "provider": "TERCER MUNDO - MATIAS",
+    "eventName": "CFI 29-5",
+    "description": "BORDADO CHAQUETA CHEFF",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "",
+    "netAmount": 58500,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 58500,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "BORDADO CHAQUETA CHEFF",
+        "quantity": 9,
+        "unitAmount": 6500,
+        "total": 58500
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:07.347Z",
+    "updatedAt": "2026-06-19T18:55:10.096Z",
+    "paidAmount": 58500,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781895310096-2",
+        "date": "2026-06-18",
+        "amount": 58500,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": "",
+        "receipt": null
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-790",
+    "date": "2026-05-29",
+    "provider": "TERCER MUNDO - MATIAS",
+    "eventName": "CFI 29-5",
+    "description": "DELANTAL GABARDINA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Galicia Claudia",
+    "invoiceType": "",
+    "netAmount": 305970,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 305970,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "DELANTAL GABARDINA",
+        "quantity": 10,
+        "unitAmount": 30597,
+        "total": 305970
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:07.398Z",
+    "updatedAt": "2026-06-19T18:55:10.096Z",
+    "paidAmount": 305970,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278927546-2",
+        "date": "2026-06-12",
+        "amount": 40000,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      },
+      {
+        "id": "pago-1781895310095-1",
+        "date": "2026-06-18",
+        "amount": 265970,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": "",
+        "receipt": null
+      }
+    ]
+  },
+  {
     "id": "sheets-row-791",
     "date": "2026-05-29",
     "provider": "TERCER MUNDO - MATIAS",
@@ -973,44 +1658,6 @@
     ]
   },
   {
-    "id": "sheets-row-790",
-    "date": "2026-05-29",
-    "provider": "TERCER MUNDO - MATIAS",
-    "eventName": "CFI 29-5",
-    "description": "DELANTAL GABARDINA",
-    "paymentStatus": "Parcial",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 305970,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 305970,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "DELANTAL GABARDINA",
-        "quantity": 10,
-        "unitAmount": 30597,
-        "total": 305970
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:07.398Z",
-    "updatedAt": "2026-06-12T15:42:07.546Z",
-    "paidAmount": 40000,
-    "pendingAmount": 265970,
-    "paymentLog": [
-      {
-        "id": "pago-1781278927546-2",
-        "date": "2026-06-12",
-        "amount": 40000,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
     "id": "sheets-row-783",
     "date": "2026-05-29",
     "provider": "STELLA MARIS",
@@ -1042,82 +1689,6 @@
         "id": "pago-1781278927471-1",
         "date": "2026-06-12",
         "amount": 912800,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-732",
-    "date": "2026-05-29",
-    "provider": "SEBA SUAREZ",
-    "eventName": "RESIDENCIA 28-5",
-    "description": "VAJILLA RESIDENCIA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 114100,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 114100,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "VAJILLA RESIDENCIA",
-        "quantity": 1,
-        "unitAmount": 114100,
-        "total": 114100
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.593Z",
-    "updatedAt": "2026-06-12T15:42:07.388Z",
-    "paidAmount": 114100,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278927388-3",
-        "date": "2026-06-12",
-        "amount": 114100,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-741",
-    "date": "2026-05-29",
-    "provider": "SEBA SUAREZ",
-    "eventName": "CFI 29-5",
-    "description": "VAJILLA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 94000,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 94000,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "VAJILLA",
-        "quantity": 1,
-        "unitAmount": 94000,
-        "total": 94000
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.929Z",
-    "updatedAt": "2026-06-12T15:42:07.388Z",
-    "paidAmount": 94000,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278927388-2",
-        "date": "2026-06-12",
-        "amount": 94000,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1163,37 +1734,37 @@
     ]
   },
   {
-    "id": "sheets-row-742",
+    "id": "sheets-row-741",
     "date": "2026-05-29",
-    "provider": "SEBA GUZZO",
+    "provider": "SEBA SUAREZ",
     "eventName": "CFI 29-5",
-    "description": "VERDURA",
+    "description": "VAJILLA",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "",
-    "netAmount": 60300,
+    "netAmount": 94000,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 60300,
+    "totalAmount": 94000,
     "notes": "",
     "lineItems": [
       {
-        "description": "VERDURA",
+        "description": "VAJILLA",
         "quantity": 1,
-        "unitAmount": 60300,
-        "total": 60300
+        "unitAmount": 94000,
+        "total": 94000
       }
     ],
-    "createdAt": "2026-06-08T17:48:05.961Z",
-    "updatedAt": "2026-06-12T15:42:07.206Z",
-    "paidAmount": 60300,
+    "createdAt": "2026-06-08T17:48:05.929Z",
+    "updatedAt": "2026-06-12T15:42:07.388Z",
+    "paidAmount": 94000,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278927206-4",
+        "id": "pago-1781278927388-2",
         "date": "2026-06-12",
-        "amount": 60300,
+        "amount": 94000,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1201,75 +1772,37 @@
     ]
   },
   {
-    "id": "sheets-row-743",
+    "id": "sheets-row-732",
     "date": "2026-05-29",
-    "provider": "SEBA GUZZO",
-    "eventName": "CFI 29-5",
-    "description": "VERDURA",
+    "provider": "SEBA SUAREZ",
+    "eventName": "RESIDENCIA 28-5",
+    "description": "VAJILLA RESIDENCIA",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "",
-    "netAmount": 49500,
+    "netAmount": 114100,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 49500,
+    "totalAmount": 114100,
     "notes": "",
     "lineItems": [
       {
-        "description": "VERDURA",
+        "description": "VAJILLA RESIDENCIA",
         "quantity": 1,
-        "unitAmount": 49500,
-        "total": 49500
+        "unitAmount": 114100,
+        "total": 114100
       }
     ],
-    "createdAt": "2026-06-08T17:48:05.992Z",
-    "updatedAt": "2026-06-12T15:42:07.206Z",
-    "paidAmount": 49500,
+    "createdAt": "2026-06-08T17:48:05.593Z",
+    "updatedAt": "2026-06-12T15:42:07.388Z",
+    "paidAmount": 114100,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278927206-3",
+        "id": "pago-1781278927388-3",
         "date": "2026-06-12",
-        "amount": 49500,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-750",
-    "date": "2026-05-29",
-    "provider": "SEBA GUZZO",
-    "eventName": "CFI 29-5",
-    "description": "VERDURA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 370400,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 370400,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "VERDURA",
-        "quantity": 1,
-        "unitAmount": 370400,
-        "total": 370400
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:06.165Z",
-    "updatedAt": "2026-06-12T15:42:07.206Z",
-    "paidAmount": 370400,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278927206-2",
-        "date": "2026-06-12",
-        "amount": 370400,
+        "amount": 114100,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1315,37 +1848,37 @@
     ]
   },
   {
-    "id": "sheets-row-740",
+    "id": "sheets-row-750",
     "date": "2026-05-29",
-    "provider": "PAUZEN - ZENON",
+    "provider": "SEBA GUZZO",
     "eventName": "CFI 29-5",
-    "description": "CHAFFING",
+    "description": "VERDURA",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "",
-    "netAmount": 112000,
+    "netAmount": 370400,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 112000,
+    "totalAmount": 370400,
     "notes": "",
     "lineItems": [
       {
-        "description": "CHAFFING",
-        "quantity": 4,
-        "unitAmount": 28000,
-        "total": 112000
+        "description": "VERDURA",
+        "quantity": 1,
+        "unitAmount": 370400,
+        "total": 370400
       }
     ],
-    "createdAt": "2026-06-08T17:48:05.900Z",
-    "updatedAt": "2026-06-12T15:42:06.949Z",
-    "paidAmount": 112000,
+    "createdAt": "2026-06-08T17:48:06.165Z",
+    "updatedAt": "2026-06-12T15:42:07.206Z",
+    "paidAmount": 370400,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278926949-4",
+        "id": "pago-1781278927206-2",
         "date": "2026-06-12",
-        "amount": 112000,
+        "amount": 370400,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1353,37 +1886,75 @@
     ]
   },
   {
-    "id": "sheets-row-784",
+    "id": "sheets-row-743",
     "date": "2026-05-29",
-    "provider": "PAUZEN - ZENON",
+    "provider": "SEBA GUZZO",
     "eventName": "CFI 29-5",
-    "description": "ENVIO",
+    "description": "VERDURA",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "",
-    "netAmount": 18000,
+    "netAmount": 49500,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 18000,
+    "totalAmount": 49500,
     "notes": "",
     "lineItems": [
       {
-        "description": "ENVIO",
+        "description": "VERDURA",
         "quantity": 1,
-        "unitAmount": 18000,
-        "total": 18000
+        "unitAmount": 49500,
+        "total": 49500
       }
     ],
-    "createdAt": "2026-06-08T17:48:07.180Z",
-    "updatedAt": "2026-06-12T15:42:06.949Z",
-    "paidAmount": 18000,
+    "createdAt": "2026-06-08T17:48:05.992Z",
+    "updatedAt": "2026-06-12T15:42:07.206Z",
+    "paidAmount": 49500,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278926949-3",
+        "id": "pago-1781278927206-3",
         "date": "2026-06-12",
-        "amount": 18000,
+        "amount": 49500,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-742",
+    "date": "2026-05-29",
+    "provider": "SEBA GUZZO",
+    "eventName": "CFI 29-5",
+    "description": "VERDURA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "",
+    "netAmount": 60300,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 60300,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "VERDURA",
+        "quantity": 1,
+        "unitAmount": 60300,
+        "total": 60300
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:05.961Z",
+    "updatedAt": "2026-06-12T15:42:07.206Z",
+    "paidAmount": 60300,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278927206-4",
+        "date": "2026-06-12",
+        "amount": 60300,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1429,37 +2000,37 @@
     ]
   },
   {
-    "id": "sheets-row-706",
+    "id": "sheets-row-784",
     "date": "2026-05-29",
-    "provider": "PAPELERA DEL OESTE SRL",
+    "provider": "PAUZEN - ZENON",
     "eventName": "CFI 29-5",
-    "description": "CAJA REFORZADA 400X300X300 X1",
+    "description": "ENVIO",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 131570.4,
+    "invoiceType": "",
+    "netAmount": 18000,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 131570.4,
+    "totalAmount": 18000,
     "notes": "",
     "lineItems": [
       {
-        "description": "CAJA REFORZADA 400X300X300 X1",
-        "quantity": 40,
-        "unitAmount": 3289.26,
-        "total": 131570.4
+        "description": "ENVIO",
+        "quantity": 1,
+        "unitAmount": 18000,
+        "total": 18000
       }
     ],
-    "createdAt": "2026-06-08T17:48:04.640Z",
-    "updatedAt": "2026-06-12T15:42:06.768Z",
-    "paidAmount": 131570.4,
+    "createdAt": "2026-06-08T17:48:07.180Z",
+    "updatedAt": "2026-06-12T15:42:06.949Z",
+    "paidAmount": 18000,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278926768-3",
+        "id": "pago-1781278926949-3",
         "date": "2026-06-12",
-        "amount": 131570.4,
+        "amount": 18000,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1467,37 +2038,37 @@
     ]
   },
   {
-    "id": "sheets-row-707",
+    "id": "sheets-row-740",
     "date": "2026-05-29",
-    "provider": "PAPELERA DEL OESTE SRL",
+    "provider": "PAUZEN - ZENON",
     "eventName": "CFI 29-5",
-    "description": "CAJA MICRO 33X33 M/M 4,5CM X1",
+    "description": "CHAFFING",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 64462,
+    "invoiceType": "",
+    "netAmount": 112000,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 64462,
+    "totalAmount": 112000,
     "notes": "",
     "lineItems": [
       {
-        "description": "CAJA MICRO 33X33 M/M 4,5CM X1",
-        "quantity": 200,
-        "unitAmount": 322.31,
-        "total": 64462
+        "description": "CHAFFING",
+        "quantity": 4,
+        "unitAmount": 28000,
+        "total": 112000
       }
     ],
-    "createdAt": "2026-06-08T17:48:04.676Z",
-    "updatedAt": "2026-06-12T15:42:06.768Z",
-    "paidAmount": 64462,
+    "createdAt": "2026-06-08T17:48:05.900Z",
+    "updatedAt": "2026-06-12T15:42:06.949Z",
+    "paidAmount": 112000,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278926768-2",
+        "id": "pago-1781278926949-4",
         "date": "2026-06-12",
-        "amount": 64462,
+        "amount": 112000,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1544,6 +2115,82 @@
         "id": "pago-1781278926768-1",
         "date": "2026-06-12",
         "amount": 21601.21,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-707",
+    "date": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "CFI 29-5",
+    "description": "CAJA MICRO 33X33 M/M 4,5CM X1",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 64462,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 64462,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CAJA MICRO 33X33 M/M 4,5CM X1",
+        "quantity": 200,
+        "unitAmount": 322.31,
+        "total": 64462
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.676Z",
+    "updatedAt": "2026-06-12T15:42:06.768Z",
+    "paidAmount": 64462,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926768-2",
+        "date": "2026-06-12",
+        "amount": 64462,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-706",
+    "date": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "CFI 29-5",
+    "description": "CAJA REFORZADA 400X300X300 X1",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 131570.4,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 131570.4,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CAJA REFORZADA 400X300X300 X1",
+        "quantity": 40,
+        "unitAmount": 3289.26,
+        "total": 131570.4
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.640Z",
+    "updatedAt": "2026-06-12T15:42:06.768Z",
+    "paidAmount": 131570.4,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926768-3",
+        "date": "2026-06-12",
+        "amount": 131570.4,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1627,44 +2274,6 @@
     ]
   },
   {
-    "id": "sheets-row-712",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "ACEITE DE GIRASOL NATURA X 5 L",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 58598.97,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 58598.97,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "ACEITE DE GIRASOL NATURA X 5 L",
-        "quantity": 3,
-        "unitAmount": 19532.99,
-        "total": 58598.97
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.827Z",
-    "updatedAt": "2026-06-12T15:42:06.331Z",
-    "paidAmount": 58598.97,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926331-14",
-        "date": "2026-06-12",
-        "amount": 58598.97,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
     "id": "sheets-row-713",
     "date": "2026-05-29",
     "provider": "GRUPO RADEL SRL",
@@ -1703,37 +2312,37 @@
     ]
   },
   {
-    "id": "sheets-row-714",
+    "id": "sheets-row-712",
     "date": "2026-05-29",
     "provider": "GRUPO RADEL SRL",
     "eventName": "CFI 29-5",
-    "description": "AZUCAR LEDESMA X1KG",
+    "description": "ACEITE DE GIRASOL NATURA X 5 L",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 3735.93,
+    "netAmount": 58598.97,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 3735.93,
+    "totalAmount": 58598.97,
     "notes": "",
     "lineItems": [
       {
-        "description": "AZUCAR LEDESMA X1KG",
+        "description": "ACEITE DE GIRASOL NATURA X 5 L",
         "quantity": 3,
-        "unitAmount": 1245.31,
-        "total": 3735.93
+        "unitAmount": 19532.99,
+        "total": 58598.97
       }
     ],
-    "createdAt": "2026-06-08T17:48:04.886Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 3735.93,
+    "createdAt": "2026-06-08T17:48:04.827Z",
+    "updatedAt": "2026-06-12T15:42:06.331Z",
+    "paidAmount": 58598.97,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278926330-12",
+        "id": "pago-1781278926331-14",
         "date": "2026-06-12",
-        "amount": 3735.93,
+        "amount": 58598.97,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -1741,341 +2350,37 @@
     ]
   },
   {
-    "id": "sheets-row-715",
+    "id": "sheets-row-766",
     "date": "2026-05-29",
     "provider": "GRUPO RADEL SRL",
     "eventName": "CFI 29-5",
-    "description": "AJI MOLIDO INDIAS X 1KG",
+    "description": "QUESO CREMA TONADITA PATAGONIA POUCH X 3 KG",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 7785.5,
+    "netAmount": 40429.74,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 7785.5,
+    "totalAmount": 40429.74,
     "notes": "",
     "lineItems": [
       {
-        "description": "AJI MOLIDO INDIAS X 1KG",
-        "quantity": 1,
-        "unitAmount": 7785.5,
-        "total": 7785.5
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.916Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 7785.5,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926330-11",
-        "date": "2026-06-12",
-        "amount": 7785.5,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-716",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "LAUREL EN HOJAS INDIAS X 10GR",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 3708.8,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 3708.8,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "LAUREL EN HOJAS INDIAS X 10GR",
-        "quantity": 5,
-        "unitAmount": 741.76,
-        "total": 3708.8
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.947Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 3708.8,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926330-10",
-        "date": "2026-06-12",
-        "amount": 3708.8,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-717",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "LENTEJAS CADEA X 400G",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 58053.9,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 58053.9,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "LENTEJAS CADEA X 400G",
-        "quantity": 30,
-        "unitAmount": 1935.13,
-        "total": 58053.9
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.979Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 58053.9,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926330-9",
-        "date": "2026-06-12",
-        "amount": 58053.9,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-718",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "PURE DE TOMATE NOEL X 530G",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 9643.92,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 9643.92,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "PURE DE TOMATE NOEL X 530G",
-        "quantity": 12,
-        "unitAmount": 803.66,
-        "total": 9643.92
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.006Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 9643.92,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926330-8",
-        "date": "2026-06-12",
-        "amount": 9643.92,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-719",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "PIMENTON INDIAS X 1 KG",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 15330.92,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 15330.92,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "PIMENTON INDIAS X 1 KG",
+        "description": "QUESO CREMA TONADITA PATAGONIA POUCH X 3 KG",
         "quantity": 2,
-        "unitAmount": 7665.46,
-        "total": 15330.92
+        "unitAmount": 20214.87,
+        "total": 40429.74
       }
     ],
-    "createdAt": "2026-06-08T17:48:05.037Z",
+    "createdAt": "2026-06-08T17:48:06.629Z",
     "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 15330.92,
+    "paidAmount": 40429.74,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278926330-7",
+        "id": "pago-1781278926329-1",
         "date": "2026-06-12",
-        "amount": 15330.92,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-720",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "OREGANO INDIAS X 1 KG",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 6036.33,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 6036.33,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "OREGANO INDIAS X 1 KG",
-        "quantity": 1,
-        "unitAmount": 6036.33,
-        "total": 6036.33
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.065Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 6036.33,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926330-6",
-        "date": "2026-06-12",
-        "amount": 6036.33,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-721",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "SALSA DE TOMATE VEGA GRANDE X 1KG",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 37585.6,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 37585.6,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "SALSA DE TOMATE VEGA GRANDE X 1KG",
-        "quantity": 32,
-        "unitAmount": 1174.55,
-        "total": 37585.6
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.095Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 37585.6,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926330-5",
-        "date": "2026-06-12",
-        "amount": 37585.6,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-722",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "ACEITUNAS ALPUJARRA CALIBRE 1 X 5KG",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 21404.55,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 21404.55,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "ACEITUNAS ALPUJARRA CALIBRE 1 X 5KG",
-        "quantity": 1,
-        "unitAmount": 21404.55,
-        "total": 21404.55
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.126Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 21404.55,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926330-4",
-        "date": "2026-06-12",
-        "amount": 21404.55,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-723",
-    "date": "2026-05-29",
-    "provider": "GRUPO RADEL SRL",
-    "eventName": "CFI 29-5",
-    "description": "GARBANZO INALPA X 300G",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 14354.76,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 14354.76,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "GARBANZO INALPA X 300G",
-        "quantity": 21,
-        "unitAmount": 683.56,
-        "total": 14354.76
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.172Z",
-    "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 14354.76,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278926330-3",
-        "date": "2026-06-12",
-        "amount": 14354.76,
+        "amount": 40429.74,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -2121,37 +2426,379 @@
     ]
   },
   {
-    "id": "sheets-row-766",
+    "id": "sheets-row-723",
     "date": "2026-05-29",
     "provider": "GRUPO RADEL SRL",
     "eventName": "CFI 29-5",
-    "description": "QUESO CREMA TONADITA PATAGONIA POUCH X 3 KG",
+    "description": "GARBANZO INALPA X 300G",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 40429.74,
+    "netAmount": 14354.76,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 40429.74,
+    "totalAmount": 14354.76,
     "notes": "",
     "lineItems": [
       {
-        "description": "QUESO CREMA TONADITA PATAGONIA POUCH X 3 KG",
-        "quantity": 2,
-        "unitAmount": 20214.87,
-        "total": 40429.74
+        "description": "GARBANZO INALPA X 300G",
+        "quantity": 21,
+        "unitAmount": 683.56,
+        "total": 14354.76
       }
     ],
-    "createdAt": "2026-06-08T17:48:06.629Z",
+    "createdAt": "2026-06-08T17:48:05.172Z",
     "updatedAt": "2026-06-12T15:42:06.330Z",
-    "paidAmount": 40429.74,
+    "paidAmount": 14354.76,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278926329-1",
+        "id": "pago-1781278926330-3",
         "date": "2026-06-12",
-        "amount": 40429.74,
+        "amount": 14354.76,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-722",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "ACEITUNAS ALPUJARRA CALIBRE 1 X 5KG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 21404.55,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 21404.55,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "ACEITUNAS ALPUJARRA CALIBRE 1 X 5KG",
+        "quantity": 1,
+        "unitAmount": 21404.55,
+        "total": 21404.55
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:05.126Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 21404.55,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-4",
+        "date": "2026-06-12",
+        "amount": 21404.55,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-721",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "SALSA DE TOMATE VEGA GRANDE X 1KG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 37585.6,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 37585.6,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "SALSA DE TOMATE VEGA GRANDE X 1KG",
+        "quantity": 32,
+        "unitAmount": 1174.55,
+        "total": 37585.6
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:05.095Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 37585.6,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-5",
+        "date": "2026-06-12",
+        "amount": 37585.6,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-720",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "OREGANO INDIAS X 1 KG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 6036.33,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 6036.33,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "OREGANO INDIAS X 1 KG",
+        "quantity": 1,
+        "unitAmount": 6036.33,
+        "total": 6036.33
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:05.065Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 6036.33,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-6",
+        "date": "2026-06-12",
+        "amount": 6036.33,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-719",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "PIMENTON INDIAS X 1 KG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 15330.92,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 15330.92,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "PIMENTON INDIAS X 1 KG",
+        "quantity": 2,
+        "unitAmount": 7665.46,
+        "total": 15330.92
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:05.037Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 15330.92,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-7",
+        "date": "2026-06-12",
+        "amount": 15330.92,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-718",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "PURE DE TOMATE NOEL X 530G",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 9643.92,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 9643.92,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "PURE DE TOMATE NOEL X 530G",
+        "quantity": 12,
+        "unitAmount": 803.66,
+        "total": 9643.92
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:05.006Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 9643.92,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-8",
+        "date": "2026-06-12",
+        "amount": 9643.92,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-717",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "LENTEJAS CADEA X 400G",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 58053.9,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 58053.9,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "LENTEJAS CADEA X 400G",
+        "quantity": 30,
+        "unitAmount": 1935.13,
+        "total": 58053.9
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.979Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 58053.9,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-9",
+        "date": "2026-06-12",
+        "amount": 58053.9,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-716",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "LAUREL EN HOJAS INDIAS X 10GR",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 3708.8,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 3708.8,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "LAUREL EN HOJAS INDIAS X 10GR",
+        "quantity": 5,
+        "unitAmount": 741.76,
+        "total": 3708.8
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.947Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 3708.8,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-10",
+        "date": "2026-06-12",
+        "amount": 3708.8,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-715",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "AJI MOLIDO INDIAS X 1KG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 7785.5,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 7785.5,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "AJI MOLIDO INDIAS X 1KG",
+        "quantity": 1,
+        "unitAmount": 7785.5,
+        "total": 7785.5
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.916Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 7785.5,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-11",
+        "date": "2026-06-12",
+        "amount": 7785.5,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-714",
+    "date": "2026-05-29",
+    "provider": "GRUPO RADEL SRL",
+    "eventName": "CFI 29-5",
+    "description": "AZUCAR LEDESMA X1KG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 3735.93,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 3735.93,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "AZUCAR LEDESMA X1KG",
+        "quantity": 3,
+        "unitAmount": 1245.31,
+        "total": 3735.93
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.886Z",
+    "updatedAt": "2026-06-12T15:42:06.330Z",
+    "paidAmount": 3735.93,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278926330-12",
+        "date": "2026-06-12",
+        "amount": 3735.93,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -2235,379 +2882,37 @@
     ]
   },
   {
-    "id": "sheets-row-699",
+    "id": "sheets-row-771",
     "date": "2026-05-29",
     "provider": "BACA LOGISTICA CUYO SAS",
     "eventName": "CFI 29-5",
-    "description": "LAVANDINA THAMES BIO-LAV X5LTS",
+    "description": "ENVASE P PULVERIZADOR X1LT",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 6758.42,
+    "netAmount": 1754.22,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 6758.42,
+    "totalAmount": 1754.22,
     "notes": "",
     "lineItems": [
       {
-        "description": "LAVANDINA THAMES BIO-LAV X5LTS",
-        "quantity": 1,
-        "unitAmount": 6758.4235,
-        "total": 6758.42
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.132Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 6758.42,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-13",
-        "date": "2026-06-12",
-        "amount": 6758.42,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-700",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "DESENG. & DESCARBONIZANTE HOT PLUS X5LT",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 17790.56,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 17790.56,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "DESENG. & DESCARBONIZANTE HOT PLUS X5LT",
-        "quantity": 1,
-        "unitAmount": 17790.5645,
-        "total": 17790.56
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.290Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 17790.56,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-12",
-        "date": "2026-06-12",
-        "amount": 17790.56,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-701",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "TRAPO COSTURADO CHICO GRIS",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 6128.92,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 6128.92,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "TRAPO COSTURADO CHICO GRIS",
-        "quantity": 5,
-        "unitAmount": 1225.7849999999999,
-        "total": 6128.92
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.357Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 6128.92,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-11",
-        "date": "2026-06-12",
-        "amount": 6128.92,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-702",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "DETERGENTE ECO X5LT",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 7721.66,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 7721.66,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "DETERGENTE ECO X5LT",
-        "quantity": 1,
-        "unitAmount": 7721.657,
-        "total": 7721.66
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.441Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 7721.66,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-10",
-        "date": "2026-06-12",
-        "amount": 7721.66,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-703",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "PAÑO AMARILLO BALLERINA A GRANEL",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 2817.13,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 2817.13,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "PAÑO AMARILLO BALLERINA A GRANEL",
-        "quantity": 5,
-        "unitAmount": 563.426,
-        "total": 2817.13
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.530Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 2817.13,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-9",
-        "date": "2026-06-12",
-        "amount": 2817.13,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-704",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "ESPONJA PLASTICA FORRADA COLORES VARIOS",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 2747.21,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 2747.21,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "ESPONJA PLASTICA FORRADA COLORES VARIOS",
-        "quantity": 4,
-        "unitAmount": 686.8025,
-        "total": 2747.21
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.580Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 2747.21,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-8",
-        "date": "2026-06-12",
-        "amount": 2747.21,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-705",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "PAÑO HANDY PRO ROLL X60U 28CMX42XM I8TH AZUL",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 15788.12,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 15788.12,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "PAÑO HANDY PRO ROLL X60U 28CMX42XM I8TH AZUL",
-        "quantity": 1,
-        "unitAmount": 15788.116499999998,
-        "total": 15788.12
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:04.610Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 15788.12,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-7",
-        "date": "2026-06-12",
-        "amount": 15788.12,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-724",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "PAPEL ALUMINIO X 1KG",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 45226.35,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 45226.35,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "PAPEL ALUMINIO X 1KG",
-        "quantity": 5,
-        "unitAmount": 9045.27,
-        "total": 45226.35
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.271Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 45226.35,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-6",
-        "date": "2026-06-12",
-        "amount": 45226.35,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-725",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 22586.6,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 22586.6,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
-        "quantity": 1,
-        "unitAmount": 22586.6,
-        "total": 22586.6
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:05.302Z",
-    "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 22586.6,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278925293-5",
-        "date": "2026-06-12",
-        "amount": 22586.6,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-769",
-    "date": "2026-05-29",
-    "provider": "BACA LOGISTICA CUYO SAS",
-    "eventName": "CFI 29-5",
-    "description": "ALCOHOL FINO AL 70% THAMES X5LTS",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 33167.62,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 33167.62,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "ALCOHOL FINO AL 70% THAMES X5LTS",
+        "description": "ENVASE P PULVERIZADOR X1LT",
         "quantity": 2,
-        "unitAmount": 16583.81,
-        "total": 33167.62
+        "unitAmount": 877.11,
+        "total": 1754.22
       }
     ],
-    "createdAt": "2026-06-08T17:48:06.716Z",
+    "createdAt": "2026-06-08T17:48:06.776Z",
     "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 33167.62,
+    "paidAmount": 1754.22,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278925293-4",
+        "id": "pago-1781278925293-2",
         "date": "2026-06-12",
-        "amount": 33167.62,
+        "amount": 1754.22,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -2653,37 +2958,379 @@
     ]
   },
   {
-    "id": "sheets-row-771",
+    "id": "sheets-row-769",
     "date": "2026-05-29",
     "provider": "BACA LOGISTICA CUYO SAS",
     "eventName": "CFI 29-5",
-    "description": "ENVASE P PULVERIZADOR X1LT",
+    "description": "ALCOHOL FINO AL 70% THAMES X5LTS",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 1754.22,
+    "netAmount": 33167.62,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 1754.22,
+    "totalAmount": 33167.62,
     "notes": "",
     "lineItems": [
       {
-        "description": "ENVASE P PULVERIZADOR X1LT",
+        "description": "ALCOHOL FINO AL 70% THAMES X5LTS",
         "quantity": 2,
-        "unitAmount": 877.11,
-        "total": 1754.22
+        "unitAmount": 16583.81,
+        "total": 33167.62
       }
     ],
-    "createdAt": "2026-06-08T17:48:06.776Z",
+    "createdAt": "2026-06-08T17:48:06.716Z",
     "updatedAt": "2026-06-12T15:42:05.293Z",
-    "paidAmount": 1754.22,
+    "paidAmount": 33167.62,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278925293-2",
+        "id": "pago-1781278925293-4",
         "date": "2026-06-12",
-        "amount": 1754.22,
+        "amount": 33167.62,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-725",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 22586.6,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 22586.6,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
+        "quantity": 1,
+        "unitAmount": 22586.6,
+        "total": 22586.6
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:05.302Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 22586.6,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-5",
+        "date": "2026-06-12",
+        "amount": 22586.6,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-724",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "PAPEL ALUMINIO X 1KG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 45226.35,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 45226.35,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "PAPEL ALUMINIO X 1KG",
+        "quantity": 5,
+        "unitAmount": 9045.27,
+        "total": 45226.35
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:05.271Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 45226.35,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-6",
+        "date": "2026-06-12",
+        "amount": 45226.35,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-705",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "PAÑO HANDY PRO ROLL X60U 28CMX42XM I8TH AZUL",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 15788.12,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 15788.12,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "PAÑO HANDY PRO ROLL X60U 28CMX42XM I8TH AZUL",
+        "quantity": 1,
+        "unitAmount": 15788.116499999998,
+        "total": 15788.12
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.610Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 15788.12,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-7",
+        "date": "2026-06-12",
+        "amount": 15788.12,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-704",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "ESPONJA PLASTICA FORRADA COLORES VARIOS",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 2747.21,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 2747.21,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "ESPONJA PLASTICA FORRADA COLORES VARIOS",
+        "quantity": 4,
+        "unitAmount": 686.8025,
+        "total": 2747.21
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.580Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 2747.21,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-8",
+        "date": "2026-06-12",
+        "amount": 2747.21,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-703",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "PAÑO AMARILLO BALLERINA A GRANEL",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 2817.13,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 2817.13,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "PAÑO AMARILLO BALLERINA A GRANEL",
+        "quantity": 5,
+        "unitAmount": 563.426,
+        "total": 2817.13
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.530Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 2817.13,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-9",
+        "date": "2026-06-12",
+        "amount": 2817.13,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-702",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "DETERGENTE ECO X5LT",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 7721.66,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 7721.66,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "DETERGENTE ECO X5LT",
+        "quantity": 1,
+        "unitAmount": 7721.657,
+        "total": 7721.66
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.441Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 7721.66,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-10",
+        "date": "2026-06-12",
+        "amount": 7721.66,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-701",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "TRAPO COSTURADO CHICO GRIS",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 6128.92,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 6128.92,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "TRAPO COSTURADO CHICO GRIS",
+        "quantity": 5,
+        "unitAmount": 1225.7849999999999,
+        "total": 6128.92
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.357Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 6128.92,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-11",
+        "date": "2026-06-12",
+        "amount": 6128.92,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-700",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "DESENG. & DESCARBONIZANTE HOT PLUS X5LT",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 17790.56,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 17790.56,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "DESENG. & DESCARBONIZANTE HOT PLUS X5LT",
+        "quantity": 1,
+        "unitAmount": 17790.5645,
+        "total": 17790.56
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.290Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 17790.56,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-12",
+        "date": "2026-06-12",
+        "amount": 17790.56,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-699",
+    "date": "2026-05-29",
+    "provider": "BACA LOGISTICA CUYO SAS",
+    "eventName": "CFI 29-5",
+    "description": "LAVANDINA THAMES BIO-LAV X5LTS",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 6758.42,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 6758.42,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "LAVANDINA THAMES BIO-LAV X5LTS",
+        "quantity": 1,
+        "unitAmount": 6758.4235,
+        "total": 6758.42
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:04.132Z",
+    "updatedAt": "2026-06-12T15:42:05.293Z",
+    "paidAmount": 6758.42,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278925293-13",
+        "date": "2026-06-12",
+        "amount": 6758.42,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -2729,189 +3376,37 @@
     ]
   },
   {
-    "id": "sheets-row-755",
+    "id": "sheets-row-709",
     "date": "2026-05-29",
     "provider": "PAPELERA DEL OESTE SRL",
     "eventName": "CFI 29-5",
-    "description": "VASO TERMICO 240CC X1",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 123770,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 123770,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "VASO TERMICO 240CC X1",
-        "quantity": 1000,
-        "unitAmount": 123.77,
-        "total": 123770
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:06.315Z",
-    "updatedAt": "2026-06-11T20:18:33.743Z",
-    "paidAmount": 123770,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113743-9",
-        "date": "2026-06-11",
-        "amount": 123770,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-754",
-    "date": "2026-05-29",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "CFI 29-5",
-    "description": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 24628.1,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 24628.1,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
-        "quantity": 1,
-        "unitAmount": 24628.1,
-        "total": 24628.1
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:06.286Z",
-    "updatedAt": "2026-06-11T20:18:33.743Z",
-    "paidAmount": 24628.1,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113743-10",
-        "date": "2026-06-11",
-        "amount": 24628.1,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-753",
-    "date": "2026-05-29",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "CFI 29-5",
-    "description": "CONSORCIO 80X100 NEGRO MARPLA X50U",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 21818.18,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 21818.18,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "CONSORCIO 80X100 NEGRO MARPLA X50U",
-        "quantity": 1,
-        "unitAmount": 21818.18,
-        "total": 21818.18
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:06.254Z",
-    "updatedAt": "2026-06-11T20:18:33.743Z",
-    "paidAmount": 21818.18,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113743-11",
-        "date": "2026-06-11",
-        "amount": 21818.18,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-752",
-    "date": "2026-05-29",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "CFI 29-5",
-    "description": "CINTA ANCHA 48*100",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 13533.05,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 13533.05,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "CINTA ANCHA 48*100",
-        "quantity": 5,
-        "unitAmount": 2706.61,
-        "total": 13533.05
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:06.226Z",
-    "updatedAt": "2026-06-11T20:18:33.743Z",
-    "paidAmount": 13533.05,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113743-12",
-        "date": "2026-06-11",
-        "amount": 13533.05,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-711",
-    "date": "2026-05-29",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "CFI 29-5",
-    "description": "GUANTES NITRILO NEGRO L X100",
+    "description": "COFIA DE PP BLANCA X1",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 27768.6,
+    "netAmount": 18182,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 27768.6,
+    "totalAmount": 18182,
     "notes": "",
     "lineItems": [
       {
-        "description": "GUANTES NITRILO NEGRO L X100",
-        "quantity": 2,
-        "unitAmount": 13884.3,
-        "total": 27768.6
+        "description": "COFIA DE PP BLANCA X1",
+        "quantity": 200,
+        "unitAmount": 90.91,
+        "total": 18182
       }
     ],
-    "createdAt": "2026-06-08T17:48:04.797Z",
+    "createdAt": "2026-06-08T17:48:04.733Z",
     "updatedAt": "2026-06-11T20:18:33.743Z",
-    "paidAmount": 27768.6,
+    "paidAmount": 18182,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781209113743-13",
+        "id": "pago-1781209113743-15",
         "date": "2026-06-11",
-        "amount": 27768.6,
+        "amount": 18182,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -2957,37 +3452,189 @@
     ]
   },
   {
-    "id": "sheets-row-709",
+    "id": "sheets-row-711",
     "date": "2026-05-29",
     "provider": "PAPELERA DEL OESTE SRL",
     "eventName": "CFI 29-5",
-    "description": "COFIA DE PP BLANCA X1",
+    "description": "GUANTES NITRILO NEGRO L X100",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 18182,
+    "netAmount": 27768.6,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 18182,
+    "totalAmount": 27768.6,
     "notes": "",
     "lineItems": [
       {
-        "description": "COFIA DE PP BLANCA X1",
-        "quantity": 200,
-        "unitAmount": 90.91,
-        "total": 18182
+        "description": "GUANTES NITRILO NEGRO L X100",
+        "quantity": 2,
+        "unitAmount": 13884.3,
+        "total": 27768.6
       }
     ],
-    "createdAt": "2026-06-08T17:48:04.733Z",
+    "createdAt": "2026-06-08T17:48:04.797Z",
     "updatedAt": "2026-06-11T20:18:33.743Z",
-    "paidAmount": 18182,
+    "paidAmount": 27768.6,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781209113743-15",
+        "id": "pago-1781209113743-13",
         "date": "2026-06-11",
-        "amount": 18182,
+        "amount": 27768.6,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-752",
+    "date": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "CFI 29-5",
+    "description": "CINTA ANCHA 48*100",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "",
+    "netAmount": 13533.05,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 13533.05,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CINTA ANCHA 48*100",
+        "quantity": 5,
+        "unitAmount": 2706.61,
+        "total": 13533.05
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:06.226Z",
+    "updatedAt": "2026-06-11T20:18:33.743Z",
+    "paidAmount": 13533.05,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113743-12",
+        "date": "2026-06-11",
+        "amount": 13533.05,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-753",
+    "date": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "CFI 29-5",
+    "description": "CONSORCIO 80X100 NEGRO MARPLA X50U",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "",
+    "netAmount": 21818.18,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 21818.18,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CONSORCIO 80X100 NEGRO MARPLA X50U",
+        "quantity": 1,
+        "unitAmount": 21818.18,
+        "total": 21818.18
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:06.254Z",
+    "updatedAt": "2026-06-11T20:18:33.743Z",
+    "paidAmount": 21818.18,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113743-11",
+        "date": "2026-06-11",
+        "amount": 21818.18,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-754",
+    "date": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "CFI 29-5",
+    "description": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "",
+    "netAmount": 24628.1,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 24628.1,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "BOLSA DE ARRANQUE PS 60X90 MAXIM",
+        "quantity": 1,
+        "unitAmount": 24628.1,
+        "total": 24628.1
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:06.286Z",
+    "updatedAt": "2026-06-11T20:18:33.743Z",
+    "paidAmount": 24628.1,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113743-10",
+        "date": "2026-06-11",
+        "amount": 24628.1,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-755",
+    "date": "2026-05-29",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "CFI 29-5",
+    "description": "VASO TERMICO 240CC X1",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "",
+    "netAmount": 123770,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 123770,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "VASO TERMICO 240CC X1",
+        "quantity": 1000,
+        "unitAmount": 123.77,
+        "total": 123770
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:06.315Z",
+    "updatedAt": "2026-06-11T20:18:33.743Z",
+    "paidAmount": 123770,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113743-9",
+        "date": "2026-06-11",
+        "amount": 123770,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -3111,7 +3758,7 @@
   {
     "id": "sheets-row-745",
     "date": "2026-05-29",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "CFI 29-5",
     "description": "CARNES",
     "paymentStatus": "Pagado",
@@ -3132,7 +3779,7 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:06.049Z",
-    "updatedAt": "2026-06-11T18:34:13.590Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 3162164,
     "pendingAmount": 0,
     "paymentLog": [
@@ -3144,7 +3791,8 @@
         "fundsSource": "",
         "notes": ""
       }
-    ]
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-748",
@@ -3223,37 +3871,37 @@
     ]
   },
   {
-    "id": "sheets-row-778",
+    "id": "sheets-row-776",
     "date": "2026-05-29",
     "provider": "CLAUDIO PAELLAS",
     "eventName": "CFI 29-5",
-    "description": "ENVIO",
+    "description": "MUERTARIOS",
     "paymentStatus": "Pagado",
     "paymentMethod": "",
     "fundsSource": "",
     "invoiceType": "",
-    "netAmount": 120000,
+    "netAmount": 300000,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 120000,
+    "totalAmount": 300000,
     "notes": "",
     "lineItems": [
       {
-        "description": "ENVIO",
-        "quantity": 1,
-        "unitAmount": 120000,
-        "total": 120000
+        "description": "MUERTARIOS",
+        "quantity": 2,
+        "unitAmount": 150000,
+        "total": 300000
       }
     ],
-    "createdAt": "2026-06-08T17:48:06.998Z",
+    "createdAt": "2026-06-08T17:48:06.941Z",
     "updatedAt": "2026-06-10T19:51:54.728Z",
-    "paidAmount": 120000,
+    "paidAmount": 300000,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781121114728-3",
+        "id": "pago-1781121114728-1",
         "date": "2026-06-10",
-        "amount": 120000,
+        "amount": 300000,
         "paymentMethod": "",
         "fundsSource": "",
         "notes": ""
@@ -3299,70 +3947,42 @@
     ]
   },
   {
-    "id": "sheets-row-776",
+    "id": "sheets-row-778",
     "date": "2026-05-29",
     "provider": "CLAUDIO PAELLAS",
     "eventName": "CFI 29-5",
-    "description": "MUERTARIOS",
+    "description": "ENVIO",
     "paymentStatus": "Pagado",
     "paymentMethod": "",
     "fundsSource": "",
     "invoiceType": "",
-    "netAmount": 300000,
+    "netAmount": 120000,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 300000,
+    "totalAmount": 120000,
     "notes": "",
     "lineItems": [
       {
-        "description": "MUERTARIOS",
-        "quantity": 2,
-        "unitAmount": 150000,
-        "total": 300000
+        "description": "ENVIO",
+        "quantity": 1,
+        "unitAmount": 120000,
+        "total": 120000
       }
     ],
-    "createdAt": "2026-06-08T17:48:06.941Z",
+    "createdAt": "2026-06-08T17:48:06.998Z",
     "updatedAt": "2026-06-10T19:51:54.728Z",
-    "paidAmount": 300000,
+    "paidAmount": 120000,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781121114728-1",
+        "id": "pago-1781121114728-3",
         "date": "2026-06-10",
-        "amount": 300000,
+        "amount": 120000,
         "paymentMethod": "",
         "fundsSource": "",
         "notes": ""
       }
     ]
-  },
-  {
-    "id": "sheets-row-789",
-    "date": "2026-05-29",
-    "provider": "TERCER MUNDO - MATIAS",
-    "eventName": "CFI 29-5",
-    "description": "BORDADO CHAQUETA CHEFF",
-    "paymentStatus": "Pendiente",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "",
-    "netAmount": 58500,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 58500,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "BORDADO CHAQUETA CHEFF",
-        "quantity": 9,
-        "unitAmount": 6500,
-        "total": 58500
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:07.347Z",
-    "updatedAt": "2026-06-08T17:48:57.124Z",
-    "paidAmount": 0,
-    "pendingAmount": 58500
   },
   {
     "id": "sheets-row-780",
@@ -4355,44 +4975,6 @@
     ]
   },
   {
-    "id": "compra-1780949402074",
-    "date": "2026-05-27",
-    "provider": "MC COMPANY",
-    "eventName": "RESIDENCIA 28-5",
-    "description": "SILLAS TIJERA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Sin comprobante",
-    "netAmount": 50000,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 50000,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "SILLAS TIJERA",
-        "quantity": 1,
-        "unitAmount": 50000,
-        "total": 50000
-      }
-    ],
-    "createdAt": "2026-06-08T20:10:02.075Z",
-    "updatedAt": "2026-06-11T18:36:41.413Z",
-    "paidAmount": 50000,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781203001413-4",
-        "date": "2026-06-11",
-        "amount": 50000,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
     "id": "sheets-row-686",
     "date": "2026-05-27",
     "provider": "MC COMPANY",
@@ -4424,6 +5006,44 @@
         "id": "pago-1781203001413-3",
         "date": "2026-06-11",
         "amount": 112000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "compra-1780949402074",
+    "date": "2026-05-27",
+    "provider": "MC COMPANY",
+    "eventName": "RESIDENCIA 28-5",
+    "description": "SILLAS TIJERA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Sin comprobante",
+    "netAmount": 50000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 50000,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "SILLAS TIJERA",
+        "quantity": 1,
+        "unitAmount": 50000,
+        "total": 50000
+      }
+    ],
+    "createdAt": "2026-06-08T20:10:02.075Z",
+    "updatedAt": "2026-06-11T18:36:41.413Z",
+    "paidAmount": 50000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781203001413-4",
+        "date": "2026-06-11",
+        "amount": 50000,
         "paymentMethod": "",
         "fundsSource": "",
         "notes": ""
@@ -4469,47 +5089,9 @@
     ]
   },
   {
-    "id": "sheets-row-690",
-    "date": "2026-05-27",
-    "provider": "RUBEN CARNE",
-    "eventName": "Sin evento",
-    "description": "CARNES",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "",
-    "netAmount": 82650,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 82650,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "CARNES",
-        "quantity": 8.7,
-        "unitAmount": 9500,
-        "total": 82650
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.830Z",
-    "updatedAt": "2026-06-11T18:34:13.590Z",
-    "paidAmount": 82650,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853590-14",
-        "date": "2026-06-11",
-        "amount": 82650,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
     "id": "sheets-row-680",
     "date": "2026-05-27",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "CFI 29-5",
     "description": "MOLIDA INT X MAYOR",
     "paymentStatus": "Pagado",
@@ -4530,7 +5112,7 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:03.595Z",
-    "updatedAt": "2026-06-11T18:34:13.590Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 341742.5,
     "pendingAmount": 0,
     "paymentLog": [
@@ -4542,7 +5124,47 @@
         "fundsSource": "",
         "notes": ""
       }
-    ]
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-690",
+    "date": "2026-05-27",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "Sin evento",
+    "description": "CARNES",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "",
+    "netAmount": 82650,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 82650,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CARNES",
+        "quantity": 8.7,
+        "unitAmount": 9500,
+        "total": 82650
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.830Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 82650,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853590-14",
+        "date": "2026-06-11",
+        "amount": 82650,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-691",
@@ -4741,6 +5363,279 @@
     "pendingAmount": 0
   },
   {
+    "id": "sheets-row-662",
+    "date": "2026-05-25",
+    "provider": "LA NUEVA PERLA",
+    "eventName": "EFICIENCIA 25-5",
+    "description": "PAN",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 4500,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 4500,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 4.500",
+    "lineItems": [
+      {
+        "description": "PAN",
+        "quantity": 1,
+        "unitAmount": 4500,
+        "total": 4500
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.150Z",
+    "updatedAt": "2026-06-19T15:38:57.774Z",
+    "paidAmount": 4500,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 4500,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537773-15",
+        "date": "2026-06-19",
+        "amount": 4500,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-666",
+    "date": "2026-05-25",
+    "provider": "VARIOS",
+    "eventName": "EFICIENCIA 25-5",
+    "description": "MANTECA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 6500,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 6500,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 6.500",
+    "lineItems": [
+      {
+        "description": "MANTECA",
+        "quantity": 2,
+        "unitAmount": 3250,
+        "total": 6500
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.259Z",
+    "updatedAt": "2026-06-19T15:38:57.773Z",
+    "paidAmount": 6500,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 6500,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537772-11",
+        "date": "2026-06-19",
+        "amount": 6500,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-665",
+    "date": "2026-05-25",
+    "provider": "VERDULERIA",
+    "eventName": "EFICIENCIA 25-5",
+    "description": "LECHE LA SERENISIMA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 8000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 8000,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 8.000",
+    "lineItems": [
+      {
+        "description": "LECHE LA SERENISIMA",
+        "quantity": 2,
+        "unitAmount": 4000,
+        "total": 8000
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.234Z",
+    "updatedAt": "2026-06-19T15:38:57.773Z",
+    "paidAmount": 8000,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 8000,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537773-12",
+        "date": "2026-06-19",
+        "amount": 8000,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-664",
+    "date": "2026-05-25",
+    "provider": "VERDULERIA",
+    "eventName": "EFICIENCIA 25-5",
+    "description": "PAPA XKG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 4736.2,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 4736.2,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 4.736",
+    "lineItems": [
+      {
+        "description": "PAPA XKG",
+        "quantity": 2,
+        "unitAmount": 2368.1,
+        "total": 4736.2
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.205Z",
+    "updatedAt": "2026-06-19T15:38:57.773Z",
+    "paidAmount": 4736.2,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 4736.2,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537773-13",
+        "date": "2026-06-19",
+        "amount": 4736.2,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-663",
+    "date": "2026-05-25",
+    "provider": "CENTRAL DE BEBIDAS / DISRE",
+    "eventName": "EFICIENCIA 25-5",
+    "description": "BEBIDAS VARIAS",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 99905.32,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 99905.32,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 99.905",
+    "lineItems": [
+      {
+        "description": "BEBIDAS VARIAS",
+        "quantity": 1,
+        "unitAmount": 99905.32,
+        "total": 99905.32
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.179Z",
+    "updatedAt": "2026-06-19T15:38:57.773Z",
+    "paidAmount": 99905.32,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 99905.32,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537773-14",
+        "date": "2026-06-19",
+        "amount": 99905.32,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-668",
+    "date": "2026-05-25",
+    "provider": "VARIOS",
+    "eventName": "EFICIENCIA 25-5",
+    "description": "CREMA DE LECHE X200",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 6550,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 6550,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 6.550",
+    "lineItems": [
+      {
+        "description": "CREMA DE LECHE X200",
+        "quantity": 2,
+        "unitAmount": 3275,
+        "total": 6550
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.314Z",
+    "updatedAt": "2026-06-19T15:38:57.772Z",
+    "paidAmount": 6550,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 6550,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537772-9",
+        "date": "2026-06-19",
+        "amount": 6550,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-667",
+    "date": "2026-05-25",
+    "provider": "VARIOS",
+    "eventName": "EFICIENCIA 25-5",
+    "description": "MANTECA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 3250,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 3250,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 3.250",
+    "lineItems": [
+      {
+        "description": "MANTECA",
+        "quantity": 1,
+        "unitAmount": 3250,
+        "total": 3250
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.284Z",
+    "updatedAt": "2026-06-19T15:38:57.772Z",
+    "paidAmount": 3250,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 3250,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537772-10",
+        "date": "2026-06-19",
+        "amount": 3250,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
     "id": "sheets-row-670",
     "date": "2026-05-25",
     "provider": "PAUZEN - ZENON",
@@ -4855,227 +5750,37 @@
     ]
   },
   {
-    "id": "sheets-row-679",
-    "date": "2026-05-25",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "FERR 23-5",
-    "description": "TAPA CANELONERA ALUMINIO F-200 X1",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 21240,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 21240,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "TAPA CANELONERA ALUMINIO F-200 X1",
-        "quantity": 30,
-        "unitAmount": 708,
-        "total": 21240
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.575Z",
-    "updatedAt": "2026-06-11T20:18:33.742Z",
-    "paidAmount": 21240,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113742-1",
-        "date": "2026-06-11",
-        "amount": 21240,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-678",
-    "date": "2026-05-25",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "FERR 23-5",
-    "description": "CANELONERA ALUMINIO BAL 4 X1",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 23553.6,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 23553.6,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "CANELONERA ALUMINIO BAL 4 X1",
-        "quantity": 30,
-        "unitAmount": 785.12,
-        "total": 23553.6
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.552Z",
-    "updatedAt": "2026-06-11T20:18:33.742Z",
-    "paidAmount": 23553.6,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113742-2",
-        "date": "2026-06-11",
-        "amount": 23553.6,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-677",
+    "id": "sheets-row-672",
     "date": "2026-05-25",
     "provider": "PAPELERA DEL OESTE SRL",
     "eventName": "COCINA GG",
-    "description": "BANDEJA ALUMINIO REAL 5 X1",
+    "description": "FILM PVC PREMIUM 200MTS X1",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 6611.6,
+    "netAmount": 55785.12,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 6611.6,
+    "totalAmount": 55785.12,
     "notes": "",
     "lineItems": [
       {
-        "description": "BANDEJA ALUMINIO REAL 5 X1",
-        "quantity": 20,
-        "unitAmount": 330.58,
-        "total": 6611.6
+        "description": "FILM PVC PREMIUM 200MTS X1",
+        "quantity": 3,
+        "unitAmount": 18595.04,
+        "total": 55785.12
       }
     ],
-    "createdAt": "2026-06-08T17:48:03.532Z",
+    "createdAt": "2026-06-08T17:48:03.427Z",
     "updatedAt": "2026-06-11T20:18:33.742Z",
-    "paidAmount": 6611.6,
+    "paidAmount": 55785.12,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781209113742-3",
+        "id": "pago-1781209113742-8",
         "date": "2026-06-11",
-        "amount": 6611.6,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-676",
-    "date": "2026-05-25",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "EFICIENCIA 25-5",
-    "description": "CUCHILLO BLANCO REFORZADO X50",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 2561.98,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 2561.98,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "CUCHILLO BLANCO REFORZADO X50",
-        "quantity": 1,
-        "unitAmount": 2561.98,
-        "total": 2561.98
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.512Z",
-    "updatedAt": "2026-06-11T20:18:33.742Z",
-    "paidAmount": 2561.98,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113742-4",
-        "date": "2026-06-11",
-        "amount": 2561.98,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-675",
-    "date": "2026-05-25",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "EFICIENCIA 25-5",
-    "description": "TENEDOR BLANCO REFORZADO X50",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 2561.98,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 2561.98,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "TENEDOR BLANCO REFORZADO X50",
-        "quantity": 1,
-        "unitAmount": 2561.98,
-        "total": 2561.98
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.491Z",
-    "updatedAt": "2026-06-11T20:18:33.742Z",
-    "paidAmount": 2561.98,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113742-5",
-        "date": "2026-06-11",
-        "amount": 2561.98,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-674",
-    "date": "2026-05-25",
-    "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "EFICIENCIA 25-5",
-    "description": "ESTUCHE 102 PP COTNYL X1",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "Factura A",
-    "netAmount": 69834.7,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 69834.7,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "ESTUCHE 102 PP COTNYL X1",
-        "quantity": 65,
-        "unitAmount": 1074.38,
-        "total": 69834.7
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.471Z",
-    "updatedAt": "2026-06-11T20:18:33.742Z",
-    "paidAmount": 69834.7,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781209113742-6",
-        "date": "2026-06-11",
-        "amount": 69834.7,
+        "amount": 55785.12,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -5121,37 +5826,37 @@
     ]
   },
   {
-    "id": "sheets-row-672",
+    "id": "sheets-row-674",
     "date": "2026-05-25",
     "provider": "PAPELERA DEL OESTE SRL",
-    "eventName": "COCINA GG",
-    "description": "FILM PVC PREMIUM 200MTS X1",
+    "eventName": "EFICIENCIA 25-5",
+    "description": "ESTUCHE 102 PP COTNYL X1",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
     "invoiceType": "Factura A",
-    "netAmount": 55785.12,
+    "netAmount": 69834.7,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 55785.12,
+    "totalAmount": 69834.7,
     "notes": "",
     "lineItems": [
       {
-        "description": "FILM PVC PREMIUM 200MTS X1",
-        "quantity": 3,
-        "unitAmount": 18595.04,
-        "total": 55785.12
+        "description": "ESTUCHE 102 PP COTNYL X1",
+        "quantity": 65,
+        "unitAmount": 1074.38,
+        "total": 69834.7
       }
     ],
-    "createdAt": "2026-06-08T17:48:03.427Z",
+    "createdAt": "2026-06-08T17:48:03.471Z",
     "updatedAt": "2026-06-11T20:18:33.742Z",
-    "paidAmount": 55785.12,
+    "paidAmount": 69834.7,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781209113742-8",
+        "id": "pago-1781209113742-6",
         "date": "2026-06-11",
-        "amount": 55785.12,
+        "amount": 69834.7,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -5159,200 +5864,506 @@
     ]
   },
   {
-    "id": "sheets-row-668",
+    "id": "sheets-row-675",
     "date": "2026-05-25",
-    "provider": "VARIOS",
+    "provider": "PAPELERA DEL OESTE SRL",
     "eventName": "EFICIENCIA 25-5",
-    "description": "CREMA DE LECHE X200",
+    "description": "TENEDOR BLANCO REFORZADO X50",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 6550,
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 2561.98,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 6550,
+    "totalAmount": 2561.98,
     "notes": "",
     "lineItems": [
       {
-        "description": "CREMA DE LECHE X200",
-        "quantity": 2,
-        "unitAmount": 3275,
-        "total": 6550
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.314Z",
-    "updatedAt": "2026-06-08T17:48:53.501Z",
-    "paidAmount": 6550,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-667",
-    "date": "2026-05-25",
-    "provider": "VARIOS",
-    "eventName": "EFICIENCIA 25-5",
-    "description": "MANTECA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 3250,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 3250,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "MANTECA",
+        "description": "TENEDOR BLANCO REFORZADO X50",
         "quantity": 1,
-        "unitAmount": 3250,
-        "total": 3250
+        "unitAmount": 2561.98,
+        "total": 2561.98
       }
     ],
-    "createdAt": "2026-06-08T17:48:03.284Z",
-    "updatedAt": "2026-06-08T17:48:53.475Z",
-    "paidAmount": 3250,
-    "pendingAmount": 0
+    "createdAt": "2026-06-08T17:48:03.491Z",
+    "updatedAt": "2026-06-11T20:18:33.742Z",
+    "paidAmount": 2561.98,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113742-5",
+        "date": "2026-06-11",
+        "amount": 2561.98,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
   },
   {
-    "id": "sheets-row-666",
+    "id": "sheets-row-676",
     "date": "2026-05-25",
-    "provider": "VARIOS",
+    "provider": "PAPELERA DEL OESTE SRL",
     "eventName": "EFICIENCIA 25-5",
-    "description": "MANTECA",
+    "description": "CUCHILLO BLANCO REFORZADO X50",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 2561.98,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 2561.98,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CUCHILLO BLANCO REFORZADO X50",
+        "quantity": 1,
+        "unitAmount": 2561.98,
+        "total": 2561.98
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.512Z",
+    "updatedAt": "2026-06-11T20:18:33.742Z",
+    "paidAmount": 2561.98,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113742-4",
+        "date": "2026-06-11",
+        "amount": 2561.98,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-677",
+    "date": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "COCINA GG",
+    "description": "BANDEJA ALUMINIO REAL 5 X1",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 6611.6,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 6611.6,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "BANDEJA ALUMINIO REAL 5 X1",
+        "quantity": 20,
+        "unitAmount": 330.58,
+        "total": 6611.6
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.532Z",
+    "updatedAt": "2026-06-11T20:18:33.742Z",
+    "paidAmount": 6611.6,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113742-3",
+        "date": "2026-06-11",
+        "amount": 6611.6,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-678",
+    "date": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "FERR 23-5",
+    "description": "CANELONERA ALUMINIO BAL 4 X1",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 23553.6,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 23553.6,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "CANELONERA ALUMINIO BAL 4 X1",
+        "quantity": 30,
+        "unitAmount": 785.12,
+        "total": 23553.6
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.552Z",
+    "updatedAt": "2026-06-11T20:18:33.742Z",
+    "paidAmount": 23553.6,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113742-2",
+        "date": "2026-06-11",
+        "amount": 23553.6,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-679",
+    "date": "2026-05-25",
+    "provider": "PAPELERA DEL OESTE SRL",
+    "eventName": "FERR 23-5",
+    "description": "TAPA CANELONERA ALUMINIO F-200 X1",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "Factura A",
+    "netAmount": 21240,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 21240,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "TAPA CANELONERA ALUMINIO F-200 X1",
+        "quantity": 30,
+        "unitAmount": 708,
+        "total": 21240
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.575Z",
+    "updatedAt": "2026-06-11T20:18:33.742Z",
+    "paidAmount": 21240,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781209113742-1",
+        "date": "2026-06-11",
+        "amount": 21240,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-656",
+    "date": "2026-05-22",
+    "provider": "TORRENT",
+    "eventName": "RESIDENCIA 22-5",
+    "description": "FIAMBRES",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Factura A",
+    "netAmount": 11029.09,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 11029.09,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 11.029",
+    "lineItems": [
+      {
+        "description": "FIAMBRES",
+        "quantity": 1,
+        "unitAmount": 11029.09090909091,
+        "total": 11029.09
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.988Z",
+    "updatedAt": "2026-06-19T15:38:57.771Z",
+    "paidAmount": 11029.09,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 11029.09,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537771-6",
+        "date": "2026-06-19",
+        "amount": 11029.09,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-655",
+    "date": "2026-05-22",
+    "provider": "FRUTI SHOP / PALFRUTI SAS",
+    "eventName": "RESIDENCIA 22-5",
+    "description": "VERDURA",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Joaquin",
     "invoiceType": "Remito",
-    "netAmount": 6500,
+    "netAmount": 22701.99,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 6500,
-    "notes": "",
+    "totalAmount": 22701.99,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 22.702",
     "lineItems": [
       {
-        "description": "MANTECA",
-        "quantity": 2,
-        "unitAmount": 3250,
-        "total": 6500
+        "description": "VERDURA",
+        "quantity": 1,
+        "unitAmount": 22701.989999999998,
+        "total": 22701.99
       }
     ],
-    "createdAt": "2026-06-08T17:48:03.259Z",
-    "updatedAt": "2026-06-08T17:48:53.452Z",
-    "paidAmount": 6500,
-    "pendingAmount": 0
+    "createdAt": "2026-06-08T17:48:02.961Z",
+    "updatedAt": "2026-06-19T15:38:57.771Z",
+    "paidAmount": 22701.99,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 22701.99,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537771-7",
+        "date": "2026-06-19",
+        "amount": 22701.99,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
   },
   {
-    "id": "sheets-row-665",
-    "date": "2026-05-25",
-    "provider": "VERDULERIA",
-    "eventName": "EFICIENCIA 25-5",
-    "description": "LECHE LA SERENISIMA",
+    "id": "sheets-row-654",
+    "date": "2026-05-22",
+    "provider": "MORETTI",
+    "eventName": "RESIDENCIA 22-5",
+    "description": "FIAMBRES",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 8000,
+    "invoiceType": "Factura A",
+    "netAmount": 181325.62,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 8000,
-    "notes": "",
+    "totalAmount": 181325.62,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 181.326",
     "lineItems": [
       {
-        "description": "LECHE LA SERENISIMA",
-        "quantity": 2,
-        "unitAmount": 4000,
-        "total": 8000
+        "description": "FIAMBRES",
+        "quantity": 1,
+        "unitAmount": 181325.61983471076,
+        "total": 181325.62
       }
     ],
-    "createdAt": "2026-06-08T17:48:03.234Z",
-    "updatedAt": "2026-06-08T17:48:53.421Z",
-    "paidAmount": 8000,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-664",
-    "date": "2026-05-25",
-    "provider": "VERDULERIA",
-    "eventName": "EFICIENCIA 25-5",
-    "description": "PAPA XKG",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 4736.2,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 4736.2,
-    "notes": "",
-    "lineItems": [
+    "createdAt": "2026-06-08T17:48:02.939Z",
+    "updatedAt": "2026-06-19T15:38:57.771Z",
+    "paidAmount": 181325.62,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 181325.62,
+    "reimbursementLog": [
       {
-        "description": "PAPA XKG",
-        "quantity": 2,
-        "unitAmount": 2368.1,
-        "total": 4736.2
+        "id": "reintegro-1781883537771-8",
+        "date": "2026-06-19",
+        "amount": 181325.62,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
       }
-    ],
-    "createdAt": "2026-06-08T17:48:03.205Z",
-    "updatedAt": "2026-06-08T17:48:53.390Z",
-    "paidAmount": 4736.2,
-    "pendingAmount": 0
+    ]
   },
   {
-    "id": "sheets-row-663",
-    "date": "2026-05-25",
-    "provider": "CENTRAL DE BEBIDAS / DISRE",
-    "eventName": "EFICIENCIA 25-5",
+    "id": "sheets-row-660",
+    "date": "2026-05-22",
+    "provider": "BRALUJA SAS",
+    "eventName": "SANTI REUNION 23-5",
     "description": "BEBIDAS VARIAS",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Joaquin",
     "invoiceType": "Remito",
-    "netAmount": 99905.32,
+    "netAmount": 41040,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 99905.32,
-    "notes": "",
+    "totalAmount": 41040,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 41.040",
     "lineItems": [
       {
         "description": "BEBIDAS VARIAS",
         "quantity": 1,
-        "unitAmount": 99905.32,
-        "total": 99905.32
+        "unitAmount": 41040,
+        "total": 41040
       }
     ],
-    "createdAt": "2026-06-08T17:48:03.179Z",
-    "updatedAt": "2026-06-08T17:48:53.358Z",
-    "paidAmount": 99905.32,
-    "pendingAmount": 0
+    "createdAt": "2026-06-08T17:48:03.096Z",
+    "updatedAt": "2026-06-19T15:38:57.770Z",
+    "paidAmount": 41040,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 41040,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537769-2",
+        "date": "2026-06-19",
+        "amount": 41040,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
   },
   {
-    "id": "sheets-row-662",
-    "date": "2026-05-25",
-    "provider": "LA NUEVA PERLA",
-    "eventName": "EFICIENCIA 25-5",
-    "description": "PAN",
+    "id": "sheets-row-659",
+    "date": "2026-05-22",
+    "provider": "VERDULERIA",
+    "eventName": "SANTI REUNION 23-5",
+    "description": "ATADO TABLAS",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Joaquin",
     "invoiceType": "Remito",
-    "netAmount": 4500,
+    "netAmount": 7000,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 4500,
-    "notes": "",
+    "totalAmount": 7000,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 7.000",
     "lineItems": [
       {
-        "description": "PAN",
-        "quantity": 1,
-        "unitAmount": 4500,
-        "total": 4500
+        "description": "ATADO TABLAS",
+        "quantity": 2,
+        "unitAmount": 3500,
+        "total": 7000
       }
     ],
-    "createdAt": "2026-06-08T17:48:03.150Z",
-    "updatedAt": "2026-06-08T17:48:53.329Z",
-    "paidAmount": 4500,
-    "pendingAmount": 0
+    "createdAt": "2026-06-08T17:48:03.072Z",
+    "updatedAt": "2026-06-19T15:38:57.770Z",
+    "paidAmount": 7000,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 7000,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537770-3",
+        "date": "2026-06-19",
+        "amount": 7000,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-658",
+    "date": "2026-05-22",
+    "provider": "VERDULERIA",
+    "eventName": "SANTI REUNION 23-5",
+    "description": "VERDURA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 40500,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 40500,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 40.500",
+    "lineItems": [
+      {
+        "description": "VERDURA",
+        "quantity": 1,
+        "unitAmount": 40500,
+        "total": 40500
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.044Z",
+    "updatedAt": "2026-06-19T15:38:57.770Z",
+    "paidAmount": 40500,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 40500,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537770-4",
+        "date": "2026-06-19",
+        "amount": 40500,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-657",
+    "date": "2026-05-22",
+    "provider": "GRANJA BENEDETTI / ALMA SRL",
+    "eventName": "RESIDENCIA 22-5",
+    "description": "CARNES",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 44014.8,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 44014.8,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 44.015",
+    "lineItems": [
+      {
+        "description": "CARNES",
+        "quantity": 1,
+        "unitAmount": 44014.8,
+        "total": 44014.8
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.016Z",
+    "updatedAt": "2026-06-19T15:38:57.770Z",
+    "paidAmount": 44014.8,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 44014.8,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537770-5",
+        "date": "2026-06-19",
+        "amount": 44014.8,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-661",
+    "date": "2026-05-22",
+    "provider": "VARIOS",
+    "eventName": "CUMPLEAÑOS 23-5",
+    "description": "BEBIDAS VARIAS",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Joaquin",
+    "invoiceType": "Remito",
+    "netAmount": 12000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 12000,
+    "notes": "Reintegro Joaquin 2026-06-19: $ 12.000",
+    "lineItems": [
+      {
+        "description": "BEBIDAS VARIAS",
+        "quantity": 1,
+        "unitAmount": 12000,
+        "total": 12000
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:03.124Z",
+    "updatedAt": "2026-06-19T15:38:57.769Z",
+    "paidAmount": 12000,
+    "pendingAmount": 0,
+    "reimbursementPaidAmount": 12000,
+    "reimbursementLog": [
+      {
+        "id": "reintegro-1781883537658-1",
+        "date": "2026-06-19",
+        "amount": 12000,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Galicia Claudia",
+        "notes": ""
+      }
+    ]
   },
   {
     "id": "compra-1780949076258",
@@ -5393,273 +6404,11 @@
     ]
   },
   {
-    "id": "sheets-row-661",
-    "date": "2026-05-22",
-    "provider": "VARIOS",
-    "eventName": "CUMPLEAÑOS 23-5",
-    "description": "BEBIDAS VARIAS",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 12000,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 12000,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "BEBIDAS VARIAS",
-        "quantity": 1,
-        "unitAmount": 12000,
-        "total": 12000
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.124Z",
-    "updatedAt": "2026-06-08T17:48:53.302Z",
-    "paidAmount": 12000,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-660",
-    "date": "2026-05-22",
-    "provider": "BRALUJA SAS",
-    "eventName": "SANTI REUNION 23-5",
-    "description": "BEBIDAS VARIAS",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 41040,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 41040,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "BEBIDAS VARIAS",
-        "quantity": 1,
-        "unitAmount": 41040,
-        "total": 41040
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.096Z",
-    "updatedAt": "2026-06-08T17:48:53.278Z",
-    "paidAmount": 41040,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-659",
-    "date": "2026-05-22",
-    "provider": "VERDULERIA",
-    "eventName": "SANTI REUNION 23-5",
-    "description": "ATADO TABLAS",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 7000,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 7000,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "ATADO TABLAS",
-        "quantity": 2,
-        "unitAmount": 3500,
-        "total": 7000
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.072Z",
-    "updatedAt": "2026-06-08T17:48:53.253Z",
-    "paidAmount": 7000,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-658",
-    "date": "2026-05-22",
-    "provider": "VERDULERIA",
-    "eventName": "SANTI REUNION 23-5",
-    "description": "VERDURA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 40500,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 40500,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "VERDURA",
-        "quantity": 1,
-        "unitAmount": 40500,
-        "total": 40500
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.044Z",
-    "updatedAt": "2026-06-08T17:48:53.224Z",
-    "paidAmount": 40500,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-657",
-    "date": "2026-05-22",
-    "provider": "GRANJA BENEDETTI / ALMA SRL",
-    "eventName": "RESIDENCIA 22-5",
-    "description": "CARNES",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 44014.8,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 44014.8,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "CARNES",
-        "quantity": 1,
-        "unitAmount": 44014.8,
-        "total": 44014.8
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:03.016Z",
-    "updatedAt": "2026-06-08T17:48:53.196Z",
-    "paidAmount": 44014.8,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-656",
-    "date": "2026-05-22",
-    "provider": "TORRENT",
-    "eventName": "RESIDENCIA 22-5",
-    "description": "FIAMBRES",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Factura A",
-    "netAmount": 11029.09,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 11029.09,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "FIAMBRES",
-        "quantity": 1,
-        "unitAmount": 11029.09090909091,
-        "total": 11029.09
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.988Z",
-    "updatedAt": "2026-06-08T17:48:53.159Z",
-    "paidAmount": 11029.09,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-655",
-    "date": "2026-05-22",
-    "provider": "FRUTI SHOP / PALFRUTI SAS",
-    "eventName": "RESIDENCIA 22-5",
-    "description": "VERDURA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Remito",
-    "netAmount": 22701.99,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 22701.99,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "VERDURA",
-        "quantity": 1,
-        "unitAmount": 22701.989999999998,
-        "total": 22701.99
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.961Z",
-    "updatedAt": "2026-06-08T17:48:53.126Z",
-    "paidAmount": 22701.99,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-654",
-    "date": "2026-05-22",
-    "provider": "MORETTI",
-    "eventName": "RESIDENCIA 22-5",
-    "description": "FIAMBRES",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Joaquin",
-    "invoiceType": "Factura A",
-    "netAmount": 181325.62,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 181325.62,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "FIAMBRES",
-        "quantity": 1,
-        "unitAmount": 181325.61983471076,
-        "total": 181325.62
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.939Z",
-    "updatedAt": "2026-06-08T17:48:53.102Z",
-    "paidAmount": 181325.62,
-    "pendingAmount": 0
-  },
-  {
-    "id": "sheets-row-649",
+    "id": "sheets-row-652",
     "date": "2026-05-21",
     "provider": "TIA CLARA DULCES ARTESANALES",
     "eventName": "RESIDENCIA 22-5",
-    "description": "MERMELADA DE AJI PICANTE",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Banco",
-    "invoiceType": "",
-    "netAmount": 7000,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 7000,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "MERMELADA DE AJI PICANTE",
-        "quantity": 1,
-        "unitAmount": 7000,
-        "total": 7000
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.660Z",
-    "updatedAt": "2026-06-12T15:42:07.629Z",
-    "paidAmount": 7000,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781278927629-5",
-        "date": "2026-06-12",
-        "amount": 7000,
-        "paymentMethod": "Transferencia",
-        "fundsSource": "Banco",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-650",
-    "date": "2026-05-21",
-    "provider": "TIA CLARA DULCES ARTESANALES",
-    "eventName": "RESIDENCIA 22-5",
-    "description": "HIGOS EN ALMIBAR",
+    "description": "NARANJA EN ALMIBAR",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
@@ -5671,19 +6420,19 @@
     "notes": "",
     "lineItems": [
       {
-        "description": "HIGOS EN ALMIBAR",
+        "description": "NARANJA EN ALMIBAR",
         "quantity": 2,
         "unitAmount": 8500,
         "total": 17000
       }
     ],
-    "createdAt": "2026-06-08T17:48:02.688Z",
+    "createdAt": "2026-06-08T17:48:02.734Z",
     "updatedAt": "2026-06-12T15:42:07.629Z",
     "paidAmount": 17000,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278927629-4",
+        "id": "pago-1781278927629-2",
         "date": "2026-06-12",
         "amount": 17000,
         "paymentMethod": "Transferencia",
@@ -5731,11 +6480,11 @@
     ]
   },
   {
-    "id": "sheets-row-652",
+    "id": "sheets-row-650",
     "date": "2026-05-21",
     "provider": "TIA CLARA DULCES ARTESANALES",
     "eventName": "RESIDENCIA 22-5",
-    "description": "NARANJA EN ALMIBAR",
+    "description": "HIGOS EN ALMIBAR",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
     "fundsSource": "Banco",
@@ -5747,21 +6496,59 @@
     "notes": "",
     "lineItems": [
       {
-        "description": "NARANJA EN ALMIBAR",
+        "description": "HIGOS EN ALMIBAR",
         "quantity": 2,
         "unitAmount": 8500,
         "total": 17000
       }
     ],
-    "createdAt": "2026-06-08T17:48:02.734Z",
+    "createdAt": "2026-06-08T17:48:02.688Z",
     "updatedAt": "2026-06-12T15:42:07.629Z",
     "paidAmount": 17000,
     "pendingAmount": 0,
     "paymentLog": [
       {
-        "id": "pago-1781278927629-2",
+        "id": "pago-1781278927629-4",
         "date": "2026-06-12",
         "amount": 17000,
+        "paymentMethod": "Transferencia",
+        "fundsSource": "Banco",
+        "notes": ""
+      }
+    ]
+  },
+  {
+    "id": "sheets-row-649",
+    "date": "2026-05-21",
+    "provider": "TIA CLARA DULCES ARTESANALES",
+    "eventName": "RESIDENCIA 22-5",
+    "description": "MERMELADA DE AJI PICANTE",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "Transferencia",
+    "fundsSource": "Banco",
+    "invoiceType": "",
+    "netAmount": 7000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 7000,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "MERMELADA DE AJI PICANTE",
+        "quantity": 1,
+        "unitAmount": 7000,
+        "total": 7000
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.660Z",
+    "updatedAt": "2026-06-12T15:42:07.629Z",
+    "paidAmount": 7000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781278927629-5",
+        "date": "2026-06-12",
+        "amount": 7000,
         "paymentMethod": "Transferencia",
         "fundsSource": "Banco",
         "notes": ""
@@ -5845,389 +6632,9 @@
     ]
   },
   {
-    "id": "sheets-row-647",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "SANTI REUNION 23-5",
-    "description": "MATAMBRITO DE CERDO",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 32937.5,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 32937.5,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "MATAMBRITO DE CERDO",
-        "quantity": 2.125,
-        "unitAmount": 15500,
-        "total": 32937.5
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.600Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 32937.5,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-12",
-        "date": "2026-06-11",
-        "amount": 32937.5,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-646",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "SANTI REUNION 23-5",
-    "description": "VACIO",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 175172.5,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 175172.5,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "VACIO",
-        "quantity": 8.545,
-        "unitAmount": 20500,
-        "total": 175172.5
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.574Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 175172.5,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-11",
-        "date": "2026-06-11",
-        "amount": 175172.5,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-645",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "SANTI REUNION 23-5",
-    "description": "COSTILLA DE 1°",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 27420.4,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 27420.4,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "COSTILLA DE 1°",
-        "quantity": 1.96,
-        "unitAmount": 13990,
-        "total": 27420.4
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.547Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 27420.4,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-10",
-        "date": "2026-06-11",
-        "amount": 27420.4,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-644",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "RESIDENCIA 22-5",
-    "description": "TAPA DE ASADO XKG",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 47460.9,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 47460.9,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "TAPA DE ASADO XKG",
-        "quantity": 2.81,
-        "unitAmount": 16890,
-        "total": 47460.9
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.523Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 47460.9,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-9",
-        "date": "2026-06-11",
-        "amount": 47460.9,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-643",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "COCINA GG",
-    "description": "MOLIDA INT X MAYOR",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 17000,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 17000,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "MOLIDA INT X MAYOR",
-        "quantity": 2,
-        "unitAmount": 8500,
-        "total": 17000
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.494Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 17000,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-8",
-        "date": "2026-06-11",
-        "amount": 17000,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-642",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "CUMPLEAÑOS 23-5",
-    "description": "COSTILLA DE 1°",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 37982.85,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 37982.85,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "COSTILLA DE 1°",
-        "quantity": 2.715,
-        "unitAmount": 13990,
-        "total": 37982.85
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.468Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 37982.85,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-7",
-        "date": "2026-06-11",
-        "amount": 37982.85,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-641",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "CUMPLEAÑOS 23-5",
-    "description": "ENTRAÑA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 40250,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 40250,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "ENTRAÑA",
-        "quantity": 1.61,
-        "unitAmount": 25000,
-        "total": 40250
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.444Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 40250,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-6",
-        "date": "2026-06-11",
-        "amount": 40250,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-640",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "CUMPLEAÑOS 23-5",
-    "description": "VACIO",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 151495,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 151495,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "VACIO",
-        "quantity": 7.39,
-        "unitAmount": 20500,
-        "total": 151495
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.411Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 151495,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-5",
-        "date": "2026-06-11",
-        "amount": 151495,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-638",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "RESIDENCIA 22-5",
-    "description": "MATAMBRITO DE CERDO",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 48437.5,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 48437.5,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "MATAMBRITO DE CERDO",
-        "quantity": 3.125,
-        "unitAmount": 15500,
-        "total": 48437.5
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.359Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 48437.5,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-4",
-        "date": "2026-06-11",
-        "amount": 48437.5,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
-    "id": "sheets-row-637",
-    "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
-    "eventName": "RESIDENCIA 22-5",
-    "description": "SUPREMA",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "",
-    "fundsSource": "",
-    "invoiceType": "Remito",
-    "netAmount": 45034,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 45034,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "SUPREMA",
-        "quantity": 4.094,
-        "unitAmount": 11000,
-        "total": 45034
-      }
-    ],
-    "createdAt": "2026-06-08T17:48:02.333Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
-    "paidAmount": 45034,
-    "pendingAmount": 0,
-    "paymentLog": [
-      {
-        "id": "pago-1781202853589-3",
-        "date": "2026-06-11",
-        "amount": 45034,
-        "paymentMethod": "",
-        "fundsSource": "",
-        "notes": ""
-      }
-    ]
-  },
-  {
     "id": "sheets-row-636",
     "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "EFICIENCIA 25-5",
     "description": "BONDIOLA FRESCA DE CERDO",
     "paymentStatus": "Pagado",
@@ -6248,7 +6655,7 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:02.310Z",
-    "updatedAt": "2026-06-11T18:34:13.589Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 73344,
     "pendingAmount": 0,
     "paymentLog": [
@@ -6260,12 +6667,403 @@
         "fundsSource": "",
         "notes": ""
       }
-    ]
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-637",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "RESIDENCIA 22-5",
+    "description": "SUPREMA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 45034,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 45034,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "SUPREMA",
+        "quantity": 4.094,
+        "unitAmount": 11000,
+        "total": 45034
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.333Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 45034,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-3",
+        "date": "2026-06-11",
+        "amount": 45034,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-638",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "RESIDENCIA 22-5",
+    "description": "MATAMBRITO DE CERDO",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 48437.5,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 48437.5,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "MATAMBRITO DE CERDO",
+        "quantity": 3.125,
+        "unitAmount": 15500,
+        "total": 48437.5
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.359Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 48437.5,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-4",
+        "date": "2026-06-11",
+        "amount": 48437.5,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-640",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "CUMPLEAÑOS 23-5",
+    "description": "VACIO",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 151495,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 151495,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "VACIO",
+        "quantity": 7.39,
+        "unitAmount": 20500,
+        "total": 151495
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.411Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 151495,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-5",
+        "date": "2026-06-11",
+        "amount": 151495,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-641",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "CUMPLEAÑOS 23-5",
+    "description": "ENTRAÑA",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 40250,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 40250,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "ENTRAÑA",
+        "quantity": 1.61,
+        "unitAmount": 25000,
+        "total": 40250
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.444Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 40250,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-6",
+        "date": "2026-06-11",
+        "amount": 40250,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-642",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "CUMPLEAÑOS 23-5",
+    "description": "COSTILLA DE 1°",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 37982.85,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 37982.85,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "COSTILLA DE 1°",
+        "quantity": 2.715,
+        "unitAmount": 13990,
+        "total": 37982.85
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.468Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 37982.85,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-7",
+        "date": "2026-06-11",
+        "amount": 37982.85,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-643",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "COCINA GG",
+    "description": "MOLIDA INT X MAYOR",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 17000,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 17000,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "MOLIDA INT X MAYOR",
+        "quantity": 2,
+        "unitAmount": 8500,
+        "total": 17000
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.494Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 17000,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-8",
+        "date": "2026-06-11",
+        "amount": 17000,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-644",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "RESIDENCIA 22-5",
+    "description": "TAPA DE ASADO XKG",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 47460.9,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 47460.9,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "TAPA DE ASADO XKG",
+        "quantity": 2.81,
+        "unitAmount": 16890,
+        "total": 47460.9
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.523Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 47460.9,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-9",
+        "date": "2026-06-11",
+        "amount": 47460.9,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-645",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "SANTI REUNION 23-5",
+    "description": "COSTILLA DE 1°",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 27420.4,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 27420.4,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "COSTILLA DE 1°",
+        "quantity": 1.96,
+        "unitAmount": 13990,
+        "total": 27420.4
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.547Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 27420.4,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-10",
+        "date": "2026-06-11",
+        "amount": 27420.4,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-646",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "SANTI REUNION 23-5",
+    "description": "VACIO",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 175172.5,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 175172.5,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "VACIO",
+        "quantity": 8.545,
+        "unitAmount": 20500,
+        "total": 175172.5
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.574Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 175172.5,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-11",
+        "date": "2026-06-11",
+        "amount": 175172.5,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
+  },
+  {
+    "id": "sheets-row-647",
+    "date": "2026-05-21",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "SANTI REUNION 23-5",
+    "description": "MATAMBRITO DE CERDO",
+    "paymentStatus": "Pagado",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 32937.5,
+    "ivaRate": 0,
+    "ivaAmount": 0,
+    "totalAmount": 32937.5,
+    "notes": "",
+    "lineItems": [
+      {
+        "description": "MATAMBRITO DE CERDO",
+        "quantity": 2.125,
+        "unitAmount": 15500,
+        "total": 32937.5
+      }
+    ],
+    "createdAt": "2026-06-08T17:48:02.600Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
+    "paidAmount": 32937.5,
+    "pendingAmount": 0,
+    "paymentLog": [
+      {
+        "id": "pago-1781202853589-12",
+        "date": "2026-06-11",
+        "amount": 32937.5,
+        "paymentMethod": "",
+        "fundsSource": "",
+        "notes": ""
+      }
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-635",
     "date": "2026-05-21",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "RESIDENCIA 22-5",
     "description": "ENTRAÑA",
     "paymentStatus": "Pagado",
@@ -6286,7 +7084,7 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:02.285Z",
-    "updatedAt": "2026-06-11T18:34:13.588Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 152375,
     "pendingAmount": 0,
     "paymentLog": [
@@ -6298,7 +7096,8 @@
         "fundsSource": "",
         "notes": ""
       }
-    ]
+    ],
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-648",
@@ -6509,7 +7308,7 @@
   {
     "id": "sheets-row-628",
     "date": "2026-03-19",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "Sin evento",
     "description": "MOLIDA XKG",
     "paymentStatus": "Pagado",
@@ -6530,14 +7329,15 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:02.072Z",
-    "updatedAt": "2026-06-08T17:48:52.323Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 74990.5,
-    "pendingAmount": 0
+    "pendingAmount": 0,
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-627",
     "date": "2026-03-19",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "Sin evento",
     "description": "MOLIDA XKG",
     "paymentStatus": "Pagado",
@@ -6558,9 +7358,10 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:02.043Z",
-    "updatedAt": "2026-06-08T17:48:52.296Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 74907.5,
-    "pendingAmount": 0
+    "pendingAmount": 0,
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-626",
@@ -7153,7 +7954,7 @@
   {
     "id": "sheets-row-605",
     "date": "2026-03-14",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "Sin evento",
     "description": "COSTILLA DE 1°",
     "paymentStatus": "Pagado",
@@ -7174,14 +7975,15 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:01.257Z",
-    "updatedAt": "2026-06-08T17:48:51.621Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 124800,
-    "pendingAmount": 0
+    "pendingAmount": 0,
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-604",
     "date": "2026-03-14",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "Sin evento",
     "description": "PUNTA DE ESPALDA",
     "paymentStatus": "Pagado",
@@ -7202,14 +8004,15 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:01.205Z",
-    "updatedAt": "2026-06-08T17:48:51.600Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 15300,
-    "pendingAmount": 0
+    "pendingAmount": 0,
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-603",
     "date": "2026-03-14",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "Sin evento",
     "description": "TAPA DE ASADO XKG",
     "paymentStatus": "Pagado",
@@ -7230,9 +8033,10 @@
       }
     ],
     "createdAt": "2026-06-08T17:48:01.174Z",
-    "updatedAt": "2026-06-08T17:48:51.575Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 154800,
-    "pendingAmount": 0
+    "pendingAmount": 0,
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-602",
@@ -10793,7 +11597,7 @@
   {
     "id": "sheets-row-454",
     "date": "2026-03-01",
-    "provider": "RUBEN CARNE",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
     "eventName": "Sin evento",
     "description": "MOLIDA INT X MAYOR",
     "paymentStatus": "Pagado",
@@ -10814,9 +11618,10 @@
       }
     ],
     "createdAt": "2026-06-08T17:47:57.491Z",
-    "updatedAt": "2026-06-08T17:48:45.748Z",
+    "updatedAt": "2026-06-19T21:12:34.974Z",
     "paidAmount": 41625,
-    "pendingAmount": 0
+    "pendingAmount": 0,
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   },
   {
     "id": "sheets-row-453",
@@ -24847,194 +25652,72 @@
     "pendingAmount": 0
   },
   {
-    "id": "compra-1781614916236",
-    "date": "2026-06-16",
-    "provider": "PEDIDOS YA",
-    "eventName": "INFANTIL ROMI",
-    "description": "JAMON COCIDO CAGNOLI FETEADO XG",
+    "id": "compra-1781898919955",
+    "date": "2026-06-19",
+    "provider": "LA CUYANITA S.A.",
+    "eventName": "CUMPLE LUCCA",
+    "description": "EMPANADAS HOJALDRE",
     "paymentStatus": "Pagado",
     "paymentMethod": "Transferencia",
-    "fundsSource": "Galicia Claudia",
-    "invoiceType": "Factura C",
-    "netAmount": 34352.45,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 34352.45,
-    "paidAmount": 34352.45,
+    "fundsSource": "MP Claudia",
+    "invoiceType": "Factura A",
+    "netAmount": 12000,
+    "ivaRate": 0.21,
+    "ivaAmount": 2520,
+    "totalAmount": 14520,
+    "paidAmount": 14520,
     "pendingAmount": 0,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
     "notes": "",
     "lineItems": [
       {
-        "description": "JAMON COCIDO CAGNOLI FETEADO XG",
-        "quantity": 1,
-        "unitAmount": 4234.45,
-        "ivaRate": 0,
-        "netTotal": 4234.45,
-        "ivaAmount": 0,
-        "total": 4234.45
-      },
-      {
-        "description": "QUESO CREMON DOBLE CREMA LA SERENISIMA 480G",
-        "quantity": 2,
-        "unitAmount": 7709.5,
-        "ivaRate": 0,
-        "netTotal": 15419,
-        "ivaAmount": 0,
-        "total": 15419
-      },
-      {
-        "description": "PASSATA DE TOMATE RINA MATARAZZO 500G",
-        "quantity": 2,
-        "unitAmount": 6315,
-        "ivaRate": 0,
-        "netTotal": 12630,
-        "ivaAmount": 0,
-        "total": 12630
-      },
-      {
-        "description": "ENVIO",
-        "quantity": 1,
-        "unitAmount": 1229,
-        "ivaRate": 0,
-        "netTotal": 1229,
-        "ivaAmount": 0,
-        "total": 1229
-      },
-      {
-        "description": "TARIFA DE SERVICIO PEDIDOS YA",
-        "quantity": 1,
-        "unitAmount": 840,
-        "ivaRate": 0,
-        "netTotal": 840,
-        "ivaAmount": 0,
-        "total": 840
+        "description": "EMPANADAS HOJALDRE",
+        "quantity": 10,
+        "unitAmount": 1200,
+        "ivaRate": 0.21,
+        "netTotal": 12000,
+        "ivaAmount": 2520,
+        "total": 14520
       }
     ],
     "paymentLog": [],
-    "createdAt": "2026-06-16T13:01:56.236Z",
-    "updatedAt": "2026-06-16T13:01:56.382Z"
+    "createdAt": "2026-06-19T19:55:19.955Z",
+    "updatedAt": "2026-06-19T21:15:31.050Z"
   },
   {
-    "id": "compra-1781615035900",
-    "date": "2026-06-16",
-    "provider": "PEDIDOS YA",
-    "eventName": "PICADA POLO JUDICIAL",
-    "description": "FRUTOS SECOS MIX SUPREMO 50G",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Galicia Claudia",
-    "invoiceType": "Factura C",
-    "netAmount": 28723,
+    "id": "compra-1781903345265",
+    "date": "2026-06-19",
+    "provider": "ABASTO VICINO (RUBEN CARNES)",
+    "eventName": "CUMPLE LUCCA",
+    "description": "MOLIDA INT X MAYOR",
+    "paymentStatus": "Pendiente",
+    "paymentMethod": "",
+    "fundsSource": "",
+    "invoiceType": "Remito",
+    "netAmount": 25500,
     "ivaRate": 0,
     "ivaAmount": 0,
-    "totalAmount": 28723,
-    "paidAmount": 28723,
-    "pendingAmount": 0,
+    "totalAmount": 25500,
+    "paidAmount": 0,
+    "pendingAmount": 25500,
+    "reimbursementPaidAmount": 0,
+    "reimbursementLog": [],
     "notes": "",
     "lineItems": [
       {
-        "description": "FRUTOS SECOS MIX SUPREMO 50G",
-        "quantity": 4,
-        "unitAmount": 2835,
+        "description": "MOLIDA INT X MAYOR",
+        "quantity": 3,
+        "unitAmount": 8500,
         "ivaRate": 0,
-        "netTotal": 11340,
+        "netTotal": 25500,
         "ivaAmount": 0,
-        "total": 11340
-      },
-      {
-        "description": "EDULCORANTE HILERET CLASICO LÍQUIDO 500ML",
-        "quantity": 1,
-        "unitAmount": 5355,
-        "ivaRate": 0,
-        "netTotal": 5355,
-        "ivaAmount": 0,
-        "total": 5355
-      },
-      {
-        "description": "TOMATE CHERRY RIE LA HUERTA 300GRS",
-        "quantity": 2,
-        "unitAmount": 6014,
-        "ivaRate": 0,
-        "netTotal": 12028,
-        "ivaAmount": 0,
-        "total": 12028
+        "total": 25500
       }
     ],
     "paymentLog": [],
-    "createdAt": "2026-06-16T13:03:55.900Z",
-    "updatedAt": "2026-06-16T13:03:55.946Z"
-  },
-  {
-    "id": "compra-1781615094963",
-    "date": "2026-06-16",
-    "provider": "PEDIDOS YA",
-    "eventName": "PICADA POLO JUDICIAL",
-    "description": "ENVIO",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Galicia Claudia",
-    "invoiceType": "Ticket",
-    "netAmount": 4699,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 4699,
-    "paidAmount": 4699,
-    "pendingAmount": 0,
-    "notes": "ENVIO PANERAS CASA MARTIN A CLAUDIA",
-    "lineItems": [
-      {
-        "description": "ENVIO",
-        "quantity": 1,
-        "unitAmount": 4699,
-        "ivaRate": 0,
-        "netTotal": 4699,
-        "ivaAmount": 0,
-        "total": 4699
-      }
-    ],
-    "paymentLog": [],
-    "createdAt": "2026-06-16T13:04:54.963Z",
-    "updatedAt": "2026-06-16T13:04:54.975Z"
-  },
-  {
-    "id": "compra-1781615650534",
-    "date": "2026-06-16",
-    "provider": "PEDIDOS YA",
-    "eventName": "PICADA POLO JUDICIAL",
-    "description": "ENVIO",
-    "paymentStatus": "Pagado",
-    "paymentMethod": "Transferencia",
-    "fundsSource": "Galicia Claudia",
-    "invoiceType": "Ticket",
-    "netAmount": 1974,
-    "ivaRate": 0,
-    "ivaAmount": 0,
-    "totalAmount": 1974,
-    "paidAmount": 1974,
-    "pendingAmount": 0,
-    "notes": "",
-    "lineItems": [
-      {
-        "description": "ENVIO",
-        "quantity": 1,
-        "unitAmount": 1229,
-        "ivaRate": 0,
-        "netTotal": 1229,
-        "ivaAmount": 0,
-        "total": 1229
-      },
-      {
-        "description": "TARIFA DE SERVICIO PEDIDOS YA",
-        "quantity": 1,
-        "unitAmount": 745,
-        "ivaRate": 0,
-        "netTotal": 745,
-        "ivaAmount": 0,
-        "total": 745
-      }
-    ],
-    "paymentLog": [],
-    "createdAt": "2026-06-16T13:14:10.534Z",
-    "updatedAt": "2026-06-16T13:14:10.546Z"
+    "createdAt": "2026-06-19T21:09:05.265Z",
+    "updatedAt": "2026-06-19T21:12:34.975Z",
+    "proveedor": "ABASTO VICINO (RUBEN CARNES)"
   }
 ]

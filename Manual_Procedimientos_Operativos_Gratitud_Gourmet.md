@@ -26,6 +26,88 @@ Las areas principales son:
 
 Regla simple: **cada evento debe poder seguirse desde el dashboard y ejecutarse con estos procedimientos.**
 
+### Navegacion del ERP
+
+El panel se navega por modulos principales con submenus. Al pasar el mouse por una pestaña, se despliega la lista de subfunciones de ese modulo. Al tocar la pestaña principal, se abre directamente la vista mas importante del modulo. Al elegir una subfuncion, el sistema cambia a esa subpantalla y oculta el resto para evitar pantallas largas y mezcladas:
+
+- `ERP`: resumen ejecutivo, lectura rapida y alertas accionables.
+- `Comercial`: oportunidades, pipeline, presupuestos, clientes y lugares.
+- `Eventos`: control integral del evento, estados, cierres, conformidades y presupuestos asociados.
+- `Compras`: compras, ordenes de compra, inventario e insumos con variacion.
+- `Finanzas`: resumen, cobros por evento, deudas, reintegros y ordenes de pago.
+- `Produccion/Cocina`: monitor de produccion, libro de recetas, revision del cocinero y checklist cocina por evento.
+- `Logistica Evento`: ficha operativa mobile-first, checklist por rubro, mapa, telefono/WhatsApp y cierre a autorizacion.
+- `Recetas`: libro de recetas, carga/edicion, fotos, revision y exportacion.
+- `Stock`: inventario, recepciones, diferencias e insumos con variacion.
+- `Proveedores`: datos fiscales, bancarios, contacto y cuenta corriente.
+- `Clientes`: base de clientes, historial, preferencias y restricciones.
+- `Personal/RRHH`: legajos, asistencia, horarios, sueldos y horas.
+- `Bromatologia`: registros, vencimientos, decomisos y aprobaciones.
+- `Seguridad`: usuarios, roles, permisos, panel admin e historial.
+- `Reportes`: ventas, compras, margen, stock, proveedores, clientes, eventos y exportaciones.
+
+Cada usuario solo ve los modulos, submenus y subpantallas habilitadas para su rol.
+Cuando se abre una ventana emergente de carga o edicion, los submenus quedan ocultos para evitar solapamientos.
+
+### Actualizacion de navegacion y control - 22/06/2026
+
+- El modulo `Eventos` queda separado de `Comercial` para concentrar el control integral del evento.
+- El modulo `ERP` queda como resumen ejecutivo limpio: venta aceptada, margen, compras pendientes, proximos eventos, deudas y cierres por autorizar.
+- Las tablas largas deben abrirse dentro de contenedores con scroll interno y encabezado fijo.
+- Las fichas de evento deben abrirse en ventana amplia, casi pantalla completa, para revisar menu, compras, costos, checklist, conformidad y cierre.
+- El `Panel admin` dentro de Seguridad funciona como mapa accionable: permite saltar a usuarios, roles, historial, opciones operativas y modulos.
+
+### Actualizacion UX - 22/06/2026
+
+Se ajusto la interfaz para que el sistema sea mas comodo en uso diario:
+
+- El header queda organizado con logo + `Gratitud Gourmet ERP`, buscador global al centro y usuario/rol/salida a la derecha.
+- El menu principal incorpora `Produccion/Cocina`, `Stock` y `Reportes`.
+- `Ordenes de pago` queda como subfuncion de `Finanzas`, no como pestaña principal.
+- `ERP` muestra una lectura ejecutiva compacta, con KPIs y listas accionables en vez de tarjetas altas o decorativas.
+- Las listas de eventos, compras y alertas usan filas clickeables, alto controlado y scroll interno.
+- Las compras se muestran en tabla con encabezado fijo y scroll propio, sin empujar toda la pagina hacia los costados.
+- Las acciones de fila se concentran en boton de tres puntos para evitar columnas llenas de botones.
+- Formularios, selects, buscadores y filtros comparten una estetica consistente.
+- Clientes y proveedores usan tarjetas mas limpias, con datos principales visibles y acciones secundarias ocultas.
+- Logistica Evento mantiene criterio mobile-first: tarjetas compactas, campos apilados y checklist editable sin rebalse.
+- Las alertas del centro de control se abren en ventana de detalle con resumen y accion sugerida.
+- Los submenus por hover no deben mover la pantalla: se muestran como panel flotante, con contraste legible y sin recargar el modulo hasta que el usuario haga click.
+- El buscador global debe mostrar resultados con texto oscuro y tarjetas compactas.
+
+### Guia visual vigente - Gratitud Gourmet ERP
+
+- Fondo principal: `#F3F6F7`.
+- Superficies: blanco.
+- Texto principal: `#17212B`.
+- Texto secundario: `#66758A`.
+- Verde marca/accion: `#0F4F43`.
+- Exito: verde claro `#DCEFE9`.
+- Alerta: amarillo suave `#FFF1D2`.
+- Peligro: rojo suave `#F8D7DA`.
+- Informacion puntual: azul suave `#E6F0FA`.
+- Bordes: `#D6DEE6`.
+- El verde se usa para identidad, accion principal y estado positivo; no debe dominar toda la pantalla.
+- Tipografia base: sans-serif moderna (`Inter`, `system-ui`, `Segoe UI`) con texto base de 14 px.
+- Boton primario: verde oscuro con texto blanco.
+- Boton secundario: blanco con borde gris y texto oscuro.
+- Boton de peligro: rojo suave con texto rojo oscuro.
+- Acciones de fila: boton circular de tres puntos.
+- Tarjetas: radio maximo 8 px, borde fino y sombra minima o nula.
+- Tablas: header fijo, scroll interno, badges de estado y fila clickeable.
+- Formularios: dos columnas en desktop, una columna en mobile; selects e inputs con la misma altura.
+- Modales: eventos y fichas operativas casi pantalla completa; compras, proveedores y clientes en ancho medio; confirmaciones chicas.
+- Logo: usarlo en header, login, reportes y exportaciones. En pantallas internas priorizar claridad operativa.
+
+### Regla de mantenimiento del sistema y del manual
+
+Cada vez que se agregue, modifique o elimine una funcion del ERP, se debe actualizar este manual y la documentacion funcional correspondiente. El resumen de cada cambio debe indicar:
+
+- Que se modifico.
+- Que modulo o pantalla cambia.
+- Que debe hacer el usuario para probarlo.
+- Si hay una nueva regla operativa o administrativa.
+
 ---
 
 # AREA 1 - Comercial
@@ -257,6 +339,121 @@ Administracion.
 
 ---
 
+## ADM-02 - Personal/RRHH, asistencia y sueldos
+
+### Objetivo
+
+Centralizar legajos, turnos, asistencia, novedades y pagos del personal para que cada evento tenga trazabilidad laboral y administrativa.
+
+### Responsable
+
+RRHH o administracion, con revision de direccion cuando haya pagos, adicionales o novedades relevantes.
+
+### Que debe cargar en el sistema
+
+- Legajo del personal: nombre, telefono, documento, rol, tarifa por hora, disponibilidad y estado.
+- Turno por evento: persona, evento, fecha, horario de entrada, horario de salida, rol trabajado y estado de asistencia.
+- Novedades: llegadas tarde, ausencias, adicionales, observaciones o acuerdos especiales.
+- Sueldos: periodo, horas liquidadas, adicionales, descuentos, importe final, estado de pago y comprobante si corresponde.
+
+### Procedimiento
+
+- Crear o actualizar el legajo antes de asignar una persona a un evento.
+- Registrar el turno previsto con fecha, horario y evento asociado.
+- Al finalizar el evento, actualizar asistencia real y novedades.
+- Liquidar horas desde el modulo `Personal/RRHH`.
+- Registrar el pago de sueldo o dejarlo pendiente.
+- Para pagos formales, generar una orden de pago si requiere aprobacion.
+
+### Checklist
+
+- [ ] Legajo completo.
+- [ ] Turno asignado al evento.
+- [ ] Horario real cargado.
+- [ ] Novedades registradas.
+- [ ] Sueldo calculado.
+- [ ] Pago registrado o pendiente.
+
+---
+
+## ADM-03 - Bromatologia
+
+### Objetivo
+
+Controlar documentacion sanitaria, etiquetas, vencimientos, decomisos, fotos/comprobantes y aprobaciones bromatologicas.
+
+### Responsable
+
+Usuario con rol `bromatologia` o administracion general.
+
+### Que debe cargar en el sistema
+
+- Tipo de registro: documento sanitario, etiqueta, vencimiento, decomiso, aprobacion o control.
+- Producto, proveedor, evento o lote relacionado.
+- Fecha de vencimiento o fecha de control.
+- Motivo, observaciones y acciones tomadas.
+- Foto, PDF o comprobante cuando corresponda.
+- Estado de aprobacion: pendiente, aprobado o rechazado.
+
+### Procedimiento
+
+- Crear el registro bromatologico desde el modulo `Bromatologia`.
+- Adjuntar comprobante o foto cuando sea necesario.
+- Si es decomiso o control sensible, dejarlo pendiente de aprobacion.
+- La persona autorizada aprueba o rechaza el registro.
+- Administracion revisa impactos economicos si el decomiso afecta compras, stock o evento.
+
+### Checklist
+
+- [ ] Registro creado.
+- [ ] Producto/proveedor/evento vinculado.
+- [ ] Vencimiento o motivo cargado.
+- [ ] Comprobante adjunto si corresponde.
+- [ ] Aprobacion registrada.
+
+---
+
+## ADM-04 - Ordenes de pago formales
+
+### Objetivo
+
+Formalizar pagos a proveedores, personal, reintegros u otros beneficiarios con aprobacion, comprobante e historial.
+
+### Responsable
+
+Finanzas genera o gestiona la orden. Administracion general aprueba cuando corresponde.
+
+### Que debe cargar en el sistema
+
+- Tipo de orden: proveedor, personal, reintegro u otro.
+- Beneficiario.
+- Evento o compra vinculada si corresponde.
+- Concepto.
+- Monto.
+- Fecha de vencimiento.
+- Medio de pago y origen de fondos.
+- Estado: pendiente, aprobada, pagada, rechazada o cancelada.
+- Comprobante de pago si ya fue abonada.
+
+### Procedimiento
+
+- Crear la orden de pago desde `Ordenes de pago`.
+- Revisar datos bancarios, concepto, compra/evento y monto.
+- Aprobar o rechazar la orden.
+- Cuando se paga, cargar comprobante y marcarla como pagada.
+- Mantener el historial como respaldo para contador y direccion.
+
+### Checklist
+
+- [ ] Beneficiario cargado.
+- [ ] Monto y concepto cargados.
+- [ ] Vencimiento definido.
+- [ ] Aprobacion registrada.
+- [ ] Comprobante adjunto si corresponde.
+- [ ] Estado actualizado.
+
+---
+
 # AREA 3 - Cocina y Produccion
 
 ## COC-01 - Produccion y mise en place
@@ -395,6 +592,67 @@ Joaquin para compras operativas. Administracion para pagos y control.
 - [ ] Compra cargada.
 - [ ] Evento imputado.
 - [ ] Estado de pago cargado.
+
+---
+
+## CPR-02 - Ordenes de compra, recepcion e inventario
+
+### Objetivo
+
+Controlar que lo pedido llegue correctamente, separar mercaderia, vajilla, alquileres y equipamiento, detectar diferencias antes de pagar y convertir recepciones aceptadas en compras reales.
+
+### Responsable
+
+Compras carga la orden y la recepcion. Deposito controla cantidades y estado. Administracion valida diferencias antes de pagar. Direccion interviene si hay diferencias importantes o reclamos.
+
+### Flujo en el sistema
+
+1. En `Compras`, crear una **Orden de compra** asociada a un evento.
+2. Cargar productos, cantidades, unidad y proveedor sugerido/asignado.
+3. Al recibir, abrir la orden y tocar **Recibir**.
+4. Para cada linea recibida, indicar:
+   - Tipo: Mercaderia, Vajilla, Alquiler o Equipamiento.
+   - Cantidad recibida.
+   - Unidad.
+   - Precio unitario.
+   - IVA si corresponde.
+   - Proveedor o marca.
+   - Diferencia o nota si algo no coincide.
+5. Guardar la recepcion.
+6. Si hay diferencias, resolverlas o aceptarlas antes de convertir o pagar.
+7. Cuando la recepcion este correcta, tocar **Convertir en compra real**.
+
+### Reglas del sistema
+
+- Si una recepcion tiene diferencias sin resolver, genera alerta administrativa.
+- Si un proveedor tiene recepciones con diferencias sin resolver, el sistema bloquea el pago a ese proveedor.
+- Una recepcion aceptada puede convertirse en compra real.
+- Al convertir en compra real, se crea una compra pendiente asociada al proveedor y al evento.
+- Mercaderia, vajilla y equipamiento suman movimientos de inventario.
+- Alquileres quedan separados y no suman stock permanente.
+- Si falta precio unitario en algun producto recibido, no se puede convertir la recepcion en compra real.
+
+### Como interpretar los tipos
+
+| Tipo | Uso | Impacto |
+|---|---|---|
+| Mercaderia | Alimentos, bebidas, descartables o insumos consumibles. | Puede sumar stock/inventario. |
+| Vajilla | Platos, copas, cubiertos, bandejas o piezas reutilizables. | Puede sumar inventario de vajilla. |
+| Alquiler | Elementos alquilados para un evento puntual. | No suma stock permanente. |
+| Equipamiento | Conservadoras, artefactos, herramientas o elementos reutilizables. | Puede sumar inventario de equipamiento. |
+
+### Checklist
+
+- [ ] Orden asociada a evento.
+- [ ] Proveedor asignado o sugerido.
+- [ ] Productos y cantidades cargados.
+- [ ] Recepcion cargada.
+- [ ] Tipo de cada item definido.
+- [ ] Diferencias revisadas.
+- [ ] Diferencias resueltas o aceptadas.
+- [ ] Compra real generada si corresponde.
+- [ ] Inventario actualizado.
+- [ ] Pago habilitado solo si no hay diferencias pendientes.
 
 ---
 

@@ -19,6 +19,26 @@
     "createdAt": "2026-06-10T15:41:28.001Z",
     "updatedAt": "2026-06-12T18:34:39.071Z"
   },
+  "2615328511": {
+    "id": "2615328511",
+    "phone": "2615328511",
+    "displayPhone": "2615328511",
+    "fullName": "LAURA",
+    "contactName": "LAURA",
+    "aliases": [
+      "2615328511",
+      "LAURA"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "PICADA",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-19T19:36:04.754Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-18T15:32:05.473Z",
+    "updatedAt": "2026-06-19T19:36:04.754Z"
+  },
   "2615406970": {
     "id": "2615406970",
     "phone": "2615406970",
@@ -33,12 +53,32 @@
     "budgetCount": 0,
     "lastEventType": "Coffee",
     "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-17T23:45:24.952Z",
+    "lastSeenAt": "2026-06-19T19:20:23.137Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-09T14:37:31.840Z",
-    "updatedAt": "2026-06-17T23:45:24.952Z"
+    "updatedAt": "2026-06-19T19:20:23.137Z"
+  },
+  "2616011182": {
+    "id": "2616011182",
+    "phone": "2616011182",
+    "displayPhone": "2616011182",
+    "fullName": "MARIA DE LOS ANGELES QUIROGA",
+    "contactName": "MARIA DE LOS ANGELES QUIROGA",
+    "aliases": [
+      "2616011182",
+      "MARIA DE LOS ANGELES QUIROGA"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "Asado",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-19T19:26:57.801Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-19T19:26:16.702Z",
+    "updatedAt": "2026-06-19T19:26:57.801Z"
   },
   "2616988941": {
     "id": "2616988941",
@@ -53,19 +93,19 @@
     "budgetCount": 1,
     "lastEventType": "Almuerzo",
     "lastBudgetAt": "2026-06-08T20:01:50.279Z",
-    "lastSeenAt": "2026-06-16T12:56:21.328Z",
+    "lastSeenAt": "2026-06-19T21:22:38.487Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-08T20:01:50.279Z",
-    "updatedAt": "2026-06-16T12:56:21.328Z"
+    "updatedAt": "2026-06-19T21:22:38.487Z"
   },
   "2619977846": {
     "id": "2619977846",
     "phone": "2619977846",
     "displayPhone": "2619977846",
     "fullName": "GERMAN",
-    "contactName": "GERRRRR",
+    "contactName": "GERMAN",
     "aliases": [
       "2619977846",
       "GERRRRR",
@@ -74,12 +114,12 @@
     "budgetCount": 0,
     "lastEventType": "",
     "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-09T14:34:06.829Z",
+    "lastSeenAt": "2026-06-20T21:57:17.236Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-09T14:34:06.829Z",
-    "updatedAt": "2026-06-09T14:34:06.829Z"
+    "updatedAt": "2026-06-20T21:57:17.236Z"
   },
   "255189810475111@lid": {
     "id": "255189810475111@lid",
@@ -150,11 +190,31 @@
     "budgetCount": 0,
     "lastEventType": "Coffee",
     "lastBudgetAt": "",
-    "lastSeenAt": "2026-06-16T16:38:42.009Z",
+    "lastSeenAt": "2026-06-19T21:25:26.638Z",
     "preferences": "",
     "dietaryRestrictions": "",
     "notes": "",
     "createdAt": "2026-06-08T20:13:42.660Z",
-    "updatedAt": "2026-06-16T16:38:42.009Z"
+    "updatedAt": "2026-06-19T21:25:26.638Z"
+  },
+  "5492616165503": {
+    "id": "5492616165503",
+    "phone": "5492616165503",
+    "displayPhone": "5492616165503",
+    "fullName": "FLORENCIA EFICIENCIA",
+    "contactName": "FLORENCIA EFICIENCIA",
+    "aliases": [
+      "5492616165503",
+      "FLORENCIA EFICIENCIA"
+    ],
+    "budgetCount": 0,
+    "lastEventType": "",
+    "lastBudgetAt": "",
+    "lastSeenAt": "2026-06-19T21:25:08.771Z",
+    "preferences": "",
+    "dietaryRestrictions": "",
+    "notes": "",
+    "createdAt": "2026-06-19T19:08:20.755Z",
+    "updatedAt": "2026-06-19T21:25:08.771Z"
   }
 }

@@ -7,13 +7,20 @@
     "tabs": [
       "erp",
       "commercial",
+      "events",
       "purchases",
       "finance",
-      "customers",
-      "providers",
-      "recipes",
+      "production",
       "logistics_event",
-      "security"
+      "recipes",
+      "stock",
+      "providers",
+      "customers",
+      "hr",
+      "sanitation",
+      "security",
+      "reports",
+      "payment_orders"
     ]
   },
   "comercial": {
@@ -27,6 +34,7 @@
     ],
     "tabs": [
       "commercial",
+      "events",
       "customers"
     ]
   },
@@ -35,40 +43,40 @@
     "permissions": [
       "view",
       "purchases:write",
+      "stock:read",
       "providers:write",
       "events:read",
       "venues:read"
     ],
     "tabs": [
       "purchases",
+      "stock",
       "providers"
     ]
   },
   "cocina": {
-    "label": "Cocina",
+    "label": "Cocinero",
     "permissions": [
       "view",
-      "events:write",
+      "production:read",
       "recipes:write",
-      "events:read",
-      "venues:read",
-      "logistics:read"
+      "recipes:read"
     ],
     "tabs": [
-      "recipes",
-      "logistics_event"
+      "production",
+      "recipes"
     ]
   },
   "operacion": {
     "label": "Operacion",
     "permissions": [
       "view",
+      "logistics:read",
+      "logistics:write",
       "events:write",
       "venues:write",
       "events:read",
-      "recipes:read",
-      "logistics:read",
-      "logistics:write"
+      "recipes:read"
     ],
     "tabs": [
       "logistics_event"
@@ -90,10 +98,40 @@
     "permissions": [
       "view",
       "finance:read",
-      "finance:write"
+      "finance:write",
+      "payment_orders:read",
+      "payment_orders:write",
+      "reports:read"
     ],
     "tabs": [
-      "finance"
+      "finance",
+      "reports",
+      "payment_orders"
+    ]
+  },
+  "rrhh": {
+    "label": "Personal/RRHH",
+    "permissions": [
+      "view",
+      "hr:read",
+      "hr:write",
+      "payroll:read",
+      "payroll:write"
+    ],
+    "tabs": [
+      "hr"
+    ]
+  },
+  "bromatologia": {
+    "label": "Bromatologia",
+    "permissions": [
+      "view",
+      "sanitation:read",
+      "sanitation:write",
+      "sanitation:approve"
+    ],
+    "tabs": [
+      "sanitation"
     ]
   }
 }

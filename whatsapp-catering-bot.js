@@ -46,13 +46,22 @@ const CONFIG_FILE = path.resolve(process.env.BOT_CONFIG_FILE || path.join(__dirn
 const STATE_FILE = dataPath("bot-state.json");
 const CUSTOMERS_FILE = dataPath("clientes-bot.json");
 const RECIPES_FILE = dataPath("recetas-bot.json");
+const PENDING_RECIPE_EDITS_FILE = dataPath("recetas-pendientes-revision.json");
 const PRODUCT_PRICES_FILE = dataPath("precios-productos-bot.json");
 const COST_SETTINGS_FILE = dataPath("costos-bot.json");
 const ERP_EVENTS_FILE = dataPath("eventos-erp.json");
 const ERP_QUOTES_FILE = dataPath("presupuestos-erp.json");
 const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
+const ERP_PURCHASE_ORDERS_FILE = dataPath("ordenes-compra-erp.json");
+const ERP_PURCHASE_RECEIPTS_FILE = dataPath("recepciones-compra-erp.json");
+const ERP_INVENTORY_FILE = dataPath("inventario-erp.json");
 const ERP_PROVIDERS_FILE = dataPath("proveedores-erp.json");
 const ERP_VENUES_FILE = dataPath("lugares-erp.json");
+const ERP_HR_STAFF_FILE = dataPath("personal-erp.json");
+const ERP_HR_SHIFTS_FILE = dataPath("asistencias-personal-erp.json");
+const ERP_PAYROLL_FILE = dataPath("sueldos-erp.json");
+const ERP_SANITATION_FILE = dataPath("bromatologia-erp.json");
+const ERP_PAYMENT_ORDERS_FILE = dataPath("ordenes-pago-erp.json");
 const ERP_USERS_FILE = dataPath("usuarios-erp.json");
 const ERP_AUDIT_FILE = dataPath("historial-erp.json");
 const ERP_ROLES_FILE = dataPath("roles-erp.json");
@@ -81,7 +90,7 @@ const PANEL_SESSION_SECRET =
   process.env.PANEL_SESSION_SECRET ||
   BOT_CONFIG.panelSessionSecret ||
   crypto.createHash("sha256").update(`${PANEL_AUTH_USER}:${PANEL_AUTH_PASSWORD || "local"}`).digest("hex");
-const MAX_JSON_BODY_BYTES = Number(process.env.MAX_JSON_BODY_BYTES || BOT_CONFIG.maxJsonBodyBytes || 15 * 1024 * 1024);
+const MAX_JSON_BODY_BYTES = Number(process.env.MAX_JSON_BODY_BYTES || BOT_CONFIG.maxJsonBodyBytes || 60 * 1024 * 1024);
 const DEFAULT_CHROME_EXECUTABLE = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const DEFAULT_CHROME_VERSION = "148.0.7778.217";
 const WHATSAPP_WEB_VERSION =
@@ -157,13 +166,22 @@ const pendingReplies = {};
 const chatRecords = {};
 const customerRecords = {};
 let recipeRecords = [];
+let pendingRecipeEdits = [];
 const productPriceRecords = {};
 let costSettings = {};
 let erpEvents = [];
 let erpQuotes = [];
 let erpPurchases = [];
+let erpPurchaseOrders = [];
+let erpPurchaseReceipts = [];
+let erpInventoryMovements = [];
 let erpProviders = [];
 let erpVenues = [];
+let erpStaff = [];
+let erpStaffShifts = [];
+let erpPayrollRecords = [];
+let erpSanitationRecords = [];
+let erpPaymentOrders = [];
 let erpUsers = [];
 let auditRecords = [];
 let panelRoleDefinitions = {};
@@ -172,22 +190,22 @@ const DEFAULT_ROLE_DEFINITIONS = {
   admin: {
     label: "Administracion general",
     permissions: ["*"],
-    tabs: ["erp", "commercial", "purchases", "finance", "customers", "providers", "recipes", "logistics_event", "security"],
+    tabs: ["erp", "commercial", "events", "purchases", "finance", "production", "logistics_event", "recipes", "stock", "providers", "customers", "hr", "sanitation", "security", "reports", "payment_orders"],
   },
   comercial: {
     label: "Comercial",
     permissions: ["view", "events:write", "quotes:write", "customers:write", "venues:read"],
-    tabs: ["commercial", "customers"],
+    tabs: ["commercial", "events", "customers"],
   },
   compras: {
     label: "Compras",
-    permissions: ["view", "purchases:write", "providers:write", "venues:read", "events:read"],
-    tabs: ["purchases", "providers"],
+    permissions: ["view", "purchases:write", "stock:read", "providers:write", "venues:read", "events:read"],
+    tabs: ["purchases", "stock", "providers"],
   },
   cocina: {
-    label: "Cocina",
-    permissions: ["view", "events:read", "events:write", "recipes:write", "venues:read", "logistics:read"],
-    tabs: ["recipes", "logistics_event"],
+    label: "Cocinero",
+    permissions: ["view", "production:read", "recipes:read", "recipes:write"],
+    tabs: ["production", "recipes"],
   },
   operacion: {
     label: "Operacion",
@@ -201,25 +219,55 @@ const DEFAULT_ROLE_DEFINITIONS = {
   },
   finanzas: {
     label: "Finanzas",
-    permissions: ["view", "finance:read", "finance:write"],
-    tabs: ["finance"],
+    permissions: ["view", "finance:read", "finance:write", "payment_orders:read", "payment_orders:write", "reports:read"],
+    tabs: ["finance", "reports", "payment_orders"],
+  },
+  rrhh: {
+    label: "Personal/RRHH",
+    permissions: ["view", "hr:read", "hr:write", "payroll:read", "payroll:write"],
+    tabs: ["hr"],
+  },
+  bromatologia: {
+    label: "Bromatologia",
+    permissions: ["view", "sanitation:read", "sanitation:write", "sanitation:approve"],
+    tabs: ["sanitation"],
   },
 };
 const TAB_DEFINITIONS = [
   { id: "erp", label: "ERP", requiredAny: ["view"] },
   { id: "commercial", label: "Comercial", requiredAny: ["events:read", "events:write", "quotes:write", "customers:write"] },
+  { id: "events", label: "Eventos", requiredAny: ["events:read", "events:write"] },
   { id: "purchases", label: "Compras", requiredAny: ["purchases:write"] },
   { id: "finance", label: "Finanzas", requiredAny: ["finance:read", "finance:write"] },
-  { id: "customers", label: "Clientes", requiredAny: ["customers:write"] },
-  { id: "providers", label: "Proveedores", requiredAny: ["providers:write"] },
-  { id: "recipes", label: "Recetas", requiredAny: ["recipes:read", "recipes:write"] },
+  { id: "production", label: "Produccion/Cocina", requiredAny: ["production:read", "recipes:read", "recipes:write"] },
   { id: "logistics_event", label: "Logistica Evento", requiredAny: ["logistics:read", "logistics:write"] },
+  { id: "recipes", label: "Recetas", requiredAny: ["recipes:read", "recipes:write"] },
+  { id: "stock", label: "Stock", requiredAny: ["stock:read", "purchases:write"] },
+  { id: "providers", label: "Proveedores", requiredAny: ["providers:write"] },
+  { id: "customers", label: "Clientes", requiredAny: ["customers:write"] },
+  { id: "hr", label: "Personal/RRHH", requiredAny: ["hr:read", "hr:write", "payroll:read", "payroll:write"] },
+  { id: "sanitation", label: "Bromatologia", requiredAny: ["sanitation:read", "sanitation:write", "sanitation:approve"] },
+  { id: "payment_orders", label: "Ordenes de pago", requiredAny: ["payment_orders:read", "payment_orders:write", "payment_orders:approve"] },
   { id: "security", label: "Seguridad", requiredAny: ["users:write"] },
+  { id: "reports", label: "Reportes", requiredAny: ["reports:read"] },
 ];
 const PERMISSION_DEFINITIONS = [
   { id: "users:write", label: "Usuarios, roles e historial", group: "Seguridad" },
+  { id: "reports:read", label: "Ver reportes", group: "Reportes" },
   { id: "finance:read", label: "Ver pagos y deudas", group: "Finanzas" },
   { id: "finance:write", label: "Registrar pagos de proveedores", group: "Finanzas" },
+  { id: "payment_orders:read", label: "Ver ordenes de pago", group: "Finanzas" },
+  { id: "payment_orders:write", label: "Crear ordenes de pago", group: "Finanzas" },
+  { id: "payment_orders:approve", label: "Aprobar ordenes de pago", group: "Finanzas" },
+  { id: "hr:read", label: "Ver personal/RRHH", group: "RRHH" },
+  { id: "hr:write", label: "Crear y editar personal/RRHH", group: "RRHH" },
+  { id: "payroll:read", label: "Ver sueldos y horas", group: "RRHH" },
+  { id: "payroll:write", label: "Liquidar sueldos y horas", group: "RRHH" },
+  { id: "sanitation:read", label: "Ver bromatologia", group: "Bromatologia" },
+  { id: "sanitation:write", label: "Crear registros bromatologicos", group: "Bromatologia" },
+  { id: "sanitation:approve", label: "Aprobar decomisos y controles", group: "Bromatologia" },
+  { id: "production:read", label: "Ver Produccion/Cocina", group: "Produccion/Cocina" },
+  { id: "stock:read", label: "Ver stock e inventario", group: "Stock" },
   { id: "logistics:read", label: "Ver Logistica Evento", group: "Logistica" },
   { id: "logistics:write", label: "Editar ficha logistica", group: "Logistica" },
   { id: "events:write", label: "Crear y editar eventos", group: "Eventos" },
@@ -713,6 +761,10 @@ function startApprovalPanelServer() {
         return servePanelHtml(response);
       }
 
+      if (request.method === "GET" && requestUrl.pathname.startsWith("/assets/")) {
+        return serveStaticAsset(response, requestUrl.pathname);
+      }
+
       if (request.method === "GET" && requestUrl.pathname === "/api/me") {
         const user = getPanelSessionUser(request);
         return sendJson(response, {
@@ -804,11 +856,12 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/recipes") {
+        const sessionUser = getPanelSessionUser(request);
         return sendJson(response, {
           ok: true,
-          recipes: getRecipeList(),
-          products: getRecipeProductOptions(),
-          settings: getCostSettings(),
+          recipes: getRecipeListForUser(sessionUser),
+          products: getRecipeProductOptionsForUser(sessionUser),
+          settings: getCostSettingsForUser(sessionUser),
         });
       }
 
@@ -819,8 +872,14 @@ function startApprovalPanelServer() {
         const canSeeCommercial = canSeeEverything || hasPanelPermission(sessionUser, "events:read") || hasPanelPermission(sessionUser, "events:write") || hasPanelPermission(sessionUser, "quotes:write") || hasPanelPermission(sessionUser, "customers:write");
         const canSeePurchases = canSeeEverything || hasPanelPermission(sessionUser, "purchases:write");
         const canSeeFinance = canSeeEverything || hasPanelPermission(sessionUser, "finance:read") || hasPanelPermission(sessionUser, "finance:write");
+        const canSeeHr = canSeeEverything || hasPanelPermission(sessionUser, "hr:read") || hasPanelPermission(sessionUser, "hr:write") || hasPanelPermission(sessionUser, "payroll:read") || hasPanelPermission(sessionUser, "payroll:write");
+        const canSeeSanitation = canSeeEverything || hasPanelPermission(sessionUser, "sanitation:read") || hasPanelPermission(sessionUser, "sanitation:write") || hasPanelPermission(sessionUser, "sanitation:approve");
+        const canSeePaymentOrders = canSeeEverything || hasPanelPermission(sessionUser, "payment_orders:read") || hasPanelPermission(sessionUser, "payment_orders:write") || hasPanelPermission(sessionUser, "payment_orders:approve");
         const canSeeProviders = canSeeEverything || hasPanelPermission(sessionUser, "providers:write") || canSeePurchases || canSeeFinance;
         const canSeeRecipes = canSeeEverything || hasPanelPermission(sessionUser, "recipes:read") || hasPanelPermission(sessionUser, "recipes:write");
+        const canSeeProduction = canSeeEverything || hasPanelPermission(sessionUser, "production:read");
+        const canSeeStock = canSeeEverything || hasPanelPermission(sessionUser, "stock:read") || canSeePurchases;
+        const canSeeReports = canSeeEverything || hasPanelPermission(sessionUser, "reports:read");
         const canSeeCustomers = canSeeEverything || hasPanelPermission(sessionUser, "customers:write");
         const canSeeVenues = canSeeEverything || hasPanelPermission(sessionUser, "venues:read") || hasPanelPermission(sessionUser, "venues:write");
         if (publicUser?.role === "logistica_evento") {
@@ -834,11 +893,18 @@ function startApprovalPanelServer() {
             confirmedEvents: [],
             quotes: [],
             purchases: [],
+            purchaseOrders: [],
+            purchaseReceipts: [],
+            inventory: [],
+            inventoryMovements: [],
             providers: [],
             recipes: [],
             customers: [],
             venues: [],
             productAlerts: [],
+            hrDashboard: undefined,
+            sanitationDashboard: undefined,
+            paymentOrdersDashboard: undefined,
           });
         }
         if (publicUser?.role === "finanzas") {
@@ -854,29 +920,43 @@ function startApprovalPanelServer() {
             confirmedEvents: [],
             quotes: [],
             purchases: getErpPurchaseList(),
+            purchaseOrders: [],
+            purchaseReceipts: [],
+            inventory: [],
+            inventoryMovements: [],
             providers: getProviderList(),
             recipes: [],
             customers: [],
             venues: [],
             productAlerts: [],
+            hrDashboard: undefined,
+            sanitationDashboard: undefined,
+            paymentOrdersDashboard: getPaymentOrdersDashboard(),
           });
         }
         return sendJson(response, {
           ok: true,
           me: publicUser,
           roles: getPanelRoleList(),
-          dashboard: canSeeEverything ? getErpDashboard() : {},
+          dashboard: canSeeEverything || canSeeReports ? getErpDashboard() : {},
           pipeline: canSeeCommercial ? getPipelineBoard() : { columns: [] },
-          events: canSeeCommercial ? getErpEventList() : [],
-          confirmedEvents: canSeeCommercial ? getConfirmedEventList() : [],
+          events: canSeeCommercial ? getErpEventList() : canSeeProduction ? getProductionEventList() : [],
+          confirmedEvents: canSeeCommercial ? getConfirmedEventList() : canSeeProduction ? getProductionEventList().filter((event) => ["confirmed", "production", "done"].includes(event.status)) : [],
           quotes: canSeeCommercial ? getErpQuoteList() : [],
           purchases: canSeePurchases || canSeeFinance ? getErpPurchaseList() : [],
+          purchaseOrders: canSeePurchases || canSeeStock ? getPurchaseOrderList() : [],
+          purchaseReceipts: canSeePurchases || canSeeStock ? getPurchaseReceiptList() : [],
+          inventory: canSeePurchases || canSeeStock ? getInventoryBalanceList() : [],
+          inventoryMovements: canSeePurchases || canSeeStock ? getInventoryMovementList() : [],
           providers: canSeeProviders ? getProviderList() : [],
-          recipes: canSeeRecipes ? getRecipeList() : [],
+            recipes: canSeeRecipes ? getRecipeListForUser(sessionUser) : [],
           customers: canSeeCustomers || canSeeCommercial ? getCustomerInsights() : [],
           venues: canSeeVenues || canSeeCommercial ? getVenueList() : [],
-          productAlerts: canSeePurchases || canSeeRecipes || canSeeEverything ? getProductPriceAlerts() : [],
+          productAlerts: canSeePurchases || canSeeStock || canSeeRecipes || canSeeEverything ? getProductPriceAlerts() : [],
           financeDashboard: canSeeFinance ? getFinanceDashboard() : undefined,
+          hrDashboard: canSeeHr ? getHrDashboard() : undefined,
+          sanitationDashboard: canSeeSanitation ? getSanitationDashboard() : undefined,
+          paymentOrdersDashboard: canSeePaymentOrders ? getPaymentOrdersDashboard() : undefined,
         });
       }
 
@@ -1086,12 +1166,221 @@ function startApprovalPanelServer() {
         }
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/payer-reimbursement") {
+        const user = requirePanelPermission(request, response, "finance:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const result = applyPayerReimbursement(body);
+          recordAudit(user, "payment", "reimbursement", body.payer, `Reintegro - ${body.payer}`, null, result);
+          return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList(), financeDashboard: getFinanceDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/hr") {
+        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "payroll:read", "payroll:write"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, hrDashboard: getHrDashboard() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/hr-staff") {
+        const user = requirePanelPermission(request, response, "hr:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpStaff.find((item) => item.id === body.id);
+          const staff = saveStaffRecord(body);
+          recordAudit(user, body.id ? "update" : "create", "staff", staff.id, staff.fullName, before, staff);
+          return sendJson(response, { ok: true, staff, hrDashboard: getHrDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/hr-shift") {
+        const user = requirePanelPermission(request, response, "hr:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpStaffShifts.find((item) => item.id === body.id);
+          const shift = saveStaffShiftRecord(body);
+          recordAudit(user, body.id ? "update" : "create", "staff_shift", shift.id, `${shift.staffName} - ${shift.eventName || shift.date}`, before, shift);
+          return sendJson(response, { ok: true, shift, hrDashboard: getHrDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/payroll") {
+        const user = requirePanelPermission(request, response, "payroll:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpPayrollRecords.find((item) => item.id === body.id);
+          const payroll = savePayrollRecord(body);
+          recordAudit(user, body.id ? "update" : "create", "payroll", payroll.id, `${payroll.staffName} - ${payroll.period}`, before, payroll);
+          return sendJson(response, { ok: true, payroll, hrDashboard: getHrDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/sanitation") {
+        const user = requireAnyPanelPermission(request, response, ["sanitation:read", "sanitation:write", "sanitation:approve"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, sanitationDashboard: getSanitationDashboard() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/sanitation-record") {
+        const user = requirePanelPermission(request, response, "sanitation:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpSanitationRecords.find((item) => item.id === body.id);
+          const record = saveSanitationRecord(body, user);
+          recordAudit(user, body.id ? "update" : "create", "sanitation", record.id, record.title || record.productName || record.eventName, before, record);
+          return sendJson(response, { ok: true, record, sanitationDashboard: getSanitationDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/sanitation-approval") {
+        const user = requirePanelPermission(request, response, "sanitation:approve");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpSanitationRecords.find((item) => item.id === body.id);
+          const record = approveSanitationRecord(body, user);
+          recordAudit(user, "approve", "sanitation", record.id, record.title || record.productName || record.eventName, before, record);
+          return sendJson(response, { ok: true, record, sanitationDashboard: getSanitationDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/payment-orders") {
+        const user = requireAnyPanelPermission(request, response, ["payment_orders:read", "payment_orders:write", "payment_orders:approve"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, paymentOrdersDashboard: getPaymentOrdersDashboard() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/payment-order") {
+        const user = requirePanelPermission(request, response, "payment_orders:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpPaymentOrders.find((item) => item.id === body.id);
+          const order = savePaymentOrder(body, user);
+          recordAudit(user, body.id ? "update" : "create", "payment_order", order.id, `${order.beneficiary} - ${order.concept}`, before, order);
+          return sendJson(response, { ok: true, order, paymentOrdersDashboard: getPaymentOrdersDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/payment-order-status") {
+        const user = requirePanelPermission(request, response, "payment_orders:approve");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpPaymentOrders.find((item) => item.id === body.id);
+          const order = updatePaymentOrderStatus(body, user);
+          recordAudit(user, "approve", "payment_order", order.id, `${order.statusLabel} - ${order.beneficiary}`, before, order);
+          return sendJson(response, { ok: true, order, paymentOrdersDashboard: getPaymentOrdersDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/import-purchases-from-sheets") {
         const user = requirePanelPermission(request, response, "purchases:write");
         if (!user) return;
         const result = await importPurchasesFromSheets();
         recordAudit(user, "import", "purchase", "sheets", "Importar compras desde Sheets", null, result);
         return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/purchase-orders") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        return sendJson(response, { ok: true, orders: getPurchaseOrderList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/purchase-order") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const before = erpPurchaseOrders.find((order) => order.id === body.id);
+        const order = savePurchaseOrderRecord(body, user);
+        recordAudit(user, body.id ? "update" : "create", "purchase_order", order.id, order.title, before, order);
+        return sendJson(response, { ok: true, order, orders: getPurchaseOrderList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/delete-purchase-order") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const before = erpPurchaseOrders.find((order) => order.id === body.id);
+        deletePurchaseOrderRecord(body.id);
+        recordAudit(user, "delete", "purchase_order", body.id, before?.title || body.id, before, null);
+        return sendJson(response, { ok: true, orders: getPurchaseOrderList() });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/purchase-order-receipts") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        return sendJson(response, { ok: true, receipts: getPurchaseReceiptList(requestUrl.searchParams.get("orderId") || "") });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/purchase-order-receipt") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const before = erpPurchaseReceipts.find((receipt) => receipt.id === body.id);
+        const receipt = savePurchaseReceiptRecord(body, user);
+        recordAudit(user, body.id ? "update" : "create", "purchase_receipt", receipt.id, `Recepcion - ${receipt.orderTitle}`, before, receipt);
+        return sendJson(response, {
+          ok: true,
+          receipt,
+          receipts: getPurchaseReceiptList(),
+          orders: getPurchaseOrderList(),
+        });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/convert-purchase-receipt") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpPurchaseReceipts.find((receipt) => receipt.id === (body.id || body.receiptId));
+          const result = convertPurchaseReceiptToPurchase(body, user);
+          recordAudit(user, "convert", "purchase_receipt", result.receipt.id, `Compra real - ${result.receipt.orderTitle}`, before, result);
+          return sendJson(response, {
+            ok: true,
+            result,
+            receipts: getPurchaseReceiptList(),
+            orders: getPurchaseOrderList(),
+            purchases: getErpPurchaseList(),
+            inventory: getInventoryBalanceList(),
+            inventoryMovements: getInventoryMovementList(),
+            dashboard: getErpDashboard(),
+          });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/inventory") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        return sendJson(response, {
+          ok: true,
+          inventory: getInventoryBalanceList(),
+          movements: getInventoryMovementList(),
+        });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/import-accountant-payments") {
@@ -1140,7 +1429,7 @@ function startApprovalPanelServer() {
         if (!user) return;
         const body = await readJsonBody(request);
         const before = erpEvents.find((event) => event.id === body.id);
-        const event = saveErpEventRecord(body);
+        const event = saveErpEventRecord(body, user);
         recordAudit(user, body.id ? "update" : "create", "event", event.id, event.name, before, event);
         return sendJson(response, { ok: true, event, dashboard: getErpDashboard() });
       }
@@ -1191,7 +1480,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/provider") {
-        const user = requirePanelPermission(request, response, "providers:write");
+        const user = requireAnyPanelPermission(request, response, ["providers:write", "finance:write"]);
         if (!user) return;
         const body = await readJsonBody(request);
         const before = erpProviders.find((provider) => provider.id === body.id);
@@ -1261,12 +1550,50 @@ function startApprovalPanelServer() {
         if (!user) return;
         const body = await readJsonBody(request);
         const before = recipeRecords.find((recipe) => recipe.id === body.id);
+        if (user.role === "cocina" && !hasPanelPermission(user, "*")) {
+          const pending = submitRecipeEditForReview(body, user);
+          recordAudit(user, "review_request", "recipe", pending.id, pending.recipeName, before, pending.next);
+          return sendJson(response, { ok: true, pending: true, review: pending });
+        }
         const recipe = saveRecipeRecord(body);
         recordAudit(user, body.id ? "update" : "create", "recipe", recipe.id, recipe.name, before, recipe);
         return sendJson(response, { ok: true, recipe });
       }
 
+      if (request.method === "GET" && requestUrl.pathname === "/api/pending-recipe-edits") {
+        const user = requirePanelPermission(request, response, "recipes:write");
+        if (!user) return;
+        if (!hasPanelPermission(user, "*")) {
+          return sendJson(response, { ok: false, error: "Solo administracion puede revisar cambios de recetas." }, 403);
+        }
+        return sendJson(response, { ok: true, reviews: getPendingRecipeEditList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/approve-recipe-edit") {
+        const user = requirePanelPermission(request, response, "recipes:write");
+        if (!user) return;
+        if (!hasPanelPermission(user, "*")) {
+          return sendJson(response, { ok: false, error: "Solo administracion puede aprobar cambios de recetas." }, 403);
+        }
+        const body = await readJsonBody(request);
+        const result = approvePendingRecipeEdit(body.id, user);
+        return sendJson(response, { ok: true, result, recipes: getRecipeList(), reviews: getPendingRecipeEditList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/reject-recipe-edit") {
+        const user = requirePanelPermission(request, response, "recipes:write");
+        if (!user) return;
+        if (!hasPanelPermission(user, "*")) {
+          return sendJson(response, { ok: false, error: "Solo administracion puede rechazar cambios de recetas." }, 403);
+        }
+        const body = await readJsonBody(request);
+        const result = rejectPendingRecipeEdit(body.id, user, body.reason || "");
+        return sendJson(response, { ok: true, result, reviews: getPendingRecipeEditList() });
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/cost-settings") {
+        const user = requirePanelPermission(request, response, "*");
+        if (!user) return;
         const body = await readJsonBody(request);
         const settings = saveCostSettingsFromPanel(body);
         return sendJson(response, { ok: true, settings });
@@ -1281,6 +1608,9 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-recipe") {
         const user = requirePanelPermission(request, response, "recipes:write");
         if (!user) return;
+        if (user.role === "cocina" && !hasPanelPermission(user, "*")) {
+          return sendJson(response, { ok: false, error: "Cocina no puede eliminar recetas. Envie una correccion a administracion." }, 403);
+        }
         const body = await readJsonBody(request);
         const before = recipeRecords.find((recipe) => recipe.id === body.id);
         deleteRecipeRecord(body.id);
@@ -1351,6 +1681,33 @@ function timingSafeEqual(left, right) {
   }
 
   return crypto.timingSafeEqual(leftBuffer, rightBuffer);
+}
+
+function serveStaticAsset(response, pathname) {
+  const assetsRoot = path.join(__dirname, "assets");
+  const relativePath = decodeURIComponent(pathname.replace(/^\/assets\//, ""));
+  const requestedPath = path.resolve(assetsRoot, relativePath);
+
+  const isInsideAssets = requestedPath === assetsRoot || requestedPath.startsWith(`${assetsRoot}${path.sep}`);
+  if (!isInsideAssets || !fs.existsSync(requestedPath) || !fs.statSync(requestedPath).isFile()) {
+    response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+    response.end("No encontrado");
+    return;
+  }
+
+  const extension = path.extname(requestedPath).toLowerCase();
+  const contentTypes = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".svg": "image/svg+xml",
+  };
+  response.writeHead(200, {
+    "Content-Type": contentTypes[extension] || "application/octet-stream",
+    "Cache-Control": "public, max-age=86400",
+  });
+  fs.createReadStream(requestedPath).pipe(response);
 }
 
 function servePanelHtml(response) {
@@ -1966,6 +2323,7 @@ function getPendingApprovalList() {
 function loadBusinessData() {
   Object.assign(customerRecords, readJsonFile(CUSTOMERS_FILE, {}));
   recipeRecords = readJsonFile(RECIPES_FILE, []);
+  pendingRecipeEdits = readJsonFile(PENDING_RECIPE_EDITS_FILE, []);
   Object.assign(productPriceRecords, readJsonFile(PRODUCT_PRICES_FILE, {}));
   costSettings = {
     laborHourlyCost: 0,
@@ -1974,8 +2332,16 @@ function loadBusinessData() {
   erpEvents = readJsonFile(ERP_EVENTS_FILE, []);
   erpQuotes = readJsonFile(ERP_QUOTES_FILE, []);
   erpPurchases = loadErpPurchasesFromStorage();
+  erpPurchaseOrders = normalizePurchaseOrderList(readJsonFile(ERP_PURCHASE_ORDERS_FILE, []));
+  erpPurchaseReceipts = normalizePurchaseReceiptList(readJsonFile(ERP_PURCHASE_RECEIPTS_FILE, []));
+  erpInventoryMovements = normalizeInventoryMovementList(readJsonFile(ERP_INVENTORY_FILE, []));
   erpProviders = readJsonFile(ERP_PROVIDERS_FILE, []);
   erpVenues = readJsonFile(ERP_VENUES_FILE, []);
+  erpStaff = normalizeStaffList(readJsonFile(ERP_HR_STAFF_FILE, []));
+  erpStaffShifts = normalizeStaffShiftList(readJsonFile(ERP_HR_SHIFTS_FILE, []));
+  erpPayrollRecords = normalizePayrollRecordList(readJsonFile(ERP_PAYROLL_FILE, []));
+  erpSanitationRecords = normalizeSanitationRecordList(readJsonFile(ERP_SANITATION_FILE, []));
+  erpPaymentOrders = normalizePaymentOrderList(readJsonFile(ERP_PAYMENT_ORDERS_FILE, []));
   panelRoleDefinitions = normalizeRoleDefinitions(readJsonFile(ERP_ROLES_FILE, {}));
   erpUsers = normalizeUserList(readJsonFile(ERP_USERS_FILE, []));
   auditRecords = readJsonFile(ERP_AUDIT_FILE, []);
@@ -2278,6 +2644,10 @@ function saveRecipeRecords() {
   writeJsonFile(RECIPES_FILE, recipeRecords);
 }
 
+function savePendingRecipeEdits() {
+  writeJsonFile(PENDING_RECIPE_EDITS_FILE, pendingRecipeEdits);
+}
+
 function saveProductPriceRecords() {
   writeJsonFile(PRODUCT_PRICES_FILE, productPriceRecords);
 }
@@ -2294,6 +2664,18 @@ function saveErpQuotes() {
   writeJsonFile(ERP_QUOTES_FILE, erpQuotes);
 }
 
+function saveErpPurchaseOrders() {
+  writeJsonFile(ERP_PURCHASE_ORDERS_FILE, erpPurchaseOrders);
+}
+
+function saveErpPurchaseReceipts() {
+  writeJsonFile(ERP_PURCHASE_RECEIPTS_FILE, erpPurchaseReceipts);
+}
+
+function saveErpInventory() {
+  writeJsonFile(ERP_INVENTORY_FILE, erpInventoryMovements);
+}
+
 function saveErpPurchases() {
   savePurchasesToDatabase(erpPurchases);
   writeJsonFile(ERP_PURCHASES_FILE, erpPurchases);
@@ -2305,6 +2687,26 @@ function saveErpProviders() {
 
 function saveErpVenues() {
   writeJsonFile(ERP_VENUES_FILE, erpVenues);
+}
+
+function saveErpStaff() {
+  writeJsonFile(ERP_HR_STAFF_FILE, erpStaff);
+}
+
+function saveErpStaffShifts() {
+  writeJsonFile(ERP_HR_SHIFTS_FILE, erpStaffShifts);
+}
+
+function saveErpPayroll() {
+  writeJsonFile(ERP_PAYROLL_FILE, erpPayrollRecords);
+}
+
+function saveErpSanitation() {
+  writeJsonFile(ERP_SANITATION_FILE, erpSanitationRecords);
+}
+
+function saveErpPaymentOrders() {
+  writeJsonFile(ERP_PAYMENT_ORDERS_FILE, erpPaymentOrders);
 }
 
 function saveErpUsers() {
@@ -2381,6 +2783,7 @@ function normalizeUserList(users) {
 
 function normalizePanelUser(user = {}) {
   const role = getRoleDefinitions()[user.role] ? user.role : "comercial";
+
   return {
     id: normalizeText(user.id || `usuario-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     username: normalizeText(user.username || "").toLowerCase(),
@@ -2971,12 +3374,49 @@ function getRecipeList() {
   return recipeRecords.map((recipe) => calculateRecipeCost(recipe)).sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function getRecipeListForUser(user) {
+  const recipes = getRecipeList();
+  return canUserSeeRecipeCosts(user) ? recipes : recipes.map(stripRecipeCosts);
+}
+
+function canUserSeeRecipeCosts(user) {
+  return Boolean(user) && (hasPanelPermission(user, "*") || !isCookingRole(user));
+}
+
+function isCookingRole(user) {
+  return ["cocina", "cocinero"].includes(String(user?.role || "").toLowerCase());
+}
+
+function stripRecipeCosts(recipe = {}) {
+  const clone = JSON.parse(JSON.stringify(recipe || {}));
+  const stripItem = (item = {}) => {
+    delete item.unitCost;
+    delete item.cost;
+    if (item.linkedRecipe) item.linkedRecipe = stripRecipeCosts(item.linkedRecipe);
+    return item;
+  };
+  delete clone.laborHourlyCost;
+  delete clone.laborCost;
+  delete clone.ingredientCost;
+  delete clone.totalCost;
+  delete clone.costPerPortion;
+  clone.items = Array.isArray(clone.items) ? clone.items.map(stripItem) : [];
+  return clone;
+}
+
 function getCostSettings() {
   return {
     laborHourlyCost: parseDecimalNumber(costSettings.laborHourlyCost || 0),
     supplyProfiles: normalizeSupplyProfiles(costSettings.supplyProfiles),
     operationalOptions: normalizeOperationalOptions(costSettings.operationalOptions),
   };
+}
+
+function getCostSettingsForUser(user) {
+  const settings = getCostSettings();
+  if (canUserSeeRecipeCosts(user)) return settings;
+  const { laborHourlyCost, ...safeSettings } = settings;
+  return safeSettings;
 }
 
 function saveCostSettingsFromPanel(input) {
@@ -3099,6 +3539,12 @@ function getRecipeProductOptions() {
   return Array.from(byKey.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function getRecipeProductOptionsForUser(user) {
+  const products = getRecipeProductOptions();
+  if (canUserSeeRecipeCosts(user)) return products;
+  return products.map((product) => ({ name: product.name }));
+}
+
 function rememberPurchasePrices(purchase) {
   let changed = false;
 
@@ -3146,6 +3592,21 @@ function normalizeSearchKey(value) {
 }
 
 function saveRecipeRecord(input) {
+  const existingIndex = recipeRecords.findIndex((recipe) => recipe.id === input.id);
+  const previous = existingIndex >= 0 ? recipeRecords[existingIndex] : {};
+  const recipe = buildRecipeRecord(input, previous);
+
+  if (existingIndex >= 0) {
+    recipeRecords[existingIndex] = recipe;
+  } else {
+    recipeRecords.push(recipe);
+  }
+
+  saveRecipeRecords();
+  return calculateRecipeCost(recipe);
+}
+
+function buildRecipeRecord(input, previous = {}) {
   const name = normalizeText(input.name || "");
   const portions = parseDecimalNumber(input.portions || input.yieldPortions || 0);
   const items = Array.isArray(input.items) ? input.items.map(normalizeRecipeItem).filter((item) => item.name) : [];
@@ -3167,10 +3628,8 @@ function saveRecipeRecord(input) {
   }
 
   const now = new Date().toISOString();
-  const existingIndex = recipeRecords.findIndex((recipe) => recipe.id === input.id);
-  const previous = existingIndex >= 0 ? recipeRecords[existingIndex] : {};
-  const recipe = {
-    id: previous.id || `receta-${Date.now()}`,
+  return {
+    id: previous.id || input.id || `receta-${Date.now()}`,
     name,
     category: normalizeText(input.category || previous.category || ""),
     portions,
@@ -3183,19 +3642,154 @@ function saveRecipeRecord(input) {
     assemblyUnit: normalizeText(input.assemblyUnit || ""),
     processRows,
     items,
+    platePhoto: normalizeRecipePhoto(input.platePhoto || previous.platePhoto || null),
     notes: normalizeText(input.notes || ""),
     createdAt: previous.createdAt || now,
     updatedAt: now,
   };
+}
 
-  if (existingIndex >= 0) {
-    recipeRecords[existingIndex] = recipe;
-  } else {
-    recipeRecords.push(recipe);
+function submitRecipeEditForReview(input, user) {
+  const previous = input.id ? recipeRecords.find((recipe) => recipe.id === input.id) : null;
+  const safeInput = user?.role === "cocina" && previous
+    ? preserveRecipeCostsFromPrevious(input, previous)
+    : input;
+  const next = buildRecipeRecord(safeInput, previous || {});
+  const before = previous ? calculateRecipeCost(previous) : null;
+  const after = calculateRecipeCost(next);
+  const now = new Date().toISOString();
+  const review = {
+    id: `revision-receta-${Date.now()}`,
+    recipeId: next.id,
+    recipeName: next.name,
+    status: "pending",
+    requestedBy: user?.id || "",
+    requestedByName: user?.displayName || user?.username || "",
+    requestedAt: now,
+    before,
+    next: after,
+    changes: getRecipeEditChanges(before, after),
+  };
+  pendingRecipeEdits = pendingRecipeEdits.filter((item) =>
+    !(item.status === "pending" && item.recipeId === review.recipeId && item.requestedBy === review.requestedBy)
+  );
+  pendingRecipeEdits.push(review);
+  savePendingRecipeEdits();
+  return review;
+}
+
+function preserveRecipeCostsFromPrevious(input = {}, previous = {}) {
+  const previousItems = Array.isArray(previous.items) ? previous.items : [];
+  const nextItems = Array.isArray(input.items) ? input.items : [];
+  return {
+    ...input,
+    laborHours: previous.laborHours,
+    items: nextItems.map((item) => {
+      const previousItem = findMatchingRecipeItem(item, previousItems);
+      return {
+        ...item,
+        unitCost: previousItem?.unitCost ?? item.unitCost ?? "",
+      };
+    }),
+  };
+}
+
+function findMatchingRecipeItem(item = {}, candidates = []) {
+  const key = normalizeSearchKey(item.recipeId || item.name || "");
+  const type = normalizeText(item.type || "product");
+  return candidates.find((candidate) =>
+    normalizeText(candidate.type || "product") === type &&
+    (
+      (item.recipeId && candidate.recipeId && normalizeSearchKey(candidate.recipeId) === normalizeSearchKey(item.recipeId)) ||
+      normalizeSearchKey(candidate.name || "") === key
+    )
+  );
+}
+
+function getPendingRecipeEditList() {
+  return pendingRecipeEdits
+    .filter((item) => item.status === "pending")
+    .sort((a, b) => String(b.requestedAt || "").localeCompare(String(a.requestedAt || "")));
+}
+
+function approvePendingRecipeEdit(id, user) {
+  const index = pendingRecipeEdits.findIndex((item) => item.id === id && item.status === "pending");
+  if (index < 0) throw new Error("No encontre esa revision pendiente.");
+  const review = pendingRecipeEdits[index];
+  const before = recipeRecords.find((recipe) => recipe.id === review.recipeId) || null;
+  const recipe = saveRecipeRecord(review.next);
+  pendingRecipeEdits[index] = {
+    ...review,
+    status: "approved",
+    resolvedAt: new Date().toISOString(),
+    resolvedBy: user?.displayName || user?.username || "",
+  };
+  savePendingRecipeEdits();
+  recordAudit(user, "approve", "recipe", recipe.id, `Revision aprobada - ${recipe.name}`, before, recipe, { reviewId: id });
+  return { reviewId: id, recipe };
+}
+
+function rejectPendingRecipeEdit(id, user, reason = "") {
+  const index = pendingRecipeEdits.findIndex((item) => item.id === id && item.status === "pending");
+  if (index < 0) throw new Error("No encontre esa revision pendiente.");
+  const review = pendingRecipeEdits[index];
+  pendingRecipeEdits[index] = {
+    ...review,
+    status: "rejected",
+    reason: normalizeText(reason || ""),
+    resolvedAt: new Date().toISOString(),
+    resolvedBy: user?.displayName || user?.username || "",
+  };
+  savePendingRecipeEdits();
+  recordAudit(user, "reject", "recipe", review.recipeId, `Revision rechazada - ${review.recipeName}`, review.before, review.next, { reviewId: id, reason });
+  return { reviewId: id };
+}
+
+function getRecipeEditChanges(before, after) {
+  const fields = [
+    ["Nombre", before?.name, after?.name],
+    ["Categoria", before?.category, after?.category],
+    ["Rinde", before ? `${before.portions} ${before.yieldUnit || ""}` : "", `${after.portions} ${after.yieldUnit || ""}`],
+    ["Horas personal", before?.laborHours, after?.laborHours],
+    ["Tiempo elaboracion", before?.productionTimeHours, after?.productionTimeHours],
+    ["Tiempo armado", before?.assemblyTimeMinutes, after?.assemblyTimeMinutes],
+    ["Personas armado", before?.assemblyPeople, after?.assemblyPeople],
+    ["Cantidad armada", before ? `${before.assemblyQuantity || ""} ${before.assemblyUnit || ""}` : "", `${after.assemblyQuantity || ""} ${after.assemblyUnit || ""}`],
+    ["Notas", before?.notes, after?.notes],
+    ["Foto plato", before?.platePhoto?.name || "", after?.platePhoto?.name || ""],
+  ].map(([label, previousValue, nextValue]) => ({
+    label,
+    before: normalizeText(previousValue ?? ""),
+    after: normalizeText(nextValue ?? ""),
+    changed: normalizeText(previousValue ?? "") !== normalizeText(nextValue ?? ""),
+  })).filter((item) => item.changed);
+
+  return {
+    fields,
+    ingredients: diffRecipeCollections(before?.items || [], after.items || [], (item) => `${item.type}:${normalizeSearchKey(item.name)}`),
+    processRows: diffRecipeCollections(before?.processRows || [], after.processRows || [], (item) => `${item.type}:${normalizeSearchKey(item.label)}`),
+  };
+}
+
+function diffRecipeCollections(beforeItems, afterItems, getKey) {
+  const beforeMap = new Map(beforeItems.map((item) => [getKey(item), item]));
+  const afterMap = new Map(afterItems.map((item) => [getKey(item), item]));
+  const added = [];
+  const removed = [];
+  const changed = [];
+
+  for (const [key, item] of afterMap.entries()) {
+    if (!beforeMap.has(key)) {
+      added.push(item);
+    } else if (JSON.stringify(beforeMap.get(key)) !== JSON.stringify(item)) {
+      changed.push({ before: beforeMap.get(key), after: item });
+    }
+  }
+  for (const [key, item] of beforeMap.entries()) {
+    if (!afterMap.has(key)) removed.push(item);
   }
 
-  saveRecipeRecords();
-  return calculateRecipeCost(recipe);
+  return { added, removed, changed };
 }
 
 function normalizeRecipeItem(item) {
@@ -3221,7 +3815,26 @@ function normalizeRecipeProcessRow(row) {
     quantity: type === "note" ? 0 : parseDecimalNumber(row.quantity || 0),
     unit: type === "note" ? "" : normalizeRecipeIngredientUnit(row.unit || ""),
     notes: normalizeText(row.notes || ""),
+    photos: normalizeRecipePhotos(row.photos || []),
   };
+}
+
+function normalizeRecipePhoto(photo = {}) {
+  if (!photo || typeof photo !== "object") return null;
+  const dataUrl = normalizeText(photo.dataUrl || photo.url || "");
+  if (!/^data:image\/(?:jpeg|jpg|png|webp);base64,/i.test(dataUrl)) return null;
+  return {
+    id: normalizeText(photo.id || `foto-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    name: normalizeText(photo.name || "foto-receta.jpg"),
+    caption: normalizeText(photo.caption || ""),
+    dataUrl,
+    uploadedAt: photo.uploadedAt || new Date().toISOString(),
+  };
+}
+
+function normalizeRecipePhotos(photos = []) {
+  if (!Array.isArray(photos)) return [];
+  return photos.map(normalizeRecipePhoto).filter(Boolean).slice(0, 8);
 }
 
 function calculateRecipeCost(recipe, stack = []) {
@@ -3283,6 +3896,7 @@ function calculateRecipeCost(recipe, stack = []) {
     assemblyQuantity: parseDecimalNumber(recipe.assemblyQuantity || 0),
     assemblyUnit: recipe.assemblyUnit || "",
     processRows: Array.isArray(recipe.processRows) ? recipe.processRows : [],
+    platePhoto: normalizeRecipePhoto(recipe.platePhoto || null),
     yieldUnit: normalizeRecipeYieldUnit(recipe.yieldUnit || "unidad"),
     laborHourlyCost: getCostSettings().laborHourlyCost,
     laborCost,
@@ -3321,6 +3935,49 @@ function getRecipeCostQuantity(quantity, unit) {
   if (normalizedUnit === "gramos") return quantity / 1000;
   if (normalizedUnit === "ml") return quantity / 1000;
   return quantity;
+}
+
+function normalizeRecipeProductionQuantity(quantity, unit) {
+  const value = parseDecimalNumber(quantity || 0);
+  if (!value) return 0;
+  const normalizedUnit = normalizeText(unit || "").toLowerCase();
+
+  if (["gramos", "g", "gr", "ml"].includes(normalizedUnit) || isDiscreteRecipeUnit(normalizedUnit)) {
+    return Math.ceil(value);
+  }
+
+  return roundToDecimals(value, 3);
+}
+
+function isDiscreteRecipeUnit(unit) {
+  return [
+    "unidad",
+    "unidades",
+    "porcion",
+    "porción",
+    "porciones",
+    "cazuela",
+    "cazuelas",
+    "botella",
+    "botellas",
+    "lata",
+    "latas",
+    "vaso",
+    "vasos",
+    "copa",
+    "copas",
+    "bandeja",
+    "bandejas",
+    "contenedor",
+    "contenedores",
+    "pieza",
+    "piezas",
+  ].includes(unit);
+}
+
+function roundToDecimals(value, decimals = 3) {
+  const factor = 10 ** decimals;
+  return Math.round((Number(value || 0) + Number.EPSILON) * factor) / factor;
 }
 
 function parseDecimalNumber(value) {
@@ -3372,7 +4029,9 @@ function getErpDashboard() {
   }, {});
   const conformityUploaded = events.filter((event) => event.clientConformity?.fileName).length;
   const conformityPending = events.filter((event) =>
-    ["confirmed", "production", "done"].includes(event.status) && !event.clientConformity?.fileName
+    ["confirmed", "production", "done"].includes(event.status) &&
+    !event.clientConformity?.fileName &&
+    !event.conformityWaiver?.approved
   ).length;
 
   return {
@@ -3407,6 +4066,9 @@ function getFinanceDashboard() {
     .sort((a, b) => String(a.eventDate || "9999-12-31").localeCompare(String(b.eventDate || "9999-12-31")));
   const purchases = getErpPurchaseList();
   const supplierDebt = roundMoney(purchases.reduce((sum, purchase) => sum + Number(purchase.pendingAmount || (purchase.paymentStatus === "Pagado" ? 0 : purchase.totalAmount || 0)), 0));
+  const reimbursementGroups = getPayerReimbursementGroups(purchases);
+  const reimbursementPendingTotal = roundMoney(reimbursementGroups.reduce((sum, group) => sum + Number(group.pendingAmount || 0), 0));
+  const reimbursementPaidTotal = roundMoney(reimbursementGroups.reduce((sum, group) => sum + Number(group.reimbursedAmount || 0), 0));
   const salesTotal = roundMoney(events.reduce((sum, event) => sum + Number(event.saleTotal || 0), 0));
   const collectedTotal = roundMoney(events.reduce((sum, event) => sum + Number(event.collectedAmount || 0), 0));
   const pendingCollectionTotal = roundMoney(events.reduce((sum, event) => sum + Number(event.pendingCollectionAmount || 0), 0));
@@ -3426,11 +4088,496 @@ function getFinanceDashboard() {
       overdueCollectionTotal,
       upcomingCollectionTotal,
       supplierDebt,
-      projectedBalance: roundMoney(collectedTotal + pendingCollectionTotal - supplierDebt),
+      reimbursementPendingTotal,
+      reimbursementPaidTotal,
+      projectedBalance: roundMoney(collectedTotal + pendingCollectionTotal - supplierDebt - reimbursementPendingTotal),
       eventsCount: events.length,
     },
     events,
+    reimbursements: reimbursementGroups,
   };
+}
+
+function normalizeStaffList(input = []) {
+  return (Array.isArray(input) ? input : [])
+    .map(normalizeStaffRecord)
+    .filter((item) => item.fullName);
+}
+
+function normalizeStaffRecord(input = {}) {
+  const now = new Date().toISOString();
+  return {
+    id: normalizeText(input.id || `personal-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    fullName: normalizeText(input.fullName || input.name || ""),
+    role: normalizeText(input.role || input.position || ""),
+    phone: normalizeText(input.phone || input.telefono || ""),
+    email: normalizeText(input.email || ""),
+    documentId: normalizeText(input.documentId || input.dni || input.cuil || ""),
+    address: normalizeText(input.address || ""),
+    availability: normalizeText(input.availability || "A definir"),
+    hourlyRate: roundMoney(parseOptionalNumber(input.hourlyRate || input.valorHora || 0)),
+    salaryMode: normalizeText(input.salaryMode || "hourly"),
+    status: normalizeStaffStatus(input.status || "active"),
+    notes: normalizeText(input.notes || ""),
+    createdAt: input.createdAt || now,
+    updatedAt: input.updatedAt || now,
+  };
+}
+
+function normalizeStaffStatus(status) {
+  const key = normalizeSearchKey(status || "");
+  if (["inactive", "inactivo", "baja"].includes(key)) return "inactive";
+  if (["paused", "pausado", "licencia"].includes(key)) return "paused";
+  return "active";
+}
+
+function getStaffList() {
+  return normalizeStaffList(erpStaff)
+    .map((staff) => ({
+      ...staff,
+      statusLabel: getStaffStatusLabel(staff.status),
+      shiftsCount: erpStaffShifts.filter((shift) => shift.staffId === staff.id).length,
+    }))
+    .sort((a, b) => a.fullName.localeCompare(b.fullName));
+}
+
+function getStaffStatusLabel(status) {
+  return {
+    active: "Activo",
+    paused: "Pausado",
+    inactive: "Inactivo",
+  }[status] || "Activo";
+}
+
+function saveStaffRecord(input = {}) {
+  const now = new Date().toISOString();
+  const id = normalizeText(input.id || "");
+  const index = erpStaff.findIndex((item) => item.id === id);
+  const previous = index >= 0 ? erpStaff[index] : {};
+  const staff = normalizeStaffRecord({
+    ...previous,
+    ...input,
+    id: id || previous.id || `personal-${Date.now()}`,
+    createdAt: previous.createdAt || now,
+    updatedAt: now,
+  });
+  if (!staff.fullName) throw new Error("Ingrese el nombre del integrante.");
+  if (index >= 0) erpStaff[index] = staff;
+  else erpStaff.push(staff);
+  saveErpStaff();
+  return staff;
+}
+
+function normalizeStaffShiftList(input = []) {
+  return (Array.isArray(input) ? input : [])
+    .map(normalizeStaffShiftRecord)
+    .filter((item) => item.staffId || item.staffName);
+}
+
+function normalizeStaffShiftRecord(input = {}) {
+  const staff = erpStaff.find((item) => item.id === input.staffId) || {};
+  const event = erpEvents.find((item) => item.id === input.eventId) || {};
+  const startTime = normalizeText(input.startTime || input.start || "");
+  const endTime = normalizeText(input.endTime || input.end || "");
+  const hours = input.hours !== undefined && input.hours !== ""
+    ? parseOptionalNumber(input.hours)
+    : calculateHoursBetween(startTime, endTime);
+  const hourlyRate = roundMoney(parseOptionalNumber(input.hourlyRate || staff.hourlyRate || 0));
+  const extrasAmount = roundMoney(parseOptionalNumber(input.extrasAmount || 0));
+  const totalAmount = roundMoney(hours * hourlyRate + extrasAmount);
+  return {
+    id: normalizeText(input.id || `asistencia-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    staffId: normalizeText(input.staffId || staff.id || ""),
+    staffName: normalizeText(input.staffName || staff.fullName || ""),
+    eventId: normalizeText(input.eventId || event.id || ""),
+    eventName: normalizeText(input.eventName || event.name || ""),
+    date: normalizePanelDate(input.date || event.eventDate || "") || getDateOnly(new Date()),
+    role: normalizeText(input.role || staff.role || ""),
+    startTime,
+    endTime,
+    hours: roundMoney(hours),
+    hourlyRate,
+    extrasAmount,
+    totalAmount,
+    attendanceStatus: normalizeAttendanceStatus(input.attendanceStatus || input.status || "scheduled"),
+    notes: normalizeText(input.notes || ""),
+    createdAt: input.createdAt || new Date().toISOString(),
+    updatedAt: input.updatedAt || new Date().toISOString(),
+  };
+}
+
+function calculateHoursBetween(startTime, endTime) {
+  const parseTime = (value) => {
+    const match = String(value || "").match(/^(\d{1,2}):(\d{2})$/);
+    if (!match) return null;
+    return Number(match[1]) + Number(match[2]) / 60;
+  };
+  const start = parseTime(startTime);
+  const end = parseTime(endTime);
+  if (start === null || end === null) return 0;
+  return roundMoney((end >= start ? end - start : end + 24 - start));
+}
+
+function normalizeAttendanceStatus(status) {
+  const key = normalizeSearchKey(status || "");
+  if (["present", "presente", "realizado"].includes(key)) return "present";
+  if (["absent", "ausente", "falto"].includes(key)) return "absent";
+  if (["cancelled", "cancelado"].includes(key)) return "cancelled";
+  return "scheduled";
+}
+
+function getAttendanceStatusLabel(status) {
+  return {
+    scheduled: "Programado",
+    present: "Presente",
+    absent: "Ausente",
+    cancelled: "Cancelado",
+  }[status] || "Programado";
+}
+
+function getStaffShiftList() {
+  return normalizeStaffShiftList(erpStaffShifts)
+    .map((shift) => ({ ...shift, attendanceStatusLabel: getAttendanceStatusLabel(shift.attendanceStatus) }))
+    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+}
+
+function saveStaffShiftRecord(input = {}) {
+  const id = normalizeText(input.id || "");
+  const index = erpStaffShifts.findIndex((item) => item.id === id);
+  const previous = index >= 0 ? erpStaffShifts[index] : {};
+  const shift = normalizeStaffShiftRecord({
+    ...previous,
+    ...input,
+    id: id || previous.id || `asistencia-${Date.now()}`,
+    createdAt: previous.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  if (!shift.staffId && !shift.staffName) throw new Error("Seleccione una persona.");
+  if (index >= 0) erpStaffShifts[index] = shift;
+  else erpStaffShifts.push(shift);
+  saveErpStaffShifts();
+  return shift;
+}
+
+function normalizePayrollRecordList(input = []) {
+  return (Array.isArray(input) ? input : [])
+    .map(normalizePayrollRecord)
+    .filter((item) => item.staffId || item.staffName);
+}
+
+function normalizePayrollRecord(input = {}) {
+  const shiftIds = Array.isArray(input.shiftIds) ? input.shiftIds.map(normalizeText).filter(Boolean) : [];
+  const linkedShifts = shiftIds.length
+    ? erpStaffShifts.filter((shift) => shiftIds.includes(shift.id))
+    : [];
+  const hours = input.hours !== undefined && input.hours !== ""
+    ? parseOptionalNumber(input.hours)
+    : linkedShifts.reduce((sum, shift) => sum + Number(shift.hours || 0), 0);
+  const baseAmount = input.baseAmount !== undefined && input.baseAmount !== ""
+    ? parseOptionalNumber(input.baseAmount)
+    : linkedShifts.reduce((sum, shift) => sum + Number(shift.totalAmount || 0), 0);
+  const additions = parseOptionalNumber(input.additions || 0);
+  const deductions = parseOptionalNumber(input.deductions || 0);
+  return {
+    id: normalizeText(input.id || `sueldo-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    staffId: normalizeText(input.staffId || ""),
+    staffName: normalizeText(input.staffName || ""),
+    period: normalizeText(input.period || getDateOnly(new Date()).slice(0, 7)),
+    shiftIds,
+    hours: roundMoney(hours),
+    baseAmount: roundMoney(baseAmount),
+    additions: roundMoney(additions),
+    deductions: roundMoney(deductions),
+    totalAmount: roundMoney(baseAmount + additions - deductions),
+    paymentStatus: normalizePaymentLifecycleStatus(input.paymentStatus || "pending"),
+    paymentDate: normalizePanelDate(input.paymentDate || "") || "",
+    notes: normalizeText(input.notes || ""),
+    createdAt: input.createdAt || new Date().toISOString(),
+    updatedAt: input.updatedAt || new Date().toISOString(),
+  };
+}
+
+function normalizePaymentLifecycleStatus(status) {
+  const key = normalizeSearchKey(status || "");
+  if (["approved", "aprobada", "aprobado"].includes(key)) return "approved";
+  if (["paid", "pagada", "pagado"].includes(key)) return "paid";
+  if (["rejected", "rechazada", "rechazado"].includes(key)) return "rejected";
+  return "pending";
+}
+
+function getPayrollList() {
+  return normalizePayrollRecordList(erpPayrollRecords)
+    .sort((a, b) => String(b.period || "").localeCompare(String(a.period || "")));
+}
+
+function savePayrollRecord(input = {}) {
+  const id = normalizeText(input.id || "");
+  const index = erpPayrollRecords.findIndex((item) => item.id === id);
+  const previous = index >= 0 ? erpPayrollRecords[index] : {};
+  const staff = erpStaff.find((item) => item.id === (input.staffId || previous.staffId)) || {};
+  const payroll = normalizePayrollRecord({
+    ...previous,
+    ...input,
+    id: id || previous.id || `sueldo-${Date.now()}`,
+    staffName: input.staffName || previous.staffName || staff.fullName || "",
+    createdAt: previous.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  if (!payroll.staffId && !payroll.staffName) throw new Error("Seleccione una persona para liquidar.");
+  if (index >= 0) erpPayrollRecords[index] = payroll;
+  else erpPayrollRecords.push(payroll);
+  saveErpPayroll();
+  return payroll;
+}
+
+function getHrDashboard() {
+  const staff = getStaffList();
+  const shifts = getStaffShiftList();
+  const payroll = getPayrollList();
+  const pendingPayroll = payroll.filter((item) => item.paymentStatus !== "paid");
+  return {
+    summary: {
+      activeStaff: staff.filter((item) => item.status === "active").length,
+      shiftsCount: shifts.length,
+      pendingPayrollAmount: roundMoney(pendingPayroll.reduce((sum, item) => sum + Number(item.totalAmount || 0), 0)),
+      pendingPayrollCount: pendingPayroll.length,
+    },
+    staff,
+    shifts,
+    payroll,
+  };
+}
+
+function normalizeSanitationRecordList(input = []) {
+  return (Array.isArray(input) ? input : [])
+    .map(normalizeSanitationRecord)
+    .filter((item) => item.title || item.productName || item.eventName);
+}
+
+function normalizeSanitationRecord(input = {}) {
+  const recordType = normalizeSanitationType(input.recordType || input.type || "");
+  const approvalStatus = normalizeSanitationApprovalStatus(input.approvalStatus || input.status || "pending");
+  return {
+    id: normalizeText(input.id || `broma-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    recordType,
+    recordTypeLabel: getSanitationTypeLabel(recordType),
+    title: normalizeText(input.title || ""),
+    productName: normalizeText(input.productName || input.product || ""),
+    batch: normalizeText(input.batch || input.lote || ""),
+    eventId: normalizeText(input.eventId || ""),
+    eventName: normalizeText(input.eventName || ""),
+    date: normalizePanelDate(input.date || "") || getDateOnly(new Date()),
+    expirationDate: normalizePanelDate(input.expirationDate || input.vencimiento || "") || "",
+    quantity: normalizeText(input.quantity || ""),
+    reason: normalizeText(input.reason || input.motivo || ""),
+    actionTaken: normalizeText(input.actionTaken || input.action || ""),
+    documentName: normalizeText(input.documentName || input.fileName || ""),
+    documentDataUrl: String(input.documentDataUrl || ""),
+    approvalStatus,
+    approvalStatusLabel: getSanitationApprovalStatusLabel(approvalStatus),
+    approvedBy: normalizeText(input.approvedBy || ""),
+    approvedAt: input.approvedAt || "",
+    approvalNotes: normalizeText(input.approvalNotes || ""),
+    createdAt: input.createdAt || new Date().toISOString(),
+    updatedAt: input.updatedAt || new Date().toISOString(),
+  };
+}
+
+function normalizeSanitationType(value) {
+  const key = normalizeSearchKey(value || "");
+  if (["etiqueta", "label"].includes(key)) return "label";
+  if (["vencimiento", "expiration", "vencido"].includes(key)) return "expiration";
+  if (["decomiso", "decomisar", "discard", "descarte"].includes(key)) return "discard";
+  if (["aprobacion", "approval", "control"].includes(key)) return "approval";
+  return "document";
+}
+
+function getSanitationTypeLabel(type) {
+  return {
+    document: "Documentacion",
+    label: "Etiqueta",
+    expiration: "Vencimiento",
+    discard: "Decomiso",
+    approval: "Aprobacion",
+  }[type] || "Documentacion";
+}
+
+function normalizeSanitationApprovalStatus(status) {
+  const key = normalizeSearchKey(status || "");
+  if (["approved", "aprobado", "aprobada"].includes(key)) return "approved";
+  if (["rejected", "rechazado", "rechazada"].includes(key)) return "rejected";
+  return "pending";
+}
+
+function getSanitationApprovalStatusLabel(status) {
+  return {
+    pending: "Pendiente",
+    approved: "Aprobado",
+    rejected: "Rechazado",
+  }[status] || "Pendiente";
+}
+
+function getSanitationDashboard() {
+  const records = normalizeSanitationRecordList(erpSanitationRecords)
+    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  const today = getDateOnly(new Date());
+  const soon = getDateOnly(addDays(new Date(), 14));
+  return {
+    summary: {
+      total: records.length,
+      pendingApprovals: records.filter((item) => item.approvalStatus === "pending").length,
+      dueSoon: records.filter((item) => item.expirationDate && item.expirationDate >= today && item.expirationDate <= soon).length,
+      expired: records.filter((item) => item.expirationDate && item.expirationDate < today).length,
+      discardsPending: records.filter((item) => item.recordType === "discard" && item.approvalStatus === "pending").length,
+    },
+    records,
+  };
+}
+
+function saveSanitationRecord(input = {}, user = null) {
+  const id = normalizeText(input.id || "");
+  const index = erpSanitationRecords.findIndex((item) => item.id === id);
+  const previous = index >= 0 ? erpSanitationRecords[index] : {};
+  const record = normalizeSanitationRecord({
+    ...previous,
+    ...input,
+    id: id || previous.id || `broma-${Date.now()}`,
+    createdAt: previous.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  if (!record.title && !record.productName && !record.eventName) throw new Error("Ingrese titulo, producto o evento.");
+  if (index >= 0) erpSanitationRecords[index] = record;
+  else erpSanitationRecords.push(record);
+  saveErpSanitation();
+  return record;
+}
+
+function approveSanitationRecord(input = {}, user = null) {
+  const id = normalizeText(input.id || "");
+  const index = erpSanitationRecords.findIndex((item) => item.id === id);
+  if (index < 0) throw new Error("No encontre ese registro bromatologico.");
+  erpSanitationRecords[index] = normalizeSanitationRecord({
+    ...erpSanitationRecords[index],
+    approvalStatus: normalizeSanitationApprovalStatus(input.approvalStatus || "approved"),
+    approvedBy: user?.displayName || user?.username || "",
+    approvedAt: new Date().toISOString(),
+    approvalNotes: normalizeText(input.approvalNotes || ""),
+    updatedAt: new Date().toISOString(),
+  });
+  saveErpSanitation();
+  return erpSanitationRecords[index];
+}
+
+function normalizePaymentOrderList(input = []) {
+  return (Array.isArray(input) ? input : [])
+    .map(normalizePaymentOrder)
+    .filter((item) => item.beneficiary || item.concept);
+}
+
+function normalizePaymentOrder(input = {}) {
+  const sourceRefs = Array.isArray(input.sourceRefs) ? input.sourceRefs : [];
+  const status = normalizePaymentLifecycleStatus(input.status || "pending");
+  return {
+    id: normalizeText(input.id || `op-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    type: normalizePaymentOrderType(input.type || ""),
+    beneficiary: normalizeText(input.beneficiary || input.provider || input.person || ""),
+    beneficiaryType: normalizeText(input.beneficiaryType || ""),
+    concept: normalizeText(input.concept || input.description || ""),
+    amount: roundMoney(parseOptionalNumber(input.amount || 0)),
+    dueDate: normalizePanelDate(input.dueDate || "") || "",
+    paymentDate: normalizePanelDate(input.paymentDate || "") || "",
+    paymentMethod: normalizeText(input.paymentMethod || ""),
+    fundsSource: normalizeText(input.fundsSource || ""),
+    status,
+    statusLabel: getPaymentOrderStatusLabel(status),
+    sourceRefs,
+    receipt: normalizePaymentReceipt(input.receipt),
+    notes: normalizeText(input.notes || ""),
+    requestedBy: normalizeText(input.requestedBy || ""),
+    approvedBy: normalizeText(input.approvedBy || ""),
+    approvedAt: input.approvedAt || "",
+    paidBy: normalizeText(input.paidBy || ""),
+    paidAt: input.paidAt || "",
+    createdAt: input.createdAt || new Date().toISOString(),
+    updatedAt: input.updatedAt || new Date().toISOString(),
+  };
+}
+
+function normalizePaymentOrderType(type) {
+  const key = normalizeSearchKey(type || "");
+  if (["salary", "sueldo", "personal"].includes(key)) return "salary";
+  if (["reimbursement", "reintegro"].includes(key)) return "reimbursement";
+  if (["expense", "gasto"].includes(key)) return "expense";
+  return "provider";
+}
+
+function getPaymentOrderStatusLabel(status) {
+  return {
+    pending: "Pendiente",
+    approved: "Aprobada",
+    paid: "Pagada",
+    rejected: "Rechazada",
+  }[status] || "Pendiente";
+}
+
+function getPaymentOrderList() {
+  return normalizePaymentOrderList(erpPaymentOrders)
+    .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+}
+
+function getPaymentOrdersDashboard() {
+  const orders = getPaymentOrderList();
+  return {
+    summary: {
+      pendingAmount: roundMoney(orders.filter((item) => item.status === "pending").reduce((sum, item) => sum + Number(item.amount || 0), 0)),
+      approvedAmount: roundMoney(orders.filter((item) => item.status === "approved").reduce((sum, item) => sum + Number(item.amount || 0), 0)),
+      paidAmount: roundMoney(orders.filter((item) => item.status === "paid").reduce((sum, item) => sum + Number(item.amount || 0), 0)),
+      pendingCount: orders.filter((item) => item.status === "pending").length,
+      approvedCount: orders.filter((item) => item.status === "approved").length,
+    },
+    orders,
+  };
+}
+
+function savePaymentOrder(input = {}, user = null) {
+  const id = normalizeText(input.id || "");
+  const index = erpPaymentOrders.findIndex((item) => item.id === id);
+  const previous = index >= 0 ? erpPaymentOrders[index] : {};
+  const order = normalizePaymentOrder({
+    ...previous,
+    ...input,
+    id: id || previous.id || `op-${Date.now()}`,
+    requestedBy: previous.requestedBy || user?.displayName || user?.username || "",
+    createdAt: previous.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  if (!order.beneficiary) throw new Error("Ingrese el beneficiario de la orden.");
+  if (!order.concept) throw new Error("Ingrese el concepto de la orden.");
+  if (order.amount <= 0) throw new Error("Ingrese un monto mayor a cero.");
+  if (index >= 0) erpPaymentOrders[index] = order;
+  else erpPaymentOrders.push(order);
+  saveErpPaymentOrders();
+  return order;
+}
+
+function updatePaymentOrderStatus(input = {}, user = null) {
+  const id = normalizeText(input.id || "");
+  const index = erpPaymentOrders.findIndex((item) => item.id === id);
+  if (index < 0) throw new Error("No encontre esa orden de pago.");
+  const status = normalizePaymentLifecycleStatus(input.status || "");
+  const current = erpPaymentOrders[index];
+  erpPaymentOrders[index] = normalizePaymentOrder({
+    ...current,
+    ...input,
+    status,
+    approvedBy: status === "approved" ? user?.displayName || user?.username || current.approvedBy || "" : current.approvedBy,
+    approvedAt: status === "approved" ? new Date().toISOString() : current.approvedAt,
+    paidBy: status === "paid" ? user?.displayName || user?.username || current.paidBy || "" : current.paidBy,
+    paidAt: status === "paid" ? new Date().toISOString() : current.paidAt,
+    updatedAt: new Date().toISOString(),
+  });
+  saveErpPaymentOrders();
+  return erpPaymentOrders[index];
 }
 
 function toFinanceEventRecord(event) {
@@ -3438,6 +4585,10 @@ function toFinanceEventRecord(event) {
   const collectedAmount = roundMoney(Math.min(parseDecimalNumber(event.collectedAmount || event.collectionAmount || 0), saleTotal || Number.MAX_SAFE_INTEGER));
   const pendingCollectionAmount = roundMoney(Math.max(0, saleTotal - collectedAmount));
   const collectionStatus = normalizeCollectionStatus(event.collectionStatus || event.paymentStatus, collectedAmount, saleTotal);
+  const invoiceRequirement = normalizeEventInvoiceRequirement(event.invoiceRequirement || event.billingRequirement || "");
+  const invoiceStatus = invoiceRequirement === "no_invoice"
+    ? "not_applicable"
+    : normalizeEventInvoiceStatus(event.invoiceStatus || "not_invoiced");
   return {
     id: event.id,
     name: event.name,
@@ -3455,9 +4606,11 @@ function toFinanceEventRecord(event) {
     collectionDueDate: event.collectionDueDate || "",
     collectionMethod: event.collectionMethod || "",
     collectionNotes: event.collectionNotes || "",
-    invoiceStatus: event.invoiceStatus || "not_invoiced",
-    invoiceStatusLabel: getEventInvoiceStatusLabel(event.invoiceStatus || "not_invoiced"),
-    invoiceNumber: event.invoiceNumber || "",
+    invoiceRequirement,
+    invoiceRequirementLabel: getEventInvoiceRequirementLabel(invoiceRequirement),
+    invoiceStatus,
+    invoiceStatusLabel: getEventInvoiceStatusLabel(invoiceStatus),
+    invoiceNumber: invoiceRequirement === "no_invoice" ? "" : event.invoiceNumber || "",
   };
 }
 
@@ -3481,12 +4634,35 @@ function getCollectionStatusLabel(status) {
 
 function normalizeEventInvoiceStatus(status) {
   const key = normalizeSearchKey(status || "");
+  if (["not_applicable", "no_aplica", "no aplica", "no_invoice", "no_facturar"].includes(key)) return "not_applicable";
   if (["invoiced", "facturado", "facturada"].includes(key)) return "invoiced";
   return "not_invoiced";
 }
 
 function getEventInvoiceStatusLabel(status) {
-  return normalizeEventInvoiceStatus(status) === "invoiced" ? "Facturado" : "No facturado";
+  const normalized = normalizeEventInvoiceStatus(status);
+  if (normalized === "not_applicable") return "No aplica";
+  return normalized === "invoiced" ? "Facturado" : "No facturado";
+}
+
+function normalizeEventInvoiceRequirement(value) {
+  const key = normalizeSearchKey(value || "");
+  if ([
+    "no_invoice",
+    "no invoice",
+    "no_facturar",
+    "no facturar",
+    "no factura",
+    "sin factura",
+    "no se factura",
+    "no aplica",
+    "not_applicable",
+  ].includes(key)) return "no_invoice";
+  return "invoice_required";
+}
+
+function getEventInvoiceRequirementLabel(value) {
+  return normalizeEventInvoiceRequirement(value) === "no_invoice" ? "No facturar" : "Facturar";
 }
 
 function updateEventCollectionRecord(input = {}) {
@@ -3497,6 +4673,7 @@ function updateEventCollectionRecord(input = {}) {
   const saleTotal = Number(previous.quoteTotal || 0);
   const collectedAmount = roundMoney(Math.max(0, parseDecimalNumber(input.collectedAmount || 0)));
   const collectionStatus = normalizeCollectionStatus(input.collectionStatus || "", collectedAmount, saleTotal);
+  const invoiceRequirement = normalizeEventInvoiceRequirement(input.invoiceRequirement || previous.invoiceRequirement || "");
   erpEvents[index] = normalizeErpEvent({
     ...erpEvents[index],
     collectedAmount,
@@ -3504,8 +4681,9 @@ function updateEventCollectionRecord(input = {}) {
     collectionDueDate: normalizePanelDate(input.collectionDueDate || "") || "",
     collectionMethod: normalizeText(input.collectionMethod || ""),
     collectionNotes: normalizeText(input.collectionNotes || ""),
-    invoiceStatus: normalizeEventInvoiceStatus(input.invoiceStatus || ""),
-    invoiceNumber: normalizeText(input.invoiceNumber || ""),
+    invoiceRequirement,
+    invoiceStatus: invoiceRequirement === "no_invoice" ? "not_applicable" : normalizeEventInvoiceStatus(input.invoiceStatus || ""),
+    invoiceNumber: invoiceRequirement === "no_invoice" ? "" : normalizeText(input.invoiceNumber || ""),
     paymentStatus: getCollectionStatusLabel(collectionStatus),
     updatedAt: new Date().toISOString(),
   });
@@ -3551,6 +4729,484 @@ function groupPurchaseAmount(purchases, field) {
     .slice(0, 8);
 }
 
+function normalizePurchaseOrderList(input = []) {
+  return Array.isArray(input) ? input.map(normalizePurchaseOrderRecord).filter((order) => order.title || order.items.length) : [];
+}
+
+function getPurchaseOrderList() {
+  return normalizePurchaseOrderList(erpPurchaseOrders)
+    .map((order) => ({ ...order, receiptSummary: getPurchaseOrderReceiptSummary(order.id) }))
+    .sort((a, b) => String(b.updatedAt || b.createdAt || "").localeCompare(String(a.updatedAt || a.createdAt || "")));
+}
+
+function normalizePurchaseOrderRecord(input = {}) {
+  const event = input.eventId ? getErpEventList().find((item) => item.id === input.eventId) : null;
+  const eventName = normalizeText(input.eventName || event?.name || "");
+  const items = normalizePurchaseOrderItems(input.items || input.lines || []);
+  return {
+    id: normalizeText(input.id || `oc-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    title: normalizeText(input.title || input.name || (eventName ? `Orden de compra - ${eventName}` : "Orden de compra")),
+    eventId: normalizeText(input.eventId || event?.id || ""),
+    eventName,
+    menuType: normalizeText(input.menuType || input.serviceType || event?.serviceType || ""),
+    status: normalizePurchaseOrderStatus(input.status || "draft"),
+    neededDate: normalizePanelDate(input.neededDate || input.date || "") || "",
+    notes: normalizeText(input.notes || ""),
+    items,
+    createdAt: input.createdAt || new Date().toISOString(),
+    createdBy: normalizeText(input.createdBy || ""),
+    updatedAt: input.updatedAt || "",
+    updatedBy: normalizeText(input.updatedBy || ""),
+  };
+}
+
+function normalizePurchaseOrderItems(items = []) {
+  return (Array.isArray(items) ? items : [])
+    .map((item) => {
+      const productName = normalizeText(item.productName || item.product || item.description || item.name || "");
+      const providerName = normalizeText(item.providerName || item.provider || "");
+      return {
+        id: normalizeText(item.id || `item-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+        productName,
+        quantity: normalizeText(item.quantity || item.cantidad || ""),
+        unit: normalizeText(item.unit || item.unidad || ""),
+        providerName,
+        suggestedProvider: normalizeText(item.suggestedProvider || suggestProviderForProduct(productName) || providerName),
+        itemType: normalizeReceiptItemType(item.itemType || item.type || item.category || ""),
+        category: normalizeText(item.category || ""),
+        notes: normalizeText(item.notes || item.note || ""),
+        checked: parseBooleanLike(item.checked),
+      };
+    })
+    .filter((item) => item.productName);
+}
+
+function normalizePurchaseOrderStatus(status) {
+  const key = normalizeSearchKey(status || "");
+  if (["sent", "enviada", "enviado"].includes(key)) return "sent";
+  if (["fulfilled", "comprada", "comprado", "complete", "completa"].includes(key)) return "fulfilled";
+  if (["cancelled", "cancelada", "cancelado"].includes(key)) return "cancelled";
+  return "draft";
+}
+
+function normalizeReceiptItemType(value) {
+  const key = normalizeSearchKey(value || "");
+  if (["vajilla", "tableware"].includes(key)) return "tableware";
+  if (["alquiler", "alquileres", "rental", "rentals"].includes(key)) return "rental";
+  if (["equipamiento", "equipo", "equipment"].includes(key)) return "equipment";
+  if (["mercaderia", "mercadería", "comida", "insumo", "materia prima", "merchandise", "food"].includes(key)) return "merchandise";
+  return "merchandise";
+}
+
+function getReceiptItemTypeLabel(type) {
+  return {
+    merchandise: "Mercaderia",
+    tableware: "Vajilla",
+    rental: "Alquiler",
+    equipment: "Equipamiento",
+  }[normalizeReceiptItemType(type)] || "Mercaderia";
+}
+
+function suggestProviderForProduct(productName) {
+  const key = normalizeSearchKey(productName || "");
+  if (!key) return "";
+  const matches = getErpPurchaseList()
+    .filter((purchase) => {
+      const values = [
+        purchase.description,
+        ...(purchase.lineItems || []).map((item) => item.description),
+      ].map((value) => normalizeSearchKey(value || "")).filter(Boolean);
+      return values.some((value) => value.includes(key) || key.includes(value));
+    })
+    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  return normalizeText(matches[0]?.provider || "");
+}
+
+function savePurchaseOrderRecord(input = {}, user = null) {
+  const now = new Date().toISOString();
+  const existingIndex = erpPurchaseOrders.findIndex((order) => order.id === input.id);
+  const previous = existingIndex >= 0 ? erpPurchaseOrders[existingIndex] : {};
+  const order = normalizePurchaseOrderRecord({
+    ...previous,
+    ...input,
+    id: input.id || previous.id || `oc-${Date.now()}`,
+    createdAt: previous.createdAt || now,
+    createdBy: previous.createdBy || user?.displayName || user?.username || "",
+    updatedAt: now,
+    updatedBy: user?.displayName || user?.username || "",
+  });
+
+  if (!order.eventId && !order.eventName) {
+    throw new Error("Seleccione el evento al que corresponde la orden de compra.");
+  }
+  if (!order.items.length) {
+    throw new Error("Agregue al menos un producto a la orden de compra.");
+  }
+
+  if (existingIndex >= 0) {
+    erpPurchaseOrders[existingIndex] = order;
+  } else {
+    erpPurchaseOrders.push(order);
+  }
+  saveErpPurchaseOrders();
+  return order;
+}
+
+function deletePurchaseOrderRecord(id) {
+  const cleanId = normalizeText(id || "");
+  if (!cleanId) throw new Error("No encontre esa orden de compra.");
+  erpPurchaseOrders = erpPurchaseOrders.filter((order) => order.id !== cleanId);
+  saveErpPurchaseOrders();
+}
+
+function normalizePurchaseReceiptList(input = []) {
+  return Array.isArray(input) ? input.map(normalizePurchaseReceiptRecord).filter((receipt) => receipt.orderId && receipt.items.length) : [];
+}
+
+function getPurchaseReceiptList(orderId = "") {
+  const cleanOrderId = normalizeText(orderId || "");
+  return normalizePurchaseReceiptList(erpPurchaseReceipts)
+    .filter((receipt) => !cleanOrderId || receipt.orderId === cleanOrderId)
+    .sort((a, b) => String(b.receivedAt || b.updatedAt || "").localeCompare(String(a.receivedAt || a.updatedAt || "")));
+}
+
+function getReceiptUnresolvedDifferences(receipt = {}) {
+  return (receipt.items || []).filter((item) =>
+    (Math.abs(Number(item.difference || 0)) > 0.0001 || normalizeText(item.differenceReason || "")) &&
+    !["resolved", "accepted"].includes(normalizeText(item.differenceStatus || "pending").toLowerCase())
+  );
+}
+
+function hasReceiptUnresolvedDifferences(receipt = {}) {
+  return getReceiptUnresolvedDifferences(receipt).length > 0;
+}
+
+function getProviderUnresolvedReceiptDifferences(providerName = "") {
+  const key = normalizeSearchKey(providerName || "");
+  if (!key) return [];
+  return getPurchaseReceiptList().filter((receipt) =>
+    receipt.status === "with_differences" &&
+    hasReceiptUnresolvedDifferences(receipt) &&
+    (normalizeSearchKey(receipt.providerName) === key || (receipt.items || []).some((item) => normalizeSearchKey(item.providerName) === key))
+  );
+}
+
+function normalizePurchaseReceiptRecord(input = {}) {
+  const order = erpPurchaseOrders.find((item) => item.id === input.orderId) || {};
+  const items = normalizePurchaseReceiptItems(input.items || input.lines || [], order);
+  const differences = items.filter((item) => item.difference || normalizeText(item.differenceReason || ""));
+  const unresolvedDifferences = differences.filter((item) => !["resolved", "accepted"].includes(normalizeText(item.differenceStatus || "pending").toLowerCase()));
+  const completed = items.filter((item) => item.status === "complete").length;
+  const status = differences.length
+    ? "with_differences"
+    : completed >= items.length && items.length
+      ? "complete"
+      : items.some((item) => parseDecimalNumber(item.receivedQuantity || 0) > 0)
+        ? "partial"
+        : "pending";
+  const acceptanceStatus = normalizeReceiptAcceptanceStatus(input.acceptanceStatus || input.approvalStatus || "", {
+    status,
+    unresolvedDifferences,
+    convertedPurchaseId: input.convertedPurchaseId,
+  });
+  return {
+    id: normalizeText(input.id || `recepcion-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    orderId: normalizeText(input.orderId || ""),
+    orderTitle: normalizeText(input.orderTitle || order.title || ""),
+    eventId: normalizeText(input.eventId || order.eventId || ""),
+    eventName: normalizeText(input.eventName || order.eventName || ""),
+    providerName: normalizeText(input.providerName || ""),
+    receivedAt: normalizePanelDate(input.receivedAt || input.date || "") || getDateOnly(new Date()),
+    receivedBy: normalizeText(input.receivedBy || ""),
+    status,
+    acceptanceStatus,
+    hasUnresolvedDifferences: unresolvedDifferences.length > 0,
+    unresolvedDifferenceCount: unresolvedDifferences.length,
+    convertedPurchaseId: normalizeText(input.convertedPurchaseId || ""),
+    convertedAt: input.convertedAt || "",
+    convertedBy: normalizeText(input.convertedBy || ""),
+    notes: normalizeText(input.notes || ""),
+    items,
+    createdAt: input.createdAt || new Date().toISOString(),
+    updatedAt: input.updatedAt || "",
+    updatedBy: normalizeText(input.updatedBy || ""),
+  };
+}
+
+function normalizeReceiptAcceptanceStatus(value, context = {}) {
+  const key = normalizeSearchKey(value || "");
+  if (context.convertedPurchaseId || ["converted", "convertida", "compra"].includes(key)) return "converted";
+  if (["accepted", "aceptada", "aprobada"].includes(key)) return "accepted";
+  if (context.status === "complete" && !context.unresolvedDifferences?.length) return "accepted";
+  return "pending";
+}
+
+function normalizePurchaseReceiptItems(items = [], order = {}) {
+  const orderItems = Array.isArray(order.items) ? order.items : [];
+  const incoming = Array.isArray(items) ? items : [];
+  const sourceItems = incoming.length ? incoming : orderItems;
+  return sourceItems
+    .map((item) => {
+      const orderItem = orderItems.find((orderLine) =>
+        orderLine.id === item.orderItemId ||
+        normalizeSearchKey(orderLine.productName) === normalizeSearchKey(item.productName || item.product || "")
+      ) || {};
+      const orderedQuantity = normalizeText(item.orderedQuantity || orderItem.quantity || "");
+      const receivedQuantity = normalizeText(item.receivedQuantity || item.received || "");
+      const orderedNumber = parseDecimalNumber(orderedQuantity || 0);
+      const receivedNumber = parseDecimalNumber(receivedQuantity || 0);
+      const difference = orderedNumber || receivedNumber ? roundMoney(receivedNumber - orderedNumber) : 0;
+      const differenceReason = normalizeText(item.differenceReason || item.reason || "");
+      const differenceStatus = normalizeReceiptDifferenceStatus(item.differenceStatus || item.resolutionStatus || item.differenceResolved);
+      const status = Math.abs(difference) < 0.0001 && (receivedQuantity || orderedQuantity)
+        ? "complete"
+        : receivedNumber > 0
+          ? "partial"
+          : "pending";
+      return {
+        id: normalizeText(item.id || `item-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+        orderItemId: normalizeText(item.orderItemId || orderItem.id || ""),
+        productName: normalizeText(item.productName || item.product || orderItem.productName || ""),
+        providerName: normalizeText(item.providerName || orderItem.providerName || orderItem.suggestedProvider || ""),
+        itemType: normalizeReceiptItemType(item.itemType || orderItem.itemType || ""),
+        orderedQuantity,
+        receivedQuantity,
+        unit: normalizeText(item.unit || orderItem.unit || ""),
+        unitAmount: roundMoney(parseOptionalNumber(item.unitAmount || orderItem.unitAmount || 0)),
+        ivaRate: normalizeIvaRate(item.ivaRate ?? item.iva ?? orderItem.ivaRate ?? 0),
+        brandRequested: normalizeText(item.brandRequested || item.requestedBrand || ""),
+        brandReceived: normalizeText(item.brandReceived || item.receivedBrand || ""),
+        difference,
+        differenceReason,
+        differenceStatus: Math.abs(difference) > 0.0001 || differenceReason ? differenceStatus : "none",
+        notes: normalizeText(item.notes || item.note || ""),
+        status,
+      };
+    })
+    .filter((item) => item.productName);
+}
+
+function normalizeReceiptDifferenceStatus(value) {
+  if (value === true) return "resolved";
+  const key = normalizeSearchKey(value || "");
+  if (["resolved", "resuelta", "resuelto", "ok"].includes(key)) return "resolved";
+  if (["accepted", "aceptada", "aceptado", "aceptar"].includes(key)) return "accepted";
+  return "pending";
+}
+
+function getPurchaseOrderReceiptSummary(orderId) {
+  const receipts = getPurchaseReceiptList(orderId);
+  const latest = receipts[0] || null;
+  const order = erpPurchaseOrders.find((item) => item.id === orderId) || {};
+  const totalItems = Array.isArray(order.items) ? order.items.length : 0;
+  if (!latest) {
+    return { status: "pending", label: "Sin recibir", totalItems, completeItems: 0, differenceItems: 0, receivedAt: "" };
+  }
+  const completeItems = latest.items.filter((item) => item.status === "complete").length;
+  const differenceItems = latest.items.filter((item) => item.difference || item.differenceReason).length;
+  return {
+    status: latest.status,
+    label: getPurchaseReceiptStatusLabel(latest.status),
+    acceptanceStatus: latest.acceptanceStatus,
+    hasUnresolvedDifferences: hasReceiptUnresolvedDifferences(latest),
+    unresolvedDifferenceCount: getReceiptUnresolvedDifferences(latest).length,
+    convertedPurchaseId: latest.convertedPurchaseId || "",
+    totalItems: latest.items.length || totalItems,
+    completeItems,
+    differenceItems,
+    receivedAt: latest.receivedAt,
+    receiptId: latest.id,
+  };
+}
+
+function getPurchaseReceiptStatusLabel(status) {
+  return {
+    pending: "Sin recibir",
+    partial: "Parcial",
+    complete: "Completa",
+    with_differences: "Con diferencias",
+  }[status] || "Sin recibir";
+}
+
+function savePurchaseReceiptRecord(input = {}, user = null) {
+  const orderId = normalizeText(input.orderId || "");
+  const order = erpPurchaseOrders.find((item) => item.id === orderId);
+  if (!order) throw new Error("No encontre la orden de compra para recibir.");
+
+  const now = new Date().toISOString();
+  const existingIndex = erpPurchaseReceipts.findIndex((receipt) => receipt.id === input.id);
+  const previous = existingIndex >= 0 ? erpPurchaseReceipts[existingIndex] : {};
+  const receipt = normalizePurchaseReceiptRecord({
+    ...previous,
+    ...input,
+    orderTitle: order.title,
+    eventId: order.eventId,
+    eventName: order.eventName,
+    id: input.id || previous.id || `recepcion-${Date.now()}`,
+    createdAt: previous.createdAt || now,
+    updatedAt: now,
+    updatedBy: user?.displayName || user?.username || "",
+    receivedBy: input.receivedBy || previous.receivedBy || user?.displayName || user?.username || "",
+  });
+
+  if (!receipt.items.length) {
+    throw new Error("La recepcion debe tener al menos un producto.");
+  }
+
+  if (existingIndex >= 0) {
+    erpPurchaseReceipts[existingIndex] = receipt;
+  } else {
+    erpPurchaseReceipts.push(receipt);
+  }
+
+  saveErpPurchaseReceipts();
+  return receipt;
+}
+
+function normalizeInventoryMovementList(input = []) {
+  return (Array.isArray(input) ? input : [])
+    .map((item) => ({
+      id: normalizeText(item.id || `inv-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+      date: normalizePanelDate(item.date || item.createdAt || "") || getDateOnly(new Date()),
+      productName: normalizeText(item.productName || item.product || item.description || ""),
+      itemType: normalizeReceiptItemType(item.itemType || item.type || ""),
+      quantity: roundMoney(parseOptionalNumber(item.quantity || 0)),
+      unit: normalizeText(item.unit || ""),
+      movementType: normalizeText(item.movementType || item.typeMovement || "in"),
+      providerName: normalizeText(item.providerName || item.provider || ""),
+      eventId: normalizeText(item.eventId || ""),
+      eventName: normalizeText(item.eventName || ""),
+      sourceType: normalizeText(item.sourceType || ""),
+      sourceId: normalizeText(item.sourceId || ""),
+      notes: normalizeText(item.notes || ""),
+      createdAt: item.createdAt || new Date().toISOString(),
+    }))
+    .filter((item) => item.productName && item.quantity);
+}
+
+function getInventoryMovementList() {
+  return normalizeInventoryMovementList(erpInventoryMovements)
+    .sort((a, b) => String(b.date || b.createdAt || "").localeCompare(String(a.date || a.createdAt || "")));
+}
+
+function getInventoryBalanceList() {
+  const grouped = new Map();
+  for (const movement of getInventoryMovementList()) {
+    if (movement.itemType === "rental") continue;
+    const key = [normalizeSearchKey(movement.productName), normalizeSearchKey(movement.unit), movement.itemType].join("|");
+    const current = grouped.get(key) || {
+      productName: movement.productName,
+      itemType: movement.itemType,
+      itemTypeLabel: getReceiptItemTypeLabel(movement.itemType),
+      unit: movement.unit,
+      quantity: 0,
+      lastMovementDate: "",
+    };
+    const multiplier = movement.movementType === "out" ? -1 : 1;
+    current.quantity = roundMoney(current.quantity + Number(movement.quantity || 0) * multiplier);
+    current.lastMovementDate = [current.lastMovementDate, movement.date].sort().pop() || "";
+    grouped.set(key, current);
+  }
+  return Array.from(grouped.values())
+    .filter((item) => Math.abs(Number(item.quantity || 0)) > 0.0001)
+    .sort((a, b) => a.productName.localeCompare(b.productName));
+}
+
+function upsertInventoryMovementsFromReceipt(receipt = {}) {
+  const sourcePrefix = `receipt:${receipt.id}:`;
+  erpInventoryMovements = erpInventoryMovements.filter((movement) => !String(movement.sourceId || "").startsWith(sourcePrefix));
+  const movements = (receipt.items || [])
+    .filter((item) => ["merchandise", "tableware", "equipment"].includes(normalizeReceiptItemType(item.itemType)))
+    .filter((item) => parseOptionalNumber(item.receivedQuantity || 0) > 0)
+    .map((item) => ({
+      id: `inv-${receipt.id}-${item.id}`,
+      date: receipt.receivedAt || getDateOnly(new Date()),
+      productName: item.productName,
+      itemType: normalizeReceiptItemType(item.itemType),
+      quantity: roundMoney(parseOptionalNumber(item.receivedQuantity || 0)),
+      unit: item.unit || "",
+      movementType: "in",
+      providerName: item.providerName || receipt.providerName || "",
+      eventId: receipt.eventId || "",
+      eventName: receipt.eventName || "",
+      sourceType: "purchase_receipt",
+      sourceId: `${sourcePrefix}${item.id}`,
+      notes: [`Recepcion ${receipt.orderTitle || receipt.orderId}`, item.differenceReason].filter(Boolean).join(" | "),
+      createdAt: new Date().toISOString(),
+    }));
+  erpInventoryMovements.push(...normalizeInventoryMovementList(movements));
+  saveErpInventory();
+}
+
+function convertPurchaseReceiptToPurchase(input = {}, user = null) {
+  const receiptId = normalizeText(input.id || input.receiptId || "");
+  const receiptIndex = erpPurchaseReceipts.findIndex((receipt) => receipt.id === receiptId);
+  if (receiptIndex < 0) throw new Error("No encontre esa recepcion.");
+  const receipt = normalizePurchaseReceiptRecord(erpPurchaseReceipts[receiptIndex]);
+
+  if (receipt.convertedPurchaseId) {
+    throw new Error("Esta recepcion ya fue convertida en compra real.");
+  }
+  if (receipt.status === "pending" || receipt.status === "partial") {
+    throw new Error("Para convertir, primero complete la recepcion.");
+  }
+  if (hasReceiptUnresolvedDifferences(receipt)) {
+    throw new Error("Hay diferencias sin resolver. Marquelas como resueltas o aceptadas antes de convertir.");
+  }
+
+  const lineItems = receipt.items
+    .filter((item) => parseOptionalNumber(item.receivedQuantity || 0) > 0)
+    .map((item) => ({
+      description: item.productName,
+      quantity: parseOptionalNumber(item.receivedQuantity || 0),
+      unitAmount: parseOptionalNumber(item.unitAmount || 0),
+      ivaRate: normalizeIvaRate(item.ivaRate || 0),
+    }));
+
+  if (!lineItems.length) {
+    throw new Error("La recepcion no tiene productos recibidos para convertir.");
+  }
+  if (lineItems.some((item) => Number(item.unitAmount || 0) <= 0)) {
+    throw new Error("Para convertir en compra real, cargue el precio unitario de cada producto recibido.");
+  }
+
+  const provider = normalizeText(input.provider || receipt.providerName || receipt.items.map((item) => item.providerName).find(Boolean) || "");
+  const purchase = buildPurchaseRecord({
+    id: `compra-${receipt.id}`,
+    date: receipt.receivedAt || getDateOnly(new Date()),
+    provider,
+    eventName: receipt.eventName || "Sin evento",
+    invoiceType: normalizeText(input.invoiceType || "Orden de compra"),
+    paymentStatus: normalizeText(input.paymentStatus || "Pendiente"),
+    paymentMethod: normalizeText(input.paymentMethod || ""),
+    fundsSource: normalizeText(input.fundsSource || ""),
+    notes: [receipt.notes, `Generada desde recepcion ${receipt.orderTitle || receipt.id}`].filter(Boolean).join("\n"),
+    items: lineItems,
+  }, { requireEvent: false, defaultEvent: receipt.eventName || "Sin evento" });
+
+  purchase.source = "purchase_receipt";
+  purchase.sourceReceiptId = receipt.id;
+  purchase.sourceOrderId = receipt.orderId;
+  const savedPurchase = rememberErpPurchase(purchase);
+  rememberPurchasePrices(purchase);
+
+  erpPurchaseReceipts[receiptIndex] = normalizePurchaseReceiptRecord({
+    ...receipt,
+    acceptanceStatus: "converted",
+    convertedPurchaseId: savedPurchase.id,
+    convertedAt: new Date().toISOString(),
+    convertedBy: user?.displayName || user?.username || "",
+  });
+  saveErpPurchaseReceipts();
+  upsertInventoryMovementsFromReceipt(erpPurchaseReceipts[receiptIndex]);
+
+  return {
+    receipt: erpPurchaseReceipts[receiptIndex],
+    purchase: savedPurchase,
+    inventory: getInventoryBalanceList(),
+  };
+}
+
 function buildErpAlerts(events, quotes, purchases) {
   const today = getDateOnly(new Date());
   const soon = getDateOnly(addDays(new Date(), 7));
@@ -3570,6 +5226,7 @@ function buildErpAlerts(events, quotes, purchases) {
     (recipe.items || []).some((item) => item.type !== "recipe" && !productPriceRecords[normalizeProductKey(item.name)])
   );
   const priceAlerts = getProductPriceAlerts().filter((alert) => Math.abs(Number(alert.changePercent || 0)) >= 15);
+  const unresolvedReceiptDifferences = getPurchaseReceiptList().filter((receipt) => hasReceiptUnresolvedDifferences(receipt));
 
   if (eventsWithoutQuote.length) {
     alerts.push({
@@ -3600,6 +5257,15 @@ function buildErpAlerts(events, quotes, purchases) {
       type: "warning",
       title: "Compras pendientes de pago",
       detail: `${unpaidPurchases.length} compra(s) requieren seguimiento administrativo.`,
+    });
+  }
+
+  if (unresolvedReceiptDifferences.length) {
+    alerts.push({
+      type: "danger",
+      title: "Recepciones con diferencias sin resolver",
+      detail: `${unresolvedReceiptDifferences.length} recepcion(es) bloquean pagos o conversion a compra hasta resolver diferencias.`,
+      items: unresolvedReceiptDifferences.slice(0, 8).map((receipt) => `${receipt.orderTitle || receipt.orderId}: ${receipt.unresolvedDifferenceCount || getReceiptUnresolvedDifferences(receipt).length} diferencia(s)`),
     });
   }
 
@@ -3802,6 +5468,10 @@ function closeLogisticsEvent(input = {}, user = null) {
   const sheet = normalizeOperationalSheet(rawSheet, previous);
   validateOperationalSheet(sheet);
   validateLogisticsCloseSheet(sheet);
+  const withoutConformity = !previous.clientConformity?.fileName;
+  if (withoutConformity && !parseBooleanLike(input.requestWithoutConformity)) {
+    throw new Error("Este evento no tiene conformidad. Envie una solicitud de cierre sin conformidad para que administracion la autorice.");
+  }
 
   const updated = normalizeErpEvent({
     ...erpEvents[index],
@@ -3810,6 +5480,9 @@ function closeLogisticsEvent(input = {}, user = null) {
       ...sheet,
       logisticsClosedAt: new Date().toISOString(),
       logisticsClosedBy: user?.name || user?.username || "",
+      closeWithoutConformityRequested: withoutConformity,
+      closeWithoutConformityRequestedAt: withoutConformity ? new Date().toISOString() : "",
+      closeWithoutConformityRequestedBy: withoutConformity ? user?.name || user?.username || "" : "",
       updatedAt: new Date().toISOString(),
     },
     updatedAt: new Date().toISOString(),
@@ -3830,14 +5503,27 @@ function approveLogisticsEventClose(input = {}, user = null) {
   if (previous.logisticsStatus !== "pending_admin_close") {
     throw new Error("Este evento no tiene un cierre logistico pendiente de autorizacion.");
   }
-  validateEventConformityForClose(previous);
   const sheet = normalizeOperationalSheet(previous.operationalSheet || {}, previous);
   validateLogisticsCloseSheet(sheet);
+  const requestedWithoutConformity = parseBooleanLike(sheet.closeWithoutConformityRequested);
+  if (!previous.clientConformity?.fileName && !requestedWithoutConformity) {
+    validateEventConformityForClose(previous);
+  }
 
   const updated = normalizeErpEvent({
     ...erpEvents[index],
     status: "done",
     logisticsStatus: "admin_approved_close",
+    conformityWaiver: !previous.clientConformity?.fileName && requestedWithoutConformity
+      ? {
+        approved: true,
+        approvedAt: new Date().toISOString(),
+        approvedBy: normalizeText(user?.name || user?.username || ""),
+        requestedBy: normalizeText(sheet.closeWithoutConformityRequestedBy || ""),
+        requestedAt: sheet.closeWithoutConformityRequestedAt || "",
+        reason: normalizeText(sheet.postEventNotes || "Cierre autorizado sin conformidad adjunta."),
+      }
+      : previous.conformityWaiver || null,
     operationalSheet: {
       ...sheet,
       closedAt: new Date().toISOString(),
@@ -3867,7 +5553,7 @@ function validateLogisticsCloseSheet(sheet = {}) {
 }
 
 function validateEventConformityForClose(event = {}) {
-  if (!event.clientConformity?.fileName) {
+  if (!event.clientConformity?.fileName && !event.conformityWaiver?.approved) {
     throw new Error("Para cerrar el evento, primero suba la conformidad del cliente en PDF.");
   }
 }
@@ -3883,6 +5569,18 @@ function normalizeEventConformity(input = {}) {
     size: Number(input.size || 0),
     uploadedAt: input.uploadedAt || "",
     uploadedBy: normalizeText(input.uploadedBy || ""),
+  };
+}
+
+function normalizeEventConformityWaiver(input = {}) {
+  if (!input || typeof input !== "object" || !parseBooleanLike(input.approved)) return null;
+  return {
+    approved: true,
+    approvedAt: input.approvedAt || "",
+    approvedBy: normalizeText(input.approvedBy || ""),
+    requestedAt: input.requestedAt || "",
+    requestedBy: normalizeText(input.requestedBy || ""),
+    reason: normalizeText(input.reason || ""),
   };
 }
 
@@ -3985,6 +5683,10 @@ function toLogisticsEventSummary(event) {
     serviceType: event.serviceType,
     status: event.status,
     statusLabel: getErpEventStatusLabel(event.status),
+    logisticsStatus: event.logisticsStatus || "",
+    hasClientConformity: Boolean(event.clientConformity?.fileName),
+    conformityWaiver: event.conformityWaiver || null,
+    closeWithoutConformityRequested: parseBooleanLike(event.operationalSheet?.closeWithoutConformityRequested),
     progress,
   };
 }
@@ -4054,6 +5756,7 @@ function normalizeOperationalSheet(sheet = {}, event = {}) {
   }
 
   cleanOperationalSheetNoise(categories, event);
+  cleanDeliveryOnlyOperationalSuggestions(categories, event);
   seedOperationalSheet(categories, event, deletedSeeds);
 
   return {
@@ -4061,8 +5764,54 @@ function normalizeOperationalSheet(sheet = {}, event = {}) {
     deletedSeeds,
     leftovers: normalizeEventLeftovers(sheet.leftovers || event.leftovers || event.leftoverItems || []),
     postEventNotes: normalizeText(sheet.postEventNotes || sheet.eventComments || ""),
+    closeWithoutConformityRequested: parseBooleanLike(sheet.closeWithoutConformityRequested),
+    closeWithoutConformityRequestedAt: sheet.closeWithoutConformityRequestedAt || "",
+    closeWithoutConformityRequestedBy: normalizeText(sheet.closeWithoutConformityRequestedBy || ""),
     updatedAt: sheet.updatedAt || now,
   };
+}
+
+function isDeliveryOnlyEvent(event = {}) {
+  if (event.assistanceMode === "delivery_only") return true;
+  const values = [
+    event.assistanceMode,
+    event.serviceMode,
+    event.serviceType,
+    event.staff,
+    event.notes,
+  ].map((value) => normalizeSearchKey(value || "")).join(" ");
+  return values.includes("solo entrega") || values.includes("delivery only") || values.includes("sin montaje");
+}
+
+function cleanDeliveryOnlyOperationalSuggestions(categories, event = {}) {
+  if (!isDeliveryOnlyEvent(event)) return;
+  const autoSeedKeys = {
+    utensilios: [
+      "Cuchillos de servicio",
+      "Pinzas de servicio",
+      "Cucharas de servicio",
+      "Tablas de apoyo",
+      "Termos / dispensers de cafe",
+      "Jarras para leche/agua",
+      "Bandejas de servicio",
+      "Pinzas para bocados",
+    ],
+    manteleria: [
+      "Manteles para mesa de apoyo",
+    ],
+    mobiliario: [
+      "Mesa de apoyo",
+    ],
+  };
+
+  for (const [category, labels] of Object.entries(autoSeedKeys)) {
+    const keys = new Set(labels.map((label) => normalizeSearchKey(label)));
+    categories[category] = (categories[category] || []).filter((item) => {
+      const key = normalizeSearchKey(item.text || "");
+      const looksManual = item.checked || item.owner || item.note || item.updatedAt;
+      return !keys.has(key) || looksManual;
+    });
+  }
 }
 
 function normalizeDeletedOperationalSeeds(input = {}) {
@@ -4254,22 +6003,27 @@ function seedOperationalSuggestions(categories, event = {}, add) {
   const guests = Number(event.guestCount || 0);
   const serviceKey = normalizeServiceCategoryKey(event.serviceType || event.eventMoments || "");
   const assisted = event.assistanceMode === "assisted" || normalizeSearchKey(event.staff).includes("mozo");
+  const deliveryOnly = isDeliveryOnlyEvent(event);
+  const addSuggestion = (category, text, quantity = "", note = "") => {
+    if (deliveryOnly && ["utensilios", "manteleria", "mobiliario"].includes(category)) return;
+    add(category, text, quantity, note);
+  };
 
-  add("utensilios", "Cuchillos de servicio");
-  add("utensilios", "Pinzas de servicio");
-  add("utensilios", "Cucharas de servicio");
-  add("utensilios", "Tablas de apoyo");
+  addSuggestion("utensilios", "Cuchillos de servicio");
+  addSuggestion("utensilios", "Pinzas de servicio");
+  addSuggestion("utensilios", "Cucharas de servicio");
+  addSuggestion("utensilios", "Tablas de apoyo");
 
   if (serviceKey.includes("coffee")) {
-    add("utensilios", "Termos / dispensers de cafe");
-    add("utensilios", "Jarras para leche/agua");
+    addSuggestion("utensilios", "Termos / dispensers de cafe");
+    addSuggestion("utensilios", "Jarras para leche/agua");
     add("bebidas", "Hielo");
     add("montaje", "Armar estacion de cafe e infusiones");
   }
 
   if (serviceKey.includes("finger") || serviceKey.includes("agape") || serviceKey.includes("cocktail")) {
-    add("utensilios", "Bandejas de servicio");
-    add("utensilios", "Pinzas para bocados");
+    addSuggestion("utensilios", "Bandejas de servicio");
+    addSuggestion("utensilios", "Pinzas para bocados");
     add("montaje", "Definir mesa de apoyo para reposicion");
   }
 
@@ -4289,8 +6043,8 @@ function seedOperationalSuggestions(categories, event = {}, add) {
   add("documentacion", "Confirmar contacto del cliente y lugar");
 
   if (guests > 0) {
-    add("mobiliario", "Mesa de apoyo", guests > 60 ? "2+" : "1");
-    add("manteleria", "Manteles para mesa de apoyo", guests > 60 ? "2+" : "1");
+    addSuggestion("mobiliario", "Mesa de apoyo", guests > 60 ? "2+" : "1");
+    addSuggestion("manteleria", "Manteles para mesa de apoyo", guests > 60 ? "2+" : "1");
     add("vajilla", "Servilletas", String(Math.ceil(guests * 1.2)));
   }
 
@@ -4651,6 +6405,37 @@ function getErpEventList() {
   });
 }
 
+function getProductionEventList() {
+  return getErpEventList()
+    .filter((event) => ["confirmed", "production", "done"].includes(event.status))
+    .map((event) => ({
+      id: event.id,
+      name: event.name,
+      clientName: event.clientName,
+      eventDate: event.eventDate,
+      eventTime: event.eventTime,
+      guestCount: event.guestCount,
+      venue: event.venue,
+      serviceType: event.serviceType,
+      status: event.status,
+      owner: event.owner,
+      role: event.role,
+      nextAction: event.nextAction,
+      productionStatus: event.productionStatus,
+      menuStatus: event.menuStatus,
+      checklist: event.checklist,
+      checklistDetails: event.checklistDetails,
+      menuItems: event.menuItems,
+      selectedMenu: event.selectedMenu,
+      dietaryRestrictions: event.dietaryRestrictions,
+      notes: event.notes,
+      operationalSheet: event.operationalSheet,
+      createdAt: event.createdAt,
+      updatedAt: event.updatedAt,
+    }))
+    .sort(compareEventsByDate);
+}
+
 function normalizeErpEvent(event = {}) {
   const quote = getBestQuoteForEvent(event.id);
   const purchases = getErpPurchaseList().filter((purchase) => purchase.eventName && normalizeSearchKey(purchase.eventName) === normalizeSearchKey(event.name));
@@ -4671,6 +6456,10 @@ function normalizeErpEvent(event = {}) {
     ? menuItems.map((item) => item.name).filter(Boolean).join(", ")
     : normalizeText(event.selectedMenu || "");
   const finalMargin = quoteTotal - finalCostTotal;
+  const invoiceRequirement = normalizeEventInvoiceRequirement(event.invoiceRequirement || event.billingRequirement || "");
+  const invoiceStatus = invoiceRequirement === "no_invoice"
+    ? "not_applicable"
+    : normalizeEventInvoiceStatus(event.invoiceStatus || "");
 
   return {
     id: event.id || `evento-${Date.now()}`,
@@ -4716,13 +6505,15 @@ function normalizeErpEvent(event = {}) {
     collectionDueDate: normalizePanelDate(event.collectionDueDate || "") || "",
     collectionMethod: normalizeText(event.collectionMethod || ""),
     collectionNotes: normalizeText(event.collectionNotes || ""),
-    invoiceStatus: normalizeEventInvoiceStatus(event.invoiceStatus || ""),
-    invoiceNumber: normalizeText(event.invoiceNumber || ""),
+    invoiceRequirement,
+    invoiceStatus,
+    invoiceNumber: invoiceRequirement === "no_invoice" ? "" : normalizeText(event.invoiceNumber || ""),
     productionStatus: normalizeText(event.productionStatus || ""),
     menuStatus: normalizeText(event.menuStatus || ""),
     staffStatus: normalizeText(event.staffStatus || ""),
     logisticsStatus: normalizeText(event.logisticsStatus || ""),
     clientConformity: normalizeEventConformity(event.clientConformity || event.conformity || {}),
+    conformityWaiver: normalizeEventConformityWaiver(event.conformityWaiver || event.conformityException || {}),
     checklist: normalizeOperationalChecklist(event.checklist || event),
     checklistDetails: normalizeText(event.checklistDetails || ""),
     operationalSheet: normalizeOperationalSheet(event.operationalSheet || {}, event),
@@ -4831,7 +6622,7 @@ function parseBooleanLike(value) {
   return value === true || value === "true" || value === "on" || value === "1" || value === 1;
 }
 
-function saveErpEventRecord(input) {
+function saveErpEventRecord(input, user = null) {
   const name = normalizeText(input.name || input.eventName || "");
 
   if (!name) {
@@ -4841,7 +6632,7 @@ function saveErpEventRecord(input) {
   const now = new Date().toISOString();
   const existingIndex = erpEvents.findIndex((event) => event.id === input.id);
   const previous = existingIndex >= 0 ? erpEvents[existingIndex] : {};
-  const event = normalizeErpEvent({
+  let event = normalizeErpEvent({
     ...previous,
     ...input,
     id: input.id || previous.id || `evento-${Date.now()}`,
@@ -4852,6 +6643,27 @@ function saveErpEventRecord(input) {
 
   if (event.status === "done" && event.eventDate && event.eventDate > new Date().toISOString().slice(0, 10)) {
     throw new Error("No se puede marcar como realizado un evento con fecha futura.");
+  }
+  if (event.status === "done" && !event.clientConformity?.fileName && !event.conformityWaiver?.approved) {
+    const sheet = normalizeOperationalSheet(event.operationalSheet || {}, event);
+    const hasPendingWithoutConformityRequest = event.logisticsStatus === "pending_admin_close" &&
+      parseBooleanLike(sheet.closeWithoutConformityRequested);
+    const adminApprovedWithoutConformity = parseBooleanLike(input.approveWithoutConformity || input.authorizeWithoutConformity);
+    const adminUserApprovedWithoutConformity = user && (user.role === "admin" || hasPanelPermission(user, "*"));
+    if (hasPendingWithoutConformityRequest || adminApprovedWithoutConformity || adminUserApprovedWithoutConformity) {
+      event = normalizeErpEvent({
+        ...event,
+        conformityWaiver: {
+          approved: true,
+          approvedAt: now,
+          approvedBy: normalizeText(input.approvedBy || input.updatedBy || user?.displayName || user?.username || "Administracion"),
+          requestedBy: sheet.closeWithoutConformityRequestedBy || "",
+          requestedAt: sheet.closeWithoutConformityRequestedAt || "",
+          reason: normalizeText(input.conformityWaiverReason || sheet.postEventNotes || "Cierre autorizado sin conformidad adjunta."),
+        },
+        logisticsStatus: "admin_approved_close",
+      });
+    }
   }
   if (event.status === "done") {
     validateEventConformityForClose(event);
@@ -5457,10 +7269,12 @@ function normalizeErpQuote(quote = {}) {
 }
 
 function normalizeQuoteRecipeLine(item = {}) {
+  const recipe = findRecipeById(item.recipeId);
+  const quantity = normalizeRecipeProductionQuantity(item.quantity || 0, recipe?.yieldUnit || "unidad");
   return {
     recipeId: normalizeText(item.recipeId || ""),
     name: normalizeText(item.name || ""),
-    quantity: parseDecimalNumber(item.quantity || 0),
+    quantity,
     unitCost: roundMoney(Number(item.unitCost || 0)),
     totalCost: roundMoney(Number(item.totalCost || 0)),
   };
@@ -5519,7 +7333,7 @@ function calculateErpQuote(input) {
   const recipes = Array.isArray(input.recipes) ? input.recipes : [];
   const recipeLines = recipes.map((line) => {
     const recipe = findRecipeById(line.recipeId);
-    const quantity = parseDecimalNumber(line.quantity || 0);
+    const quantity = normalizeRecipeProductionQuantity(line.quantity || 0, recipe?.yieldUnit || "unidad");
     const unitCost = Number(recipe ? calculateRecipeCost(recipe).costPerPortion : line.unitCost || 0);
 
     return normalizeQuoteRecipeLine({
@@ -5633,6 +7447,8 @@ function getErpPurchaseList() {
     const paidAmount = getPurchasePaidAmount(purchase, amounts.totalAmount);
     const pendingAmount = getPurchasePendingAmount(purchase, amounts.totalAmount);
     const paymentStatus = pendingAmount <= 0 ? "Pagado" : (paidAmount > 0 ? "Parcial" : (purchase.paymentStatus || "Pendiente"));
+    const reimbursementPaidAmount = getPurchaseReimbursementPaidAmount(purchase, paidAmount);
+    const reimbursementPendingAmount = getPurchaseReimbursementPendingAmount(purchase, paidAmount);
     return {
       ...purchase,
       invoiceType: purchase.invoiceType || "",
@@ -5643,6 +7459,9 @@ function getErpPurchaseList() {
       paidAmount,
       pendingAmount,
       paymentStatus,
+      reimbursementPaidAmount,
+      reimbursementPendingAmount,
+      reimbursementStatus: reimbursementPendingAmount <= 0 && reimbursementPaidAmount > 0 ? "Reintegrado" : (reimbursementPaidAmount > 0 ? "Parcial" : "Pendiente"),
       notes: purchase.notes || "",
     };
   }).sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
@@ -5683,6 +7502,26 @@ function getPurchasePendingAmount(purchase = {}, totalAmount = 0) {
   return roundMoney(Math.max(0, Number(totalAmount || 0) - getPurchasePaidAmount(purchase, totalAmount)));
 }
 
+function getPurchaseReimbursementPaidAmount(purchase = {}, paidByPayerAmount = 0) {
+  const explicitPaid = Number(purchase.reimbursementPaidAmount || purchase.montoReintegrado || 0);
+  return roundMoney(Math.min(Math.max(0, explicitPaid), Math.max(0, Number(paidByPayerAmount || 0))));
+}
+
+function getPurchaseReimbursementPendingAmount(purchase = {}, paidByPayerAmount = 0) {
+  if (!isReimbursablePurchase(purchase)) return 0;
+  return roundMoney(Math.max(0, Number(paidByPayerAmount || 0) - getPurchaseReimbursementPaidAmount(purchase, paidByPayerAmount)));
+}
+
+function isReimbursablePurchase(purchase = {}) {
+  const payer = normalizeSearchKey(purchase.fundsSource || purchase.origenFondos || "");
+  return isPersonalReimbursementPayer(payer);
+}
+
+function isPersonalReimbursementPayer(value = "") {
+  const payer = normalizeSearchKey(value || "");
+  return payer.includes("joaquin") || payer.includes("joaqu") || payer.includes("german") || payer.includes("germa");
+}
+
 function rememberErpPurchase(purchase) {
   const lineTotal = (purchase.lineItems || []).reduce((sum, item) => sum + Number(item.total || 0), 0);
   const amounts = getPurchaseAmounts({ ...purchase, lineItems: purchase.lineItems || [] });
@@ -5698,12 +7537,18 @@ function rememberErpPurchase(purchase) {
         : getPurchasePaidAmount(previous, amounts.totalAmount);
   const paidAmount = roundMoney(Math.min(preservedPaidAmount, amounts.totalAmount));
   const pendingAmount = roundMoney(Math.max(0, amounts.totalAmount - paidAmount));
+  const reimbursementPaidAmount = purchase.reimbursementPaidAmount !== undefined
+    ? roundMoney(Number(purchase.reimbursementPaidAmount || 0))
+    : getPurchaseReimbursementPaidAmount(previous, paidAmount);
   const record = {
     id: purchase.id || `compra-${Date.now()}`,
     date: purchase.fecha || getDateOnly(new Date()),
     provider: purchase.proveedor || "",
     eventName: purchase.evento || "",
     description: purchase.descripcion || "",
+    source: purchase.source || previous.source || "panel_compras",
+    sourceReceiptId: purchase.sourceReceiptId || previous.sourceReceiptId || "",
+    sourceOrderId: purchase.sourceOrderId || previous.sourceOrderId || "",
     paymentStatus: pendingAmount <= 0 ? "Pagado" : (paidAmount > 0 ? "Parcial" : (purchase.estadoPago || "Pendiente")),
     paymentMethod: purchase.medioPago || "",
     fundsSource: purchase.origenFondos || "",
@@ -5714,6 +7559,8 @@ function rememberErpPurchase(purchase) {
     totalAmount: amounts.totalAmount,
     paidAmount,
     pendingAmount,
+    reimbursementPaidAmount: roundMoney(Math.min(reimbursementPaidAmount, paidAmount)),
+    reimbursementLog: Array.isArray(previous.reimbursementLog) ? previous.reimbursementLog : [],
     notes: purchase.observaciones || "",
     lineItems: purchase.lineItems || [],
     paymentLog: Array.isArray(previous.paymentLog) ? previous.paymentLog : [],
@@ -5749,16 +7596,33 @@ async function deletePurchaseRecord(id, options = {}) {
   return { id: cleanId, deleted: true };
 }
 
+function normalizePaymentReceipt(receipt = null) {
+  if (!receipt || typeof receipt !== "object" || !receipt.dataUrl) return null;
+  return {
+    name: normalizeText(receipt.name || "comprobante"),
+    type: normalizeText(receipt.type || "application/octet-stream"),
+    size: Number(receipt.size || 0),
+    dataUrl: String(receipt.dataUrl || ""),
+    uploadedAt: normalizeText(receipt.uploadedAt || new Date().toISOString()),
+  };
+}
+
 async function applyProviderPayment(input = {}) {
   const provider = normalizeText(input.provider || "");
   const mode = normalizeText(input.mode || "partial");
   const paymentMethod = normalizeText(input.paymentMethod || "");
   const fundsSource = normalizeText(input.fundsSource || "");
   const notes = normalizeText(input.notes || "");
+  const receipt = normalizePaymentReceipt(input.receipt);
   const paymentDate = normalizePanelDate(input.date || getDateOnly(new Date())) || getDateOnly(new Date());
 
   if (!provider) {
     throw new Error("Seleccione el proveedor al que corresponde el pago.");
+  }
+
+  const unresolvedReceipts = getProviderUnresolvedReceiptDifferences(provider);
+  if (unresolvedReceipts.length) {
+    throw new Error(`Hay ${unresolvedReceipts.length} recepcion(es) con diferencias sin resolver para este proveedor. Resuelva o acepte las diferencias antes de pagar.`);
   }
 
   const pendingPurchases = getErpPurchaseList()
@@ -5808,6 +7672,7 @@ async function applyProviderPayment(input = {}) {
           paymentMethod,
           fundsSource,
           notes,
+          receipt,
         },
       ],
       updatedAt: new Date().toISOString(),
@@ -5835,6 +7700,132 @@ async function applyProviderPayment(input = {}) {
 
   return {
     provider,
+    requestedAmount: mode === "total" ? debtTotal : roundMoney(parseOptionalNumber(input.amount)),
+    appliedAmount: roundMoney(applied.reduce((sum, item) => sum + item.appliedAmount, 0)),
+    remainingCredit: roundMoney(Math.max(0, remaining)),
+    debtBefore: debtTotal,
+    debtAfter: roundMoney(Math.max(0, debtTotal - applied.reduce((sum, item) => sum + item.appliedAmount, 0))),
+    purchases: applied,
+  };
+}
+
+function getPayerReimbursementGroups(purchases = getErpPurchaseList()) {
+  const groups = {};
+
+  purchases
+    .filter((purchase) => isReimbursablePurchase(purchase))
+    .forEach((purchase) => {
+      const paidByPayer = Number(purchase.paidAmount || 0);
+      if (paidByPayer <= 0) return;
+      const payer = normalizeText(purchase.fundsSource || "Sin definir");
+      const reimbursed = Number(purchase.reimbursementPaidAmount || 0);
+      const pending = Number(purchase.reimbursementPendingAmount || 0);
+      if (!groups[payer]) {
+        groups[payer] = {
+          payer,
+          totalPaid: 0,
+          reimbursedAmount: 0,
+          pendingAmount: 0,
+          purchaseCount: 0,
+          purchases: [],
+        };
+      }
+      groups[payer].totalPaid += paidByPayer;
+      groups[payer].reimbursedAmount += reimbursed;
+      groups[payer].pendingAmount += pending;
+      groups[payer].purchaseCount += 1;
+      groups[payer].purchases.push(purchase);
+    });
+
+  return Object.values(groups)
+    .map((group) => ({
+      ...group,
+      totalPaid: roundMoney(group.totalPaid),
+      reimbursedAmount: roundMoney(group.reimbursedAmount),
+      pendingAmount: roundMoney(group.pendingAmount),
+    }))
+    .sort((a, b) => b.pendingAmount - a.pendingAmount);
+}
+
+function applyPayerReimbursement(input = {}) {
+  const payer = normalizeText(input.payer || "");
+  const mode = normalizeText(input.mode || "partial");
+  const paymentMethod = normalizeText(input.paymentMethod || "");
+  const fundsSource = normalizeText(input.fundsSource || "");
+  const notes = normalizeText(input.notes || "");
+  const receipt = normalizePaymentReceipt(input.receipt);
+  const paymentDate = normalizePanelDate(input.date || getDateOnly(new Date())) || getDateOnly(new Date());
+
+  if (!payer) {
+    throw new Error("Seleccione a quien se le reintegra la plata.");
+  }
+
+  const pendingPurchases = getErpPurchaseList()
+    .filter((purchase) => isReimbursablePurchase(purchase))
+    .filter((purchase) => normalizeSearchKey(purchase.fundsSource || "").includes(normalizeSearchKey(payer).slice(0, 5)))
+    .filter((purchase) => Number(purchase.reimbursementPendingAmount || 0) > 0)
+    .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+
+  if (!pendingPurchases.length) {
+    throw new Error("No hay reintegros pendientes para esa persona.");
+  }
+
+  const debtTotal = roundMoney(pendingPurchases.reduce((sum, purchase) => sum + Number(purchase.reimbursementPendingAmount || 0), 0));
+  let remaining = mode === "total" ? debtTotal : roundMoney(parseOptionalNumber(input.amount));
+
+  if (remaining <= 0) {
+    throw new Error("Ingrese un monto de reintegro mayor a cero.");
+  }
+
+  const applied = [];
+
+  for (const purchase of pendingPurchases) {
+    if (remaining <= 0) break;
+    const amount = Math.min(Number(purchase.reimbursementPendingAmount || 0), remaining);
+    const index = erpPurchases.findIndex((item) => item.id === purchase.id);
+    if (index < 0 || amount <= 0) continue;
+
+    const current = erpPurchases[index];
+    const currentAmounts = getPurchaseAmounts(current);
+    const paidByPayer = getPurchasePaidAmount(current, currentAmounts.totalAmount);
+    const previousReimbursed = getPurchaseReimbursementPaidAmount(current, paidByPayer);
+    const nextReimbursed = roundMoney(Math.min(paidByPayer, previousReimbursed + amount));
+    const reimbursementLog = Array.isArray(current.reimbursementLog) ? current.reimbursementLog : [];
+
+    erpPurchases[index] = {
+      ...current,
+      reimbursementPaidAmount: nextReimbursed,
+      reimbursementLog: [
+        ...reimbursementLog,
+        {
+          id: `reintegro-${Date.now()}-${applied.length + 1}`,
+          date: paymentDate,
+          amount: roundMoney(amount),
+          paymentMethod,
+          fundsSource,
+          notes,
+          receipt,
+        },
+      ],
+      notes: [current.notes, `Reintegro ${payer} ${paymentDate}: ${formatMoneyText(amount)}${notes ? ` - ${notes}` : ""}`].filter(Boolean).join("\n"),
+      updatedAt: new Date().toISOString(),
+    };
+
+    applied.push({
+      id: purchase.id,
+      date: purchase.date,
+      provider: purchase.provider,
+      description: purchase.description,
+      appliedAmount: roundMoney(amount),
+      pendingAmount: roundMoney(Math.max(0, paidByPayer - nextReimbursed)),
+    });
+    remaining = roundMoney(remaining - amount);
+  }
+
+  saveErpPurchases();
+
+  return {
+    payer,
     requestedAmount: mode === "total" ? debtTotal : roundMoney(parseOptionalNumber(input.amount)),
     appliedAmount: roundMoney(applied.reduce((sum, item) => sum + item.appliedAmount, 0)),
     remainingCredit: roundMoney(Math.max(0, remaining)),
