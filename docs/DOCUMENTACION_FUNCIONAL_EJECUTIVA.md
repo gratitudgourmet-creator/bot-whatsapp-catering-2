@@ -98,6 +98,139 @@ Archivos modificados:
 - `approval-panel.html`
 - `Manual_Procedimientos_Operativos_Gratitud_Gourmet.md`
 
+### Actualizacion 22/06/2026 - Maestro de insumos, produccion y ordenes desde recetas
+
+Se conectaron productos/insumos, recetas, stock y ordenes de compra para avanzar hacia un circuito operativo mas integrado.
+
+Cambios funcionales:
+
+- Se agrego un maestro consolidado de productos/insumos alimentado por:
+  - productos historicos de compras;
+  - precios recordados;
+  - ingredientes de recetas;
+  - lineas de compras;
+  - ordenes de compra;
+  - inventario generado por recepciones.
+- El endpoint `GET /api/product-master` devuelve el maestro segun permisos del usuario.
+- El payload de `GET /api/erp` ahora incluye `productMaster` para roles con compras, stock, recetas, produccion o admin.
+- El maestro oculta costos a roles de cocina/cocinero y a usuarios sin permisos financieros/stock/compras.
+- El monitor `Produccion/Cocina` muestra eventos proximos/confirmados con menu, servicio, restricciones y acciones operativas.
+- Desde Produccion/Cocina, un usuario con permiso de compras puede abrir una orden de compra preasociada al evento.
+- La orden puede traer `menu y recetas`: si existe una receta con el mismo nombre del item de menu, sugiere insumos de la receta y preparaciones anidadas.
+- El generador de orden considera stock disponible por producto/unidad y lo descuenta de la cantidad sugerida.
+- Las lineas de orden incorporan tipo de item: mercaderia, vajilla, alquiler o equipamiento.
+- Se reforzo la sanitizacion de recetas: cocina/cocinero no reciben costos desde backend ni los ven en frontend.
+
+Archivos modificados:
+
+- `whatsapp-catering-bot.js`
+- `approval-panel.html`
+- `Manual_Procedimientos_Operativos_Gratitud_Gourmet.md`
+
+### Actualizacion 22/06/2026 - Inventario operativo seleccionable por evento
+
+Se agrego una capa de inventario operativo para que Logistica pueda reservar elementos por evento sin ver costos.
+
+Cambios funcionales:
+
+- Nueva persistencia `inventario-operativo-erp.json`.
+- `Stock > Inventario operativo` permite administrar categorias, subcategorias e items.
+- Categorias base: alimentos, bebidas, vajilla, utensilios, artefactos, contenedores, manteleria, mobiliario, transporte, descartables y productos de limpieza.
+- Cada item guarda nombre, categoria, subcategoria, cantidad, unidad, estado, ubicacion y notas.
+- Estados de item: disponible, roto, mantenimiento, perdido y baja.
+- Los items no disponibles se muestran bloqueados para Logistica.
+- En `Logistica Evento`, cada evento confirmado muestra el inventario por rubros colapsables.
+- El rol `logistica_evento` puede seleccionar items, cantidad y nota por evento, sin acceder a costos ni compras.
+- Las reservas quedan guardadas dentro del evento como `operationalSheet.reservations`.
+- La disponibilidad considera reservas existentes: reutilizables contra eventos confirmados/en produccion de la misma fecha; consumibles contra disponibilidad general.
+- La ficha queda unificada en `Operacion del evento`:
+  - `Inventario operativo reservado`: elementos reales seleccionables desde stock/deposito.
+  - `Procedimientos operativos`: tareas del manual de operacion, como personal, transporte, montaje, desmontaje, documentacion y extras.
+- Los rubros materiales dejaron de mostrarse como checklist textual para evitar duplicacion y listas interminables.
+- `Sobrantes / almacenamiento` trae los consumibles reservados en el evento y permite marcar `Revisar`, `Sobro` o `No sobro`. Ahora se muestra como segunda instancia de cierre/post-evento para no sobrecargar la ficha previa.
+- Los consumibles traidos desde el evento quedan bloqueados como nombre de producto; solo los sobrantes manuales permiten escribir texto libre.
+- Los sobrantes marcados con `returnToStock` generan movimientos de inventario con `sourceType: event_leftover` y `sourceId: event-leftover:{eventId}:{leftoverId}`.
+- `Personal/RRHH > Sueldos y horas` calcula una vista previa desde asistencias del periodo: horas trabajadas, monto por asistencias y total a liquidar.
+- Las recetas ahora muestran escala de produccion por rendimiento real. Si el rendimiento esta en kg o gramos, se proponen equivalencias redondas como `1 kg` / `1000 g` para facilitar cocina e impresion.
+
+Mejoras UX de esta etapa:
+
+- `Clientes` queda como modulo independiente y sale del modulo `Comercial`.
+- `Comercial` queda centrado en oportunidades, pipeline, presupuestos y lugares.
+- Tablero de oportunidades con scroll interno y encabezado fijo.
+- Recepciones clickeables desde `Stock`.
+- `Stock` separa `Stock contable` de `Inventario operativo`.
+- `Maestro de insumos` reemplaza `Origen` por `Presente en` y permite abrir la ficha del producto.
+- Las variaciones de insumos se pueden abrir para ver proveedor, cambio de precio y recetas afectadas.
+- Acciones de proveedor y cliente corregidas con menu de tres puntos.
+- `Reportes` permite descargar CSV separados por eventos, compras, proveedores, clientes y stock contable.
+
+### Actualizacion 23/06/2026 - Rendimiento de modulos y alta rapida de servicios
+
+- La navegacion entre modulos ERP reutiliza datos ya cargados y evita llamadas repetidas a `/api/erp`.
+- `loadErp` queda coalescido: si ya hay una carga en curso, las demas acciones esperan esa misma carga en lugar de disparar varias simultaneas.
+- Si los datos tienen mas de un minuto, el panel refresca en segundo plano sin bloquear el cambio de pestaña.
+- En `Crear evento`, el campo `Agregar servicio` intercepta Enter para no enviar el formulario del evento.
+- Al agregar un servicio operativo nuevo, queda seleccionado automaticamente en la ficha abierta.
+
+Endpoints agregados:
+
+- `GET /api/operational-inventory`
+- `POST /api/operational-inventory`
+- `POST /api/operational-inventory-categories`
+- `POST /api/delete-operational-inventory`
+
+Estructura principal:
+
+```json
+{
+  "categories": [
+    { "id": "utensilios", "label": "Utensilios", "type": "reusable", "subcategories": ["Cocina", "Servicio"] }
+  ],
+  "items": [
+    { "id": "", "name": "", "categoryId": "", "subcategory": "", "quantity": 1, "unit": "unidad", "status": "available", "location": "", "notes": "" }
+  ]
+}
+```
+
+Reserva dentro del evento:
+
+```json
+{
+  "operationalSheet": {
+    "reservations": [
+      { "itemId": "", "itemName": "", "categoryId": "", "quantity": "1", "unit": "unidad", "checked": true, "note": "" }
+    ]
+  }
+}
+```
+
+Archivos modificados:
+
+- `whatsapp-catering-bot.js`
+- `approval-panel.html`
+- `Manual_Procedimientos_Operativos_Gratitud_Gourmet.md`
+
+### Actualizacion 22/06/2026 - Personal/RRHH por subpantallas y costo de personal en evento
+
+Se reorganizo el modulo `Personal/RRHH` para evitar que legajos, asistencias y sueldos aparezcan mezclados en una unica pantalla.
+
+Cambios funcionales:
+
+- `Legajos`, `Asistencia y horarios` y `Sueldos y horas` ahora son subpantallas reales.
+- El formulario de asistencia suma preview de horas, valor hora, adicionales y costo estimado antes de guardar.
+- Se puede editar una asistencia haciendo click en la fila cargada.
+- Al guardar legajo/asistencia/sueldo, el modulo conserva la subpantalla correspondiente.
+- El costo de personal de RRHH impacta en el evento cuando la asistencia esta vinculada al evento.
+- Si existen asistencias para un evento, el costo real/programado de RRHH reemplaza el costo de personal estimado del presupuesto para calcular el costo final del evento.
+- Si no existen asistencias vinculadas, el evento mantiene el costo de personal presupuestado.
+
+Archivos modificados:
+
+- `approval-panel.html`
+- `whatsapp-catering-bot.js`
+- `Manual_Procedimientos_Operativos_Gratitud_Gourmet.md`
+
 ### Estructura general
 
 El sistema es una aplicacion Node.js monolitica orientada a la gestion comercial y operativa de un servicio de catering. Combina tres componentes principales:

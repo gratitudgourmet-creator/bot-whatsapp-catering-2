@@ -1,0 +1,1 @@
+Prompt para Codex: agregar una seccion Adjuntos por area/modulo al ERP, vinculada a evento, cliente, proveedor, compra, stock, equipo, personal u orden de pago. Debe permitir PDF, DOCX, imagenes y planillas; clasificar por area; aprobar/rechazar; ver en mobile; y guardar historial.

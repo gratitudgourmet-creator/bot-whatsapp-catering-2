@@ -3631,7 +3631,7 @@
     "priceMode": "per_person",
     "pricePerPerson": 23500,
     "servicePriceTotal": 0,
-    "status": "confirmed",
+    "status": "done",
     "owner": "",
     "role": "",
     "nextAction": "",
@@ -3647,9 +3647,16 @@
     "productionStatus": "",
     "menuStatus": "",
     "staffStatus": "",
-    "logisticsStatus": "pending_admin_close",
+    "logisticsStatus": "admin_approved_close",
     "clientConformity": null,
-    "conformityWaiver": null,
+    "conformityWaiver": {
+      "approved": true,
+      "approvedAt": "2026-06-23T13:18:06.990Z",
+      "approvedBy": "admin",
+      "requestedAt": "2026-06-20T22:04:01.056Z",
+      "requestedBy": "brunours",
+      "reason": "Sin comentarios"
+    },
     "checklist": {
       "purchases": false,
       "production": false,
@@ -3837,6 +3844,15 @@
             "owner": "",
             "note": "",
             "updatedAt": "2026-06-20T22:04:00.735Z"
+          },
+          {
+            "id": "item-1782220686984-2b02f5490199f",
+            "text": "Verificar contenedores asignados antes de cargar",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
           }
         ],
         "montaje": [
@@ -3866,6 +3882,15 @@
             "owner": "",
             "note": "",
             "updatedAt": "2026-06-20T22:04:00.735Z"
+          },
+          {
+            "id": "item-1782220686985-16861dd73c561",
+            "text": "Confirmar cantidad final de invitados con responsable",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
           }
         ],
         "desmontaje": [
@@ -3982,16 +4007,20 @@
         "extras": []
       },
       "leftovers": [],
+      "reservations": [],
       "postEventNotes": "Sin comentarios",
       "closeWithoutConformityRequested": true,
       "closeWithoutConformityRequestedAt": "2026-06-20T22:04:01.056Z",
       "closeWithoutConformityRequestedBy": "brunours",
-      "updatedAt": "2026-06-20T22:04:01.056Z"
+      "updatedAt": "2026-06-23T13:18:06.990Z"
     },
     "dietaryRestrictions": "",
     "notes": "",
     "quoteTotal": 540500,
     "quoteCostTotal": 0,
+    "staffBudgetCost": 0,
+    "staffRealCost": 0,
+    "appliedStaffCost": 0,
     "quoteMarginPercent": 0,
     "purchaseTotal": 63836.27,
     "stockCostTotal": 0,
@@ -4098,7 +4127,7 @@
       }
     ],
     "createdAt": "2026-06-19T19:07:13.792Z",
-    "updatedAt": "2026-06-20T22:04:01.056Z"
+    "updatedAt": "2026-06-23T13:18:06.990Z"
   },
   {
     "id": "evento-1781898849863",
@@ -4134,7 +4163,7 @@
     "priceMode": "total",
     "pricePerPerson": 0,
     "servicePriceTotal": 0,
-    "status": "confirmed",
+    "status": "done",
     "owner": "",
     "role": "",
     "nextAction": "",
@@ -4172,78 +4201,11 @@
     "operationalSheet": {
       "categories": {
         "alimentos": [],
-        "vajilla": [
-          {
-            "id": "item-1781898849868-3a9b6f75c97e8",
-            "text": "Servilletas",
-            "quantity": "102",
-            "checked": false,
-            "owner": "",
-            "note": "",
-            "updatedAt": "2026-06-20T21:57:17.209Z"
-          }
-        ],
-        "utensilios": [
-          {
-            "id": "item-1781898849868-eb83b3687c061",
-            "text": "Cuchillos de servicio",
-            "quantity": "",
-            "checked": false,
-            "owner": "",
-            "note": "",
-            "updatedAt": "2026-06-20T21:57:17.209Z"
-          },
-          {
-            "id": "item-1781898849868-ca53c2f4dd622",
-            "text": "Pinzas de servicio",
-            "quantity": "",
-            "checked": false,
-            "owner": "",
-            "note": "",
-            "updatedAt": "2026-06-20T21:57:17.209Z"
-          },
-          {
-            "id": "item-1781898849868-62d03a8600b78",
-            "text": "Cucharas de servicio",
-            "quantity": "",
-            "checked": false,
-            "owner": "",
-            "note": "",
-            "updatedAt": "2026-06-20T21:57:17.209Z"
-          },
-          {
-            "id": "item-1781898849868-08884b4017ced",
-            "text": "Tablas de apoyo",
-            "quantity": "",
-            "checked": false,
-            "owner": "",
-            "note": "",
-            "updatedAt": "2026-06-20T21:57:17.209Z"
-          }
-        ],
+        "vajilla": [],
+        "utensilios": [],
         "bebidas": [],
-        "manteleria": [
-          {
-            "id": "item-1781898849868-f32f273cf72b4",
-            "text": "Manteles para mesa de apoyo",
-            "quantity": "2+",
-            "checked": false,
-            "owner": "",
-            "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
-          }
-        ],
-        "mobiliario": [
-          {
-            "id": "item-1781898849868-7350b70a2286f",
-            "text": "Mesa de apoyo",
-            "quantity": "2+",
-            "checked": false,
-            "owner": "",
-            "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
-          }
-        ],
+        "manteleria": [],
+        "mobiliario": [],
         "personal": [],
         "transporte": [
           {
@@ -4253,7 +4215,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.585Z"
           },
           {
             "id": "item-1781898849868-014eaf1442121",
@@ -4262,7 +4224,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.586Z"
           }
         ],
         "montaje": [
@@ -4273,7 +4235,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.587Z"
           },
           {
             "id": "item-1781898849868-9f024ad5dbe0e",
@@ -4282,7 +4244,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.587Z"
           },
           {
             "id": "item-1781898849868-b14abda65e9a9",
@@ -4291,7 +4253,16 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.587Z"
+          },
+          {
+            "id": "item-1782220639782-8f62234505b0d",
+            "text": "Confirmar cantidad final de invitados con responsable",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
           }
         ],
         "desmontaje": [
@@ -4302,7 +4273,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.588Z"
           },
           {
             "id": "item-1781898849868-a86d2873bd123",
@@ -4311,7 +4282,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.589Z"
           },
           {
             "id": "item-1781898849868-6c30e3c949b78",
@@ -4320,7 +4291,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.589Z"
           },
           {
             "id": "item-1781898849868-b5ab04e3ed5ad",
@@ -4329,7 +4300,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.589Z"
           },
           {
             "id": "item-1781898849868-66716f7fd5c96",
@@ -4338,7 +4309,7 @@
             "checked": true,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.589Z"
           }
         ],
         "documentacion": [
@@ -4349,7 +4320,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.589Z"
           },
           {
             "id": "item-1781898849868-1e043320614e1",
@@ -4358,7 +4329,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.589Z"
           }
         ],
         "extras": [
@@ -4369,7 +4340,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.590Z"
           },
           {
             "id": "item-1781898849868-00a876357efaf",
@@ -4378,7 +4349,7 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.590Z"
           },
           {
             "id": "item-1781898849868-b03bd557940f9",
@@ -4387,17 +4358,28 @@
             "checked": false,
             "owner": "",
             "note": "",
-            "updatedAt": "2026-06-20T21:57:17.210Z"
+            "updatedAt": "2026-06-22T23:20:46.590Z"
           }
         ]
       },
       "deletedSeeds": {
         "alimentos": [],
-        "vajilla": [],
-        "utensilios": [],
+        "vajilla": [
+          "servilletas"
+        ],
+        "utensilios": [
+          "cuchillos de servicio",
+          "pinzas de servicio",
+          "cucharas de servicio",
+          "tablas de apoyo"
+        ],
         "bebidas": [],
-        "manteleria": [],
-        "mobiliario": [],
+        "manteleria": [
+          "manteles para mesa de apoyo"
+        ],
+        "mobiliario": [
+          "mesa de apoyo"
+        ],
         "personal": [],
         "transporte": [],
         "montaje": [],
@@ -4405,17 +4387,84 @@
         "documentacion": [],
         "extras": []
       },
-      "leftovers": [],
+      "leftovers": [
+        {
+          "id": "sobrante-opinv-1782169946025-6319c1adb5b81",
+          "inventoryItemId": "",
+          "food": "VINO MALBEC 750CC",
+          "status": "pending",
+          "quantity": "10",
+          "unit": "",
+          "destination": "Deposito",
+          "storage": "",
+          "notes": "",
+          "returnToStock": false,
+          "itemType": "merchandise",
+          "updatedAt": "2026-06-22T23:20:46.590Z"
+        },
+        {
+          "id": "sobrante-1782165557635",
+          "inventoryItemId": "",
+          "food": "vino",
+          "status": "pending",
+          "quantity": "12",
+          "unit": "",
+          "destination": "Deposito",
+          "storage": "",
+          "notes": "",
+          "returnToStock": false,
+          "itemType": "merchandise",
+          "updatedAt": "2026-06-22T23:20:46.590Z"
+        }
+      ],
+      "reservations": [
+        {
+          "id": "reserva-opinv-1782163900081-9c3d1a816cef2",
+          "itemId": "opinv-1782163900081-9c3d1a816cef2",
+          "itemName": "Pinza roja",
+          "categoryId": "utensilios",
+          "quantity": "1",
+          "unit": "unidad",
+          "checked": true,
+          "note": "",
+          "updatedAt": "2026-06-22T23:20:46.591Z"
+        },
+        {
+          "id": "reserva-opinv-1782163850611-d5fbba7c34108",
+          "itemId": "opinv-1782163850611-d5fbba7c34108",
+          "itemName": "vaso telgopor 240",
+          "categoryId": "descartables",
+          "quantity": "1",
+          "unit": "unidad",
+          "checked": true,
+          "note": "",
+          "updatedAt": "2026-06-22T23:20:46.591Z"
+        },
+        {
+          "id": "reserva-opinv-1782169946025-6319c1adb5b81",
+          "itemId": "opinv-1782169946025-6319c1adb5b81",
+          "itemName": "VINO MALBEC 750CC",
+          "categoryId": "alimentos",
+          "quantity": "30",
+          "unit": "unidad",
+          "checked": true,
+          "note": "",
+          "updatedAt": "2026-06-22T23:20:46.591Z"
+        }
+      ],
       "postEventNotes": "Sin comentarios",
       "closeWithoutConformityRequested": false,
       "closeWithoutConformityRequestedAt": "",
       "closeWithoutConformityRequestedBy": "",
-      "updatedAt": "2026-06-20T21:57:17.210Z"
+      "updatedAt": "2026-06-22T23:20:46.801Z"
     },
     "dietaryRestrictions": "",
     "notes": "",
     "quoteTotal": 0,
     "quoteCostTotal": 0,
+    "staffBudgetCost": 0,
+    "staffRealCost": 20000,
+    "appliedStaffCost": 20000,
     "quoteMarginPercent": 0,
     "purchaseTotal": 63630,
     "stockCostTotal": 9000,
@@ -4428,8 +4477,8 @@
         "notes": ""
       }
     ],
-    "finalCostTotal": 72630,
-    "operationalMargin": -72630,
+    "finalCostTotal": 92630,
+    "operationalMargin": -92630,
     "operationalMarginPercent": 0,
     "purchases": [
       {
@@ -4492,6 +4541,627 @@
       }
     ],
     "createdAt": "2026-06-19T19:54:09.862Z",
-    "updatedAt": "2026-06-20T21:57:17.223Z"
+    "updatedAt": "2026-06-23T13:17:40.911Z"
+  },
+  {
+    "id": "evento-1782220628237",
+    "name": "SEBA SUAREZ INAGURACION",
+    "clientId": "",
+    "clientName": "SEBA SUAREZ",
+    "eventDate": "2026-06-27",
+    "eventTime": "12:30",
+    "guestCount": 200,
+    "venue": "",
+    "venueAddress": "",
+    "venueReference": "",
+    "latitude": null,
+    "longitude": null,
+    "mapLabel": "",
+    "serviceType": "Almuerzo",
+    "assistanceMode": "",
+    "waiterCount": 0,
+    "eventMoments": "",
+    "dietaryRestrictionMode": "",
+    "selectedMenu": "CAZUELA DE CARNE",
+    "menuItems": [
+      {
+        "name": "CAZUELA DE CARNE",
+        "quantity": "",
+        "detail": "",
+        "category": "",
+        "suggestedQuantity": "",
+        "subItems": []
+      }
+    ],
+    "includesDrinks": "Con bebidas",
+    "drinkType": "VINOS, AGUA SABORIZADA, AGUA CON GAS, AGUA SIN GAS",
+    "tableware": "SEBA SUAREZ",
+    "tablewareQuantities": "",
+    "tablewareDetail": "",
+    "largeContainers": "",
+    "smallContainers": "",
+    "staff": "",
+    "schedule": "",
+    "budgetRange": "",
+    "priceMode": "total",
+    "pricePerPerson": 0,
+    "servicePriceTotal": 0,
+    "status": "lead",
+    "owner": "",
+    "role": "",
+    "nextAction": "",
+    "paymentStatus": "",
+    "collectedAmount": 0,
+    "collectionStatus": "pending",
+    "collectionDueDate": "",
+    "collectionMethod": "",
+    "collectionNotes": "",
+    "invoiceRequirement": "invoice_required",
+    "invoiceStatus": "not_invoiced",
+    "invoiceNumber": "",
+    "productionStatus": "",
+    "menuStatus": "",
+    "staffStatus": "",
+    "logisticsStatus": "",
+    "clientConformity": null,
+    "conformityWaiver": null,
+    "checklist": {
+      "purchases": false,
+      "production": false,
+      "staff": false,
+      "logistics": false,
+      "menu": false,
+      "payments": false
+    },
+    "checklistDetails": "",
+    "operationalSheet": {
+      "categories": {
+        "alimentos": [],
+        "vajilla": [],
+        "utensilios": [],
+        "bebidas": [],
+        "manteleria": [],
+        "mobiliario": [],
+        "personal": [],
+        "transporte": [
+          {
+            "id": "item-1782220628293-9a0aa2f04f4c9",
+            "text": "Transporte sugerido: camion",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-9f60cb02aa57b",
+            "text": "Revisar volumen de mobiliario, conservadoras y vajilla",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "montaje": [
+          {
+            "id": "item-1782220628292-4a53f9cd6435f",
+            "text": "Revisar acceso de carga y descarga",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-fffb707dfadc8",
+            "text": "Ubicar mesa principal / estacion de servicio",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-2360df2d9018e",
+            "text": "Verificar electricidad, agua y espacio de apoyo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-843f4d16665eb",
+            "text": "Confirmar cantidad final de invitados con responsable",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "desmontaje": [
+          {
+            "id": "item-1782220628293-16327d955379",
+            "text": "Desmontar el servicio completo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-1f3c8254dc748",
+            "text": "Descargar en deposito",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-cb0b3d840b8d8",
+            "text": "Separar sucio, sobrantes y devoluciones",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-8d8d30b375ca9",
+            "text": "Controlar que no queden vajilla, manteles ni utensilios",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-40ae7e0c50a0b",
+            "text": "Registrar roturas o faltantes",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "documentacion": [
+          {
+            "id": "item-1782220628293-691e5d487aeae",
+            "text": "Llevar ficha operativa del evento",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-6612389f441e3",
+            "text": "Confirmar contacto del cliente y lugar",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ],
+        "extras": [
+          {
+            "id": "item-1782220628293-cf5f27946a99e",
+            "text": "Cinta, marcador y bolsas",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628293-bce169d9bd5ac",
+            "text": "Kit de limpieza basico",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          },
+          {
+            "id": "item-1782220628294-41d25464d847b",
+            "text": "Repaso final antes de salir",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": ""
+          }
+        ]
+      },
+      "deletedSeeds": {
+        "alimentos": [],
+        "vajilla": [],
+        "utensilios": [],
+        "bebidas": [],
+        "manteleria": [],
+        "mobiliario": [],
+        "personal": [],
+        "transporte": [],
+        "montaje": [],
+        "desmontaje": [],
+        "documentacion": [],
+        "extras": []
+      },
+      "leftovers": [],
+      "reservations": [],
+      "postEventNotes": "",
+      "closeWithoutConformityRequested": false,
+      "closeWithoutConformityRequestedAt": "",
+      "closeWithoutConformityRequestedBy": "",
+      "updatedAt": "2026-06-23T13:17:08.217Z"
+    },
+    "dietaryRestrictions": "",
+    "notes": "",
+    "quoteTotal": 0,
+    "quoteCostTotal": 0,
+    "staffBudgetCost": 0,
+    "staffRealCost": 0,
+    "appliedStaffCost": 0,
+    "quoteMarginPercent": 0,
+    "purchaseTotal": 0,
+    "stockCostTotal": 0,
+    "stockItems": [],
+    "finalCostTotal": 0,
+    "operationalMargin": 0,
+    "operationalMarginPercent": 0,
+    "purchases": [],
+    "createdAt": "2026-06-23T13:17:08.236Z",
+    "updatedAt": "2026-06-23T13:17:08.236Z"
+  },
+  {
+    "id": "evento-1782220966184",
+    "name": "GUSTAVO MOLINELLI CUMPLEAÑOS",
+    "clientId": "",
+    "clientName": "LAURA",
+    "eventDate": "2026-06-27",
+    "eventTime": "17:00",
+    "guestCount": 40,
+    "venue": "",
+    "venueAddress": "",
+    "venueReference": "",
+    "latitude": null,
+    "longitude": null,
+    "mapLabel": "",
+    "serviceType": "",
+    "assistanceMode": "",
+    "waiterCount": 0,
+    "eventMoments": "",
+    "dietaryRestrictionMode": "",
+    "selectedMenu": "EMPANADAS, PANINI DE POLLO, CAZUELA DE CARNE, SANDWICH JYQ",
+    "menuItems": [
+      {
+        "name": "EMPANADAS",
+        "quantity": "120",
+        "detail": "",
+        "category": "",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "PANINI DE POLLO",
+        "quantity": "80",
+        "detail": "",
+        "category": "",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "CAZUELA DE CARNE",
+        "quantity": "",
+        "detail": "",
+        "category": "",
+        "suggestedQuantity": "",
+        "subItems": []
+      },
+      {
+        "name": "SANDWICH JYQ",
+        "quantity": "27",
+        "detail": "",
+        "category": "",
+        "suggestedQuantity": "",
+        "subItems": []
+      }
+    ],
+    "includesDrinks": "Con bebidas",
+    "drinkType": "GASEOSAS, VINOS",
+    "tableware": "",
+    "tablewareQuantities": "",
+    "tablewareDetail": "",
+    "largeContainers": "",
+    "smallContainers": "",
+    "staff": "",
+    "schedule": "",
+    "budgetRange": "",
+    "priceMode": "total",
+    "pricePerPerson": 0,
+    "servicePriceTotal": 0,
+    "status": "confirmed",
+    "owner": "",
+    "role": "",
+    "nextAction": "",
+    "paymentStatus": "",
+    "collectedAmount": 0,
+    "collectionStatus": "pending",
+    "collectionDueDate": "",
+    "collectionMethod": "",
+    "collectionNotes": "",
+    "invoiceRequirement": "invoice_required",
+    "invoiceStatus": "not_invoiced",
+    "invoiceNumber": "",
+    "productionStatus": "",
+    "menuStatus": "",
+    "staffStatus": "",
+    "logisticsStatus": "",
+    "clientConformity": null,
+    "conformityWaiver": null,
+    "checklist": {
+      "purchases": false,
+      "production": false,
+      "staff": false,
+      "logistics": false,
+      "menu": false,
+      "payments": false
+    },
+    "checklistDetails": "",
+    "operationalSheet": {
+      "categories": {
+        "alimentos": [],
+        "vajilla": [],
+        "utensilios": [],
+        "bebidas": [],
+        "manteleria": [],
+        "mobiliario": [],
+        "personal": [],
+        "transporte": [
+          {
+            "id": "item-1782220966207-89323f930f87f",
+            "text": "Definir transporte segun volumen",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.118Z"
+          },
+          {
+            "id": "item-1782221217506-608efc65639ae",
+            "text": "Transporte sugerido: camioneta",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.118Z"
+          },
+          {
+            "id": "item-1782221217506-b5a46537b66fa",
+            "text": "Revisar volumen antes de cargar",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.118Z"
+          }
+        ],
+        "montaje": [
+          {
+            "id": "item-1782220966206-c45339e024096",
+            "text": "Revisar acceso de carga y descarga",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.118Z"
+          },
+          {
+            "id": "item-1782220966206-d48d2c40777a9",
+            "text": "Ubicar mesa principal / estacion de servicio",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.118Z"
+          },
+          {
+            "id": "item-1782220966206-99c37f123ac5d",
+            "text": "Verificar electricidad, agua y espacio de apoyo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          },
+          {
+            "id": "item-1782221217506-4ef1b9a414b92",
+            "text": "Confirmar cantidad final de invitados con responsable",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          }
+        ],
+        "desmontaje": [
+          {
+            "id": "item-1782220966206-e54f31500289",
+            "text": "Desmontar el servicio completo",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          },
+          {
+            "id": "item-1782220966206-e8f6ff28f51e2",
+            "text": "Descargar en deposito",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          },
+          {
+            "id": "item-1782220966206-71bd35b354a65",
+            "text": "Separar sucio, sobrantes y devoluciones",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          },
+          {
+            "id": "item-1782220966207-9ecc7ee4627c6",
+            "text": "Controlar que no queden vajilla, manteles ni utensilios",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          },
+          {
+            "id": "item-1782220966207-e921ec0ca1a18",
+            "text": "Registrar roturas o faltantes",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          }
+        ],
+        "documentacion": [
+          {
+            "id": "item-1782220966207-d44eb3474634c",
+            "text": "Llevar ficha operativa del evento",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          },
+          {
+            "id": "item-1782220966207-94fb6f53285d3",
+            "text": "Confirmar contacto del cliente y lugar",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.119Z"
+          }
+        ],
+        "extras": [
+          {
+            "id": "item-1782220966207-8e7fb5276dd64",
+            "text": "Cinta, marcador y bolsas",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.120Z"
+          },
+          {
+            "id": "item-1782220966207-86071b0295246",
+            "text": "Kit de limpieza basico",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.120Z"
+          },
+          {
+            "id": "item-1782220966207-28c03e417128f",
+            "text": "Repaso final antes de salir",
+            "quantity": "",
+            "checked": false,
+            "owner": "",
+            "note": "",
+            "updatedAt": "2026-06-23T13:41:56.120Z"
+          }
+        ]
+      },
+      "deletedSeeds": {
+        "alimentos": [],
+        "vajilla": [],
+        "utensilios": [],
+        "bebidas": [],
+        "manteleria": [],
+        "mobiliario": [],
+        "personal": [],
+        "transporte": [],
+        "montaje": [],
+        "desmontaje": [],
+        "documentacion": [],
+        "extras": []
+      },
+      "leftovers": [
+        {
+          "id": "sobrante-opinv-1782169946025-6319c1adb5b81",
+          "inventoryItemId": "opinv-1782169946025-6319c1adb5b81",
+          "food": "VINO MALBEC 750CC",
+          "status": "leftover",
+          "quantity": "15",
+          "unit": "unidad",
+          "destination": "Deposito",
+          "storage": "",
+          "notes": "",
+          "returnToStock": false,
+          "itemType": "merchandise",
+          "updatedAt": "2026-06-23T13:41:56.120Z"
+        }
+      ],
+      "reservations": [
+        {
+          "id": "reserva-opinv-1782169946025-6319c1adb5b81",
+          "itemId": "opinv-1782169946025-6319c1adb5b81",
+          "itemName": "VINO MALBEC 750CC",
+          "categoryId": "alimentos",
+          "quantity": "30",
+          "unit": "unidad",
+          "checked": true,
+          "note": "",
+          "updatedAt": "2026-06-23T13:41:56.120Z"
+        },
+        {
+          "id": "reserva-opinv-1782163900081-9c3d1a816cef2",
+          "itemId": "opinv-1782163900081-9c3d1a816cef2",
+          "itemName": "Pinza roja",
+          "categoryId": "utensilios",
+          "quantity": "1",
+          "unit": "unidad",
+          "checked": true,
+          "note": "",
+          "updatedAt": "2026-06-23T13:41:56.120Z"
+        }
+      ],
+      "postEventNotes": "",
+      "closeWithoutConformityRequested": false,
+      "closeWithoutConformityRequestedAt": "",
+      "closeWithoutConformityRequestedBy": "",
+      "updatedAt": "2026-06-23T13:41:56.152Z"
+    },
+    "dietaryRestrictions": "",
+    "notes": "",
+    "quoteTotal": 0,
+    "quoteCostTotal": 0,
+    "staffBudgetCost": 0,
+    "staffRealCost": 0,
+    "appliedStaffCost": 0,
+    "quoteMarginPercent": 0,
+    "purchaseTotal": 0,
+    "stockCostTotal": 0,
+    "stockItems": [],
+    "finalCostTotal": 0,
+    "operationalMargin": 0,
+    "operationalMarginPercent": 0,
+    "purchases": [],
+    "createdAt": "2026-06-23T13:22:46.184Z",
+    "updatedAt": "2026-06-23T13:41:56.152Z"
   }
 ]

@@ -1,0 +1,156 @@
+{
+  "categories": [
+    {
+      "id": "alimentos",
+      "label": "Alimentos",
+      "type": "consumable",
+      "subcategories": [
+        "Freezer",
+        "Heladera",
+        "Deposito"
+      ]
+    },
+    {
+      "id": "bebidas",
+      "label": "Bebidas",
+      "type": "consumable",
+      "subcategories": [
+        "Agua",
+        "Gaseosas",
+        "Alcohol",
+        "Hielo"
+      ]
+    },
+    {
+      "id": "vajilla",
+      "label": "Vajilla",
+      "type": "reusable",
+      "subcategories": [
+        "Platos",
+        "Copas",
+        "Cubiertos"
+      ]
+    },
+    {
+      "id": "utensilios",
+      "label": "Utensilios",
+      "type": "reusable",
+      "subcategories": [
+        "Cocina",
+        "Servicio",
+        "Barra"
+      ]
+    },
+    {
+      "id": "artefactos",
+      "label": "Artefactos",
+      "type": "reusable",
+      "subcategories": [
+        "Calor",
+        "Frio",
+        "Electrico"
+      ]
+    },
+    {
+      "id": "contenedores",
+      "label": "Contenedores",
+      "type": "reusable",
+      "subcategories": [
+        "Grandes",
+        "Chicos",
+        "Termicos"
+      ]
+    },
+    {
+      "id": "manteleria",
+      "label": "Manteleria",
+      "type": "reusable",
+      "subcategories": [
+        "Manteles",
+        "Caminos",
+        "Servilletas"
+      ]
+    },
+    {
+      "id": "mobiliario",
+      "label": "Mobiliario",
+      "type": "reusable",
+      "subcategories": [
+        "Mesas",
+        "Tableros",
+        "Sillas",
+        "Barras"
+      ]
+    },
+    {
+      "id": "transporte",
+      "label": "Transporte",
+      "type": "reusable",
+      "subcategories": [
+        "Auto",
+        "Camioneta",
+        "Camion",
+        "Carros"
+      ]
+    },
+    {
+      "id": "descartables",
+      "label": "Descartables",
+      "type": "consumable",
+      "subcategories": [
+        "Vasos",
+        "Platos",
+        "Servilletas"
+      ]
+    },
+    {
+      "id": "limpieza",
+      "label": "Productos de limpieza",
+      "type": "consumable",
+      "subcategories": [
+        "Quimicos",
+        "Paños",
+        "Bolsas"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "opinv-1782163850611-d5fbba7c34108",
+      "name": "vaso telgopor 240",
+      "categoryId": "descartables",
+      "subcategory": "Vasos",
+      "quantity": 100,
+      "unit": "unidad",
+      "status": "available",
+      "location": "",
+      "notes": "",
+      "updatedAt": "2026-06-22T21:56:10.862Z"
+    },
+    {
+      "id": "opinv-1782163900081-9c3d1a816cef2",
+      "name": "Pinza roja",
+      "categoryId": "utensilios",
+      "subcategory": "cocina",
+      "quantity": 1,
+      "unit": "unidad",
+      "status": "available",
+      "location": "",
+      "notes": "",
+      "updatedAt": "2026-06-22T21:31:40.081Z"
+    },
+    {
+      "id": "opinv-1782169946025-6319c1adb5b81",
+      "name": "VINO MALBEC 750CC",
+      "categoryId": "alimentos",
+      "subcategory": "Deposito",
+      "quantity": 70,
+      "unit": "unidad",
+      "status": "available",
+      "location": "",
+      "notes": "",
+      "updatedAt": "2026-06-22T23:12:26.025Z"
+    }
+  ],
+  "updatedAt": "2026-06-23T13:49:50.461Z"
+}

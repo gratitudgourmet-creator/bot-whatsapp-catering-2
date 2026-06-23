@@ -1,0 +1,18 @@
+[
+  {
+    "id": "personal-1782145481956",
+    "fullName": "BRUNO URSAGASTI",
+    "role": "JEFE DE MOZOS",
+    "phone": "2617566071",
+    "email": "",
+    "documentId": "",
+    "address": "",
+    "availability": "A definir",
+    "hourlyRate": 5000,
+    "salaryMode": "hourly",
+    "status": "active",
+    "notes": "",
+    "createdAt": "2026-06-22T16:24:41.956Z",
+    "updatedAt": "2026-06-22T16:24:41.956Z"
+  }
+]

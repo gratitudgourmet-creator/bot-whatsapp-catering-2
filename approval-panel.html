@@ -547,6 +547,7 @@
       border: 1px solid var(--line);
       border-radius: 6px;
       box-shadow: var(--shadow);
+      max-height: 420px;
       overflow: auto;
     }
 
@@ -565,6 +566,9 @@
       color: #46515d;
       font-size: 12px;
       font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 2;
       text-transform: uppercase;
     }
 
@@ -998,7 +1002,7 @@
       align-items: end;
       display: grid;
       gap: 8px;
-      grid-template-columns: minmax(160px, 1.4fr) 90px 90px minmax(150px, 1fr) minmax(140px, 1fr) 38px;
+      grid-template-columns: minmax(160px, 1.35fr) 86px 86px 130px minmax(140px, 1fr) minmax(130px, 1fr) 38px;
     }
 
     .purchase-order-row.receipt-row {
@@ -1021,6 +1025,39 @@
       display: grid;
       gap: 10px;
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .production-event-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 10px 0;
+    }
+
+    .production-event-grid div {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .production-event-grid span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .production-event-grid strong {
+      display: block;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .kitchen-recipe-header {
+      background: var(--success-soft);
+      border-color: #b8d8ce;
     }
 
     .purchase-order-result-card {
@@ -1403,6 +1440,43 @@
       color: var(--accent);
     }
 
+    .menu-popover {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 14px 34px rgba(16, 24, 32, 0.16);
+      display: none;
+      gap: 4px;
+      min-width: 190px;
+      padding: 6px;
+      position: fixed;
+      z-index: 80;
+    }
+
+    .menu-popover.open {
+      display: grid;
+    }
+
+    .menu-popover button {
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      justify-content: flex-start;
+      min-height: 34px;
+      padding: 8px 10px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .menu-popover button:hover {
+      background: var(--surface-soft);
+    }
+
+    .menu-popover .danger-text {
+      color: #9f1f2f;
+      font-weight: 800;
+    }
+
     .purchase-rank-row {
       align-items: start;
       display: grid;
@@ -1738,6 +1812,16 @@
       border-radius: 8px;
       min-width: 0;
       padding: 16px;
+    }
+
+    .panel-box.soft-panel {
+      background: var(--surface-soft);
+      box-shadow: none;
+      padding: 14px;
+    }
+
+    #view-hr .panel-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.75fr);
     }
 
     .compact-list {
@@ -2128,12 +2212,31 @@
       padding: 4px 7px;
     }
 
+    .logistics-operation-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    .logistics-operation-grid h4 {
+      color: var(--text);
+      font-size: 13px;
+      margin: 0 0 8px;
+    }
+
+    .logistics-procedure-grid {
+      align-items: start;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr;
+    }
+
     .logistics-category {
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 10px;
       min-width: 0;
+      overflow: hidden;
     }
 
     .logistics-category-head {
@@ -2152,7 +2255,7 @@
       border-radius: 8px;
       display: grid;
       gap: 8px;
-      grid-template-columns: 34px minmax(0, 1fr) 96px 38px;
+      grid-template-columns: 34px minmax(0, 1fr) 100px 38px;
       margin-bottom: 8px;
       padding: 8px;
       min-width: 0;
@@ -2164,8 +2267,13 @@
     }
 
     .logistics-item-row textarea {
-      min-height: 54px;
+      min-height: 42px;
       resize: vertical;
+    }
+
+    .logistics-item-row .logistics-item-text {
+      min-height: 48px;
+      white-space: normal;
     }
 
     .logistics-item-row input,
@@ -2231,11 +2339,172 @@
     }
 
     .logistics-leftover-row {
-      align-items: center;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
       display: grid;
       gap: 8px;
-      grid-template-columns: minmax(160px, 1fr) 100px 140px minmax(140px, 0.8fr) minmax(140px, 1fr) 38px;
+      grid-template-columns: minmax(190px, 1.5fr) 118px 88px 88px minmax(116px, .8fr) minmax(130px, 1fr) minmax(130px, 1fr) 78px 38px;
       margin-bottom: 8px;
+      min-width: 0;
+      padding: 8px;
+    }
+
+    .logistics-leftover-row .leftover-food[readonly] {
+      background: var(--surface-soft);
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .logistics-leftover-row.no-leftover {
+      background: #f6f8fa;
+    }
+
+    .logistics-leftover-row.no-leftover .leftover-quantity,
+    .logistics-leftover-row.no-leftover .leftover-unit,
+    .logistics-leftover-row.no-leftover .leftover-destination,
+    .logistics-leftover-row.no-leftover .leftover-storage,
+    .logistics-leftover-row.no-leftover .leftover-return-toggle {
+      opacity: .55;
+    }
+
+    .leftover-return-toggle {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: flex;
+      font-size: 11px;
+      font-weight: 800;
+      gap: 5px;
+      justify-content: center;
+      min-height: 36px;
+      padding: 6px;
+    }
+
+    .operational-inventory-layout {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+    }
+
+    .inventory-collapse {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .inventory-collapse summary {
+      align-items: center;
+      background: var(--surface-soft);
+      cursor: pointer;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      list-style: none;
+      min-width: 0;
+      padding: 12px;
+    }
+
+    .inventory-collapse summary strong {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .inventory-collapse summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .inventory-collapse-body {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .inventory-row {
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) minmax(120px, .65fr) 38px;
+      padding: 8px;
+    }
+
+    .logistics-reservation-row {
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 28px minmax(0, 1fr) 86px minmax(90px, .55fr) minmax(120px, .8fr);
+      padding: 8px;
+    }
+
+    .operational-category-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+      max-height: 280px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .operational-category-row {
+      align-items: start;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      display: grid;
+      gap: 3px;
+      justify-items: start;
+      padding: 10px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .operational-category-row strong,
+    .operational-category-row .secondary {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .inventory-row.unavailable,
+    .logistics-reservation-row.unavailable {
+      background: #f3f4f6;
+      color: var(--muted);
+    }
+
+    .inventory-row strong,
+    .logistics-reservation-row strong {
+      overflow-wrap: anywhere;
+    }
+
+    .inventory-main,
+    .reservation-main {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .inventory-meta {
+      align-items: start;
+      display: grid;
+      gap: 3px;
+      justify-items: end;
+      min-width: 0;
+      text-align: right;
+    }
+
+    .inventory-tags,
+    .reservation-tags {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
       min-width: 0;
     }
 
@@ -3416,8 +3685,27 @@
       .venue-list,
       .logistics-card,
       .logistics-detail-grid,
-      .logistics-leftover-row {
+      .logistics-leftover-row,
+      .logistics-operation-grid,
+      .operational-inventory-layout,
+      .inventory-row {
         grid-template-columns: 1fr;
+      }
+
+      .logistics-reservation-row {
+        align-items: start;
+        grid-template-columns: 28px minmax(0, 1fr) 82px;
+      }
+
+      .logistics-reservation-row > .secondary,
+      .logistics-reservation-row > .logistics-reservation-note {
+        grid-column: 2 / 4;
+        width: 100%;
+      }
+
+      .inventory-meta {
+        justify-items: start;
+        text-align: left;
       }
 
       .logistics-card {
@@ -3502,6 +3790,7 @@
       .purchase-order-row.three,
       .purchase-order-result-grid,
       .purchase-order-list-row,
+      .production-event-grid,
       .purchase-period-bar,
       .purchase-kpis,
       .purchase-panels,
@@ -3591,7 +3880,6 @@
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-opportunities-section">Oportunidades</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-pipeline-section">Pipeline</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-quotes-section">Presupuestos</button>
-          <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-customers-section">Clientes</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-venues-section">Lugares</button>
         </div>
       </div>
@@ -3673,6 +3961,8 @@
       <div class="workspace-menu" data-menu-view="stock">
         <button class="workspace-tab" data-view="stock">Stock</button>
         <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="stock" data-anchor="product-master-section">Maestro de insumos</button>
+          <button class="workspace-subitem" data-view="stock" data-anchor="operational-inventory-section">Inventario operativo</button>
           <button class="workspace-subitem" data-view="stock" data-anchor="stock-summary-section">Inventario</button>
           <button class="workspace-subitem" data-view="stock" data-anchor="stock-receptions-section">Recepciones</button>
           <button class="workspace-subitem" data-view="stock" data-anchor="stock-variations-section">Insumos con variación</button>
@@ -3842,7 +4132,7 @@
                 <label>Servicio</label>
                 <div id="service-options" class="option-checks"></div>
                 <div class="inline-action-field" style="margin-top:8px;">
-                  <input id="new-service-option" placeholder="Agregar servicio">
+                  <input id="new-service-option" placeholder="Agregar servicio" onkeydown="handleOperationalOptionKey(event, 'service', 'new-service-option')">
                   <button class="filter" type="button" onclick="addOperationalOptionFromPanel('service', 'new-service-option')">Agregar</button>
                 </div>
               </div>
@@ -4138,14 +4428,6 @@
         <div id="erp-quote-list"></div>
       </section>
 
-      <section id="commercial-customers-section" class="erp-section">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-          <h2>Clientes comerciales</h2>
-          <button class="filter" type="button" onclick="showQuickCustomerForm()" data-permission="customers:write">Nuevo cliente</button>
-        </div>
-        <div id="commercial-customer-list" class="compact-list compact-scroll"></div>
-      </section>
-
       <section id="commercial-venues-section" class="erp-section">
         <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
           <h2>Lugares</h2>
@@ -4257,6 +4539,26 @@
     </section>
 
     <section id="view-stock" class="workspace-view" data-permission="stock:read">
+      <section id="product-master-section" class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2>Maestro de insumos</h2>
+            <p class="subtitle">Productos consolidados desde recetas, compras, stock, ordenes y precios historicos.</p>
+          </div>
+          <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+        </div>
+        <div id="product-master-dashboard"></div>
+      </section>
+      <section id="operational-inventory-section" class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2>Inventario operativo</h2>
+            <p class="subtitle">Utensilios, artefactos, contenedores, descartables, limpieza y alimentos reservables por evento.</p>
+          </div>
+          <button class="filter" type="button" onclick="resetOperationalInventoryForm()">Nuevo item</button>
+        </div>
+        <div id="operational-inventory-dashboard"></div>
+      </section>
       <section id="stock-summary-section" class="erp-section">
         <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
           <div>
@@ -4777,7 +5079,7 @@
           <div id="purchase-order-items" class="purchase-items"></div>
           <div class="actions">
             <button class="filter" type="button" onclick="addPurchaseOrderItemRow()">Agregar producto</button>
-            <button class="filter" type="button" onclick="addPurchaseOrderItemsFromEventMenu()">Traer menu del evento</button>
+            <button class="filter" type="button" onclick="addPurchaseOrderItemsFromEventMenu()">Traer menu y recetas</button>
             <button class="filter" type="button" onclick="applyPurchaseOrderProviderSuggestions()">Sugerir proveedores</button>
           </div>
         </div>
@@ -5434,8 +5736,11 @@
       events: [],
       quotes: [],
       purchases: [],
+      productMaster: [],
     };
     let erpLoadedAt = 0;
+    let erpLoadPromise = null;
+    const ERP_BACKGROUND_REFRESH_MS = 60000;
     let currentUser = null;
     let panelRoles = [];
     let permissionCatalog = [];
@@ -5448,12 +5753,6 @@
     let logisticsSaveTimer = null;
     let pendingQuoteImport = null;
     const operationalCategoryDefaults = [
-      ["alimentos", "Alimentos"],
-      ["vajilla", "Vajilla"],
-      ["utensilios", "Utensilios"],
-      ["bebidas", "Bebidas"],
-      ["manteleria", "Manteleria"],
-      ["mobiliario", "Mobiliario"],
       ["personal", "Personal"],
       ["transporte", "Transporte"],
       ["montaje", "Montaje"],
@@ -5461,6 +5760,7 @@
       ["documentacion", "Documentacion"],
       ["extras", "Extras / varios"],
     ].map(([id, label]) => ({ id, label }));
+    const operationalProcedureCategoryIds = new Set(operationalCategoryDefaults.map((category) => category.id));
     let stateRefreshTimer = null;
     let activeFilter = "all";
     let purchaseOptions = {
@@ -5497,12 +5797,11 @@
       },
       commercial: {
         title: "Comercial",
-        subtitle: "Oportunidades, pipeline, presupuestos, clientes y lugares.",
+        subtitle: "Oportunidades, pipeline, presupuestos y lugares.",
         items: [
           { label: "Oportunidades", description: "Consultas entrantes y seguimiento comercial.", anchor: "commercial-opportunities-section" },
           { label: "Pipeline", description: "Eventos por etapa comercial.", anchor: "commercial-pipeline-section" },
           { label: "Presupuestos", description: "Presupuestos asociados a eventos.", anchor: "commercial-quotes-section" },
-          { label: "Clientes", description: "Clientes vinculados al circuito comercial.", anchor: "commercial-customers-section" },
           { label: "Lugares", description: "Venues, direcciones, referencias y mapas.", anchor: "commercial-venues-section" },
         ],
       },
@@ -5522,6 +5821,7 @@
         items: [
           { label: "Compras", description: "Planilla de compras, importación Sheets y carga manual.", anchor: "purchase-sheet-section" },
           { label: "Órdenes de compra", description: "Pedidos por evento, recepción y diferencias.", anchor: "purchase-orders-section" },
+          { label: "Maestro de insumos", description: "Productos consolidados desde compras, recetas, stock y ordenes.", view: "stock", anchor: "product-master-section" },
           { label: "Inventario", description: "Stock generado por recepciones aceptadas.", anchor: "purchase-inventory-section" },
           { label: "Insumos con variación", description: "Cambios fuertes de precio e impacto en recetas.", anchor: "purchase-variations-section" },
         ],
@@ -5604,6 +5904,8 @@
         title: "Stock",
         subtitle: "Inventario, recepciones, diferencias y variación de insumos.",
         items: [
+          { label: "Maestro de insumos", description: "Productos unificados por compras, recetas, stock y ordenes.", anchor: "product-master-section" },
+          { label: "Inventario operativo", description: "Equipamiento y consumibles seleccionables por evento.", anchor: "operational-inventory-section" },
           { label: "Inventario", description: "Stock generado desde recepciones aceptadas.", anchor: "stock-summary-section" },
           { label: "Recepciones", description: "Diferencias, aceptación y conversión en compra real.", anchor: "stock-receptions-section" },
           { label: "Insumos con variación", description: "Subas y bajas fuertes con recetas afectadas.", anchor: "stock-variations-section" },
@@ -5645,7 +5947,6 @@
         "commercial-opportunities-section": ["commercial-metrics-section", "commercial-opportunities-section", "commercial-board-section"],
         "commercial-pipeline-section": ["commercial-pipeline-section"],
         "commercial-quotes-section": ["commercial-quotes-section"],
-        "commercial-customers-section": ["commercial-customers-section"],
         "commercial-venues-section": ["commercial-venues-section"],
       },
       events: {
@@ -5668,9 +5969,9 @@
         "production-kitchen-checklists-section": ["production-kitchen-checklists-section"],
       },
       hr: {
-        "hr-staff-section": ["hr-main-section"],
-        "hr-shifts-section": ["hr-main-section"],
-        "hr-payroll-section": ["hr-main-section"],
+        "hr-staff-section": ["hr-staff-section"],
+        "hr-shifts-section": ["hr-shifts-section"],
+        "hr-payroll-section": ["hr-payroll-section"],
       },
       sanitation: {
         "sanitation-form-section": ["sanitation-main-section"],
@@ -5692,6 +5993,8 @@
         "recipe-list-section": ["recipe-list-section"],
       },
       stock: {
+        "product-master-section": ["product-master-section"],
+        "operational-inventory-section": ["operational-inventory-section"],
         "stock-summary-section": ["stock-summary-section"],
         "stock-receptions-section": ["stock-receptions-section"],
         "stock-variations-section": ["stock-variations-section"],
@@ -5873,7 +6176,9 @@
     }
 
     function canSeeRecipeCosts() {
-      return can("*") || currentUser?.role !== "cocina";
+      const role = String(currentUser?.role || "").toLowerCase();
+      if (["cocina", "cocinero"].includes(role)) return false;
+      return can("*") || can("finance:read") || can("finance:write") || can("purchases:write") || can("stock:read") || can("quotes:write");
     }
 
     function ensureModuleHomes() {
@@ -6134,7 +6439,7 @@
       if (view === "providers") loadTask = loadProviders();
       if (view === "recipes") loadTask = loadRecipes();
       if (["erp", "commercial", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].includes(view)) {
-        loadTask = erpLoadedAt ? Promise.resolve(renderErp()) : loadErp();
+        loadTask = ensureErpForNavigation();
       }
       if (view === "logistics_event") loadTask = loadLogisticsEvents();
       if (view === "security") loadTask = loadSecurityPanel();
@@ -6164,12 +6469,23 @@
       setTimeout(() => target.classList.remove("section-focus"), 1400);
     }
 
-    async function loadErp() {
+    function ensureErpForNavigation() {
+      if (!erpLoadedAt) return loadErp();
+      renderErp();
+      if (Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) {
+        loadErp({ silent: true });
+      }
+      return Promise.resolve();
+    }
+
+    async function loadErp(options = {}) {
+      if (erpLoadPromise) return erpLoadPromise;
+      erpLoadPromise = (async () => {
       const response = await fetch("/api/erp");
       const result = await readJsonResponse(response);
 
       if (!result.ok) {
-        showNotice(result.error || "No se pudo cargar el ERP.", "error");
+        if (!options.silent) showNotice(result.error || "No se pudo cargar el ERP.", "error");
         return;
       }
 
@@ -6184,6 +6500,12 @@
       purchaseReceipts = result.purchaseReceipts || purchaseReceipts || [];
       renderCurrentUser();
       renderErp();
+      })();
+      try {
+        return await erpLoadPromise;
+      } finally {
+        erpLoadPromise = null;
+      }
     }
 
     function renderErp() {
@@ -6204,7 +6526,11 @@
       }
       if (canAccessTab("finance")) renderFinanceDashboard();
       if (canAccessTab("production")) renderProductionDashboard();
-      if (canAccessTab("stock")) renderStockDashboard();
+      if (canAccessTab("stock")) {
+        renderProductMasterDashboard();
+        renderOperationalInventoryManager();
+        renderStockDashboard();
+      }
       if (canAccessTab("reports")) renderReportsDashboard(dashboard);
       if (canAccessTab("hr")) renderHrDashboard();
       if (canAccessTab("sanitation")) renderSanitationDashboard();
@@ -6918,6 +7244,27 @@
       if (container) container.innerHTML = renderProductAlertRows(alerts);
     }
 
+    function showProductVariationDetail(name) {
+      const item = getSortedProductAlerts().find((alert) => normalizeSearch(alert.name || "") === normalizeSearch(name || ""));
+      if (!item) return;
+      document.getElementById("alert-detail-title").textContent = item.name || "Insumo con variacion";
+      document.getElementById("alert-detail-subtitle").textContent = "Impacto de precio y recetas afectadas";
+      document.getElementById("alert-detail-body").innerHTML = `
+        ${field("Proveedor", item.provider || "Sin proveedor")}
+        ${field("Variacion", formatPercent(item.changePercent || 0))}
+        ${field("Precio anterior", formatCurrency(item.previousUnitCost || 0))}
+        ${field("Precio actual", formatCurrency(item.unitCost || 0))}
+        ${field("Ultima compra", item.lastPurchaseDate || "Sin fecha")}
+        <div class="form-field full">
+          <label>Recetas afectadas</label>
+          ${(item.affectedRecipes || []).length
+            ? `<div class="compact-list">${(item.affectedRecipes || []).map((recipe) => `<div class="compact-item"><strong>${escapeHtml(recipe)}</strong></div>`).join("")}</div>`
+            : `<div class="empty">No hay recetas afectadas cargadas.</div>`}
+        </div>
+      `;
+      document.getElementById("alert-detail").classList.add("open");
+    }
+
     function hideAlertDetail() {
       document.getElementById("alert-detail").classList.remove("open");
     }
@@ -7381,7 +7728,7 @@
     }
 
     function buildClientFinanceDashboard() {
-      const events = (erpData.events || []).map((event) => {
+      const events = (erpData.events || []).filter(isCollectableFinanceEvent).map((event) => {
         const saleTotal = Number(event.quoteTotal || event.servicePriceTotal || 0);
         const collectedAmount = Number(event.collectedAmount || 0);
         const pendingCollectionAmount = Math.max(0, saleTotal - collectedAmount);
@@ -7418,6 +7765,10 @@
         events,
         reimbursements,
       };
+    }
+
+    function isCollectableFinanceEvent(event = {}) {
+      return ["confirmed", "production", "done"].includes(event.status) && Number(event.quoteTotal || event.servicePriceTotal || 0) > 0;
     }
 
     function renderFinanceEvents(events = []) {
@@ -7580,43 +7931,76 @@
           <div><span>Sueldos pendientes</span><strong>${formatCurrency(summary.pendingPayrollAmount || 0)}</strong></div>
           <div><span>Liquidaciones pendientes</span><strong>${escapeHtml(summary.pendingPayrollCount || 0)}</strong></div>
         </section>
-        <div class="panel-grid">
-          <section id="hr-staff-section" class="panel-box">
-            <h2 style="margin-top:0;font-size:20px;">Legajo</h2>
-            <form id="hr-staff-form" class="form-grid" onsubmit="saveHrStaff(event)">
+        <section id="hr-staff-section" class="panel-box">
+          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <h2 style="margin:0;font-size:20px;">Legajos</h2>
+              <p class="subtitle" style="margin:4px 0 0;">Datos del personal, valor hora, disponibilidad y estado.</p>
+            </div>
+            <button class="filter" type="button" onclick="resetHrStaffForm()">Nuevo legajo</button>
+          </div>
+          <div class="panel-grid">
+            <form id="hr-staff-form" class="form-grid panel-box soft-panel" onsubmit="saveHrStaff(event)">
               <input type="hidden" name="id">
-              <div class="form-field full"><label>Nombre</label><input name="fullName" required></div>
+              <div class="form-field full"><label>Nombre</label><input name="fullName" required placeholder="Ej: Bruno Ursagasti"></div>
               <div class="form-field"><label>Rol</label><input name="role" placeholder="Mozo, cocina, chofer"></div>
               <div class="form-field"><label>Telefono</label><input name="phone"></div>
               <div class="form-field"><label>DNI/CUIL</label><input name="documentId"></div>
-              <div class="form-field"><label>Valor hora</label><input name="hourlyRate" inputmode="decimal"></div>
+              <div class="form-field"><label>Valor hora</label><input name="hourlyRate" inputmode="decimal" placeholder="Ej: 5000"></div>
               <div class="form-field"><label>Estado</label><select name="status"><option value="active">Activo</option><option value="paused">Pausado</option><option value="inactive">Inactivo</option></select></div>
               <div class="form-field full"><label>Disponibilidad</label><input name="availability" placeholder="Fines de semana, noches, feriados"></div>
               <div class="form-field full"><label>Notas</label><textarea name="notes"></textarea></div>
-              <div class="actions full"><button class="approve" type="submit">Guardar legajo</button><button class="filter" type="button" onclick="resetHrStaffForm()">Nuevo</button></div>
+              <div class="actions full"><button class="approve" type="submit">Guardar legajo</button></div>
             </form>
-            <h2 id="hr-shifts-section" style="font-size:20px;">Asistencia / horario</h2>
-            <form id="hr-shift-form" class="form-grid" onsubmit="saveHrShift(event)">
+            <div>
+              <h3 style="margin:0 0 10px;">Personal cargado</h3>
+              <div class="compact-list compact-scroll">${renderHrStaffList(hr.staff || [])}</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="hr-shifts-section" class="panel-box">
+          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <h2 style="margin:0;font-size:20px;">Asistencia y horarios</h2>
+              <p class="subtitle" style="margin:4px 0 0;">Programar personal por evento o registrar horas reales trabajadas.</p>
+            </div>
+            <button class="filter" type="button" onclick="resetHrShiftForm()">Nueva asistencia</button>
+          </div>
+          <div class="panel-grid">
+            <form id="hr-shift-form" class="form-grid panel-box soft-panel" onsubmit="saveHrShift(event)" oninput="updateHrShiftPreview()" onchange="hydrateHrShiftForm(); updateHrShiftPreview();">
               <input type="hidden" name="id">
               <div class="form-field"><label>Persona</label><select name="staffId">${renderStaffOptions(hr.staff || [])}</select></div>
               <div class="form-field"><label>Evento</label><select name="eventId">${renderEventOptions(erpData.events || [])}</select></div>
               <div class="form-field"><label>Fecha</label><input name="date" type="date"></div>
               <div class="form-field"><label>Entrada</label><input name="startTime" type="time"></div>
               <div class="form-field"><label>Salida</label><input name="endTime" type="time"></div>
-              <div class="form-field"><label>Horas manual</label><input name="hours" inputmode="decimal" placeholder="Opcional"></div>
+              <div class="form-field"><label>Horas manuales</label><input name="hours" inputmode="decimal" placeholder="Solo si no usas entrada/salida"></div>
               <div class="form-field"><label>Adicionales $</label><input name="extrasAmount" inputmode="decimal" value="0"></div>
               <div class="form-field"><label>Estado</label><select name="attendanceStatus"><option value="scheduled">Programado</option><option value="present">Presente</option><option value="absent">Ausente</option><option value="cancelled">Cancelado</option></select></div>
-              <div class="form-field full"><label>Novedad</label><textarea name="notes"></textarea></div>
-              <div class="actions full"><button class="approve" type="submit">Guardar asistencia</button></div>
+              <div class="form-field full"><label>Novedad</label><textarea name="notes" placeholder="Ej: llego tarde, cubrio barra, se retiro antes, reemplazo a..."></textarea></div>
+              <div id="hr-shift-preview" class="recipe-summary full"></div>
+              <div class="actions full">
+                <button class="approve" type="submit">Guardar asistencia</button>
+                <button class="filter" type="button" onclick="markHrShiftPresent()">Marcar presente</button>
+              </div>
             </form>
-          </section>
-          <section id="hr-payroll-list-section" class="panel-box">
-            <h2 style="margin-top:0;font-size:20px;">Personal</h2>
-            <div class="compact-list compact-scroll">${renderHrStaffList(hr.staff || [])}</div>
-            <h2 style="font-size:20px;">Horas y asistencia</h2>
-            <div class="compact-list compact-scroll">${renderHrShiftList(hr.shifts || [])}</div>
-            <h2 id="hr-payroll-section" style="font-size:20px;">Sueldos</h2>
-            <form id="payroll-form" class="form-grid" onsubmit="savePayroll(event)">
+            <div>
+              <h3 style="margin:0 0 10px;">Horas cargadas</h3>
+              <div class="compact-list compact-scroll">${renderHrShiftList(hr.shifts || [])}</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="hr-payroll-section" class="panel-box">
+          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <h2 style="margin:0;font-size:20px;">Sueldos y horas</h2>
+              <p class="subtitle" style="margin:4px 0 0;">Liquidaciones, adicionales, descuentos y estado de pago.</p>
+            </div>
+          </div>
+          <div class="panel-grid">
+            <form id="payroll-form" class="form-grid panel-box soft-panel" onsubmit="savePayroll(event)" oninput="updatePayrollPreview()" onchange="hydratePayrollFromShifts(false); updatePayrollPreview();">
               <input type="hidden" name="id">
               <div class="form-field"><label>Persona</label><select name="staffId">${renderStaffOptions(hr.staff || [])}</select></div>
               <div class="form-field"><label>Periodo</label><input name="period" placeholder="2026-06" value="${escapeAttribute(new Date().toISOString().slice(0, 7))}"></div>
@@ -7626,12 +8010,22 @@
               <div class="form-field"><label>Descuentos</label><input name="deductions" inputmode="decimal" value="0"></div>
               <div class="form-field"><label>Estado</label><select name="paymentStatus"><option value="pending">Pendiente</option><option value="approved">Aprobado</option><option value="paid">Pagado</option></select></div>
               <div class="form-field full"><label>Notas</label><textarea name="notes"></textarea></div>
-              <div class="actions full"><button class="approve" type="submit">Guardar sueldo</button></div>
+              <div id="payroll-preview" class="recipe-summary full"></div>
+              <div class="actions full">
+                <button class="approve" type="submit">Guardar sueldo</button>
+                <button class="filter" type="button" onclick="hydratePayrollFromShifts(true); updatePayrollPreview();">Traer horas trabajadas</button>
+              </div>
             </form>
-            <div class="compact-list compact-scroll">${renderPayrollList(hr.payroll || [])}</div>
-          </section>
-        </div>
+            <div>
+              <h3 style="margin:0 0 10px;">Liquidaciones</h3>
+              <div class="compact-list compact-scroll">${renderPayrollList(hr.payroll || [])}</div>
+            </div>
+          </div>
+        </section>
       `;
+      updateHrShiftPreview();
+      hydratePayrollFromShifts(false);
+      updatePayrollPreview();
     }
 
     function renderStaffOptions(staff = []) {
@@ -7655,9 +8049,9 @@
     function renderHrShiftList(shifts = []) {
       if (!shifts.length) return `<div class="empty compact-empty">Sin asistencias cargadas.</div>`;
       return shifts.slice(0, 12).map((item) => `
-        <article class="compact-row">
+        <article class="compact-row" onclick="editHrShift('${escapeAttribute(item.id)}')">
           <div><strong>${escapeHtml(item.staffName || "Sin persona")}</strong><div class="secondary">${escapeHtml(formatShortDate(item.date) || "")} · ${escapeHtml(item.eventName || "Sin evento")} · ${escapeHtml(item.hours || 0)} hs</div></div>
-          <strong>${formatCurrency(item.totalAmount || 0)}</strong>
+          <div><strong>${formatCurrency(item.totalAmount || 0)}</strong><div class="secondary">${escapeHtml(item.attendanceStatusLabel || item.attendanceStatus || "")}</div></div>
         </article>
       `).join("");
     }
@@ -7665,7 +8059,7 @@
     function renderPayrollList(rows = []) {
       if (!rows.length) return `<div class="empty compact-empty">Sin sueldos liquidados.</div>`;
       return rows.slice(0, 12).map((item) => `
-        <article class="compact-row">
+        <article class="compact-row" onclick="showSanitationRecordDetail('${escapeAttribute(item.id)}')">
           <div><strong>${escapeHtml(item.staffName || "Persona")}</strong><div class="secondary">${escapeHtml(item.period || "")} · ${escapeHtml(item.hours || 0)} hs</div></div>
           <div><strong>${formatCurrency(item.totalAmount || 0)}</strong><div class="secondary">${escapeHtml(item.paymentStatus || "")}</div></div>
         </article>
@@ -7684,6 +8078,123 @@
       setFormValue(document.getElementById("hr-staff-form"), "id", "");
     }
 
+    function hydrateHrShiftForm() {
+      const form = document.getElementById("hr-shift-form");
+      if (!form) return;
+      const event = (erpData.events || []).find((item) => item.id === form.elements.eventId.value);
+      if (event && !form.elements.date.value) {
+        setFormValue(form, "date", event.eventDate || "");
+      }
+    }
+
+    function updateHrShiftPreview() {
+      const box = document.getElementById("hr-shift-preview");
+      const form = document.getElementById("hr-shift-form");
+      if (!box || !form) return;
+      const staff = (erpData.hrDashboard?.staff || []).find((item) => item.id === form.elements.staffId.value);
+      const hours = getHrShiftFormHours(form);
+      const hourlyRate = parseDecimal(staff?.hourlyRate || 0);
+      const extras = parseDecimal(form.elements.extrasAmount?.value || 0);
+      const total = Math.max(0, hours * hourlyRate + extras);
+      box.innerHTML = `
+        <div><span>Horas</span><strong>${escapeHtml(hours ? `${formatNumber(hours)} hs` : "Sin calcular")}</strong></div>
+        <div><span>Valor hora</span><strong>${formatCurrency(hourlyRate || 0)}</strong></div>
+        <div><span>Adicionales</span><strong>${formatCurrency(extras || 0)}</strong></div>
+        <div><span>Costo evento</span><strong>${formatCurrency(total || 0)}</strong></div>
+      `;
+    }
+
+    function getHrShiftFormHours(form) {
+      const manual = parseDecimal(form.elements.hours?.value || 0);
+      if (manual > 0) return manual;
+      return calculateUiHoursBetween(form.elements.startTime?.value || "", form.elements.endTime?.value || "");
+    }
+
+    function calculateUiHoursBetween(startTime, endTime) {
+      const parse = (value) => {
+        const match = String(value || "").match(/^(\d{1,2}):(\d{2})$/);
+        if (!match) return 0;
+        return Number(match[1]) + Number(match[2]) / 60;
+      };
+      const start = parse(startTime);
+      const end = parse(endTime);
+      if (!start || !end) return 0;
+      return Math.round((end >= start ? end - start : end + 24 - start) * 100) / 100;
+    }
+
+    function formatNumber(value) {
+      return Number(value || 0).toLocaleString("es-AR", { maximumFractionDigits: 2 });
+    }
+
+    function markHrShiftPresent() {
+      const form = document.getElementById("hr-shift-form");
+      if (!form) return;
+      setFormValue(form, "attendanceStatus", "present");
+      if (!form.elements.date.value) setFormValue(form, "date", new Date().toISOString().slice(0, 10));
+      updateHrShiftPreview();
+    }
+
+    function resetHrShiftForm() {
+      const form = document.getElementById("hr-shift-form");
+      form?.reset();
+      setFormValue(form, "id", "");
+      updateHrShiftPreview();
+    }
+
+    function editHrShift(id) {
+      const shift = (erpData.hrDashboard?.shifts || []).find((item) => item.id === id);
+      const form = document.getElementById("hr-shift-form");
+      if (!shift || !form) return;
+      ["id", "staffId", "eventId", "date", "startTime", "endTime", "hours", "extrasAmount", "attendanceStatus", "notes"]
+        .forEach((field) => setFormValue(form, field, shift[field] || ""));
+      showModuleSection("hr", "hr-shifts-section");
+      updateHrShiftPreview();
+    }
+
+    function getPayrollShiftSummary(staffId, period) {
+      const shifts = (erpData.hrDashboard?.shifts || []).filter((shift) => {
+        const status = String(shift.attendanceStatus || "").toLowerCase();
+        return shift.staffId === staffId
+          && String(shift.date || "").startsWith(period || "")
+          && !["absent", "cancelled"].includes(status);
+      });
+      const hours = shifts.reduce((sum, shift) => sum + parseDecimal(shift.hours || 0), 0);
+      const amount = shifts.reduce((sum, shift) => sum + parseDecimal(shift.totalAmount || 0), 0);
+      return { shifts, hours: Math.round(hours * 100) / 100, amount: Math.round(amount) };
+    }
+
+    function hydratePayrollFromShifts(force = false) {
+      const form = document.getElementById("payroll-form");
+      if (!form) return;
+      const staffId = form.elements.staffId?.value || "";
+      const period = form.elements.period?.value || "";
+      if (!staffId || !period) return;
+      const summary = getPayrollShiftSummary(staffId, period);
+      if (force || !parseDecimal(form.elements.hours?.value || 0)) {
+        setFormValue(form, "hours", summary.hours || "");
+      }
+      if (force || !parseDecimal(form.elements.baseAmount?.value || 0)) {
+        setFormValue(form, "baseAmount", summary.amount || "");
+      }
+    }
+
+    function updatePayrollPreview() {
+      const box = document.getElementById("payroll-preview");
+      const form = document.getElementById("payroll-form");
+      if (!box || !form) return;
+      const summary = getPayrollShiftSummary(form.elements.staffId?.value || "", form.elements.period?.value || "");
+      const hours = parseDecimal(form.elements.hours?.value || 0);
+      const base = parseDecimal(form.elements.baseAmount?.value || 0);
+      const additions = parseDecimal(form.elements.additions?.value || 0);
+      const deductions = parseDecimal(form.elements.deductions?.value || 0);
+      const total = Math.max(0, base + additions - deductions);
+      box.innerHTML = `
+        <div><span>Horas trabajadas</span><strong>${escapeHtml(summary.hours ? `${formatNumber(summary.hours)} hs` : "0 hs")}</strong></div>
+        <div><span>Monto por asistencias</span><strong>${formatCurrency(summary.amount || 0)}</strong></div>
+        <div><span>Total a liquidar</span><strong>${formatCurrency(total || 0)}</strong></div>
+      `;
+    }
+
     async function saveHrStaff(event) {
       event.preventDefault();
       const form = event.target;
@@ -7692,6 +8203,8 @@
       if (!result.ok) return showNotice(result.error || "No se pudo guardar el legajo.", "error");
       erpData.hrDashboard = result.hrDashboard;
       renderHrDashboard();
+      prepareModuleSections();
+      showModuleSection("hr", "hr-staff-section");
       showNotice("Legajo guardado.", "success");
     }
 
@@ -7707,6 +8220,8 @@
       if (!result.ok) return showNotice(result.error || "No se pudo guardar la asistencia.", "error");
       erpData.hrDashboard = result.hrDashboard;
       renderHrDashboard();
+      prepareModuleSections();
+      showModuleSection("hr", "hr-shifts-section");
       showNotice("Asistencia guardada.", "success");
     }
 
@@ -7715,11 +8230,15 @@
       const form = event.target;
       const payload = Object.fromEntries(new FormData(form).entries());
       const staff = (erpData.hrDashboard?.staff || []).find((item) => item.id === payload.staffId);
+      const summary = getPayrollShiftSummary(payload.staffId, payload.period);
       payload.staffName = staff?.fullName || "";
+      payload.shiftIds = summary.shifts.map((shift) => shift.id);
       const result = await postJson("/api/payroll", payload);
       if (!result.ok) return showNotice(result.error || "No se pudo guardar el sueldo.", "error");
       erpData.hrDashboard = result.hrDashboard;
       renderHrDashboard();
+      prepareModuleSections();
+      showModuleSection("hr", "hr-payroll-section");
       showNotice("Sueldo guardado.", "success");
     }
 
@@ -7773,14 +8292,36 @@
             <strong>${escapeHtml(item.title || item.productName || item.eventName || "Registro")}</strong>
             <div class="secondary">${escapeHtml(item.recordTypeLabel || item.recordType)} · ${escapeHtml(formatShortDate(item.date) || "")}${item.expirationDate ? ` · vence ${escapeHtml(formatShortDate(item.expirationDate))}` : ""}</div>
             <div class="secondary">${escapeHtml(item.reason || item.actionTaken || "")}</div>
-            ${item.documentDataUrl ? `<a class="filter" href="${escapeAttribute(item.documentDataUrl)}" download="${escapeAttribute(item.documentName || "comprobante")}">Descargar archivo</a>` : ""}
+            ${item.documentDataUrl ? `<a class="filter" href="${escapeAttribute(item.documentDataUrl)}" download="${escapeAttribute(item.documentName || "comprobante")}" onclick="event.stopPropagation()">Descargar archivo</a>` : ""}
           </div>
-          <div class="actions">
+          <div class="actions" onclick="event.stopPropagation()">
             <span class="badge ${item.approvalStatus === "approved" ? "confirmed" : item.approvalStatus === "rejected" ? "referred" : "missing_info"}">${escapeHtml(item.approvalStatusLabel || item.approvalStatus)}</span>
             ${can("sanitation:approve") && item.approvalStatus === "pending" ? `<button class="approve" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}', 'approved')">Aprobar</button><button class="reject" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}', 'rejected')">Rechazar</button>` : ""}
           </div>
         </article>
       `).join("");
+    }
+
+    function showSanitationRecordDetail(id) {
+      const records = erpData.sanitationDashboard?.records || [];
+      const item = records.find((record) => record.id === id);
+      if (!item) return;
+      document.getElementById("detail-title").textContent = item.title || item.productName || "Registro bromatologico";
+      document.getElementById("detail-subtitle").textContent = [item.recordTypeLabel || item.recordType, item.approvalStatusLabel || item.approvalStatus].filter(Boolean).join(" · ");
+      document.getElementById("detail-fields").innerHTML = `
+        ${field("Fecha", formatShortDate(item.date) || "Sin fecha")}
+        ${field("Producto", item.productName || "Sin producto")}
+        ${field("Lote", item.batch || "Sin lote")}
+        ${field("Vencimiento", formatShortDate(item.expirationDate) || "Sin vencimiento")}
+        ${field("Cantidad", item.quantity || "Sin cantidad")}
+        ${field("Evento", item.eventName || "Sin evento")}
+        ${field("Motivo", item.reason || "Sin motivo")}
+        ${field("Accion tomada", item.actionTaken || "Sin accion")}
+        ${field("Estado", item.approvalStatusLabel || item.approvalStatus || "Pendiente")}
+        ${item.documentDataUrl ? `<div class="form-field full"><label>Archivo</label><a class="filter" href="${escapeAttribute(item.documentDataUrl)}" download="${escapeAttribute(item.documentName || "comprobante")}">Descargar archivo</a></div>` : ""}
+        ${can("sanitation:approve") && item.approvalStatus === "pending" ? `<div class="actions full"><button class="approve" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}', 'approved'); hideDetail();">Aprobar</button><button class="reject" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}', 'rejected'); hideDetail();">Rechazar</button></div>` : ""}
+      `;
+      document.getElementById("detail").classList.add("open");
     }
 
     function handleSanitationFile(input) {
@@ -8696,6 +9237,7 @@
 
     function getPurchaseOrderProductOptions() {
       return Array.from(new Set([
+        ...(erpData.productMaster || []).map((product) => product.name),
         ...(purchaseOptions.products || []),
         ...(erpData.purchases || []).flatMap((purchase) => [
           purchase.description,
@@ -8750,6 +9292,12 @@
         </div>
         <input class="po-item-quantity" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}">
         <input class="po-item-unit" placeholder="Unidad" value="${escapeAttribute(item.unit || "")}">
+        <select class="po-item-type">
+          <option value="merchandise" ${normalizeSearch(item.itemType || "merchandise") === "merchandise" ? "selected" : ""}>Mercaderia</option>
+          <option value="tableware" ${normalizeSearch(item.itemType || "") === "tableware" ? "selected" : ""}>Vajilla</option>
+          <option value="rental" ${normalizeSearch(item.itemType || "") === "rental" ? "selected" : ""}>Alquiler</option>
+          <option value="equipment" ${normalizeSearch(item.itemType || "") === "equipment" ? "selected" : ""}>Equipamiento</option>
+        </select>
         <div class="autocomplete">
           <input class="po-item-provider" autocomplete="off" placeholder="Proveedor sugerido/asignado" value="${escapeAttribute(item.providerName || item.suggestedProvider || "")}" list="purchase-providers-datalist">
           <div class="autocomplete-list"></div>
@@ -8796,28 +9344,198 @@
         showNotice("Seleccione un evento para traer su menu.", "error");
         return;
       }
-      const menuItems = getKitchenChecklistItems(event);
-      if (!menuItems.length) {
-        showNotice("Ese evento no tiene items de menu cargados.", "error");
+      const suggestions = buildPurchaseOrderSuggestionsFromEvent(event);
+      if (!suggestions.length) {
+        showNotice("Ese evento no tiene menu, recetas o detalles operativos para sugerir.", "error");
         return;
       }
       const container = document.getElementById("purchase-order-items");
       if (container.querySelectorAll(".purchase-order-row").length === 1 && !container.querySelector(".po-item-product")?.value.trim()) {
         container.innerHTML = "";
       }
-      menuItems.forEach((item) => addPurchaseOrderItemRow({
-        productName: item.name,
-        quantity: item.quantity || item.suggestedQuantity || "",
-        unit: "",
-        notes: item.detail || "",
-      }));
+      suggestions.forEach(addPurchaseOrderItemRow);
       applyPurchaseOrderProviderSuggestions();
       renderPurchaseOrderPreview();
+    }
+
+    function buildPurchaseOrderSuggestionsFromEvent(event = {}) {
+      const suggestions = [];
+      const menuItems = getKitchenChecklistItems(event);
+      const recipesByName = new Map((erpData.recipes || allRecipes || []).map((recipe) => [normalizeSearch(recipe.name || ""), recipe]));
+
+      menuItems.forEach((menuItem) => {
+        const recipe = recipesByName.get(normalizeSearch(menuItem.name || ""));
+        if (recipe?.items?.length) {
+          const requested = parseKitchenQuantityNumber(menuItem.quantity || menuItem.suggestedQuantity || recipe.portions || 1) || Number(recipe.portions || 1) || 1;
+          const recipeYield = Number(recipe.portions || 1) || 1;
+          const multiplier = requested / recipeYield;
+          collectRecipeOrderIngredients(recipe, multiplier).forEach((item) => {
+            suggestions.push(applyStockAndProviderToOrderItem({
+              productName: item.name,
+              quantity: item.quantity,
+              unit: item.unit || "",
+              itemType: "merchandise",
+              notes: `Receta ${recipe.name}${item.source ? ` | ${item.source}` : ""}${menuItem.quantity ? ` | Menu ${menuItem.quantity}` : ""}`,
+            }));
+          });
+        } else {
+          suggestions.push(applyStockAndProviderToOrderItem({
+            productName: menuItem.name,
+            quantity: menuItem.quantity || menuItem.suggestedQuantity || "",
+            unit: guessUnitFromQuantity(menuItem.quantity || menuItem.suggestedQuantity || ""),
+            itemType: inferPurchaseItemType(menuItem.name, "merchandise"),
+            notes: menuItem.detail || "Item de menu sin receta vinculada",
+          }));
+        }
+      });
+
+      getOperationalCategoryItemsForOrder(event, "vajilla", "tableware").forEach((item) => suggestions.push(item));
+      getOperationalCategoryItemsForOrder(event, "utensilios", "equipment").forEach((item) => suggestions.push(item));
+      getOperationalCategoryItemsForOrder(event, "bebidas", "merchandise").forEach((item) => suggestions.push(item));
+
+      return mergePurchaseOrderSuggestions(suggestions);
+    }
+
+    function collectRecipeOrderIngredients(recipe, multiplier = 1, source = "") {
+      return (recipe.items || []).flatMap((item) => {
+        const itemMultiplier = multiplier * (parseDecimal(item.quantity || 1) || 1);
+        if (item.type === "recipe" && item.linkedRecipe) {
+          const linkedYield = Number(item.linkedRecipe.portions || 1) || 1;
+          return collectRecipeOrderIngredients(item.linkedRecipe, itemMultiplier / linkedYield, item.name || recipe.name || source);
+        }
+        if (item.type === "recipe") return [];
+        return [{
+          name: item.name,
+          quantity: scaleOrderQuantity(item.quantity, item.unit, multiplier),
+          unit: item.unit || "",
+          source,
+        }];
+      });
+    }
+
+    function getOperationalCategoryItemsForOrder(event = {}, category, itemType) {
+      return (event.operationalSheet?.categories?.[category] || [])
+        .filter((item) => item.text || item.name)
+        .map((item) => applyStockAndProviderToOrderItem({
+          productName: item.name || item.text,
+          quantity: item.quantity || "",
+          unit: item.unit || "",
+          itemType,
+          notes: [category, item.note].filter(Boolean).join(" | "),
+        }));
+    }
+
+    function applyStockAndProviderToOrderItem(item = {}) {
+      const provider = suggestPurchaseOrderProvider(item.productName || "");
+      const stock = findInventoryMatch(item.productName || "", item.unit || "");
+      const requested = parseDecimal(item.quantity || 0);
+      let quantity = item.quantity || "";
+      const notes = [item.notes].filter(Boolean);
+      if (stock && requested > 0 && (!item.unit || normalizeSearch(stock.unit || "") === normalizeSearch(item.unit || ""))) {
+        const remaining = Math.max(0, requested - Number(stock.quantity || 0));
+        quantity = formatOrderQuantity(remaining, item.unit || stock.unit || "");
+        notes.push(`Stock disponible: ${stock.quantity} ${stock.unit || ""}`);
+      }
+      return {
+        ...item,
+        quantity,
+        unit: item.unit || stock?.unit || "",
+        providerName: provider,
+        suggestedProvider: provider,
+        notes: notes.join(" | "),
+      };
+    }
+
+    function mergePurchaseOrderSuggestions(items = []) {
+      const grouped = new Map();
+      items.filter((item) => item.productName).forEach((item) => {
+        const key = [normalizeSearch(item.productName), normalizeSearch(item.unit), item.itemType || "merchandise", normalizeSearch(item.providerName || item.suggestedProvider || "")].join("|");
+        const current = grouped.get(key) || { ...item, notes: "" };
+        const currentQuantity = parseDecimal(current.quantity || 0);
+        const nextQuantity = parseDecimal(item.quantity || 0);
+        current.quantity = currentQuantity || nextQuantity
+          ? formatOrderQuantity(currentQuantity + nextQuantity, item.unit || current.unit || "")
+          : current.quantity || item.quantity || "";
+        current.notes = Array.from(new Set([current.notes, item.notes].filter(Boolean))).join(" | ");
+        grouped.set(key, current);
+      });
+      return Array.from(grouped.values()).sort((a, b) => String(a.productName || "").localeCompare(String(b.productName || "")));
+    }
+
+    function scaleOrderQuantity(quantity, unit, multiplier) {
+      const value = parseDecimal(quantity || 0);
+      if (!value || !Number.isFinite(multiplier)) return quantity || "";
+      return formatOrderQuantity(value * multiplier, unit);
+    }
+
+    function formatOrderQuantity(value, unit = "") {
+      const number = Number(value || 0);
+      if (!number) return "";
+      const key = normalizeSearch(unit || "");
+      const rounded = ["unidad", "unidades", "u", "porciones", "botellas", "cajas"].includes(key)
+        ? Math.ceil(number)
+        : Math.ceil(number * 100) / 100;
+      return String(rounded).replace(".", ",");
+    }
+
+    function guessUnitFromQuantity(value) {
+      const text = normalizeSearch(value || "");
+      if (text.includes("kg")) return "kg";
+      if (text.includes("litro") || text.includes("lts") || text.includes("lt")) return "l";
+      if (text.includes("botella")) return "botellas";
+      if (text.includes("cazuela")) return "cazuelas";
+      if (text.includes("porciones")) return "porciones";
+      if (text.includes("unidad")) return "unidades";
+      return "";
+    }
+
+    function inferPurchaseItemType(name, fallback = "merchandise") {
+      const master = findProductMasterMatch(name || "");
+      if (master?.itemType) return master.itemType;
+      const category = normalizeSearch(master?.category || name || "");
+      if (/(plato|vaso|copa|cubierto|tenedor|cuchillo|cuchara|vajilla)/.test(category)) return "tableware";
+      if (/(mesa|silla|living|alquiler)/.test(category)) return "rental";
+      if (/(conservadora|contenedor|equipo|horno|anafe)/.test(category)) return "equipment";
+      return fallback;
+    }
+
+    function findProductMasterMatch(name) {
+      const key = normalizeSearch(name || "");
+      if (!key) return null;
+      return (erpData.productMaster || []).find((product) => {
+        const productKey = normalizeSearch(product.name || "");
+        return productKey && (productKey === key || productKey.includes(key) || key.includes(productKey));
+      }) || null;
+    }
+
+    function findInventoryMatch(name, unit = "") {
+      const key = normalizeSearch(name || "");
+      if (!key) return null;
+      return (erpData.inventory || []).find((item) => {
+        const productKey = normalizeSearch(item.productName || "");
+        const unitMatches = !unit || !item.unit || normalizeSearch(item.unit) === normalizeSearch(unit);
+        return unitMatches && productKey && (productKey === key || productKey.includes(key) || key.includes(productKey));
+      }) || null;
+    }
+
+    function getPurchaseOrderTypeLabel(type) {
+      return {
+        merchandise: "Mercaderia",
+        tableware: "Vajilla",
+        rental: "Alquiler",
+        equipment: "Equipamiento",
+      }[type] || "Mercaderia";
     }
 
     function suggestPurchaseOrderProvider(productName) {
       const key = normalizeSearch(productName || "");
       if (!key) return "";
+      const masterMatch = (erpData.productMaster || []).find((product) => {
+        const productKey = normalizeSearch(product.name || "");
+        return productKey && (productKey === key || productKey.includes(key) || key.includes(productKey));
+      });
+      if (masterMatch?.lastProvider) return masterMatch.lastProvider;
+      if (masterMatch?.providerSuggestions?.length) return masterMatch.providerSuggestions[0];
       const purchases = (erpData.purchases || []).slice().sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
       const match = purchases.find((purchase) => {
         const values = [purchase.description, ...(purchase.lineItems || []).map((item) => item.description)]
@@ -8856,6 +9574,7 @@
             productName: row.querySelector(".po-item-product")?.value.trim() || "",
             quantity: row.querySelector(".po-item-quantity")?.value.trim() || "",
             unit: row.querySelector(".po-item-unit")?.value.trim() || "",
+            itemType: row.querySelector(".po-item-type")?.value || "merchandise",
             providerName: row.querySelector(".po-item-provider")?.value.trim() || "",
             suggestedProvider: suggestPurchaseOrderProvider(row.querySelector(".po-item-product")?.value || ""),
             notes: row.querySelector(".po-item-notes")?.value.trim() || "",
@@ -8882,7 +9601,7 @@
               <div class="purchase-order-list-row">
                 <strong>${escapeHtml(provider)}</strong>
                 <div>${escapeHtml(items.length)} producto(s)</div>
-                <div>${escapeHtml(items.map((item) => [item.quantity, item.unit, item.productName].filter(Boolean).join(" ")).join("; "))}</div>
+                <div>${escapeHtml(items.map((item) => [item.quantity, item.unit, item.productName, getPurchaseOrderTypeLabel(item.itemType)].filter(Boolean).join(" ")).join("; "))}</div>
               </div>
             `).join("")}
           </div>
@@ -9630,6 +10349,20 @@
           </div>
         </section>
         <section class="logistics-section">
+          <h3>Operacion del evento</h3>
+          <p class="subtitle">Seleccione elementos reales del inventario y marque los procedimientos de trabajo.</p>
+          <div class="logistics-operation-grid">
+            <div class="panel-box soft-panel">
+              <h4>Inventario operativo reservado</h4>
+              ${renderLogisticsOperationalInventory(event)}
+            </div>
+            <div class="panel-box soft-panel">
+              <h4>Procedimientos operativos</h4>
+              <div id="logistics-checklist">${renderLogisticsCategories(event)}</div>
+            </div>
+          </div>
+        </section>
+        <section class="logistics-section">
           <h3>Notas operativas</h3>
           <div class="logistics-mini-list">
             <div class="row"><strong>Observaciones</strong><div class="secondary">${escapeHtml(event.notes || "Sin notas")}</div></div>
@@ -9644,21 +10377,23 @@
             <label>Comentario post-evento</label>
             <textarea id="logistics-post-event-notes" placeholder="Que no se deberia olvidar en proximos eventos similares" onchange="saveLogisticsSheetNow()">${escapeHtml(event.operationalSheet?.postEventNotes || "")}</textarea>
           </div>
+          <details class="inventory-collapse post-event-collapse">
+            <summary>
+              <strong>Sobrantes / almacenamiento</strong>
+              <span class="badge">${escapeHtml(getLogisticsLeftoverRows(event).length)} item(s)</span>
+            </summary>
+            <div class="inventory-collapse-body">
+              <p class="subtitle">Complete esto al finalizar el evento. El producto viene de consumibles reservados o cargados en el evento; si no sobro, marque No sobro.</p>
+              <div class="toolbar-actions" style="justify-content:flex-end;margin-bottom:8px;">
+                <button class="filter" type="button" onclick="addLogisticsLeftover()">Agregar sobrante manual</button>
+              </div>
+              <div id="logistics-leftovers">${renderLogisticsLeftovers(event)}</div>
+            </div>
+          </details>
           <div class="toolbar-actions" style="justify-content:space-between;">
             <button class="filter" type="button" onclick="fillLogisticsNoNotes()">Sin comentarios</button>
             <button class="approve" type="button" onclick="closeLogisticsOperationalEvent()">Solicitar cierre</button>
           </div>
-        </section>
-        <section class="logistics-section">
-          <div class="toolbar-actions" style="justify-content:space-between;">
-            <h3>Sobrantes / almacenamiento</h3>
-            <button class="filter" type="button" onclick="addLogisticsLeftover()">Agregar sobrante</button>
-          </div>
-          <div id="logistics-leftovers">${renderLogisticsLeftovers(event.operationalSheet?.leftovers || [])}</div>
-        </section>
-        <section class="logistics-section">
-          <h3>Checklist operativo por rubro</h3>
-          <div id="logistics-checklist">${renderLogisticsCategories(event)}</div>
         </section>
       `;
     }
@@ -9790,6 +10525,68 @@
       return `<div class="row logistics-tableware-card"><strong>Vajilla y contenedores</strong>${rows || `<div class="secondary">Sin detalle</div>`}</div>`;
     }
 
+    function renderLogisticsOperationalInventory(event = {}) {
+      const catalog = event.operationalInventory || { categories: [], items: [] };
+      const categories = catalog.categories || [];
+      const items = catalog.items || [];
+      if (!items.length) {
+        return `<div class="empty">No hay inventario operativo cargado. Administracion puede cargarlo desde Stock &gt; Inventario operativo.</div>`;
+      }
+      return categories
+        .map((category) => {
+          const categoryItems = items.filter((item) => item.categoryId === category.id);
+          if (!categoryItems.length) return "";
+          const sortedItems = [...categoryItems].sort((a, b) =>
+            Number(Boolean(b.selected)) - Number(Boolean(a.selected))
+            || Number(Boolean(b.suggested)) - Number(Boolean(a.suggested))
+            || String(a.name || "").localeCompare(String(b.name || ""))
+          );
+          const selectedCount = categoryItems.filter((item) => item.selected).length;
+          const suggestedCount = categoryItems.filter((item) => item.suggested).length;
+          const availableCount = categoryItems.filter((item) => !item.disabled).length;
+          return `
+            <details class="inventory-collapse" ${selectedCount ? "open" : ""}>
+              <summary>
+                <strong>${escapeHtml(category.label)}</strong>
+                <span class="badge">Sel. ${escapeHtml(selectedCount)} · Sug. ${escapeHtml(suggestedCount)} · Disp. ${escapeHtml(availableCount)}</span>
+              </summary>
+              <div class="inventory-collapse-body">
+                ${sortedItems.map(renderLogisticsInventoryReservationRow).join("")}
+              </div>
+            </details>
+          `;
+        })
+        .join("");
+    }
+
+    function renderLogisticsInventoryReservationRow(item = {}) {
+      const disabled = item.disabled && !item.selected;
+      const quantityValue = item.selectedQuantity || (item.selected ? "1" : "");
+      return `
+        <div
+          class="logistics-reservation-row ${disabled ? "unavailable" : ""}"
+          data-reservation-item-id="${escapeAttribute(item.id || "")}"
+          data-category-id="${escapeAttribute(item.categoryId || "")}"
+          data-item-name="${escapeAttribute(item.name || "")}"
+          data-unit="${escapeAttribute(item.unit || "")}"
+        >
+          <input class="logistics-reservation-selected" type="checkbox" ${item.selected ? "checked" : ""} ${disabled ? "disabled" : ""} onchange="saveLogisticsSheetNow()">
+          <div class="reservation-main">
+            <strong>${escapeHtml(item.name || "")}</strong>
+            <div class="secondary">${escapeHtml([item.subcategory, item.location].filter(Boolean).join(" · ") || "Sin ubicacion")}</div>
+            <div class="reservation-tags">
+              <span class="badge ${item.status === "available" ? "confirmed" : "missing_info"}">${escapeHtml(item.statusLabel || "")}</span>
+              ${item.suggested ? `<span class="badge">Sugerido</span>` : ""}
+            </div>
+            ${item.disabledReason ? `<div class="secondary">${escapeHtml(item.disabledReason)}</div>` : ""}
+          </div>
+          <input class="logistics-reservation-quantity" placeholder="Cant." value="${escapeAttribute(quantityValue)}" ${disabled ? "disabled" : ""} onchange="saveLogisticsSheetNow()">
+          <div class="secondary">Disp. ${escapeHtml(item.availableQuantity ?? 0)} ${escapeHtml(item.unit || "")}</div>
+          <input class="logistics-reservation-note" placeholder="Nota" value="${escapeAttribute(item.selectedNote || "")}" ${disabled ? "disabled" : ""} onchange="saveLogisticsSheetNow()">
+        </div>
+      `;
+    }
+
     function renderLogisticsLearnedSuggestions(items = []) {
       if (!items.length) {
         return `<div class="empty">Sin aprendizajes previos para este tipo de servicio.</div>`;
@@ -9809,24 +10606,32 @@
 
     function renderLogisticsCategories(event) {
       const sheet = event.operationalSheet || { categories: {} };
-      return logisticsCategories.map((category) => {
-        const items = sheet.categories?.[category.id] || [];
+      const procedureCategories = logisticsCategories.filter((category) => operationalProcedureCategoryIds.has(category.id));
+      return `<div class="logistics-procedure-grid">${procedureCategories.map((category) => {
+        const items = (sheet.categories?.[category.id] || []).filter((item) => item.text);
         const categoryProgress = event.progress?.byCategory?.[category.id] || {};
+        const pending = Math.max(0, Number(categoryProgress.total || 0) - Number(categoryProgress.completed || 0));
+        const shouldOpen = category.id === "montaje" || category.id === "desmontaje" || pending > 0;
         return `
-          <section class="logistics-category" data-category-id="${escapeAttribute(category.id)}">
-            <div class="logistics-category-head">
+          <details class="inventory-collapse logistics-category" data-category-id="${escapeAttribute(category.id)}" ${shouldOpen ? "open" : ""}>
+            <summary class="logistics-category-head">
               <div>
                 <strong>${escapeHtml(category.label)}</strong>
                 <div class="secondary">${escapeHtml(categoryProgress.completed || 0)}/${escapeHtml(categoryProgress.total || 0)} completo(s)</div>
               </div>
+              <span class="badge ${pending ? "missing_info" : "confirmed"}">${pending ? `${escapeHtml(pending)} pendiente(s)` : "Completo"}</span>
+            </summary>
+            <div class="inventory-collapse-body">
+              <div class="toolbar-actions" style="justify-content:flex-end;margin-bottom:8px;">
               <button class="filter" type="button" onclick="addLogisticsChecklistItem('${escapeAttribute(category.id)}')">Agregar item</button>
-            </div>
+              </div>
             <div class="logistics-category-items">
               ${items.length ? items.map((item) => renderLogisticsChecklistItem(item)).join("") : `<div class="empty">Sin items en este rubro.</div>`}
             </div>
-          </section>
+            </div>
+          </details>
         `;
-      }).join("");
+      }).join("")}</div>`;
     }
 
     function renderLogisticsChecklistItem(item = {}) {
@@ -9851,9 +10656,51 @@
       `;
     }
 
-    function renderLogisticsLeftovers(items = []) {
-      if (!items.length) return `<div class="empty">Sin sobrantes cargados.</div>`;
+    function renderLogisticsLeftovers(event = activeLogisticsEvent) {
+      const items = getLogisticsLeftoverRows(event);
+      if (!items.length) {
+        return `<div class="empty">Sin consumibles reservados para controlar. Puede agregar un sobrante manual si corresponde.</div>`;
+      }
       return items.map((item) => renderLogisticsLeftoverRow(item)).join("");
+    }
+
+    function getLogisticsLeftoverRows(event = {}) {
+      const existing = Array.isArray(event.operationalSheet?.leftovers) ? event.operationalSheet.leftovers : [];
+      const categoriesById = new Map((event.operationalInventory?.categories || []).map((category) => [category.id, category]));
+      const usedIds = new Set();
+      const usedNames = new Set();
+      const byInventoryId = new Map();
+      const byName = new Map();
+      existing.forEach((item) => {
+        if (item.inventoryItemId) byInventoryId.set(item.inventoryItemId, item);
+        if (item.food) byName.set(normalizeSearch(item.food), item);
+      });
+      const consumables = (event.operationalInventory?.items || [])
+        .filter((item) => item.selected)
+        .filter((item) => categoriesById.get(item.categoryId)?.type === "consumable");
+      const rows = consumables.map((item) => {
+        const existingItem = byInventoryId.get(item.id) || byName.get(normalizeSearch(item.name || ""));
+        if (existingItem?.id) usedIds.add(existingItem.id);
+        if (existingItem?.food) usedNames.add(normalizeSearch(existingItem.food));
+        return {
+          id: existingItem?.id || `sobrante-${item.id}`,
+          inventoryItemId: item.id,
+          food: existingItem?.food || item.name || "",
+          quantity: existingItem?.quantity || "",
+          unit: existingItem?.unit || item.unit || "unidad",
+          destination: existingItem?.destination || "Deposito",
+          storage: existingItem?.storage || "",
+          notes: existingItem?.notes || "",
+          status: existingItem?.status || existingItem?.leftoverStatus || "pending",
+          returnToStock: Boolean(existingItem?.returnToStock),
+          itemType: "merchandise",
+        };
+      });
+      existing.forEach((item) => {
+        if (usedIds.has(item.id) || usedNames.has(normalizeSearch(item.food || ""))) return;
+        rows.push({ ...item, status: item.status || item.leftoverStatus || "pending" });
+      });
+      return rows;
     }
 
     function toggleLogisticsItemMenu(button) {
@@ -9871,18 +10718,42 @@
     }
 
     function renderLogisticsLeftoverRow(item = {}) {
+      const status = item.status || item.leftoverStatus || "pending";
+      const noLeftover = status === "none";
       return `
-        <div class="logistics-leftover-row" data-leftover-id="${escapeAttribute(item.id || "")}">
-          <input class="leftover-food" placeholder="Comida sobrante" value="${escapeAttribute(item.food || "")}" onchange="saveLogisticsSheetNow()">
-          <input class="leftover-quantity" placeholder="Cantidad" value="${escapeAttribute(item.quantity || "")}" onchange="saveLogisticsSheetNow()">
-          <select class="leftover-destination" onchange="saveLogisticsSheetNow()">
+        <div class="logistics-leftover-row ${noLeftover ? "no-leftover" : ""}" data-leftover-id="${escapeAttribute(item.id || "")}" data-inventory-item-id="${escapeAttribute(item.inventoryItemId || "")}">
+          <input class="leftover-food" placeholder="Producto sobrante" value="${escapeAttribute(item.food || item.productName || "")}" ${item.inventoryItemId ? "readonly" : ""} onchange="saveLogisticsSheetNow()">
+          <select class="leftover-status" onchange="toggleLogisticsLeftoverStatus(this); saveLogisticsSheetNow()">
+            ${[
+              ["pending", "Revisar"],
+              ["leftover", "Sobro"],
+              ["none", "No sobro"],
+            ].map(([value, label]) => `<option value="${escapeAttribute(value)}" ${value === status ? "selected" : ""}>${escapeHtml(label)}</option>`).join("")}
+          </select>
+          <input class="leftover-quantity" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}" ${noLeftover ? "disabled" : ""} onchange="saveLogisticsSheetNow()">
+          <input class="leftover-unit" placeholder="Unidad" value="${escapeAttribute(item.unit || "")}" ${noLeftover ? "disabled" : ""} onchange="saveLogisticsSheetNow()">
+          <select class="leftover-destination" ${noLeftover ? "disabled" : ""} onchange="saveLogisticsSheetNow()">
             ${["", "Freezer", "Heladera", "Deposito", "Descartar", "Otro"].map((value) => `<option value="${escapeAttribute(value)}" ${value === (item.destination || "") ? "selected" : ""}>${escapeHtml(value || "Destino")}</option>`).join("")}
           </select>
-          <input class="leftover-storage" placeholder="Freezer/heladera" value="${escapeAttribute(item.storage || "")}" onchange="saveLogisticsSheetNow()">
+          <input class="leftover-storage" placeholder="Freezer/heladera" value="${escapeAttribute(item.storage || "")}" ${noLeftover ? "disabled" : ""} onchange="saveLogisticsSheetNow()">
           <input class="leftover-notes" placeholder="Notas" value="${escapeAttribute(item.notes || "")}" onchange="saveLogisticsSheetNow()">
+          <label class="leftover-return-toggle"><input class="leftover-return-stock" type="checkbox" ${item.returnToStock && !noLeftover ? "checked" : ""} ${noLeftover ? "disabled" : ""} onchange="saveLogisticsSheetNow()"> Stock</label>
           <button class="reject icon-action" type="button" onclick="removeLogisticsLeftover(this)">x</button>
         </div>
       `;
+    }
+
+    function toggleLogisticsLeftoverStatus(select) {
+      const row = select.closest(".logistics-leftover-row");
+      if (!row) return;
+      const noLeftover = select.value === "none";
+      row.classList.toggle("no-leftover", noLeftover);
+      row.querySelectorAll(".leftover-quantity, .leftover-unit, .leftover-destination, .leftover-storage, .leftover-return-stock")
+        .forEach((input) => { input.disabled = noLeftover; });
+      if (noLeftover) {
+        const stock = row.querySelector(".leftover-return-stock");
+        if (stock) stock.checked = false;
+      }
     }
 
     function addLogisticsChecklistItem(categoryId) {
@@ -9928,16 +10799,34 @@
       const leftovers = Array.from(document.querySelectorAll("#logistics-leftovers .logistics-leftover-row"))
         .map((row) => ({
           id: row.dataset.leftoverId || `sobrante-${Date.now()}`,
+          inventoryItemId: row.dataset.inventoryItemId || "",
           food: row.querySelector(".leftover-food")?.value.trim() || "",
+          status: row.querySelector(".leftover-status")?.value || "pending",
           quantity: row.querySelector(".leftover-quantity")?.value.trim() || "",
+          unit: row.querySelector(".leftover-unit")?.value.trim() || "",
           destination: row.querySelector(".leftover-destination")?.value || "",
           storage: row.querySelector(".leftover-storage")?.value.trim() || "",
           notes: row.querySelector(".leftover-notes")?.value.trim() || "",
+          returnToStock: row.querySelector(".leftover-return-stock")?.checked || false,
+          itemType: "merchandise",
           updatedAt: new Date().toISOString(),
         }))
         .filter((item) => item.food);
       const postEventNotes = document.getElementById("logistics-post-event-notes")?.value.trim() || "";
-      return { categories, leftovers, postEventNotes, updatedAt: new Date().toISOString() };
+      const reservations = Array.from(document.querySelectorAll(".logistics-reservation-row"))
+        .map((row) => ({
+          id: `reserva-${row.dataset.reservationItemId || Date.now()}`,
+          itemId: row.dataset.reservationItemId || "",
+          itemName: row.dataset.itemName || "",
+          categoryId: row.dataset.categoryId || "",
+          quantity: row.querySelector(".logistics-reservation-quantity")?.value.trim() || "1",
+          unit: row.dataset.unit || "",
+          checked: row.querySelector(".logistics-reservation-selected")?.checked || false,
+          note: row.querySelector(".logistics-reservation-note")?.value.trim() || "",
+          updatedAt: new Date().toISOString(),
+        }))
+        .filter((item) => item.checked && item.itemId);
+      return { categories, leftovers, reservations, postEventNotes, updatedAt: new Date().toISOString() };
     }
 
     function saveLogisticsSheetNow() {
@@ -9970,6 +10859,7 @@
 
     function scrollLogisticsCategory(categoryId) {
       const section = document.querySelector(`.logistics-category[data-category-id="${CSS.escape(categoryId)}"]`);
+      if (section?.tagName === "DETAILS") section.open = true;
       section?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -9991,7 +10881,6 @@
       const index = logisticsEvents.findIndex((item) => item.id === activeLogisticsEvent.id);
       if (index >= 0) logisticsEvents[index] = { ...logisticsEvents[index], progress: activeLogisticsEvent.progress };
       renderLogisticsEvents();
-      renderLogisticsEventDetail();
     }
 
     function showLogisticsMissingConformityPrompt() {
@@ -10496,7 +11385,7 @@
           </section>
           <div class="compact-list compact-scroll" style="margin-top:12px;">
             ${productionEvents.length ? productionEvents.slice(0, 12).map((event) => `
-              <article class="compact-item" onclick="showEventOverview('${escapeAttribute(event.id)}')">
+              <article class="compact-item production-event-card" onclick="showEventOverview('${escapeAttribute(event.id)}')">
                 <div class="provider-card-head">
                   <div>
                     <div class="primary">${escapeHtml(event.name || "Evento sin nombre")}</div>
@@ -10504,7 +11393,17 @@
                   </div>
                   <span class="badge ${event.checklist?.production ? "confirmed" : "missing_info"}">${event.checklist?.production ? "Produccion OK" : "Produccion pendiente"}</span>
                 </div>
+                <div class="production-event-grid">
+                  <div><span>Servicio</span><strong>${escapeHtml(event.serviceType || "Sin definir")}</strong></div>
+                  <div><span>Menu</span><strong>${escapeHtml(getEventMenuItems(event).length)} item(s)</strong></div>
+                  <div><span>Restricciones</span><strong>${escapeHtml(event.dietaryRestrictions || "Sin restricciones")}</strong></div>
+                </div>
                 <div class="secondary">${escapeHtml(getEventMenuItems(event).slice(0, 4).map((item) => item.title || item.name).filter(Boolean).join(" · ") || "Menu sin items cargados")}</div>
+                <div class="actions" style="margin-top:10px;" onclick="event.stopPropagation()">
+                  <button class="filter" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">Ficha</button>
+                  <button class="filter" type="button" onclick="downloadKitchenChecklist('${escapeAttribute(event.id)}')">Checklist cocina</button>
+                  ${can("purchases:write") ? `<button class="approve" type="button" onclick="showPurchaseOrderForEvent('${escapeAttribute(event.id)}')">Orden de compra</button>` : ""}
+                </div>
               </article>
             `).join("") : `<div class="empty compact-empty">No hay eventos confirmados/proximos para cocina.</div>`}
           </div>
@@ -10526,7 +11425,13 @@
                     <td>${escapeHtml(event.clientName || "")}</td>
                     <td>${escapeHtml(getEventMenuItems(event).length)} item(s)</td>
                     <td><span class="badge ${event.checklist?.production ? "confirmed" : "missing_info"}">${event.checklist?.production ? "OK" : "Pendiente"}</span></td>
-                    <td><button class="menu-dot" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">...</button></td>
+                    <td>
+                      <div class="actions">
+                        <button class="filter" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">Ficha</button>
+                        <button class="filter" type="button" onclick="downloadKitchenChecklist('${escapeAttribute(event.id)}')">Checklist</button>
+                        ${can("purchases:write") ? `<button class="menu-dot" type="button" onclick="showPurchaseOrderForEvent('${escapeAttribute(event.id)}')">...</button>` : ""}
+                      </div>
+                    </td>
                   </tr>
                 `).join("")}
               </tbody>
@@ -10536,11 +11441,361 @@
       }
     }
 
+    function showPurchaseOrderForEvent(eventId) {
+      showPurchaseOrderForm();
+      const form = document.getElementById("purchase-order-advisor-form");
+      const event = (erpData.events || []).find((item) => item.id === eventId);
+      if (!form || !event) return;
+      setFormValue(form, "eventId", event.id);
+      setFormValue(form, "title", `Orden de compra - ${event.name || "Evento"}`);
+      setFormValue(form, "menuType", event.serviceType || "");
+      setFormValue(form, "neededDate", event.eventDate || "");
+      document.getElementById("purchase-order-items").innerHTML = "";
+      const suggestions = buildPurchaseOrderSuggestionsFromEvent(event);
+      if (suggestions.length) suggestions.forEach(addPurchaseOrderItemRow);
+      else addPurchaseOrderItemRow();
+      renderPurchaseOrderPreview();
+    }
+
     function getEventMenuItems(event = {}) {
       const items = event.menuItems || event.menu?.items || event.quoteMenuItems || [];
       if (Array.isArray(items) && items.length) return items;
       const text = String(event.menu || event.menuText || "").trim();
       return text ? text.split(/\n+/).filter(Boolean).map((line) => ({ title: line.trim() })) : [];
+    }
+
+    function renderProductMasterDashboard() {
+      const container = document.getElementById("product-master-dashboard");
+      if (!container) return;
+      const products = erpData.productMaster || [];
+      const withStock = products.filter((item) => Number(item.stockQuantity || 0) > 0).length;
+      const withProvider = products.filter((item) => item.lastProvider || item.providerSuggestions?.length).length;
+      const categories = new Set(products.map((item) => item.category).filter(Boolean)).size;
+      container.innerHTML = `
+        <section class="purchase-kpis">
+          <div class="purchase-kpi"><span>Insumos maestros</span><strong>${escapeHtml(products.length)}</strong></div>
+          <div class="purchase-kpi"><span>Con stock</span><strong>${escapeHtml(withStock)}</strong></div>
+          <div class="purchase-kpi"><span>Con proveedor</span><strong>${escapeHtml(withProvider)}</strong></div>
+          <div class="purchase-kpi"><span>Categorias</span><strong>${escapeHtml(categories)}</strong></div>
+        </section>
+        <div class="toolbar-actions" style="margin:12px 0;">
+          <input id="product-master-search" class="search" placeholder="Buscar producto, categoria, proveedor o donde se usa" oninput="renderProductMasterRows()">
+        </div>
+        <div id="product-master-list">${renderProductMasterTable(products)}</div>
+      `;
+    }
+
+    function renderProductMasterRows() {
+      const term = normalizeSearch(document.getElementById("product-master-search")?.value || "");
+      const products = (erpData.productMaster || []).filter((item) => {
+        const haystack = [
+          item.name,
+          item.category,
+          item.defaultUnit,
+          item.lastProvider,
+          ...(item.providerSuggestions || []),
+          ...(item.sources || []),
+        ].join(" ");
+        return !term || normalizeSearch(haystack).includes(term);
+      });
+      const container = document.getElementById("product-master-list");
+      if (container) container.innerHTML = renderProductMasterTable(products);
+    }
+
+    function renderProductMasterTable(products = []) {
+      if (!products.length) return `<div class="empty">No hay insumos para mostrar.</div>`;
+      return `
+        <div class="purchase-table-wrap compact-table-wrap">
+          <table class="purchase-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Categoria</th>
+                <th>Unidad</th>
+                <th>Proveedor sugerido</th>
+                <th>Stock</th>
+                ${canSeeRecipeCosts() ? `<th>Ultimo costo</th>` : ""}
+                <th>Presente en</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${products.slice(0, 250).map((item) => `
+                <tr onclick="showProductMasterDetail('${escapeAttribute(item.id || item.key || "")}')">
+                  <td><strong>${escapeHtml(item.name || "")}</strong></td>
+                  <td>${escapeHtml(item.category || "Sin categoria")}</td>
+                  <td>${escapeHtml(item.defaultUnit || item.stockUnit || "-")}</td>
+                  <td>${escapeHtml(item.lastProvider || item.providerSuggestions?.[0] || "Sin proveedor")}</td>
+                  <td>${escapeHtml(item.stockQuantity ? `${item.stockQuantity} ${item.stockUnit || ""}` : "-")}</td>
+                  ${canSeeRecipeCosts() ? `<td>${item.lastUnitCost ? formatCurrency(item.lastUnitCost) : "-"}</td>` : ""}
+                  <td>${escapeHtml(formatProductSources(item.sources || []))}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+        ${products.length > 250 ? `<p class="subtitle">Mostrando 250 de ${escapeHtml(products.length)} productos. Use el buscador para afinar.</p>` : ""}
+      `;
+    }
+
+    function formatProductSources(sources = []) {
+      const labels = {
+        compra: "Compras",
+        receta: "Recetas",
+        orden: "Ordenes",
+        stock: "Stock contable",
+        precio: "Precios historicos",
+        config: "Listas base",
+      };
+      return sources.map((source) => labels[source] || source).join(", ") || "-";
+    }
+
+    function showProductMasterDetail(id) {
+      const item = (erpData.productMaster || []).find((product) => (product.id || product.key) === id);
+      if (!item) return;
+      document.getElementById("detail-title").textContent = item.name || "Producto";
+      document.getElementById("detail-subtitle").textContent = "Ficha maestra del insumo";
+      document.getElementById("detail-fields").innerHTML = `
+        ${field("Nombre propio", item.name || "Sin nombre")}
+        ${field("Categoria", item.category || "Sin categoria")}
+        ${field("Unidad base", item.defaultUnit || item.stockUnit || "Sin definir")}
+        ${field("Proveedor sugerido", item.lastProvider || item.providerSuggestions?.[0] || "Sin proveedor")}
+        ${canSeeRecipeCosts() ? field("Ultimo costo", item.lastUnitCost ? formatCurrency(item.lastUnitCost) : "Sin costo") : ""}
+        ${field("Stock contable", item.stockQuantity ? `${formatSmartNumber(item.stockQuantity)} ${item.stockUnit || ""}` : "Sin stock contable")}
+        ${field("Presente en", formatProductSources(item.sources || []))}
+        <div class="form-field full">
+          <label>Como deberia usarse</label>
+          <div class="empty" style="text-align:left;">Esta ficha unifica nombres de compra, receta, orden y stock. El siguiente paso es permitir alias: por ejemplo, que FRACC JAM CRU X 150G y JAMON CRUDO X 150G apunten al producto maestro JAMON CRUDO.</div>
+        </div>
+      `;
+      document.getElementById("detail").classList.add("open");
+    }
+
+    function renderOperationalInventoryManager() {
+      const container = document.getElementById("operational-inventory-dashboard");
+      if (!container) return;
+      const data = erpData.operationalInventory || { categories: [], items: [] };
+      const categories = getOperationalInventoryCategories();
+      container.innerHTML = `
+        <div class="operational-inventory-layout">
+          <div class="panel-box soft-panel">
+            <h3 style="margin-top:0;">Item operativo</h3>
+            <form id="operational-inventory-form" class="form-grid" onsubmit="saveOperationalInventoryItem(event)">
+              <input type="hidden" name="id">
+              <div class="form-field full"><label>Nombre</label><input name="name" required placeholder="Ej: Conservadora grande, pinza, anafe"></div>
+              <div class="form-field"><label>Categoria</label><select name="categoryId" onchange="renderOperationalSubcategoryOptions()">${renderOperationalCategoryOptions()}</select></div>
+              <div class="form-field"><label>Subcategoria</label><select name="subcategory">${renderOperationalSubcategoryOptionsHtml()}</select></div>
+              <div class="form-field"><label>Cantidad total</label><input name="quantity" inputmode="decimal" value="1"></div>
+              <div class="form-field"><label>Unidad</label><input name="unit" value="unidad"></div>
+              <div class="form-field"><label>Estado</label><select name="status">${renderOperationalInventoryStatusOptions()}</select></div>
+              <div class="form-field full"><label>Ubicacion</label><input name="location" placeholder="Deposito, cocina, freezer, camioneta..."></div>
+              <div class="form-field full"><label>Notas</label><textarea name="notes"></textarea></div>
+              <div class="actions full">
+                <button class="approve" type="submit">Guardar item</button>
+                <button class="filter" type="button" onclick="resetOperationalInventoryForm()">Nuevo</button>
+                <button id="operational-inventory-delete" class="reject hidden" type="button" onclick="deleteOperationalInventoryItem()">Eliminar</button>
+              </div>
+            </form>
+            <details class="inventory-collapse" style="margin-top:14px;">
+              <summary><strong>Categorias y subcategorias</strong><span class="badge">${escapeHtml(categories.length)} categoria(s)</span></summary>
+              <div class="inventory-collapse-body">
+                <p class="subtitle">Una categoria agrupa items. Las subcategorias son opciones internas para ordenar, no categorias dentro de categorias.</p>
+                <form class="form-grid" onsubmit="saveOperationalInventoryCategory(event)">
+                  <div class="form-field"><label>Categoria</label><input name="label" required placeholder="Ej: Tableros"></div>
+                  <div class="form-field"><label>Tipo</label><select name="type"><option value="reusable">Reusable</option><option value="consumable">Consumible</option></select></div>
+                  <div class="form-field full"><label>Subcategorias</label><input name="subcategories" placeholder="Grandes, chicos, cocina"></div>
+                  <div class="actions full"><button class="filter" type="submit">Guardar categoria</button></div>
+                </form>
+                <div class="operational-category-list">
+                  ${categories.map((category) => `
+                    <button class="operational-category-row" type="button" onclick="fillOperationalCategoryForm('${escapeAttribute(category.id)}')">
+                      <strong>${escapeHtml(category.label)}</strong>
+                      <div class="secondary">${escapeHtml(category.type === "consumable" ? "Consumible" : "Reusable")} · ${escapeHtml((category.subcategories || []).join(", ") || "Sin subcategorias")}</div>
+                    </button>
+                  `).join("")}
+                </div>
+              </div>
+            </details>
+          </div>
+          <div>
+            <div class="toolbar-actions" style="margin-bottom:10px;">
+              <input id="operational-inventory-search" class="search" placeholder="Buscar por nombre, estado, categoria o ubicacion" oninput="renderOperationalInventoryRows()">
+            </div>
+            <div id="operational-inventory-list">${renderOperationalInventoryGroups(data.items || [], categories, true)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getOperationalInventoryCategories() {
+      const data = erpData.operationalInventory || {};
+      return data.categories?.length ? data.categories : [
+        { id: "alimentos", label: "Alimentos", type: "consumable", subcategories: ["Freezer", "Heladera", "Deposito", "Secos"] },
+        { id: "bebidas", label: "Bebidas", type: "consumable", subcategories: ["Agua", "Gaseosas", "Alcohol", "Hielo"] },
+        { id: "vajilla", label: "Vajilla", type: "reusable", subcategories: ["Platos", "Copas", "Cubiertos"] },
+        { id: "utensilios", label: "Utensilios", type: "reusable", subcategories: ["Cocina", "Servicio"] },
+        { id: "artefactos", label: "Artefactos", type: "reusable", subcategories: ["Calor", "Frio"] },
+        { id: "contenedores", label: "Contenedores", type: "reusable", subcategories: ["Grandes", "Chicos"] },
+        { id: "manteleria", label: "Manteleria", type: "reusable", subcategories: ["Manteles", "Caminos", "Servilletas"] },
+        { id: "mobiliario", label: "Mobiliario", type: "reusable", subcategories: ["Mesas", "Tableros", "Sillas"] },
+        { id: "transporte", label: "Transporte", type: "reusable", subcategories: ["Auto", "Camioneta", "Camion"] },
+        { id: "descartables", label: "Descartables", type: "consumable", subcategories: ["Vasos", "Platos"] },
+        { id: "limpieza", label: "Productos de limpieza", type: "consumable", subcategories: ["Quimicos"] },
+      ];
+    }
+
+    function renderOperationalCategoryOptions(selected = "") {
+      return getOperationalInventoryCategories().map((category) => `<option value="${escapeAttribute(category.id)}" ${category.id === selected ? "selected" : ""}>${escapeHtml(category.label)}</option>`).join("");
+    }
+
+    function renderOperationalSubcategoryOptionsHtml(selected = "", categoryId = "") {
+      const categories = getOperationalInventoryCategories();
+      const category = categories.find((item) => item.id === categoryId) || categories[0];
+      const options = category?.subcategories || [];
+      return [
+        `<option value="">Sin subcategoria</option>`,
+        ...options.map((item) => `<option value="${escapeAttribute(item)}" ${item === selected ? "selected" : ""}>${escapeHtml(item)}</option>`),
+      ].join("");
+    }
+
+    function renderOperationalInventoryStatusOptions(selected = "available") {
+      return [
+        ["available", "Disponible"],
+        ["broken", "Roto"],
+        ["maintenance", "Mantenimiento"],
+        ["lost", "Perdido"],
+        ["inactive", "Baja"],
+      ].map(([value, label]) => `<option value="${value}" ${value === selected ? "selected" : ""}>${label}</option>`).join("");
+    }
+
+    function renderOperationalSubcategoryOptions() {
+      const form = document.getElementById("operational-inventory-form");
+      if (!form) return;
+      const current = form.elements.subcategory?.value || "";
+      const category = getOperationalInventoryCategories().find((item) => item.id === form.elements.categoryId.value);
+      if (form.elements.subcategory) {
+        form.elements.subcategory.innerHTML = renderOperationalSubcategoryOptionsHtml(current, category?.id || "");
+      }
+    }
+
+    function renderOperationalInventoryRows() {
+      const term = normalizeSearch(document.getElementById("operational-inventory-search")?.value || "");
+      const data = erpData.operationalInventory || { items: [] };
+      const items = (data.items || []).filter((item) => {
+        const category = getOperationalInventoryCategories().find((entry) => entry.id === item.categoryId);
+        return !term || normalizeSearch([item.name, item.subcategory, item.statusLabel, item.location, category?.label].join(" ")).includes(term);
+      });
+      const container = document.getElementById("operational-inventory-list");
+      if (container) container.innerHTML = renderOperationalInventoryGroups(items, getOperationalInventoryCategories(), true);
+    }
+
+    function renderOperationalInventoryGroups(items = [], categories = [], adminMode = false) {
+      if (!items.length) return `<div class="empty">No hay items cargados en inventario operativo.</div>`;
+      return categories.map((category) => {
+        const categoryItems = items.filter((item) => item.categoryId === category.id);
+        if (!categoryItems.length) return "";
+        return `
+          <details class="inventory-collapse" ${categoryItems.length <= 8 ? "open" : ""}>
+            <summary><strong>${escapeHtml(category.label)}</strong><span class="badge">${escapeHtml(categoryItems.length)} item(s)</span></summary>
+            <div class="inventory-collapse-body">
+              ${categoryItems.map((item) => adminMode ? renderOperationalInventoryAdminRow(item) : "").join("")}
+            </div>
+          </details>
+        `;
+      }).join("");
+    }
+
+    function renderOperationalInventoryAdminRow(item = {}) {
+      const unavailable = item.status !== "available";
+      return `
+        <div class="inventory-row ${unavailable ? "unavailable" : ""}" onclick="editOperationalInventoryItem('${escapeAttribute(item.id)}')">
+          <div class="inventory-main">
+            <strong>${escapeHtml(item.name || "")}</strong>
+            <div class="secondary">${escapeHtml([item.subcategory, item.location].filter(Boolean).join(" · ") || "Sin ubicacion")}</div>
+            <div class="inventory-tags">
+              <span class="badge ${unavailable ? "missing_info" : "confirmed"}">${escapeHtml(item.statusLabel || item.status || "")}</span>
+              ${item.notes ? `<span class="secondary">${escapeHtml(item.notes)}</span>` : ""}
+            </div>
+          </div>
+          <div class="inventory-meta">
+            <strong>${escapeHtml(item.quantity || 0)} ${escapeHtml(item.unit || "")}</strong>
+            <span class="secondary">Disp. ${escapeHtml(item.availableQuantity ?? item.quantity ?? 0)}</span>
+          </div>
+          <button class="menu-dot" type="button" onclick="event.stopPropagation(); editOperationalInventoryItem('${escapeAttribute(item.id)}')">...</button>
+        </div>
+      `;
+    }
+
+    function editOperationalInventoryItem(id) {
+      const item = (erpData.operationalInventory?.items || []).find((entry) => entry.id === id);
+      const form = document.getElementById("operational-inventory-form");
+      if (!item || !form) return;
+      ["id", "name", "categoryId", "quantity", "unit", "status", "location", "notes"].forEach((field) => setFormValue(form, field, item[field] || ""));
+      document.getElementById("operational-inventory-delete")?.classList.remove("hidden");
+      renderOperationalSubcategoryOptions();
+      setFormValue(form, "subcategory", item.subcategory || "");
+    }
+
+    function resetOperationalInventoryForm() {
+      const form = document.getElementById("operational-inventory-form");
+      form?.reset();
+      setFormValue(form, "id", "");
+      setFormValue(form, "quantity", "1");
+      setFormValue(form, "unit", "unidad");
+      setFormValue(form, "status", "available");
+      document.getElementById("operational-inventory-delete")?.classList.add("hidden");
+      renderOperationalSubcategoryOptions();
+    }
+
+    async function saveOperationalInventoryItem(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const result = await postJson("/api/operational-inventory", payload);
+      if (!result.ok) return showNotice(result.error || "No se pudo guardar el inventario operativo.", "error");
+      erpData.operationalInventory = result.operationalInventory;
+      renderOperationalInventoryManager();
+      showNotice("Item operativo guardado.", "success");
+    }
+
+    function fillOperationalCategoryForm(id) {
+      const category = getOperationalInventoryCategories().find((item) => item.id === id);
+      const form = document.querySelector("#operational-inventory-dashboard form[onsubmit='saveOperationalInventoryCategory(event)']");
+      if (!category || !form) return;
+      setFormValue(form, "label", category.label || "");
+      setFormValue(form, "type", category.type || "reusable");
+      setFormValue(form, "subcategories", (category.subcategories || []).join(", "));
+    }
+
+    async function saveOperationalInventoryCategory(event) {
+      event.preventDefault();
+      const form = event.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const categories = [...getOperationalInventoryCategories()];
+      const id = normalizeSearch(data.label).replace(/[^a-z0-9]+/g, "_") || `categoria_${Date.now()}`;
+      const existingIndex = categories.findIndex((category) => category.id === id);
+      const next = {
+        id,
+        label: data.label,
+        type: data.type || "reusable",
+        subcategories: String(data.subcategories || "").split(",").map((item) => item.trim()).filter(Boolean),
+      };
+      if (existingIndex >= 0) categories[existingIndex] = next;
+      else categories.push(next);
+      const result = await postJson("/api/operational-inventory-categories", { categories });
+      if (!result.ok) return showNotice(result.error || "No se pudo guardar la categoria.", "error");
+      erpData.operationalInventory = result.operationalInventory;
+      form.reset();
+      renderOperationalInventoryManager();
+      showNotice("Categoria guardada.", "success");
+    }
+
+    async function deleteOperationalInventoryItem() {
+      const id = document.getElementById("operational-inventory-form")?.elements.id.value;
+      if (!id || !confirm("Eliminar este item del inventario operativo?")) return;
+      const result = await postJson("/api/delete-operational-inventory", { id });
+      if (!result.ok) return showNotice(result.error || "No se pudo eliminar el item.", "error");
+      erpData.operationalInventory = result.operationalInventory;
+      renderOperationalInventoryManager();
+      showNotice("Item eliminado.", "success");
     }
 
     function renderStockDashboard() {
@@ -10549,16 +11804,17 @@
       const alertsBox = document.getElementById("stock-product-alert-list");
       const inventory = erpData.inventory || [];
       const receipts = purchaseReceipts || erpData.purchaseReceipts || [];
+      const operationalItems = erpData.operationalInventory?.items || [];
       const unresolved = receipts.filter((receipt) => receipt.hasUnresolvedDifferences || (receipt.items || []).some((item) => item.differenceStatus === "pending"));
       const converted = receipts.filter((receipt) => receipt.convertedPurchaseId);
 
       if (dashboard) {
         dashboard.innerHTML = `
           <section class="purchase-kpis">
-            <div class="purchase-kpi"><span>Items en inventario</span><strong>${escapeHtml(inventory.length)}</strong></div>
+            <div class="purchase-kpi"><span>Stock contable</span><strong>${escapeHtml(inventory.length)}</strong></div>
+            <div class="purchase-kpi"><span>Inventario operativo</span><strong>${escapeHtml(operationalItems.length)}</strong></div>
             <div class="purchase-kpi"><span>Recepciones</span><strong>${escapeHtml(receipts.length)}</strong></div>
             <div class="purchase-kpi"><span>Diferencias pendientes</span><strong>${escapeHtml(unresolved.length)}</strong></div>
-            <div class="purchase-kpi"><span>Convertidas en compra</span><strong>${escapeHtml(converted.length)}</strong></div>
           </section>
           <div style="margin-top:12px;">${renderInventoryBoard()}</div>
         `;
@@ -10576,11 +11832,11 @@
           ${receipts.length ? `
             <div class="compact-list compact-scroll">
               ${receipts.slice(0, 16).map((receipt) => `
-                <article class="compact-item">
+                <article class="compact-item" onclick="${receipt.orderId ? `showPurchaseReceiptForm('${escapeAttribute(receipt.orderId)}')` : ""}">
                   <div class="provider-card-head">
                     <div>
                       <div class="primary">${escapeHtml(receipt.orderTitle || receipt.eventName || "Recepcion")}</div>
-                      <div class="secondary">${escapeHtml(formatShortDate(receipt.date) || "Sin fecha")} · ${escapeHtml(receipt.provider || "Sin proveedor")}</div>
+                      <div class="secondary">${escapeHtml(formatShortDate(receipt.date || receipt.receivedAt) || "Sin fecha")} · ${escapeHtml(receipt.provider || receipt.providerName || "Sin proveedor")} · ${escapeHtml((receipt.items || []).length)} item(s)</div>
                     </div>
                     <span class="badge ${receipt.convertedPurchaseId ? "confirmed" : unresolved.includes(receipt) ? "missing_info" : "ready_to_quote"}">${receipt.convertedPurchaseId ? "Compra creada" : unresolved.includes(receipt) ? "Diferencias" : "Aceptada"}</span>
                   </div>
@@ -10596,13 +11852,13 @@
         alertsBox.innerHTML = alerts.length ? `
           <div class="compact-list compact-scroll">
             ${alerts.slice(0, 20).map((item) => `
-              <article class="compact-item">
+              <article class="compact-item" onclick="showProductVariationDetail('${escapeAttribute(item.name || "")}')">
                 <div class="provider-card-head">
                   <div>
                     <div class="primary">${escapeHtml(item.name || "Insumo")}</div>
                     <div class="secondary">${escapeHtml(item.provider || "Sin proveedor")} · ${(item.affectedRecipes || []).length} receta(s) afectada(s)</div>
                   </div>
-                  <strong>${formatPercent(item.changePercent || 0)}</strong>
+                  <span class="badge ${Math.abs(Number(item.changePercent || 0)) >= 30 ? "danger" : "missing_info"}">${formatPercent(item.changePercent || 0)}</span>
                 </div>
               </article>
             `).join("")}
@@ -10639,12 +11895,57 @@
             `Proveedores activos: ${providers.length}`,
           ], (item) => `<div class="summary-row"><strong>${escapeHtml(item)}</strong><span>Reporte administrativo</span></div>`)}
           ${renderAdminSummaryList("Exportaciones", [
-            "Excel general del ERP",
-            "Compras para contador",
-            "Eventos y conformidades",
-          ], (item) => `<button class="summary-row" type="button" onclick="downloadErpXlsx()"><strong>${escapeHtml(item)}</strong><span>Descargar base</span></button>`)}
+            { label: "Excel general del ERP", type: "xlsx", description: "Base completa con varias hojas" },
+            { label: "Eventos", type: "events", description: "Listado de eventos y estados" },
+            { label: "Compras", type: "purchases", description: "Planilla de compras para revisar" },
+            { label: "Proveedores", type: "providers", description: "Datos fiscales y bancarios" },
+            { label: "Clientes", type: "customers", description: "Base de clientes e historial" },
+            { label: "Stock contable", type: "inventory", description: "Entradas convertidas desde recepciones" },
+          ], (item) => `<button class="summary-row" type="button" onclick="${item.type === "xlsx" ? "downloadErpXlsx()" : `downloadClientReportCsv('${escapeAttribute(item.type)}')`}"><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.description)}</span></button>`)}
         </div>
       `;
+    }
+
+    function downloadClientReportCsv(type) {
+      const catalogs = {
+        events: {
+          name: "reporte-eventos.csv",
+          rows: erpData.events || [],
+          columns: [["Evento", "name"], ["Fecha", "eventDate"], ["Cliente", "clientName"], ["Estado", "statusLabel"], ["Venta", "acceptedRevenue"], ["Facturacion", "invoiceStatus"]],
+        },
+        purchases: {
+          name: "reporte-compras.csv",
+          rows: erpData.purchases || [],
+          columns: [["Fecha", "date"], ["Proveedor", "provider"], ["Producto", "description"], ["Evento", "eventName"], ["Total", "totalAmount"], ["Pagado", "paidAmount"], ["Saldo", "balanceAmount"], ["Estado pago", "paymentStatus"]],
+        },
+        providers: {
+          name: "reporte-proveedores.csv",
+          rows: erpData.providers || allProviders || [],
+          columns: [["Proveedor", "name"], ["Razon social", "legalName"], ["CUIT", "cuit"], ["IVA", "ivaCondition"], ["Banco", "bankName"], ["Alias", "alias"], ["CBU/CVU", "cbu"], ["Contacto", "phone"]],
+        },
+        customers: {
+          name: "reporte-clientes.csv",
+          rows: erpData.customers || allCustomers || [],
+          columns: [["Cliente", "fullName"], ["Telefono", "displayPhone"], ["Eventos", "eventsCount"], ["Cierre", "closeRate"], ["Preferencias", "preferences"], ["Restricciones", "dietaryRestrictions"]],
+        },
+        inventory: {
+          name: "reporte-stock-contable.csv",
+          rows: erpData.inventory || [],
+          columns: [["Producto", "productName"], ["Tipo", "itemTypeLabel"], ["Cantidad", "quantity"], ["Unidad", "unit"], ["Proveedor", "providerName"], ["Evento", "eventName"]],
+        },
+      };
+      const config = catalogs[type];
+      if (!config) return;
+      const csv = [
+        config.columns.map(([label]) => label).join(";"),
+        ...config.rows.map((row) => config.columns.map(([, key]) => csvCell(row[key])).join(";")),
+      ].join("\n");
+      downloadTextFile(config.name, csv, "text/csv;charset=utf-8");
+    }
+
+    function csvCell(value) {
+      const text = String(value ?? "").replaceAll('"', '""');
+      return `"${text}"`;
     }
 
     function renderGlobalSearch() {
@@ -10745,6 +12046,7 @@
             <div class="event-number"><span>Costo presupuesto</span><strong>${formatCurrency(event.quoteCostTotal || 0)}</strong></div>
             <div class="event-number"><span>Compras reales</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
             <div class="event-number"><span>Stock usado</span><strong>${formatCurrency(event.stockCostTotal || 0)}</strong></div>
+            <div class="event-number"><span>Personal RRHH</span><strong>${formatCurrency(event.staffRealCost || 0)}</strong></div>
             <div class="event-number warn"><span>Costo final</span><strong>${formatCurrency(event.finalCostTotal || 0)}</strong></div>
             <div class="event-number highlight"><span>Margen final</span><strong>${formatCurrency(event.operationalMargin || 0)} (${formatPercent(event.operationalMarginPercent || 0)})</strong></div>
           </div>
@@ -10878,6 +12180,7 @@
           <div class="event-number"><span>Costo presupuesto</span><strong>${formatCurrency(event.quoteCostTotal || 0)}</strong></div>
           <div class="event-number"><span>Compras reales</span><strong>${formatCurrency(event.purchaseTotal || 0)}</strong></div>
           <div class="event-number"><span>Stock usado</span><strong>${formatCurrency(event.stockCostTotal || 0)}</strong></div>
+          <div class="event-number"><span>Personal RRHH</span><strong>${formatCurrency(event.staffRealCost || 0)}</strong></div>
           <div class="event-number warn"><span>Costo final</span><strong>${formatCurrency(event.finalCostTotal || 0)}</strong></div>
           <div class="event-number highlight"><span>Margen final</span><strong>${formatCurrency(event.operationalMargin || 0)} (${formatPercent(event.operationalMarginPercent || 0)})</strong></div>
         </div>
@@ -12131,6 +13434,11 @@
       const input = document.getElementById(inputId);
       const value = input.value.trim();
       if (!value) return;
+      const selectedBefore = {
+        serviceType: getCheckedOptionText("serviceType"),
+        eventMoments: getCheckedOptionText("eventMoments"),
+        drinkType: getDrinkChipsText(),
+      };
       const response = await fetch("/api/operational-option", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -12143,12 +13451,22 @@
       }
       costSettings = result.settings || costSettings;
       input.value = "";
+      if (type === "service") {
+        selectedBefore.serviceType = [selectedBefore.serviceType, value].filter(Boolean).join(", ");
+      }
       renderOperationalOptionInputs({
-        serviceType: getCheckedOptionText("serviceType"),
-        eventMoments: getCheckedOptionText("eventMoments"),
-        drinkType: getCheckedOptionText("drinkType"),
+        serviceType: selectedBefore.serviceType,
+        eventMoments: selectedBefore.eventMoments,
+        drinkType: selectedBefore.drinkType,
       });
       showNotice("Opcion agregada.");
+    }
+
+    function handleOperationalOptionKey(event, type, inputId) {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      event.stopPropagation();
+      addOperationalOptionFromPanel(type, inputId);
     }
 
     function showQuickCustomerForm() {
@@ -12721,7 +14039,7 @@
               <div class="primary">${escapeHtml(customer.fullName || customer.contactName || "Sin nombre")}</div>
               <div class="secondary">${escapeHtml(customer.displayPhone || "Telefono pendiente")}</div>
             </div>
-            <button class="menu-dot" type="button" onclick="showCustomerActions('${escapeAttribute(customer.id)}')">...</button>
+            <button class="menu-dot" type="button" onclick="event.stopPropagation(); showCustomerActions('${escapeAttribute(customer.id)}', this)">...</button>
           </div>
           <div class="secondary">${escapeHtml(customer.lastEventType ? `Ultimo evento: ${customer.lastEventType}` : "")}</div>
           <div class="recipe-summary" style="margin-top:10px;">
@@ -12734,9 +14052,17 @@
       `).join("");
     }
 
-    function showCustomerActions(id) {
+    function showCustomerActions(id, button = null) {
       const customer = allCustomers.find((item) => item.id === id);
       if (!customer) return;
+      if (button) {
+        showFloatingActionMenu(button, [
+          { label: "Editar cliente", action: `editCustomer('${escapeAttribute(customer.id)}')` },
+          { label: "Ver historial", action: `showCustomerInsight('${escapeAttribute(customer.id)}')` },
+          { label: "Eliminar", action: `deleteCustomer('${escapeAttribute(customer.id)}')`, danger: true },
+        ]);
+        return;
+      }
       document.getElementById("detail-title").textContent = customer.fullName || customer.contactName || "Cliente";
       document.getElementById("detail-subtitle").textContent = customer.displayPhone || "Telefono pendiente";
       document.getElementById("detail-fields").innerHTML = `
@@ -12750,6 +14076,29 @@
         </div>
       `;
       document.getElementById("detail").classList.add("open");
+    }
+
+    function showFloatingActionMenu(button, actions = []) {
+      document.querySelectorAll(".menu-popover").forEach((item) => item.remove());
+      const menu = document.createElement("div");
+      menu.className = "menu-popover open";
+      menu.innerHTML = actions.map((item) => `
+        <button type="button" class="${item.danger ? "danger-text" : ""}" onclick="${item.action}; this.closest('.menu-popover')?.remove();">${escapeHtml(item.label)}</button>
+      `).join("");
+      document.body.appendChild(menu);
+      const rect = button.getBoundingClientRect();
+      const top = Math.min(window.innerHeight - menu.offsetHeight - 8, rect.bottom + 6);
+      const left = Math.min(window.innerWidth - menu.offsetWidth - 8, rect.right - menu.offsetWidth);
+      menu.style.top = `${Math.max(8, top)}px`;
+      menu.style.left = `${Math.max(8, left)}px`;
+      setTimeout(() => {
+        document.addEventListener("click", function closeMenu(event) {
+          if (!menu.contains(event.target)) {
+            menu.remove();
+            document.removeEventListener("click", closeMenu);
+          }
+        });
+      }, 0);
     }
 
     function showCustomerInsight(id) {
@@ -12989,7 +14338,7 @@
               <div class="provider-meta">${escapeHtml(provider.legalName || "Razon social pendiente")}</div>
               <div class="provider-meta">${escapeHtml([provider.cuit, provider.ivaCondition].filter(Boolean).join(" · ") || "Datos fiscales pendientes")}</div>
             </div>
-            <button class="menu-dot" type="button" onclick="event.stopPropagation(); editProvider('${escapeAttribute(provider.id)}')">...</button>
+            <button class="menu-dot" type="button" onclick="event.stopPropagation(); showProviderActions('${escapeAttribute(provider.id)}')">...</button>
           </div>
           <div class="provider-stats">
             <div class="provider-stat"><span>Compras</span><strong>${escapeHtml(provider.purchaseCount || 0)}</strong></div>
@@ -13007,6 +14356,32 @@
       if (!provider) return;
       const form = document.getElementById("provider-form");
       fillProviderForm(form, provider);
+      form?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function showProviderActions(id) {
+      const provider = allProviders.find((item) => item.id === id);
+      if (!provider) return;
+      const detail = document.getElementById("detail");
+      document.getElementById("detail-title").textContent = provider.name || "Proveedor";
+      document.getElementById("detail-subtitle").textContent = [provider.legalName, provider.cuit, provider.ivaCondition].filter(Boolean).join(" · ") || "Datos del proveedor";
+      document.getElementById("detail-fields").innerHTML = `
+        <section class="recipe-detail-summary">
+          <div class="recipe-stat"><span>Compras</span><strong>${escapeHtml(provider.purchaseCount || 0)}</strong></div>
+          <div class="recipe-stat"><span>Total comprado</span><strong>${formatCurrency(provider.totalPurchased || 0)}</strong></div>
+          <div class="recipe-stat"><span>Ultima compra</span><strong>${escapeHtml(formatShortDate(provider.lastPurchaseDate) || "Sin fecha")}</strong></div>
+        </section>
+        <section class="logistics-mini-list" style="margin-top:12px;">
+          <div class="row"><strong>Banco</strong><div class="secondary">${escapeHtml([provider.bankName, provider.bankAccountType, provider.bankAccountNumber, provider.cbu, provider.alias, provider.bankAccountHolder].filter(Boolean).join(" · ") || "Datos bancarios pendientes")}</div></div>
+          <div class="row"><strong>Contacto</strong><div class="secondary">${escapeHtml([provider.contactName, provider.phone, provider.email].filter(Boolean).join(" · ") || "Contacto pendiente")}</div></div>
+          <div class="row"><strong>Direccion</strong><div class="secondary">${escapeHtml(provider.address || "Sin direccion")}</div></div>
+        </section>
+        <div class="actions" style="margin-top:14px;">
+          <button class="approve" type="button" onclick="document.getElementById('detail').classList.remove('open'); editProvider('${escapeAttribute(provider.id)}')">Editar proveedor</button>
+          <button class="filter" type="button" onclick="document.getElementById('detail').classList.remove('open')">Cerrar</button>
+        </div>
+      `;
+      detail.classList.add("open");
     }
 
     function fillProviderForm(form, provider) {
@@ -13534,6 +14909,7 @@
       document.getElementById("recipe-detail-subtitle").textContent =
         `${recipe.category || "Receta"} | Rinde ${formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad")}`;
       document.getElementById("recipe-detail-body").innerHTML = `
+        ${!canSeeRecipeCosts() ? renderRecipeKitchenHeader(recipe) : ""}
         ${renderRecipeDetailSummary(recipe)}
         <div class="actions" style="margin-bottom:16px;">
           <button class="approve" onclick="hideRecipeDetail(); editRecipe('${escapeAttribute(recipe.id)}')">Editar receta</button>
@@ -13561,6 +14937,16 @@
           <div class="primary">Composicion</div>
           ${renderRecipeDetailItems(recipe)}
         </section>
+        <section class="recipe-detail-section" style="margin-top:16px;">
+          <div class="recipe-scale-head">
+            <div>
+              <div class="primary">Escala de produccion</div>
+              <div class="secondary">Calculo proporcional por rendimiento. En kg o gramos muestra equivalencias redondas.</div>
+            </div>
+            <input value="${escapeAttribute(getRecipeDefaultScaleTarget(recipe))}" inputmode="decimal" onchange="updateRecipeScale('${escapeAttribute(recipe.id)}', this.value)" oninput="updateRecipeScale('${escapeAttribute(recipe.id)}', this.value)">
+          </div>
+          <div id="recipe-scale-${escapeAttribute(recipe.id)}" class="recipe-scale">${renderRecipeScale(recipe, getRecipeDefaultScaleTarget(recipe))}</div>
+        </section>
         ${recipe.notes ? `
           <section class="recipe-detail-section" style="margin-top:16px;">
             <div class="primary">Notas</div>
@@ -13569,6 +14955,22 @@
         ` : ""}
       `;
       document.getElementById("recipe-detail").classList.add("open");
+    }
+
+    function renderRecipeKitchenHeader(recipe) {
+      return `
+        <section class="recipe-detail-section kitchen-recipe-header">
+          <div>
+            <div class="primary">Ficha para cocina</div>
+            <div class="secondary">Procedimiento, fotos, rendimientos e ingredientes sin costos.</div>
+          </div>
+          <div class="recipe-detail-summary" style="margin-top:10px;">
+            <div class="recipe-stat"><span>Rinde</span><strong>${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</strong></div>
+            <div class="recipe-stat"><span>Elaboracion</span><strong>${formatDurationHours(recipe.productionTimeHours)}</strong></div>
+            <div class="recipe-stat"><span>Armado</span><strong>${formatDurationMinutes(recipe.assemblyTimeMinutes)}</strong></div>
+          </div>
+        </section>
+      `;
     }
 
     function renderRecipeDetailSummary(recipe) {
@@ -13696,6 +15098,7 @@
     function renderRecipeScale(recipe, targetValue) {
       const basePortions = parseDecimal(recipe.portions || 0);
       const targetPortions = parseDecimal(targetValue || 0);
+      const yieldUnit = recipe.yieldUnit || "unidad";
 
       if (!basePortions || !targetPortions) {
         return `<div class="secondary">Ingrese una cantidad valida para calcular.</div>`;
@@ -13726,12 +15129,42 @@
 
       return `
         <div class="recipe-breakdown-row" style="border-top:0;">
-          <div class="primary">Para producir ${escapeHtml(targetPortions)} unidad(es)</div>
+          <div>
+            <div class="primary">Para producir ${escapeHtml(formatRecipeScaleTarget(targetPortions, yieldUnit))}</div>
+            ${isWeightRecipeYieldUnit(yieldUnit) ? `<div class="secondary">${escapeHtml(formatRecipeWeightEquivalent(targetPortions, yieldUnit))}</div>` : ""}
+          </div>
           <div class="primary">${escapeHtml(formatScaleFactor(factor))}</div>
           <div class="primary">${canSeeRecipeCosts() ? formatCurrency(totalCost) : ""}</div>
         </div>
         ${rows}
       `;
+    }
+
+    function getRecipeDefaultScaleTarget(recipe) {
+      const unit = normalizeSearch(recipe.yieldUnit || "");
+      if (["kg", "kilo", "kilos", "kilogramo", "kilogramos"].includes(unit)) return 1;
+      if (["g", "gr", "gramo", "gramos"].includes(unit)) return 1000;
+      return recipe.portions || 1;
+    }
+
+    function isWeightRecipeYieldUnit(unit) {
+      return ["kg", "kilo", "kilos", "kilogramo", "kilogramos", "g", "gr", "gramo", "gramos"].includes(normalizeSearch(unit || ""));
+    }
+
+    function formatRecipeScaleTarget(value, unit) {
+      return formatRecipeQuantity(value, unit || "unidad");
+    }
+
+    function formatRecipeWeightEquivalent(value, unit) {
+      const normalizedUnit = normalizeSearch(unit || "");
+      const amount = parseDecimal(value || 0);
+      if (["kg", "kilo", "kilos", "kilogramo", "kilogramos"].includes(normalizedUnit)) {
+        return `Equivale a ${formatRecipeQuantity(amount * 1000, "g")}`;
+      }
+      if (["g", "gr", "gramo", "gramos"].includes(normalizedUnit)) {
+        return `Equivale a ${formatRecipeQuantity(amount / 1000, "kg")}`;
+      }
+      return "";
     }
 
     function formatScaleFactor(factor) {
@@ -14021,12 +15454,13 @@
       if (!base || !recipe.items?.length) {
         return `<p class="muted">Sin escala calculable.</p>`;
       }
-      const targets = [base, base * 2, base * 5].filter((value, index, arr) => value > 0 && arr.indexOf(value) === index);
+      const targets = getPrintableRecipeScaleTargets(recipe, base);
       return targets.map((target) => {
         const factor = target / base;
         return `
           <div class="scale-block">
-            <h4>Para producir ${escapeHtml(formatRecipeQuantity(target, recipe.yieldUnit || "unidad"))} (${escapeHtml(formatScaleFactor(factor))})</h4>
+            <h4>Para producir ${escapeHtml(formatRecipeScaleTarget(target, recipe.yieldUnit || "unidad"))} (${escapeHtml(formatScaleFactor(factor))})</h4>
+            ${isWeightRecipeYieldUnit(recipe.yieldUnit || "") ? `<p class="muted">${escapeHtml(formatRecipeWeightEquivalent(target, recipe.yieldUnit || ""))}</p>` : ""}
             <table>
               <thead><tr><th>Ingrediente</th><th>Cantidad</th></tr></thead>
               <tbody>
@@ -14041,6 +15475,18 @@
           </div>
         `;
       }).join("");
+    }
+
+    function getPrintableRecipeScaleTargets(recipe, base) {
+      const unit = normalizeSearch(recipe.yieldUnit || "");
+      const rawTargets = ["kg", "kilo", "kilos", "kilogramo", "kilogramos"].includes(unit)
+        ? [1, Math.ceil(base), base]
+        : ["g", "gr", "gramo", "gramos"].includes(unit)
+          ? [1000, Math.ceil(base / 1000) * 1000, base]
+          : [base, base * 2, base * 5];
+      return rawTargets
+        .filter((value) => value > 0)
+        .filter((value, index, arr) => arr.findIndex((entry) => Math.abs(entry - value) < 0.0001) === index);
     }
 
     function getRecipePrintStyles() {
@@ -14080,8 +15526,8 @@
       `;
     }
 
-    function downloadTextFile(fileName, content) {
-      const blob = new Blob([content], { type: "text/html;charset=utf-8" });
+    function downloadTextFile(fileName, content, mimeType = "text/html;charset=utf-8") {
+      const blob = new Blob([content], { type: mimeType });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

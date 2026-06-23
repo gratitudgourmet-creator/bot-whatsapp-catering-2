@@ -75,6 +75,93 @@ Se ajusto la interfaz para que el sistema sea mas comodo en uso diario:
 - Los submenus por hover no deben mover la pantalla: se muestran como panel flotante, con contraste legible y sin recargar el modulo hasta que el usuario haga click.
 - El buscador global debe mostrar resultados con texto oscuro y tarjetas compactas.
 
+### Actualizacion Produccion, Stock y Compras - 22/06/2026
+
+Se agrego una primera base operativa para conectar cocina, recetas, stock y compras:
+
+- `Stock` incorpora `Maestro de insumos`: productos unificados desde compras, recetas, ordenes, inventario y precios historicos.
+- El maestro muestra origen del dato, categoria, unidad, proveedor sugerido, stock actual y ultimo costo solo para roles autorizados.
+- `Produccion/Cocina` mejora el monitor de eventos a producir con fecha, cliente, servicio, restricciones, cantidad de menu y acciones.
+- Cocina y cocinero pueden operar recetas como ficha tecnica sin ver costos, margen ni precios.
+- Desde un evento en Produccion/Cocina, administracion o compras puede generar una orden de compra.
+- La orden de compra puede traer menu y recetas: si el item de menu coincide con una receta, el sistema propone los insumos de esa receta.
+- Las ordenes descuentan stock disponible cuando coincide producto/unidad y sugieren proveedor segun historial/maestro.
+- Las ordenes separan tipo de item: mercaderia, vajilla, alquiler y equipamiento.
+
+Regla operativa: para que una orden automatica sea precisa, el item del menu debe estar escrito igual o muy parecido al nombre de la receta cargada. Si no hay receta vinculada, el sistema carga el item de menu como pendiente de definir.
+
+### Actualizacion Inventario operativo para Logistica - 22/06/2026
+
+Se agrego un inventario operativo seleccionable por evento para evitar olvidos al armar la salida:
+
+- `Stock > Inventario operativo` permite cargar alimentos, bebidas, vajilla, utensilios, artefactos, contenedores, manteleria, mobiliario, transporte, descartables y productos de limpieza.
+- Cada item tiene categoria, subcategoria, cantidad, unidad, ubicacion, notas y estado.
+- Las categorias y subcategorias se administran en el bloque `Categorias`. En el formulario de `Item operativo` solo se seleccionan categorias existentes.
+- Los estados disponibles son: `Disponible`, `Roto`, `Mantenimiento`, `Perdido` y `Baja`.
+- Los items que no estan disponibles se muestran en gris y no se pueden seleccionar para un evento.
+- El rol `Logistica Evento` puede abrir un evento confirmado y seleccionar los items necesarios desde rubros colapsables.
+- La seleccion queda guardada dentro de la ficha del evento, en `operationalSheet.reservations`.
+- Los rubros aparecen colapsados para evitar listas eternas. Si un rubro tiene items seleccionados, se abre automaticamente.
+- Los items reutilizables se reservan contra otros eventos de la misma fecha. Los consumibles descuentan disponibilidad general.
+- La ficha operativa separa dos conceptos:
+  - `Inventario operativo reservado`: elementos reales que existen en stock o deposito y se seleccionan por evento.
+  - `Procedimientos operativos`: tareas del manual, como personal, transporte, montaje, desmontaje, documentacion y extras.
+- Alimentos, bebidas, vajilla, utensilios, manteleria, mobiliario y contenedores ya no deben duplicarse como texto en el checklist; deben seleccionarse desde inventario operativo.
+- En `Sobrantes / almacenamiento`, el sistema trae automaticamente los consumibles reservados para el evento. Este bloque aparece en la segunda instancia de cierre/post-evento para no cargar de mas la ficha previa del evento.
+- Los productos traidos desde el evento no se editan como texto libre; se controlan como consumibles reales del evento. Solo los sobrantes manuales permiten escribir un producto nuevo.
+- Logistica marca si `Sobro`, `No sobro` o queda `Revisar`.
+- Si el sobrante debe volver al inventario, se marca `Stock`; el sistema genera una entrada de inventario vinculada al evento.
+- Si no sobro, se marca `No sobro`. Si el sobrante se descarta o no corresponde inventariarlo, no se marca `Stock`.
+
+Definiciones de stock:
+
+- `Stock contable`: mercaderia generada desde recepciones aceptadas y convertidas en compra real. Sirve para alimentos, bebidas y consumibles con movimiento administrativo.
+- `Inventario operativo`: elementos fisicos o consumibles disponibles para armar eventos, como vajilla, utensilios, contenedores, descartables, bebidas o alimentos cargados para operacion.
+- Si `Stock contable` aparece en cero, no significa que no haya vajilla o utensilios; significa que todavia no hay recepciones convertidas en entradas contables de stock.
+
+Regla operativa: si un elemento esta roto, en mantenimiento, perdido o dado de baja, debe corregirse desde Stock antes de poder asignarlo a un evento. Logistica no ve costos ni informacion financiera al seleccionar estos elementos.
+
+### Actualizacion UX y controles administrativos - 22/06/2026
+
+- `Clientes` queda como modulo independiente y deja de duplicarse dentro de `Comercial`.
+- `Comercial` conserva oportunidades, pipeline, presupuestos y lugares.
+- Las tablas o tableros largos deben usar scroll interno con encabezado fijo para no estirar toda la pantalla.
+- Las recepciones en `Stock` se pueden abrir haciendo clic sobre el registro.
+- `Maestro de insumos` muestra `Presente en` en lugar de `Origen`, indicando si el insumo aparece en compras, recetas, ordenes, stock, precios historicos o listas base.
+- Los productos del maestro se pueden abrir para revisar su ficha. La unificacion por alias queda como siguiente mejora: varios nombres de proveedores deben poder apuntar a un mismo producto propio, por ejemplo `JAMON CRUDO`.
+- `Reportes` permite descargar bases separadas por eventos, compras, proveedores, clientes y stock contable, ademas del Excel general.
+
+### Actualizacion rendimiento y carga de modulos - 23/06/2026
+
+- Al cambiar de modulo, el panel reutiliza el ERP ya cargado en memoria y no vuelve a pedir toda la base cada vez.
+- Los botones `Actualizar` y las acciones que guardan datos siguen forzando una recarga real para traer informacion fresca.
+- Si el ERP cargado tiene mas de un minuto, el panel puede refrescar en segundo plano sin bloquear la navegacion.
+- En `Crear evento`, al agregar un nuevo servicio desde el campo `Agregar servicio`, Enter o el boton `Agregar` solo agregan la opcion operativa y no envian el formulario del evento.
+- El nuevo servicio queda seleccionado automaticamente en la ficha que se esta cargando.
+
+### Actualizacion Personal/RRHH - 22/06/2026
+
+El modulo `Personal/RRHH` queda separado en tres subpantallas reales:
+
+- `Legajos`: alta y edicion del personal, rol, telefono, DNI/CUIL, valor hora, disponibilidad y estado.
+- `Asistencia y horarios`: programacion o carga real de horas por persona y evento.
+- `Sueldos y horas`: liquidaciones, adicionales, descuentos y estado de pago. Al elegir persona y periodo, el sistema muestra horas trabajadas y monto calculado desde asistencias; el boton `Traer horas trabajadas` completa la liquidacion.
+
+### Actualizacion Recetas - escala de produccion
+
+En la ficha de receta, `Escala de produccion` calcula equivalencias proporcionales. Si una receta rinde en kg o gramos, el sistema propone una escala redonda: por ejemplo, para una receta que rinde `2,91 kg`, muestra primero que se necesita para producir `1 kg` y su equivalente en gramos. La ficha imprimible tambien incluye estas escalas para cocina.
+
+La asistencia muestra un resumen antes de guardar:
+
+- horas calculadas por entrada/salida o por horas manuales;
+- valor hora tomado del legajo;
+- adicionales;
+- costo que impactara en el evento.
+
+Regla operativa: para que el costo de personal impacte en el margen del evento, la asistencia debe estar vinculada a ese evento. Si la asistencia queda `Sin evento`, sirve para sueldo/historial, pero no se suma al costo operativo de ningun evento.
+
+Regla de costo: si un evento tiene asistencias cargadas, el costo real/programado de RRHH reemplaza el costo de personal estimado del presupuesto. Si no tiene asistencias, se mantiene el costo de personal presupuestado.
+
 ### Guia visual vigente - Gratitud Gourmet ERP
 
 - Fondo principal: `#F3F6F7`.

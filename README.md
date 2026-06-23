@@ -147,8 +147,12 @@ El procedimiento operativo completo esta en `Manual_Procedimientos_Operativos_Gr
 El ERP suma modulos separados para:
 
 - `Personal/RRHH`: legajos, roles, disponibilidad, turnos por evento, asistencia, novedades y pagos de sueldo.
+- `Sueldos y horas` toma asistencias del periodo para mostrar horas trabajadas y monto antes de guardar una liquidacion.
 - `Bromatologia`: documentacion sanitaria, etiquetas, vencimientos, decomisos, fotos/comprobantes y aprobaciones.
 - `Ordenes de pago`: solicitudes formales a proveedores, personal o reintegros, con aprobacion, estado, comprobante e historial.
+- `Logistica Evento` controla sobrantes en la instancia post-evento desde consumibles reservados y permite reingresar stock cuando corresponde.
+- `Stock` separa `Stock contable` (recepciones convertidas) de `Inventario operativo` (vajilla, utensilios, contenedores y consumibles seleccionables por evento).
+- `Reportes` permite descargas separadas por eventos, compras, proveedores, clientes y stock contable, ademas del Excel general.
 
 Los roles nuevos son `rrhh` y `bromatologia`. Finanzas puede trabajar ordenes de pago y administracion general puede revisar y aprobar todo desde Seguridad.
 

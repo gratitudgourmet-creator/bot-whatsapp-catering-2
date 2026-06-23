@@ -54,9 +54,10 @@
       "Servilletas",
       "Medialunas",
       "Jugo"
-    ]
+    ],
+    "entrega": []
   },
-  "updatedAt": "2026-06-17T16:20:26.007Z",
+  "updatedAt": "2026-06-23T13:22:49.711Z",
   "operationalOptions": {
     "services": [
       "Agape",
@@ -67,6 +68,7 @@
       "Cocktail",
       "Coctel",
       "Coffee",
+      "ENTREGA",
       "Finger",
       "PICADA",
       "TEST SERVICE CODEX"

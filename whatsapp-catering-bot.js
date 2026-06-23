@@ -55,6 +55,7 @@ const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
 const ERP_PURCHASE_ORDERS_FILE = dataPath("ordenes-compra-erp.json");
 const ERP_PURCHASE_RECEIPTS_FILE = dataPath("recepciones-compra-erp.json");
 const ERP_INVENTORY_FILE = dataPath("inventario-erp.json");
+const ERP_OPERATIONAL_INVENTORY_FILE = dataPath("inventario-operativo-erp.json");
 const ERP_PROVIDERS_FILE = dataPath("proveedores-erp.json");
 const ERP_VENUES_FILE = dataPath("lugares-erp.json");
 const ERP_HR_STAFF_FILE = dataPath("personal-erp.json");
@@ -175,6 +176,7 @@ let erpPurchases = [];
 let erpPurchaseOrders = [];
 let erpPurchaseReceipts = [];
 let erpInventoryMovements = [];
+let erpOperationalInventory = { categories: [], items: [] };
 let erpProviders = [];
 let erpVenues = [];
 let erpStaff = [];
@@ -295,6 +297,7 @@ const OPERATIONAL_SHEET_CATEGORIES = [
   ["documentacion", "Documentacion"],
   ["extras", "Extras / varios"],
 ];
+const OPERATIONAL_PROCEDURE_CATEGORY_IDS = new Set(["personal", "transporte", "montaje", "desmontaje", "documentacion", "extras"]);
 let cateringDb = null;
 let lastCateringDbBackupAt = 0;
 const approvedCustomers = new Set();
@@ -865,6 +868,15 @@ function startApprovalPanelServer() {
         });
       }
 
+      if (request.method === "GET" && requestUrl.pathname === "/api/product-master") {
+        const sessionUser = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "recipes:read", "recipes:write", "production:read"]);
+        if (!sessionUser) return;
+        return sendJson(response, {
+          ok: true,
+          products: getProductMasterListForUser(sessionUser),
+        });
+      }
+
       if (request.method === "GET" && requestUrl.pathname === "/api/erp") {
         const sessionUser = getPanelSessionUser(request);
         const publicUser = getPublicUser(sessionUser);
@@ -897,6 +909,7 @@ function startApprovalPanelServer() {
             purchaseReceipts: [],
             inventory: [],
             inventoryMovements: [],
+            productMaster: [],
             providers: [],
             recipes: [],
             customers: [],
@@ -924,6 +937,7 @@ function startApprovalPanelServer() {
             purchaseReceipts: [],
             inventory: [],
             inventoryMovements: [],
+            productMaster: [],
             providers: getProviderList(),
             recipes: [],
             customers: [],
@@ -948,6 +962,8 @@ function startApprovalPanelServer() {
           purchaseReceipts: canSeePurchases || canSeeStock ? getPurchaseReceiptList() : [],
           inventory: canSeePurchases || canSeeStock ? getInventoryBalanceList() : [],
           inventoryMovements: canSeePurchases || canSeeStock ? getInventoryMovementList() : [],
+          operationalInventory: canSeePurchases || canSeeStock || canSeeEverything ? getOperationalInventoryAdminView() : undefined,
+          productMaster: canSeePurchases || canSeeStock || canSeeRecipes || canSeeProduction || canSeeEverything ? getProductMasterListForUser(sessionUser) : [],
           providers: canSeeProviders ? getProviderList() : [],
             recipes: canSeeRecipes ? getRecipeListForUser(sessionUser) : [],
           customers: canSeeCustomers || canSeeCommercial ? getCustomerInsights() : [],
@@ -1381,6 +1397,36 @@ function startApprovalPanelServer() {
           inventory: getInventoryBalanceList(),
           movements: getInventoryMovementList(),
         });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/operational-inventory") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, operationalInventory: getOperationalInventoryAdminView() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "events:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const operationalInventory = saveOperationalInventoryRecord(body, user);
+        return sendJson(response, { ok: true, operationalInventory });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-categories") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "events:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const operationalInventory = saveOperationalInventoryCategories(body, user);
+        return sendJson(response, { ok: true, operationalInventory });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/delete-operational-inventory") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "events:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const operationalInventory = deleteOperationalInventoryItem(body.id, user);
+        return sendJson(response, { ok: true, operationalInventory });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/import-accountant-payments") {
@@ -2335,6 +2381,7 @@ function loadBusinessData() {
   erpPurchaseOrders = normalizePurchaseOrderList(readJsonFile(ERP_PURCHASE_ORDERS_FILE, []));
   erpPurchaseReceipts = normalizePurchaseReceiptList(readJsonFile(ERP_PURCHASE_RECEIPTS_FILE, []));
   erpInventoryMovements = normalizeInventoryMovementList(readJsonFile(ERP_INVENTORY_FILE, []));
+  erpOperationalInventory = normalizeOperationalInventoryData(readJsonFile(ERP_OPERATIONAL_INVENTORY_FILE, {}));
   erpProviders = readJsonFile(ERP_PROVIDERS_FILE, []);
   erpVenues = readJsonFile(ERP_VENUES_FILE, []);
   erpStaff = normalizeStaffList(readJsonFile(ERP_HR_STAFF_FILE, []));
@@ -2674,6 +2721,10 @@ function saveErpPurchaseReceipts() {
 
 function saveErpInventory() {
   writeJsonFile(ERP_INVENTORY_FILE, erpInventoryMovements);
+}
+
+function saveErpOperationalInventory() {
+  writeJsonFile(ERP_OPERATIONAL_INVENTORY_FILE, erpOperationalInventory);
 }
 
 function saveErpPurchases() {
@@ -3380,7 +3431,15 @@ function getRecipeListForUser(user) {
 }
 
 function canUserSeeRecipeCosts(user) {
-  return Boolean(user) && (hasPanelPermission(user, "*") || !isCookingRole(user));
+  return Boolean(user) && (
+    hasPanelPermission(user, "*") ||
+    hasPanelPermission(user, "finance:read") ||
+    hasPanelPermission(user, "finance:write") ||
+    hasPanelPermission(user, "purchases:write") ||
+    hasPanelPermission(user, "stock:read") ||
+    hasPanelPermission(user, "quotes:write") ||
+    (!isCookingRole(user) && hasPanelPermission(user, "recipes:write"))
+  );
 }
 
 function isCookingRole(user) {
@@ -3543,6 +3602,179 @@ function getRecipeProductOptionsForUser(user) {
   const products = getRecipeProductOptions();
   if (canUserSeeRecipeCosts(user)) return products;
   return products.map((product) => ({ name: product.name }));
+}
+
+function canUserSeeProductCosts(user) {
+  return Boolean(user) && (
+    hasPanelPermission(user, "*") ||
+    hasPanelPermission(user, "purchases:write") ||
+    hasPanelPermission(user, "stock:read") ||
+    hasPanelPermission(user, "finance:read") ||
+    (!isCookingRole(user) && hasPanelPermission(user, "recipes:write"))
+  );
+}
+
+function getProductMasterListForUser(user) {
+  const canSeeCosts = canUserSeeProductCosts(user);
+  return getProductMasterList().map((product) => {
+    if (canSeeCosts) return product;
+    const clone = { ...product };
+    delete clone.lastUnitCost;
+    delete clone.previousUnitCost;
+    delete clone.changePercent;
+    delete clone.totalStockValue;
+    return clone;
+  });
+}
+
+function getProductMasterList() {
+  const byKey = new Map();
+
+  const touch = (name, patch = {}) => {
+    const cleanName = normalizeText(name || "");
+    if (!cleanName) return null;
+    const key = normalizeProductKey(cleanName);
+    const current = byKey.get(key) || {
+      id: key,
+      key,
+      name: cleanName,
+      category: classifyProductCategory(cleanName, patch.itemType || ""),
+      defaultUnit: "",
+      itemType: normalizeReceiptItemType(patch.itemType || ""),
+      lastUnitCost: 0,
+      previousUnitCost: 0,
+      changePercent: 0,
+      lastProvider: "",
+      lastPurchaseDate: "",
+      stockQuantity: 0,
+      stockUnit: "",
+      totalStockValue: 0,
+      recipeCount: 0,
+      purchaseCount: 0,
+      orderCount: 0,
+      sources: [],
+      providerSuggestions: [],
+      updatedAt: "",
+    };
+
+    current.name = current.name || cleanName;
+    current.category = patch.category || current.category || classifyProductCategory(cleanName, patch.itemType || "");
+    current.defaultUnit = patch.defaultUnit || current.defaultUnit || patch.unit || "";
+    current.itemType = normalizeReceiptItemType(patch.itemType || current.itemType || "");
+    current.recipeCount += Number(patch.recipeCount || 0);
+    current.purchaseCount += Number(patch.purchaseCount || 0);
+    current.orderCount += Number(patch.orderCount || 0);
+    current.stockQuantity = roundMoney(Number(current.stockQuantity || 0) + Number(patch.stockQuantity || 0));
+    current.stockUnit = patch.stockUnit || current.stockUnit || patch.unit || "";
+    current.totalStockValue = roundMoney(Number(current.totalStockValue || 0) + Number(patch.totalStockValue || 0));
+
+    if (Number(patch.lastUnitCost || 0) > 0) current.lastUnitCost = roundMoney(Number(patch.lastUnitCost || 0));
+    if (Number(patch.previousUnitCost || 0) > 0) current.previousUnitCost = roundMoney(Number(patch.previousUnitCost || 0));
+    if (patch.changePercent !== undefined && patch.changePercent !== "") current.changePercent = roundMoney(Number(patch.changePercent || 0));
+    if (patch.lastProvider) current.lastProvider = normalizeText(patch.lastProvider);
+    if (patch.lastPurchaseDate && String(patch.lastPurchaseDate) >= String(current.lastPurchaseDate || "")) current.lastPurchaseDate = patch.lastPurchaseDate;
+    if (patch.updatedAt && String(patch.updatedAt) >= String(current.updatedAt || "")) current.updatedAt = patch.updatedAt;
+
+    for (const source of patch.sources || []) {
+      if (source && !current.sources.includes(source)) current.sources.push(source);
+    }
+    for (const provider of [patch.provider, patch.lastProvider, ...(patch.providerSuggestions || [])]) {
+      const cleanProvider = normalizeText(provider || "");
+      if (cleanProvider && !current.providerSuggestions.some((item) => normalizeSearchKey(item) === normalizeSearchKey(cleanProvider))) {
+        current.providerSuggestions.push(cleanProvider);
+      }
+    }
+
+    byKey.set(key, current);
+    return current;
+  };
+
+  for (const product of getConfigList("purchaseProducts")) {
+    touch(product, { sources: ["config"] });
+  }
+
+  for (const record of Object.values(productPriceRecords)) {
+    touch(record.name, {
+      lastUnitCost: record.unitCost,
+      previousUnitCost: record.previousUnitCost,
+      changePercent: record.changePercent,
+      lastPurchaseDate: record.lastPurchaseDate,
+      lastProvider: record.provider,
+      provider: record.provider,
+      updatedAt: record.updatedAt,
+      sources: ["precio"],
+    });
+  }
+
+  for (const recipe of getRecipeList()) {
+    for (const item of recipe.items || []) {
+      if (item.type === "recipe") continue;
+      touch(item.name, {
+        unit: item.unit,
+        recipeCount: 1,
+        sources: ["receta"],
+      });
+    }
+  }
+
+  for (const purchase of getErpPurchaseList()) {
+    for (const item of purchase.lineItems || []) {
+      touch(item.description || purchase.description, {
+        unit: item.unit || "",
+        lastUnitCost: item.unitAmount,
+        lastPurchaseDate: purchase.date,
+        lastProvider: purchase.provider,
+        provider: purchase.provider,
+        purchaseCount: 1,
+        sources: ["compra"],
+      });
+    }
+  }
+
+  for (const order of getPurchaseOrderList()) {
+    for (const item of order.items || []) {
+      touch(item.productName, {
+        unit: item.unit,
+        provider: item.providerName || item.suggestedProvider,
+        orderCount: 1,
+        itemType: item.itemType,
+        category: item.category,
+        sources: ["orden"],
+      });
+    }
+  }
+
+  for (const stock of getInventoryBalanceList()) {
+    touch(stock.productName, {
+      unit: stock.unit,
+      stockUnit: stock.unit,
+      stockQuantity: stock.quantity,
+      itemType: stock.itemType,
+      sources: ["stock"],
+    });
+  }
+
+  return Array.from(byKey.values())
+    .map((product) => ({
+      ...product,
+      providerSuggestions: product.providerSuggestions.slice(0, 5),
+      sources: product.sources.sort((a, b) => a.localeCompare(b)),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function classifyProductCategory(name, itemType = "") {
+  const type = normalizeReceiptItemType(itemType || "");
+  if (type === "tableware") return "Vajilla";
+  if (type === "equipment") return "Equipamiento";
+  if (type === "rental") return "Alquiler";
+  const key = normalizeSearchKey(name || "");
+  if (/(plato|copa|vaso|cubierto|tenedor|cuchillo|cuchara|jarra|bandeja|fuente)/.test(key)) return "Vajilla";
+  if (/(mantel|servilleta|camino|funda)/.test(key)) return "Manteleria";
+  if (/(mesa|silla|tablero|caballet|living|sillon)/.test(key)) return "Mobiliario";
+  if (/(caja|conservadora|contenedor|bolsa|film|papel|descartable)/.test(key)) return "Logistica";
+  if (/(agua|gaseosa|vino|cerveza|jugo|hielo|detox|cafe|te)/.test(key)) return "Bebidas";
+  return "Mercaderia";
 }
 
 function rememberPurchasePrices(purchase) {
@@ -4061,7 +4293,7 @@ function getErpDashboard() {
 
 function getFinanceDashboard() {
   const events = getErpEventList()
-    .filter((event) => ["quoted", "confirmed", "production", "done"].includes(event.status) || Number(event.quoteTotal || 0) > 0)
+    .filter((event) => isCollectableEvent(event))
     .map(toFinanceEventRecord)
     .sort((a, b) => String(a.eventDate || "9999-12-31").localeCompare(String(b.eventDate || "9999-12-31")));
   const purchases = getErpPurchaseList();
@@ -4096,6 +4328,10 @@ function getFinanceDashboard() {
     events,
     reimbursements: reimbursementGroups,
   };
+}
+
+function isCollectableEvent(event = {}) {
+  return ["confirmed", "production", "done"].includes(event.status) && Number(event.quoteTotal || event.servicePriceTotal || 0) > 0;
 }
 
 function normalizeStaffList(input = []) {
@@ -5112,6 +5348,262 @@ function getInventoryBalanceList() {
     .sort((a, b) => a.productName.localeCompare(b.productName));
 }
 
+function getDefaultOperationalInventoryCategories() {
+  return [
+    { id: "alimentos", label: "Alimentos", type: "consumable", subcategories: ["Freezer", "Heladera", "Deposito", "Secos"] },
+    { id: "bebidas", label: "Bebidas", type: "consumable", subcategories: ["Agua", "Gaseosas", "Alcohol", "Hielo"] },
+    { id: "vajilla", label: "Vajilla", type: "reusable", subcategories: ["Platos", "Copas", "Cubiertos", "Servicio"] },
+    { id: "utensilios", label: "Utensilios", type: "reusable", subcategories: ["Cocina", "Servicio", "Barra"] },
+    { id: "artefactos", label: "Artefactos", type: "reusable", subcategories: ["Calor", "Frio", "Electrico"] },
+    { id: "contenedores", label: "Contenedores", type: "reusable", subcategories: ["Grandes", "Chicos", "Termicos"] },
+    { id: "manteleria", label: "Manteleria", type: "reusable", subcategories: ["Manteles", "Caminos", "Servilletas"] },
+    { id: "mobiliario", label: "Mobiliario", type: "reusable", subcategories: ["Mesas", "Tableros", "Sillas", "Barras"] },
+    { id: "transporte", label: "Transporte", type: "reusable", subcategories: ["Auto", "Camioneta", "Camion", "Carros"] },
+    { id: "descartables", label: "Descartables", type: "consumable", subcategories: ["Vasos", "Platos", "Servilletas"] },
+    { id: "limpieza", label: "Productos de limpieza", type: "consumable", subcategories: ["Quimicos", "Paños", "Bolsas"] },
+  ];
+}
+
+function normalizeOperationalInventoryData(input = {}) {
+  const defaults = getDefaultOperationalInventoryCategories();
+  const inputCategories = Array.isArray(input.categories) ? input.categories : [];
+  const categoryMap = new Map(defaults.map((category) => [category.id, normalizeOperationalInventoryCategory(category)]));
+  inputCategories.forEach((category) => {
+    const normalized = normalizeOperationalInventoryCategory(category);
+    if (normalized.id) categoryMap.set(normalized.id, { ...categoryMap.get(normalized.id), ...normalized });
+  });
+  return {
+    categories: Array.from(categoryMap.values()),
+    items: (Array.isArray(input.items) ? input.items : []).map(normalizeOperationalInventoryItem).filter((item) => item.name),
+    updatedAt: input.updatedAt || new Date().toISOString(),
+  };
+}
+
+function normalizeOperationalInventoryCategory(input = {}) {
+  const label = normalizeText(input.label || input.name || "");
+  const id = normalizeText(input.id || normalizeSearchKey(label).replace(/[^a-z0-9]+/g, "_") || `categoria-${Date.now()}`);
+  const type = ["consumable", "reusable"].includes(normalizeText(input.type || "").toLowerCase())
+    ? normalizeText(input.type).toLowerCase()
+    : "reusable";
+  return {
+    id,
+    label: label || id,
+    type,
+    subcategories: Array.from(new Set((Array.isArray(input.subcategories) ? input.subcategories : String(input.subcategories || "").split(","))
+      .map(normalizeText)
+      .filter(Boolean))),
+  };
+}
+
+function normalizeOperationalInventoryItem(input = {}) {
+  const categoryId = normalizeText(input.categoryId || input.category || "utensilios");
+  const quantity = Math.max(0, parseDecimalNumber(input.quantity || input.totalQuantity || 1));
+  return {
+    id: normalizeText(input.id || `opinv-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    name: normalizeText(input.name || input.productName || input.description || ""),
+    categoryId,
+    subcategory: normalizeText(input.subcategory || ""),
+    quantity,
+    unit: normalizeText(input.unit || "unidad"),
+    status: normalizeOperationalInventoryStatus(input.status || "available"),
+    location: normalizeText(input.location || ""),
+    notes: normalizeText(input.notes || ""),
+    updatedAt: input.updatedAt || new Date().toISOString(),
+  };
+}
+
+function normalizeOperationalInventoryStatus(status) {
+  const key = normalizeSearchKey(status || "");
+  if (["broken", "roto", "malo", "mal_estado"].includes(key)) return "broken";
+  if (["maintenance", "mantenimiento", "reparacion"].includes(key)) return "maintenance";
+  if (["lost", "perdido"].includes(key)) return "lost";
+  if (["inactive", "baja", "inactivo"].includes(key)) return "inactive";
+  return "available";
+}
+
+function getOperationalInventoryStatusLabel(status) {
+  return {
+    available: "Disponible",
+    broken: "Roto",
+    maintenance: "Mantenimiento",
+    lost: "Perdido",
+    inactive: "Baja",
+  }[normalizeOperationalInventoryStatus(status)] || "Disponible";
+}
+
+function getOperationalInventoryAdminView() {
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  return {
+    categories: data.categories,
+    items: data.items.map((item) => ({
+      ...item,
+      statusLabel: getOperationalInventoryStatusLabel(item.status),
+      reservedQuantity: getOperationalInventoryReservedQuantity(item, null),
+      availableQuantity: Math.max(0, Number(item.quantity || 0) - getOperationalInventoryReservedQuantity(item, null)),
+    })),
+  };
+}
+
+function getOperationalInventoryCatalogForEvent(event = {}) {
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const currentReservations = normalizeOperationalInventoryReservations(event.operationalSheet?.reservations || []);
+  const currentByItem = new Map(currentReservations.map((reservation) => [reservation.itemId, reservation]));
+  const suggestedCategories = getSuggestedOperationalInventoryCategories(event);
+  const eventText = getOperationalInventoryEventText(event);
+  return {
+    categories: data.categories,
+    items: data.items.map((item) => {
+      const current = currentByItem.get(item.id);
+      const reservedElsewhere = getOperationalInventoryReservedQuantity(item, event);
+      const availableQuantity = Math.max(0, Number(item.quantity || 0) - reservedElsewhere);
+      const itemKey = normalizeSearchKey([item.name, item.subcategory, item.notes].join(" "));
+      const suggested = suggestedCategories.has(item.categoryId)
+        || (itemKey && eventText.includes(itemKey));
+      const disabledReason = item.status !== "available"
+        ? getOperationalInventoryStatusLabel(item.status)
+        : (!current && availableQuantity <= 0 ? "Sin disponibilidad" : "");
+      return {
+        ...item,
+        statusLabel: getOperationalInventoryStatusLabel(item.status),
+        reservedQuantity: reservedElsewhere,
+        availableQuantity,
+        suggested,
+        selected: Boolean(current),
+        selectedQuantity: current?.quantity || "",
+        selectedNote: current?.note || "",
+        disabled: Boolean(disabledReason && !current),
+        disabledReason,
+      };
+    }),
+  };
+}
+
+function getSuggestedOperationalInventoryCategories(event = {}) {
+  const categories = new Set();
+  const add = (category) => categories.add(category);
+  const serviceKey = normalizeServiceCategoryKey(event.serviceType || event.eventMoments || "");
+  const deliveryOnly = isDeliveryOnlyEvent(event);
+  if ((event.menuItems || []).length || event.selectedMenu || event.menu || event.menuText) add("alimentos");
+  if (event.includesDrinks || event.drinkType) add("bebidas");
+  if (event.tableware || event.tablewareQuantities || event.tablewareDetail) {
+    add("vajilla");
+    add("contenedores");
+  }
+  if (event.largeContainers || event.smallContainers) add("contenedores");
+  if (!deliveryOnly) {
+    add("utensilios");
+    add("descartables");
+    add("limpieza");
+    if (serviceKey.includes("coffee") || serviceKey.includes("finger") || serviceKey.includes("agape") || serviceKey.includes("cocktail")) {
+      add("manteleria");
+      add("mobiliario");
+    }
+  }
+  if (Number(event.guestCount || 0) > 0) add("transporte");
+  return categories;
+}
+
+function getOperationalInventoryEventText(event = {}) {
+  const menuText = (event.menuItems || []).flatMap((item) => [
+    item.name,
+    item.detail,
+    ...(Array.isArray(item.subItems) ? item.subItems.flatMap((subItem) => [subItem.name, subItem.detail]) : []),
+  ]);
+  return normalizeSearchKey([
+    event.selectedMenu,
+    event.menu,
+    event.menuText,
+    event.drinkType,
+    event.tableware,
+    event.tablewareQuantities,
+    event.tablewareDetail,
+    event.largeContainers,
+    event.smallContainers,
+    event.serviceType,
+    ...menuText,
+  ].filter(Boolean).join(" "));
+}
+
+function getOperationalInventoryReservedQuantity(item = {}, targetEvent = null) {
+  const category = getOperationalInventoryCategory(item.categoryId);
+  const targetDate = targetEvent?.eventDate || "";
+  return erpEvents.reduce((sum, event) => {
+    if (targetEvent?.id && event.id === targetEvent.id) return sum;
+    const status = normalizeErpEventStatus(event.status || "");
+    if (!["confirmed", "production"].includes(status)) return sum;
+    const sheet = event.operationalSheet || {};
+    const reservations = normalizeOperationalInventoryReservations(sheet.reservations || []);
+    if (!reservations.length) return sum;
+    if (category.type !== "consumable" && targetDate && normalizePanelDate(event.eventDate || "") !== targetDate) return sum;
+    return sum + reservations
+      .filter((reservation) => reservation.itemId === item.id)
+      .reduce((partial, reservation) => partial + parseDecimalNumber(reservation.quantity || 1), 0);
+  }, 0);
+}
+
+function getOperationalInventoryCategory(categoryId) {
+  return normalizeOperationalInventoryData(erpOperationalInventory).categories.find((category) => category.id === categoryId)
+    || getDefaultOperationalInventoryCategories()[0];
+}
+
+function normalizeOperationalInventoryReservations(input = []) {
+  return (Array.isArray(input) ? input : [])
+    .map((item) => ({
+      id: normalizeText(item.id || `reserva-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+      itemId: normalizeText(item.itemId || item.inventoryItemId || ""),
+      itemName: normalizeText(item.itemName || item.name || ""),
+      categoryId: normalizeText(item.categoryId || ""),
+      quantity: normalizeText(item.quantity || "1"),
+      unit: normalizeText(item.unit || ""),
+      checked: parseBooleanLike(item.checked),
+      note: normalizeText(item.note || item.notes || ""),
+      updatedAt: item.updatedAt || new Date().toISOString(),
+    }))
+    .filter((item) => item.itemId || item.itemName);
+}
+
+function saveOperationalInventoryRecord(input = {}, user = null) {
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const categories = Array.isArray(input.categories) ? input.categories.map(normalizeOperationalInventoryCategory).filter((item) => item.label) : data.categories;
+  const itemInput = input.item || input;
+  const item = normalizeOperationalInventoryItem(itemInput);
+  if (!item.name) throw new Error("Ingrese el nombre del item de inventario.");
+  if (!categories.some((category) => category.id === item.categoryId)) categories.push(normalizeOperationalInventoryCategory({ id: item.categoryId, label: item.categoryId }));
+  const index = data.items.findIndex((entry) => entry.id === item.id);
+  const before = index >= 0 ? data.items[index] : null;
+  const now = new Date().toISOString();
+  const nextItem = { ...(index >= 0 ? data.items[index] : {}), ...item, updatedAt: now };
+  if (index >= 0) data.items[index] = nextItem;
+  else data.items.push(nextItem);
+  erpOperationalInventory = { categories, items: data.items, updatedAt: now };
+  saveErpOperationalInventory();
+  recordAudit(user, input.id ? "update" : "create", "operational_inventory", nextItem.id, nextItem.name, before, nextItem);
+  return getOperationalInventoryAdminView();
+}
+
+function saveOperationalInventoryCategories(input = {}, user = null) {
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const categories = (Array.isArray(input.categories) ? input.categories : data.categories).map(normalizeOperationalInventoryCategory).filter((item) => item.label);
+  erpOperationalInventory = { ...data, categories, updatedAt: new Date().toISOString() };
+  saveErpOperationalInventory();
+  recordAudit(user, "update", "operational_inventory", "categories", "Categorias inventario operativo", data.categories, categories);
+  return getOperationalInventoryAdminView();
+}
+
+function deleteOperationalInventoryItem(id, user = null) {
+  const cleanId = normalizeText(id || "");
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const before = data.items.find((item) => item.id === cleanId);
+  erpOperationalInventory = {
+    ...data,
+    items: data.items.filter((item) => item.id !== cleanId),
+    updatedAt: new Date().toISOString(),
+  };
+  saveErpOperationalInventory();
+  recordAudit(user, "delete", "operational_inventory", cleanId, before?.name || cleanId, before, null);
+  return getOperationalInventoryAdminView();
+}
+
 function upsertInventoryMovementsFromReceipt(receipt = {}) {
   const sourcePrefix = `receipt:${receipt.id}:`;
   erpInventoryMovements = erpInventoryMovements.filter((movement) => !String(movement.sourceId || "").startsWith(sourcePrefix));
@@ -5406,7 +5898,9 @@ function getConfirmedEventList() {
 }
 
 function getOperationalSheetCategoryList() {
-  return OPERATIONAL_SHEET_CATEGORIES.map(([id, label]) => ({ id, label }));
+  return OPERATIONAL_SHEET_CATEGORIES
+    .filter(([id]) => OPERATIONAL_PROCEDURE_CATEGORY_IDS.has(id))
+    .map(([id, label]) => ({ id, label }));
 }
 
 function getLogisticsEventList() {
@@ -5446,6 +5940,7 @@ function updateLogisticsEventChecklist(input = {}, user = null) {
     },
     updatedAt: new Date().toISOString(),
   });
+  upsertInventoryMovementsFromEventLeftovers(erpEvents[index]);
   saveErpEvents();
   recordAudit(user, "update", "event", id, `Ficha logistica - ${previous.name}`, previous.operationalSheet || null, erpEvents[index].operationalSheet);
   return toLogisticsEventDetail(normalizeErpEvent(erpEvents[index]));
@@ -5489,6 +5984,7 @@ function closeLogisticsEvent(input = {}, user = null) {
   });
 
   erpEvents[index] = updated;
+  upsertInventoryMovementsFromEventLeftovers(updated);
   saveErpEvents();
   recordAudit(user, "update", "event", id, `Solicitud de cierre logistico - ${previous.name}`, previous, updated);
   return toLogisticsEventDetail(updated);
@@ -5726,6 +6222,7 @@ function toLogisticsEventDetail(event) {
     dietaryRestrictions: event.dietaryRestrictions || "",
     venueDetail,
     operationalSheet: sheet,
+    operationalInventory: getOperationalInventoryCatalogForEvent({ ...event, operationalSheet: sheet }),
     learnedSuggestions: getSimilarOperationalLearnings(event),
   };
 }
@@ -5763,6 +6260,7 @@ function normalizeOperationalSheet(sheet = {}, event = {}) {
     categories,
     deletedSeeds,
     leftovers: normalizeEventLeftovers(sheet.leftovers || event.leftovers || event.leftoverItems || []),
+    reservations: normalizeOperationalInventoryReservations(sheet.reservations || sheet.operationalInventory || []),
     postEventNotes: normalizeText(sheet.postEventNotes || sheet.eventComments || ""),
     closeWithoutConformityRequested: parseBooleanLike(sheet.closeWithoutConformityRequested),
     closeWithoutConformityRequestedAt: sheet.closeWithoutConformityRequestedAt || "",
@@ -5907,38 +6405,12 @@ function seedOperationalSheet(categories, event = {}, deletedSeeds = {}) {
     if (!exists) categories[category].push(normalizeOperationalSheetItem({ text: clean, quantity, note, checked: false }));
   };
 
-  const menuEntries = buildOperationalMenuEntries(event);
-  for (const entry of menuEntries) {
-    const splitItems = !entry.quantity && !entry.detail ? splitMenuOperationalItems(entry.text) : [];
-    const quantity = entry.quantity || getOperationalMenuEntryQuantity(entry, menuEntries, event);
-    if (splitItems.length > 1) {
-      for (const menuItem of splitItems) add("alimentos", menuItem);
-    } else {
-      add("alimentos", entry.text, quantity, entry.detail);
-    }
+  if (event.dietaryRestrictions) {
+    add("montaje", "Identificar restricciones alimentarias antes del armado", "", event.dietaryRestrictions);
   }
-  if (!menuEntries.length) {
-    for (const item of splitMenuOperationalItems(event.selectedMenu || "")) {
-      add("alimentos", item);
-    }
+  if (event.largeContainers || event.smallContainers) {
+    add("transporte", "Verificar contenedores asignados antes de cargar");
   }
-  for (const restriction of splitOperationalText(event.dietaryRestrictions || "")) {
-    add("alimentos", `Restriccion alimentaria: ${restriction}`);
-  }
-  for (const drink of splitOperationalText(event.drinkType)) {
-    add("bebidas", drink);
-  }
-  for (const item of splitTablewareOperationalItems(event.tableware)) {
-    add("vajilla", item.text, item.quantity);
-  }
-  for (const item of splitTablewareOperationalItems(event.tablewareQuantities)) {
-    add("vajilla", item.text, item.quantity);
-  }
-  for (const item of splitTablewareOperationalItems(event.tablewareDetail)) {
-    add("vajilla", item.text, item.quantity);
-  }
-  if (event.largeContainers) add("transporte", `Contenedores grandes: ${event.largeContainers}`);
-  if (event.smallContainers) add("transporte", `Contenedores chicos: ${event.smallContainers}`);
   const waiterCount = Number(event.waiterCount || 0) || extractWaiterCount(event.staff);
   if (waiterCount > 0) {
     add("personal", "Mozos", String(waiterCount));
@@ -6003,28 +6475,15 @@ function seedOperationalSuggestions(categories, event = {}, add) {
   const guests = Number(event.guestCount || 0);
   const serviceKey = normalizeServiceCategoryKey(event.serviceType || event.eventMoments || "");
   const assisted = event.assistanceMode === "assisted" || normalizeSearchKey(event.staff).includes("mozo");
-  const deliveryOnly = isDeliveryOnlyEvent(event);
-  const addSuggestion = (category, text, quantity = "", note = "") => {
-    if (deliveryOnly && ["utensilios", "manteleria", "mobiliario"].includes(category)) return;
-    add(category, text, quantity, note);
-  };
-
-  addSuggestion("utensilios", "Cuchillos de servicio");
-  addSuggestion("utensilios", "Pinzas de servicio");
-  addSuggestion("utensilios", "Cucharas de servicio");
-  addSuggestion("utensilios", "Tablas de apoyo");
 
   if (serviceKey.includes("coffee")) {
-    addSuggestion("utensilios", "Termos / dispensers de cafe");
-    addSuggestion("utensilios", "Jarras para leche/agua");
-    add("bebidas", "Hielo");
     add("montaje", "Armar estacion de cafe e infusiones");
+    add("montaje", "Verificar agua caliente, cafe, leche, azucar y endulzantes");
   }
 
   if (serviceKey.includes("finger") || serviceKey.includes("agape") || serviceKey.includes("cocktail")) {
-    addSuggestion("utensilios", "Bandejas de servicio");
-    addSuggestion("utensilios", "Pinzas para bocados");
     add("montaje", "Definir mesa de apoyo para reposicion");
+    add("montaje", "Confirmar circuito de salida de bocados y reposicion");
   }
 
   if (assisted) {
@@ -6043,9 +6502,7 @@ function seedOperationalSuggestions(categories, event = {}, add) {
   add("documentacion", "Confirmar contacto del cliente y lugar");
 
   if (guests > 0) {
-    addSuggestion("mobiliario", "Mesa de apoyo", guests > 60 ? "2+" : "1");
-    addSuggestion("manteleria", "Manteles para mesa de apoyo", guests > 60 ? "2+" : "1");
-    add("vajilla", "Servilletas", String(Math.ceil(guests * 1.2)));
+    add("montaje", "Confirmar cantidad final de invitados con responsable");
   }
 
   if (guests >= 90) {
@@ -6155,13 +6612,52 @@ function normalizeEventLeftovers(items = []) {
   if (!Array.isArray(items)) return [];
   return items.map((item) => ({
     id: normalizeText(item.id || `sobrante-${Date.now()}-${Math.random().toString(16).slice(2)}`),
-    food: normalizeText(item.food || item.name || ""),
+    inventoryItemId: normalizeText(item.inventoryItemId || item.itemId || ""),
+    food: normalizeText(item.food || item.productName || item.name || ""),
+    status: normalizeText(item.status || item.leftoverStatus || "pending"),
     quantity: normalizeText(item.quantity || ""),
+    unit: normalizeText(item.unit || ""),
     destination: normalizeText(item.destination || ""),
     storage: normalizeText(item.storage || ""),
     notes: normalizeText(item.notes || ""),
+    returnToStock: parseBooleanLike(item.returnToStock),
+    itemType: normalizeReceiptItemType(item.itemType || "merchandise"),
     updatedAt: item.updatedAt || "",
   })).filter((item) => item.food);
+}
+
+function upsertInventoryMovementsFromEventLeftovers(event = {}) {
+  const eventId = normalizeText(event.id || "");
+  if (!eventId) return;
+  const sourcePrefix = `event-leftover:${eventId}:`;
+  erpInventoryMovements = erpInventoryMovements.filter((movement) => !String(movement.sourceId || "").startsWith(sourcePrefix));
+  const leftovers = normalizeEventLeftovers(event.operationalSheet?.leftovers || []);
+  const movements = leftovers
+    .filter((item) => item.returnToStock)
+    .filter((item) => !["none", "no_sobro", "sin_sobrante"].includes(normalizeSearchKey(item.status || "")))
+    .filter((item) => normalizeSearchKey(item.destination) !== "descartar")
+    .map((item) => {
+      const quantity = parseDecimalNumber(item.quantity || 0);
+      return quantity > 0 ? {
+        id: `inv-leftover-${eventId}-${item.id}`,
+        date: getDateOnly(new Date()),
+        productName: item.food,
+        itemType: normalizeReceiptItemType(item.itemType || "merchandise"),
+        quantity,
+        unit: item.unit || "",
+        movementType: "in",
+        providerName: "",
+        eventId,
+        eventName: event.name || "",
+        sourceType: "event_leftover",
+        sourceId: `${sourcePrefix}${item.id}`,
+        notes: [item.destination, item.storage, item.notes].filter(Boolean).join(" | "),
+        createdAt: new Date().toISOString(),
+      } : null;
+    })
+    .filter(Boolean);
+  if (movements.length) erpInventoryMovements.push(...normalizeInventoryMovementList(movements));
+  saveErpInventory();
 }
 
 function getOperationalSheetProgress(sheet = {}) {
@@ -6169,7 +6665,7 @@ function getOperationalSheetProgress(sheet = {}) {
   let total = 0;
   let completed = 0;
 
-  for (const [categoryId, label] of OPERATIONAL_SHEET_CATEGORIES) {
+  for (const [categoryId, label] of OPERATIONAL_SHEET_CATEGORIES.filter(([id]) => OPERATIONAL_PROCEDURE_CATEGORY_IDS.has(id))) {
     const items = sheet.categories?.[categoryId] || [];
     const categoryTotal = items.length;
     const categoryCompleted = items.filter((item) => item.checked).length;
@@ -6443,7 +6939,10 @@ function normalizeErpEvent(event = {}) {
   const stockItems = normalizeStockCostItems(event.stockItems || event.stockCosts || []);
   const stockCostTotal = stockItems.reduce((sum, item) => sum + Number(item.total || 0), 0);
   const quoteCostTotal = quote ? Number(quote.costTotal || 0) : 0;
-  const finalCostTotal = quoteCostTotal + purchaseTotal + stockCostTotal;
+  const staffBudgetCost = quote ? Number(quote.staffCost || 0) : 0;
+  const staffRealCost = getEventStaffShiftTotal(event);
+  const appliedStaffCost = staffRealCost > 0 ? staffRealCost : staffBudgetCost;
+  const finalCostTotal = Math.max(0, quoteCostTotal - staffBudgetCost) + appliedStaffCost + purchaseTotal + stockCostTotal;
   const priceMode = normalizeText(event.priceMode || "total");
   const pricePerPerson = roundMoney(Number(event.pricePerPerson || 0));
   const servicePriceTotal = roundMoney(Number(event.servicePriceTotal || event.priceTotal || 0));
@@ -6521,6 +7020,9 @@ function normalizeErpEvent(event = {}) {
     notes: normalizeText(event.notes || ""),
     quoteTotal: roundMoney(quoteTotal),
     quoteCostTotal: roundMoney(quoteCostTotal),
+    staffBudgetCost: roundMoney(staffBudgetCost),
+    staffRealCost: roundMoney(staffRealCost),
+    appliedStaffCost: roundMoney(appliedStaffCost),
     quoteMarginPercent: quote ? Number(quote.marginPercent || 0) : 0,
     purchaseTotal: roundMoney(purchaseTotal),
     stockCostTotal: roundMoney(stockCostTotal),
@@ -6551,6 +7053,18 @@ function normalizeErpEvent(event = {}) {
 function compareEventsByDate(a, b) {
   const dateCompare = String(a.eventDate || "9999-12-31").localeCompare(String(b.eventDate || "9999-12-31"));
   return dateCompare || String(a.name || "").localeCompare(String(b.name || ""));
+}
+
+function getEventStaffShiftTotal(event = {}) {
+  const eventId = normalizeText(event.id || "");
+  const eventNameKey = normalizeSearchKey(event.name || event.eventName || "");
+  return normalizeStaffShiftList(erpStaffShifts)
+    .filter((shift) => !["absent", "cancelled"].includes(shift.attendanceStatus))
+    .filter((shift) => {
+      if (eventId && shift.eventId === eventId) return true;
+      return eventNameKey && normalizeSearchKey(shift.eventName || "") === eventNameKey;
+    })
+    .reduce((sum, shift) => sum + Number(shift.totalAmount || 0), 0);
 }
 
 function getErpEventStatusLabel(status) {
@@ -10472,7 +10986,28 @@ function renderMessage(message, data = {}) {
 }
 
 function normalizeText(value) {
-  return String(value ?? "").trim().replace(/\s+/g, " ");
+  return fixMojibakeText(String(value ?? "")).trim().replace(/\s+/g, " ");
+}
+
+function fixMojibakeText(value) {
+  return String(value ?? "")
+    .replaceAll("Ã¡", "á")
+    .replaceAll("Ã©", "é")
+    .replaceAll("Ã­", "í")
+    .replaceAll("Ã³", "ó")
+    .replaceAll("Ãº", "ú")
+    .replaceAll("Ã", "Á")
+    .replaceAll("Ã‰", "É")
+    .replaceAll("Ã", "Í")
+    .replaceAll("Ã“", "Ó")
+    .replaceAll("Ãš", "Ú")
+    .replaceAll("Ã±", "ñ")
+    .replaceAll("Ã‘", "Ñ")
+    .replaceAll("Â°", "°")
+    .replaceAll("Âº", "º")
+    .replaceAll("Âª", "ª")
+    .replaceAll("Â·", "·")
+    .replaceAll("Â", "");
 }
 
 function isResetCommand(text) {

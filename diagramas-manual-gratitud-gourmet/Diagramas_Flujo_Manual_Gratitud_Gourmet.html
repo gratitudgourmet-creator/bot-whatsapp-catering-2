@@ -1,0 +1,1755 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagramas de flujo - Gratitud Gourmet</title>
+  <style>
+    :root {
+      --ink: #1d2430;
+      --muted: #697386;
+      --line: #d7dde7;
+      --paper: #ffffff;
+      --soft: #f6f8fb;
+      --brand: #176b63;
+      --accent: #b64e2e;
+      --blue: #315f9f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e9edf3;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.35;
+    }
+    .cover, .diagram-page {
+      width: min(1120px, calc(100vw - 28px));
+      margin: 18px auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 28px;
+      box-shadow: 0 12px 28px rgba(27, 38, 55, 0.10);
+    }
+    .cover h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      letter-spacing: 0;
+    }
+    .cover p { color: var(--muted); margin: 8px 0; }
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .toc a {
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: var(--soft);
+      font-size: 14px;
+    }
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 18px;
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 14px;
+    }
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--brand);
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .badge {
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: #e8f3f1;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .flow {
+      display: grid;
+      gap: 14px;
+    }
+    .lane {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(90deg, #f9fafc, #ffffff);
+      padding: 12px;
+    }
+    .lane-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: .06em;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+      align-items: stretch;
+      gap: 8px;
+    }
+    .step {
+      min-height: 62px;
+      border: 1px solid #c9d3e1;
+      border-left: 5px solid var(--blue);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px 10px 10px 12px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .num {
+      color: var(--accent);
+      font-size: 12px;
+      flex: 0 0 auto;
+      padding-top: 1px;
+    }
+    .arrow {
+      display: none;
+    }
+    @media (min-width: 760px) {
+      .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 759px) {
+      .cover, .diagram-page {
+        width: calc(100vw - 16px);
+        margin: 8px auto;
+        padding: 16px;
+        border-radius: 8px;
+      }
+      .cover h1 { font-size: 26px; }
+      .page-head { display: block; }
+      .badge { display: inline-block; margin-top: 10px; }
+      .steps { grid-template-columns: 1fr; }
+      .step { min-height: auto; }
+    }
+    @media print {
+      body { background: #fff; }
+      .cover, .diagram-page {
+        width: auto;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+      .diagram-page { min-height: 100vh; }
+      .toc a { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <p class="eyebrow">Gratitud Gourmet</p>
+    <h1>Diagramas de flujo del Manual Operativo</h1>
+    <p>Version para celular, impresion y envio al equipo. Cada area tiene su propio flujo para evitar mezclar responsabilidades.</p>
+    <p>Generado el 22/06/2026.</p>
+    <div class="toc">
+      <a href="#00-flujo-general">Flujo general del evento</a><a href="#01-comercial">Area Comercial</a><a href="#02-administracion">Area Administracion</a><a href="#03-rrhh">Area Personal / RRHH</a><a href="#04-bromatologia">Area Bromatologia / Calidad</a><a href="#05-cocina-produccion">Area Cocina y Produccion</a><a href="#06-compras-proveedores">Area Compras y Proveedores</a><a href="#07-deposito-stock-equipamiento">Area Deposito, Stock y Equipamiento</a><a href="#08-logistica-traslados">Area Logistica y Traslados</a><a href="#09-carga-descarga">Area Carga y Descarga</a><a href="#10-montaje">Area Montaje</a><a href="#11-servicio-mozos">Area Servicio / Mozos</a><a href="#12-desmontaje-retorno">Area Desmontaje y Retorno</a><a href="#13-orden-limpieza-mantenimiento">Area Orden, Limpieza y Mantenimiento</a><a href="#14-direccion-control">Area Direccion y Control de Gestion</a>
+    </div>
+  </section>
+  
+    <section class="diagram-page" id="00-flujo-general">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Flujo general del evento</h2>
+          <p class="subtitle">Desde la consulta comercial hasta el cierre y mejora</p>
+        </div>
+        <span class="badge">7 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Consulta del cliente</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Recepcion de consulta</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Presupuesto y cierre comercial</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Evento confirmado</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Administracion: pagos, facturacion y condiciones</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>RRHH: personal asignado</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.4</span>
+                  <span>Bromatologia: requisitos y controles</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Cocina: produccion y mise en place</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Compras y proveedores</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Recepcion e inventario</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Deposito: preparacion de carga</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Logistica: traslado de ida</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Montaje del evento</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 5</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">5.1</span>
+                  <span>Servicio durante el evento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">5.2</span>
+                  <span>Desmontaje</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">5.3</span>
+                  <span>Traslado de vuelta</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 6</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">6.1</span>
+                  <span>Descarga en deposito</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">6.2</span>
+                  <span>Limpieza y mantenimiento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">6.3</span>
+                  <span>Cierre administrativo</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 7</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">7.1</span>
+                  <span>Control semanal de direccion</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">7.2</span>
+                  <span>Acciones de mejora</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="01-comercial">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Comercial</h2>
+          <p class="subtitle">Lead, presupuesto, seguimiento y confirmacion</p>
+        </div>
+        <span class="badge">4 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Consulta recibida</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Registrar lead en dashboard</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Pedir datos minimos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Validar evento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Consultar cocina/logistica/servicio si corresponde</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Armar presupuesto</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Enviar propuesta</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Registrar estado y proxima accion</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Hacer seguimiento</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Cliente acepta?</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Solicitar sena o autorizacion</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Cambiar a Confirmed</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="02-administracion">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Administracion</h2>
+          <p class="subtitle">Cobros, gastos, pagos y cierre economico</p>
+        </div>
+        <span class="badge">4 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Evento confirmado</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Validar datos fiscales</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Registrar sena, saldo y condiciones</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Emitir factura o comprobante</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Controlar cobros</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Reclamar saldos si corresponde</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Cargar gastos del evento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Cargar pagos a proveedores y personal</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Procesar ordenes de pago</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Calcular rentabilidad</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Revisar estimado vs real</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Cerrar evento en dashboard</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="03-rrhh">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Personal / RRHH</h2>
+          <p class="subtitle">Asignacion, asistencia y pagos de personal</p>
+        </div>
+        <span class="badge">3 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Evento confirmado</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Definir personal requerido</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Asignar cocina, mozos, logistica y apoyo</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Confirmar disponibilidad</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Buscar reemplazo si falta personal</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Registrar horarios previstos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Controlar asistencia real</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Registrar horas y adicionales</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Enviar datos a administracion</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="04-bromatologia">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Bromatologia / Calidad</h2>
+          <p class="subtitle">BPM, alergenos, registros y acciones correctivas</p>
+        </div>
+        <span class="badge">4 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Evento confirmado</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Revisar requisitos bromatologicos</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Controlar BPM e higiene</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Verificar registros necesarios</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Controlar alergenos y dietas especiales</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Controlar rotulado y temperaturas</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Hay desvio?</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Registrar no conformidad</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Definir accion correctiva</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Liberar continuidad operativa</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Archivar evidencia</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="05-cocina-produccion">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Cocina y Produccion</h2>
+          <p class="subtitle">Menu, produccion, mise en place y entrega a carga</p>
+        </div>
+        <span class="badge">4 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Evento confirmado</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Revisar menu, invitados, horario y formato</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Revisar restricciones y alergenos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Armar lista de produccion</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Revisar stock disponible</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Informar faltantes a compras</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Producir segun prioridad</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Porcionar y preparar mise en place</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Rotular preparaciones</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Conservar segun condicion requerida</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Entregar a carga con indicaciones de frio, calor o cuidado especial</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="06-compras-proveedores">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Compras y Proveedores</h2>
+          <p class="subtitle">Necesidades, proveedores, recepcion e inventario</p>
+        </div>
+        <span class="badge">4 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Necesidad de compra</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Revisar lista del evento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Consultar stock antes de comprar</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Elegir proveedor aprobado</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Solicitar precio y disponibilidad</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Emitir orden de compra</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Coordinar entrega o retiro</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Recepcion e inventario</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Controlar conformidad</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Registrar comprobante y pago pendiente</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Informar disponibilidad a cocina/deposito</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="07-deposito-stock-equipamiento">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Deposito, Stock y Equipamiento</h2>
+          <p class="subtitle">Preparacion de carga, salida, retorno e inventario</p>
+        </div>
+        <span class="badge">5 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Abrir ficha y lista de carga</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Separar vajilla, cristaleria, manteleria y utensilios</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Separar equipamiento y artefactos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Revisar estado, limpieza y funcionamiento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Registrar faltantes o roturas</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Rotular bultos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Entregar a carga y descarga</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Registrar salida</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Despacho a logistica</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Retorno del evento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Contar contra lista original</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Actualizar inventario</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 5</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">5.1</span>
+                  <span>Guardar o derivar a limpieza/reparacion</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="08-logistica-traslados">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Logistica y Traslados</h2>
+          <p class="subtitle">Vehiculo, ruta, horarios, ida y vuelta</p>
+        </div>
+        <span class="badge">4 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Carga autorizada</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Revisar direccion, ruta y contacto</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Revisar vehiculo, combustible y documentacion</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Registrar hora de salida</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Avisar salida al coordinador</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Trasladar con cuidado</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Registrar llegada</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Definir zona de descarga</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Entregar a montaje</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Fin de evento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Registrar salida del lugar</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Registrar llegada a deposito</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="09-carga-descarga">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Carga y Descarga</h2>
+          <p class="subtitle">Movimiento fisico de bultos, equipos, alimentos y mobiliario</p>
+        </div>
+        <span class="badge">5 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Lista de carga aprobada</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Recibir bultos por area</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Cargar mobiliario y estructuras pesadas</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Cargar equipamiento</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Cargar vajilla y cristaleria protegida</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Cargar manteleria y elementos de servicio</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Cargar alimentos segun indicacion de cocina</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Cargar bebidas y hielo</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.3</span>
+                  <span>Cargar limpieza separado de alimentos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Asegurar bultos</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Descargar segun prioridad de montaje</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Ubicar bultos en zona definida</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 5</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">5.1</span>
+                  <span>Desmontaje</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">5.2</span>
+                  <span>Embalar y cargar retorno</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">5.3</span>
+                  <span>Asegurar carga de regreso</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="10-montaje">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Montaje</h2>
+          <p class="subtitle">Armado del servicio en el lugar del evento</p>
+        </div>
+        <span class="badge">4 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Llegada al lugar</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Coordinacion confirma espacio y prioridades</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Logistica define acceso y descarga</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Carga y descarga baja bultos</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Mozos montan mesas, estaciones, vajilla y cristaleria</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Cocina ubica alimentos y zona de apoyo</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Equipamiento conecta artefactos seguros</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Limpieza define zona sucia y residuos</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Calidad revisa higiene, alergenos y seguridad</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Servicio listo</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="11-servicio-mozos">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Servicio / Mozos</h2>
+          <p class="subtitle">Atencion, reposicion, retiro y experiencia del cliente</p>
+        </div>
+        <span class="badge">4 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Servicio listo</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Briefing del coordinador</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Inicio en horario acordado</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Atencion a invitados</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Reposicion de comida, bebida o estaciones</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.3</span>
+                  <span>Retiro de vajilla y cristaleria usada</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Mantener mesas y estaciones prolijas</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Derivar pedidos o imprevistos al coordinador</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Continuar servicio</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Finaliza servicio?</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Transicion a desmontaje</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="12-desmontaje-retorno">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Desmontaje y Retorno</h2>
+          <p class="subtitle">Cierre fisico, retiro, vuelta y entrega a deposito</p>
+        </div>
+        <span class="badge">5 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Fin del servicio</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Coordinacion autoriza desmontaje</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Cocina retira alimentos y define sobrantes</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Barra retira bebidas y devoluciones</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Mozos retiran vajilla, cristaleria, cubiertos y manteleria</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Limpieza gestiona residuos y superficies</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Equipamiento apaga, enfria y prepara artefactos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Carga y descarga embala y carga vehiculo</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Logistica verifica carga segura</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Coordinacion hace recorrido final</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 5</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">5.1</span>
+                  <span>Registrar salida</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">5.2</span>
+                  <span>Traslado de vuelta</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="13-orden-limpieza-mantenimiento">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Orden, Limpieza y Mantenimiento</h2>
+          <p class="subtitle">Utensilios, artefactos, deposito y pendientes</p>
+        </div>
+        <span class="badge">5 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Retorno al deposito</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Separar utensilios, artefactos, textiles y residuos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Limpieza de utensilios</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Lavar, desinfectar, secar y guardar</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Limpieza de artefactos</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Limpiar, revisar funcionamiento y separar danados</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Orden del deposito</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Liberar pasillos, actualizar pendientes y guardar</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 5</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">5.1</span>
+                  <span>Registrar faltantes o roturas</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">5.2</span>
+                  <span>Derivar reparacion, lavado externo o reposicion</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">5.3</span>
+                  <span>Deposito cerrado y listo</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+    <section class="diagram-page" id="14-direccion-control">
+      <div class="page-head">
+        <div>
+          <p class="eyebrow">Gratitud Gourmet</p>
+          <h2>Area Direccion y Control de Gestion</h2>
+          <p class="subtitle">Revision semanal, desvios, acciones y mejora</p>
+        </div>
+        <span class="badge">5 etapas</span>
+      </div>
+      <div class="flow">
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 1</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">1.1</span>
+                  <span>Reunion semanal</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.2</span>
+                  <span>Revisar eventos realizados</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">1.3</span>
+                  <span>Revisar eventos activos y proximos</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 2</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">2.1</span>
+                  <span>Revisar ventas, cobros, gastos y rentabilidad</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">2.2</span>
+                  <span>Revisar compras, stock, mermas y proveedores</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 3</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">3.1</span>
+                  <span>Revisar cocina, logistica, servicio e incidentes</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">3.2</span>
+                  <span>Hay desvios importantes?</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 4</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">4.1</span>
+                  <span>Definir accion correctiva</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.2</span>
+                  <span>Asignar responsable y fecha</span>
+                </div>
+              <div class="arrow">›</div>
+                <div class="step">
+                  <span class="num">4.3</span>
+                  <span>Registrar en dashboard</span>
+                </div>
+              
+            </div>
+          </div>
+        
+          <div class="lane">
+            <div class="lane-label">Etapa 5</div>
+            <div class="steps">
+              
+                <div class="step">
+                  <span class="num">5.1</span>
+                  <span>Controlar cumplimiento en proxima reunion</span>
+                </div>
+              
+            </div>
+          </div>
+        
+      </div>
+    </section>
+</body>
+</html>
