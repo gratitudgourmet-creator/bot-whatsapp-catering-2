@@ -20,6 +20,70 @@ Fecha de analisis: 2026-06-19
 
 ## Fase 1 - Inventario del sistema
 
+### Actualizacion 23/06/2026 - Compras livianas, mobile y ordenes de compra
+
+Se corrigio el calculo de ordenes de compra cuando un item de menu usa una receta que a su vez contiene otra receta vinculada. El sistema ahora convierte la cantidad usada de la preparacion vinculada a la unidad de rendimiento de esa receta antes de multiplicar ingredientes. Ejemplo: si una receta usa `80 g` de una preparacion cuyo rendimiento esta en `kg`, se calcula como `0,08 kg`, no como `80 kg`.
+
+Cambios funcionales:
+
+- Ordenes de compra: correccion de escala para recetas anidadas con unidades `g/kg` y `ml/l`.
+- Compras: la planilla se pagina en bloques de 50 compras para evitar renderizar listas muy largas de una sola vez.
+- Compras mobile: en pantallas chicas la tabla se transforma en tarjetas resumidas y clickeables.
+- Mobile: las pestanas principales se reemplazan por un selector compacto de modulos.
+- Modales largos: en mobile, las acciones finales quedan fijas abajo para guardar/cerrar/finalizar sin perder el contexto.
+- Seguridad: los usuarios pueden guardar email y el login acepta usuario o email.
+
+Notas operativas:
+
+- Para recuperar clave por correo falta configurar una casilla SMTP real en produccion. El sistema ya puede asociar email a usuarios, pero el envio automatico de recuperacion debe activarse con credenciales de correo.
+- Si una orden de compra ya fue generada antes de esta correccion y muestra cantidades absurdas, conviene borrarla y regenerarla desde el evento.
+
+Archivos modificados:
+
+- `approval-panel.html`
+- `whatsapp-catering-bot.js`
+
+### Actualizacion 23/06/2026 - Login con email y recuperacion de clave
+
+Se amplio el modulo de Seguridad para que los usuarios puedan tener un email asociado y para que el inicio de sesion acepte usuario o email. Tambien se agrego el flujo de recuperacion de clave desde el login:
+
+- El usuario toca `Olvide mi clave`.
+- Ingresa usuario o email.
+- El sistema genera un enlace temporal con vencimiento de 60 minutos.
+- El enlace abre el ERP y permite crear una clave nueva.
+- Al cambiar la clave, se invalidan las sesiones abiertas de ese usuario.
+
+Refuerzo de seguridad agregado:
+
+- El administrador puede crear usuarios con email sin definirles una clave manual.
+- Desde `Seguridad > Usuarios` se puede usar `Enviar invitacion`.
+- La invitacion llega por email con un enlace temporal para que el usuario cree su propia clave.
+- Las invitaciones vencen en 48 horas.
+- Los intentos repetidos de login incorrecto se bloquean temporalmente para reducir ataques por fuerza bruta.
+- Las claves nuevas deben tener al menos 8 caracteres.
+
+Configuracion necesaria en produccion:
+
+- `PANEL_PUBLIC_URL`: dominio publico del panel, por ejemplo `https://sistema.gratitudgourmet.com`.
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: datos de la casilla real que enviara los correos.
+- Dependencia agregada: `nodemailer`.
+
+Notas operativas:
+
+- Si SMTP no esta configurado, el sistema avisa claramente que falta configurar el correo de recuperacion.
+- Los emails se cargan desde `Seguridad > Usuarios`.
+- La recuperacion solo funciona para usuarios activos con email cargado.
+- Las invitaciones tambien requieren SMTP configurado.
+
+Archivos modificados:
+
+- `approval-panel.html`
+- `whatsapp-catering-bot.js`
+- `package.json`
+- `package-lock.json`
+- `.env.example`
+- `deploy/env.production.example`
+
 ### Actualizacion 22/06/2026 - Navegacion ejecutiva y modulo Eventos
 
 Se separo el control integral de eventos en un modulo propio `Eventos`, independiente de `Comercial`. El modulo `ERP` queda enfocado en lectura ejecutiva, KPIs, alertas y accesos rapidos. `Comercial` conserva oportunidades, pipeline, presupuestos, clientes y lugares.
@@ -31,7 +95,8 @@ Cambios funcionales:
 - `ERP` prioriza venta aceptada, margen estimado, compras pendientes, proximos eventos, deudas y cierres por autorizar.
 - Las tablas largas se muestran dentro de contenedores con scroll interno y encabezado fijo.
 - Las fichas de evento usan modal amplio para revisar datos completos sin rebalse.
-- El panel admin de Seguridad suma accesos accionables hacia usuarios, roles, historial, opciones operativas y modulos.
+- El panel admin de Seguridad suma accesos accionables hacia usuarios, roles, servidor, historial, opciones operativas y modulos.
+- Seguridad incorpora una vista de servidor con requests, errores HTTP, memoria, rutas mas usadas y actividad reciente para diagnostico operativo.
 
 Archivos modificados:
 
@@ -1188,6 +1253,7 @@ Elegir esta solucion permite profesionalizar la operacion, ordenar equipos, redu
 | Seguridad | Roles y permisos | Operativa | Alta | Admin, comercial, compras, cocina, operacion, logistica, finanzas. |
 | Seguridad | Gestion de usuarios | Operativa | Alta | Alta/edicion/activacion. |
 | Seguridad | Auditoria | Operativa | Alta | Registra acciones principales. |
+| Seguridad | Estadisticas del servidor | Operativa | Media | Requests, errores, memoria, rutas y actividad reciente. |
 | ERP | Dashboard ejecutivo | Operativa | Alta | KPIs, alertas, busqueda global. |
 | Comercial | Pipeline | Operativa | Alta | Combina chats y eventos. |
 | Comercial | Carga manual de oportunidad | Operativa | Alta | Para canales externos. |

@@ -43,7 +43,7 @@ El panel se navega por modulos principales con submenus. Al pasar el mouse por u
 - `Clientes`: base de clientes, historial, preferencias y restricciones.
 - `Personal/RRHH`: legajos, asistencia, horarios, sueldos y horas.
 - `Bromatologia`: registros, vencimientos, decomisos y aprobaciones.
-- `Seguridad`: usuarios, roles, permisos, panel admin e historial.
+- `Seguridad`: usuarios, roles, permisos, panel admin, servidor e historial.
 - `Reportes`: ventas, compras, margen, stock, proveedores, clientes, eventos y exportaciones.
 
 Cada usuario solo ve los modulos, submenus y subpantallas habilitadas para su rol.
@@ -55,7 +55,8 @@ Cuando se abre una ventana emergente de carga o edicion, los submenus quedan ocu
 - El modulo `ERP` queda como resumen ejecutivo limpio: venta aceptada, margen, compras pendientes, proximos eventos, deudas y cierres por autorizar.
 - Las tablas largas deben abrirse dentro de contenedores con scroll interno y encabezado fijo.
 - Las fichas de evento deben abrirse en ventana amplia, casi pantalla completa, para revisar menu, compras, costos, checklist, conformidad y cierre.
-- El `Panel admin` dentro de Seguridad funciona como mapa accionable: permite saltar a usuarios, roles, historial, opciones operativas y modulos.
+- El `Panel admin` dentro de Seguridad funciona como mapa accionable: permite saltar a usuarios, roles, servidor, historial, opciones operativas y modulos.
+- La subvista `Servidor` muestra requests, errores HTTP, memoria, rutas mas usadas y actividad reciente. Es la primera pantalla a revisar cuando el panel carga lento o una accion devuelve error.
 
 ### Actualizacion UX - 22/06/2026
 

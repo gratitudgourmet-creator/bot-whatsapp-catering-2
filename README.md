@@ -45,6 +45,13 @@ DATA_DIR=./data
 PANEL_AUTH_USER=admin
 PANEL_AUTH_PASSWORD=una-contrasena-segura
 PANEL_SESSION_SECRET=un-texto-largo-aleatorio
+PANEL_PUBLIC_URL=https://sistema.gratitudgourmet.com
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=
 PURCHASE_SHEETS_SYNC_ENABLED=false
 ACCOUNTANT_SHEETS_SYNC_ENABLED=false
 ```
@@ -88,7 +95,31 @@ El hosting debe conservar `DATA_DIR` en un volumen persistente. Ahi se guardan:
 
 ## Seguridad
 
-En `NODE_ENV=production`, el sistema exige `PANEL_AUTH_PASSWORD`. El panel y las APIs quedan protegidas con autenticacion HTTP Basic.
+En `NODE_ENV=production`, el sistema exige `PANEL_AUTH_PASSWORD`. El panel usa login por usuario/email, sesiones, roles y permisos por modulo/funcion.
+
+El usuario administrador inicial se crea con:
+
+- `PANEL_AUTH_USER`
+- `PANEL_AUTH_PASSWORD`
+
+Luego se pueden crear usuarios desde `Seguridad > Usuarios`, asociarles email real y asignar rol. El login acepta usuario o email.
+
+Para dar acceso a una persona sin compartir claves manualmente:
+
+1. Crear el usuario en `Seguridad > Usuarios`.
+2. Cargar su email.
+3. Dejar la clave vacia si se usara invitacion.
+4. Guardar.
+5. Tocar `Enviar invitacion`.
+
+El usuario recibe un enlace temporal para crear su propia clave. Las invitaciones vencen en 48 horas.
+
+Para recuperar clave desde el correo se deben configurar:
+
+- `PANEL_PUBLIC_URL`: dominio publico del ERP.
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: casilla SMTP que envia los enlaces.
+
+Si SMTP no esta configurado, el sistema avisa desde la pantalla de login.
 
 Endpoint publico para monitoreo:
 
@@ -106,10 +137,14 @@ El panel organiza las areas principales como modulos con submenus. Al pasar el m
 - `Finanzas`: resumen, cobros por evento, deudas, reintegros y ordenes de pago.
 - `Personal/RRHH`: legajos, asistencia, horarios, sueldos y horas.
 - `Bromatologia`: nuevo registro, vencimientos, decomisos y aprobaciones.
-- `Seguridad`: usuarios, roles, permisos, panel admin e historial.
+- `Seguridad`: usuarios, roles, permisos, panel admin, estado del servidor e historial.
 
 Los submenus y subpantallas respetan los permisos visibles por rol.
 Cuando una ventana emergente esta abierta, los submenus quedan ocultos para no tapar formularios.
+
+En mobile, las pestanas se reemplazan por un selector compacto de `Modulos`. Las tablas largas, como compras, se muestran en tarjetas resumidas y la planilla de compras se pagina para no cargar todos los registros juntos.
+
+Desde `Seguridad > Servidor` el administrador puede ver actividad interna del ERP: requests totales, errores HTTP, memoria usada, rutas mas consultadas y ultimas llamadas. Sirve para detectar lentitud, endpoints con errores y carga general del panel sin entrar a la consola del VPS.
 
 ## Exportacion tipo Google Sheets
 

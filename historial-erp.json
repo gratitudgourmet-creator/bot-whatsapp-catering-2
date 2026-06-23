@@ -120712,5 +120712,74 @@
     },
     "after": null,
     "metadata": {}
+  },
+  {
+    "id": "historial-1782234348174-5d2fee6f73fab",
+    "at": "2026-06-23T17:05:48.174Z",
+    "userId": "usuario-admin",
+    "userName": "Joaquin",
+    "userRole": "admin",
+    "action": "login",
+    "entityType": "session",
+    "entityId": "usuario-admin",
+    "label": "Inicio de sesion",
+    "before": null,
+    "after": null,
+    "metadata": {}
+  },
+  {
+    "id": "historial-1782234773584-cb42856ab5527",
+    "at": "2026-06-23T17:12:53.584Z",
+    "userId": "usuario-admin",
+    "userName": "Joaquin",
+    "userRole": "admin",
+    "action": "login",
+    "entityType": "session",
+    "entityId": "usuario-admin",
+    "label": "Inicio de sesion",
+    "before": null,
+    "after": null,
+    "metadata": {}
+  },
+  {
+    "id": "historial-1782242766269-18f076443c15c",
+    "at": "2026-06-23T19:26:06.269Z",
+    "userId": "usuario-admin",
+    "userName": "Joaquin",
+    "userRole": "admin",
+    "action": "update",
+    "entityType": "user",
+    "entityId": "usuario-admin",
+    "label": "Joaquin",
+    "before": null,
+    "after": {
+      "id": "usuario-admin",
+      "username": "admin",
+      "displayName": "Joaquin",
+      "role": "admin",
+      "roleLabel": "Administracion general",
+      "permissions": [
+        "*"
+      ],
+      "tabs": [
+        "erp",
+        "commercial",
+        "events",
+        "purchases",
+        "finance",
+        "production",
+        "logistics_event",
+        "recipes",
+        "stock",
+        "providers",
+        "customers",
+        "hr",
+        "sanitation",
+        "security",
+        "reports",
+        "payment_orders"
+      ]
+    },
+    "metadata": {}
   }
 ]

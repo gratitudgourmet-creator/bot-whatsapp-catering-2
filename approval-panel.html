@@ -212,6 +212,30 @@
       margin-bottom: 18px;
     }
 
+    .login-reset-panel {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: none;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 12px;
+    }
+
+    .login-reset-panel.open {
+      display: grid;
+    }
+
+    .link-action {
+      background: transparent;
+      border: 0;
+      color: var(--brand);
+      cursor: pointer;
+      font-weight: 800;
+      padding: 0;
+      text-align: left;
+    }
+
     .audit-layout {
       display: grid;
       gap: 14px;
@@ -1559,6 +1583,53 @@
       white-space: nowrap;
     }
 
+    .table-pagination {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin: 10px 0;
+    }
+
+    .table-pagination > div:first-child {
+      display: grid;
+      gap: 2px;
+    }
+
+    .purchase-mobile-cards {
+      display: none;
+      gap: 8px;
+    }
+
+    .purchase-mobile-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .purchase-mobile-card > div,
+    .purchase-mobile-meta {
+      align-items: center;
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .purchase-mobile-card strong,
+    .purchase-mobile-card p,
+    .purchase-mobile-card span {
+      overflow-wrap: anywhere;
+    }
+
+    .purchase-mobile-card p {
+      margin: 0;
+    }
+
     .purchase-table th:nth-child(1),
     .purchase-table td:nth-child(1) {
       min-width: 92px;
@@ -1611,6 +1682,19 @@
       align-items: flex-start;
       position: relative;
       z-index: 20;
+    }
+
+    .mobile-module-switcher {
+      display: none;
+      gap: 6px;
+      margin: 0 0 12px;
+    }
+
+    .mobile-module-switcher label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
     }
 
     .workspace-menu {
@@ -3599,15 +3683,14 @@
       }
 
       .workspace-tabs {
-        overflow-x: auto;
-        padding-bottom: 4px;
+        display: none;
       }
 
-      .workspace-menu {
-        flex: 1 0 150px;
+      .mobile-module-switcher {
+        display: grid;
       }
 
-      .workspace-menu .workspace-tab {
+      .mobile-module-switcher select {
         width: 100%;
       }
 
@@ -3633,6 +3716,17 @@
         overflow-x: hidden;
         padding: 14px;
         width: 100%;
+      }
+
+      .detail-panel form > .actions:last-child,
+      .detail-panel .form-grid > .actions:last-child {
+        background: linear-gradient(180deg, rgba(255,255,255,.88), #fff 32%);
+        border-top: 1px solid var(--line);
+        bottom: -14px;
+        margin: 8px -14px -14px;
+        padding: 10px 14px 14px;
+        position: sticky;
+        z-index: 8;
       }
 
       .metrics {
@@ -3773,6 +3867,25 @@
         overflow-x: hidden;
       }
 
+      #purchase-table-wrap .purchase-table-wrap {
+        display: none;
+      }
+
+      .purchase-mobile-cards {
+        display: grid;
+      }
+
+      .table-pagination {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .table-pagination .actions {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        width: 100%;
+      }
+
       .erp-kpis,
       .erp-quote-line,
       .event-finance,
@@ -3848,7 +3961,7 @@
       <h2>Ingresar al ERP</h2>
       <p class="subtitle">Cada movimiento queda asociado a tu usuario.</p>
       <div class="form-field full">
-        <label>Usuario</label>
+        <label>Usuario o email</label>
         <input name="username" autocomplete="username" required>
       </div>
       <div class="form-field full">
@@ -3858,6 +3971,33 @@
       <div id="login-error" class="notice error" style="display:none;"></div>
       <div class="actions" style="margin-top:14px;">
         <button class="approve" type="submit">Entrar</button>
+        <button class="link-action" type="button" onclick="showPasswordResetRequest()">Olvide mi clave</button>
+      </div>
+      <div id="password-reset-request-panel" class="login-reset-panel">
+        <p class="secondary" style="margin:0;">Escribi tu usuario o email y te enviamos un enlace para crear una clave nueva.</p>
+        <div class="form-field full">
+          <label>Usuario o email</label>
+          <input id="password-reset-identifier" autocomplete="email">
+        </div>
+        <div class="actions">
+          <button class="approve" type="button" onclick="requestPasswordReset()">Enviar enlace</button>
+          <button class="filter" type="button" onclick="showLoginOnly()">Cancelar</button>
+        </div>
+      </div>
+      <div id="password-reset-confirm-panel" class="login-reset-panel">
+        <p class="secondary" style="margin:0;">Cargue una clave nueva para su cuenta.</p>
+        <div class="form-field full">
+          <label>Nueva clave</label>
+          <input id="password-reset-new-password" type="password" autocomplete="new-password">
+        </div>
+        <div class="form-field full">
+          <label>Repetir clave</label>
+          <input id="password-reset-repeat-password" type="password" autocomplete="new-password">
+        </div>
+        <div class="actions">
+          <button class="approve" type="button" onclick="confirmPasswordReset()">Guardar clave</button>
+          <button class="filter" type="button" onclick="showLoginOnly()">Cancelar</button>
+        </div>
       </div>
       <p class="secondary" style="margin:14px 0 0;">Usuario inicial: admin. Si no definiste clave, la clave inicial es admin.</p>
     </form>
@@ -3865,6 +4005,11 @@
 
   <main>
     <div id="notice" class="notice"></div>
+
+    <div class="mobile-module-switcher">
+      <label for="mobile-module-select">Modulo</label>
+      <select id="mobile-module-select" onchange="showWorkspaceView(this.value)"></select>
+    </div>
 
     <div class="workspace-tabs">
       <div class="workspace-menu" data-menu-view="erp">
@@ -3980,6 +4125,7 @@
           <button class="workspace-subitem" data-view="security" data-anchor="security-users-section">Usuarios</button>
           <button class="workspace-subitem" data-view="security" data-anchor="security-roles-section">Roles y permisos</button>
           <button class="workspace-subitem" data-view="security" data-anchor="security-admin-control-section">Panel admin</button>
+          <button class="workspace-subitem" data-view="security" data-anchor="security-server-section">Servidor</button>
           <button class="workspace-subitem" data-view="security" data-anchor="security-audit-section">Historial</button>
         </div>
       </div>
@@ -4952,12 +5098,16 @@
                 <input name="username" required placeholder="Ej: claudia">
               </div>
               <div class="form-field full">
+                <label>Email</label>
+                <input name="email" type="email" placeholder="Ej: claudia@gratitudgourmet.com">
+              </div>
+              <div class="form-field full">
                 <label>Rol</label>
                 <select name="role" id="panel-user-role"></select>
               </div>
               <div class="form-field full">
                 <label>Clave</label>
-                <input name="password" type="password" placeholder="Solo completar para cambiar">
+                <input name="password" type="password" placeholder="Opcional si usas invitacion por email">
               </div>
               <div class="actions full">
                 <button class="approve" type="submit">Guardar usuario</button>
@@ -4982,6 +5132,17 @@
         <h2>Panel de control admin</h2>
         <p class="subtitle">Mapa de vistas, funciones, permisos y estadisticas disponibles en el sistema.</p>
         <div id="admin-control-summary" class="admin-summary-grid"></div>
+      </section>
+
+      <section id="security-server-section" class="erp-section">
+        <div class="section-header-row">
+          <div>
+            <h2>Servidor y actividad</h2>
+            <p class="subtitle">Estado tecnico del ERP: requests, errores, memoria, rutas usadas y actividad reciente.</p>
+          </div>
+          <button class="filter" type="button" onclick="loadServerStats()">Actualizar</button>
+        </div>
+        <div id="server-stats-dashboard"></div>
       </section>
 
       <section id="security-audit-section" class="erp-section">
@@ -5747,6 +5908,8 @@
     let tabCatalog = [];
     let panelUsers = [];
     let auditLog = [];
+    let serverStats = null;
+    let pendingPasswordResetToken = "";
     let logisticsEvents = [];
     let logisticsCategories = [];
     let activeLogisticsEvent = null;
@@ -5775,6 +5938,8 @@
       from: "",
       to: "",
     };
+    let purchaseTablePage = 1;
+    const PURCHASE_TABLE_PAGE_SIZE = 50;
     let purchaseOrderAdvisorLastText = "";
     let recipeProducts = [];
     let costSettings = { laborHourlyCost: 0 };
@@ -5925,6 +6090,7 @@
           { label: "Usuarios", description: "Crear o editar usuarios del sistema.", anchor: "security-users-section" },
           { label: "Roles y permisos", description: "Controlar accesos por rol.", anchor: "security-roles-section" },
           { label: "Panel admin", description: "Mapa de vistas, funciones y estadísticas.", anchor: "security-admin-control-section" },
+          { label: "Servidor", description: "Requests, errores y estado del VPS.", anchor: "security-server-section" },
           { label: "Historial", description: "Auditoría filtrable de acciones.", anchor: "security-audit-section" },
         ],
       },
@@ -6006,6 +6172,7 @@
         "security-users-section": ["security-users-section"],
         "security-roles-section": ["security-users-section"],
         "security-admin-control-section": ["security-admin-control-section"],
+        "security-server-section": ["security-server-section"],
         "security-audit-section": ["security-audit-section"],
       },
       reports: {
@@ -6089,6 +6256,10 @@
     setupAutocomplete("purchase-provider", "purchase-provider-suggestions", () => purchaseOptions.providers || []);
 
     async function bootstrapPanel() {
+      if (preparePasswordResetFromUrl()) {
+        showLoginScreen();
+        return;
+      }
       const response = await fetch("/api/me");
       const result = await response.json();
       panelRoles = result.roles || [];
@@ -6102,6 +6273,23 @@
       hideLoginScreen();
       renderCurrentUser();
       await loadInitialData();
+    }
+    function formatDateTime(value) {
+      if (!value) return "-";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return String(value);
+      }
+
+      return date.toLocaleString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     }
 
     async function loadInitialData() {
@@ -6128,6 +6316,51 @@
       document.getElementById("login-screen").classList.remove("open");
     }
 
+    function preparePasswordResetFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("resetToken") || "";
+      if (!token) return false;
+      pendingPasswordResetToken = token;
+      history.replaceState(null, "", window.location.pathname);
+      showPasswordResetConfirm();
+      return true;
+    }
+
+    function showLoginOnly() {
+      pendingPasswordResetToken = "";
+      document.getElementById("password-reset-request-panel")?.classList.remove("open");
+      document.getElementById("password-reset-confirm-panel")?.classList.remove("open");
+      const errorBox = document.getElementById("login-error");
+      if (errorBox) {
+        errorBox.style.display = "none";
+        errorBox.className = "notice error";
+      }
+    }
+
+    function showPasswordResetRequest() {
+      document.getElementById("password-reset-confirm-panel")?.classList.remove("open");
+      document.getElementById("password-reset-request-panel")?.classList.add("open");
+      document.getElementById("password-reset-identifier")?.focus();
+      const errorBox = document.getElementById("login-error");
+      if (errorBox) errorBox.style.display = "none";
+    }
+
+    function showPasswordResetConfirm() {
+      document.getElementById("password-reset-request-panel")?.classList.remove("open");
+      document.getElementById("password-reset-confirm-panel")?.classList.add("open");
+      document.getElementById("password-reset-new-password")?.focus();
+      const errorBox = document.getElementById("login-error");
+      if (errorBox) errorBox.style.display = "none";
+    }
+
+    function showLoginMessage(message, type = "error") {
+      const errorBox = document.getElementById("login-error");
+      if (!errorBox) return;
+      errorBox.textContent = message;
+      errorBox.className = `notice open ${type === "error" ? "error" : ""}`;
+      errorBox.style.display = "block";
+    }
+
     function renderCurrentUser() {
       document.getElementById("session-user").textContent = currentUser
         ? `${currentUser.displayName || currentUser.username} | ${currentUser.roleLabel || currentUser.role}`
@@ -6137,9 +6370,18 @@
 
     async function loginPanel(event) {
       event.preventDefault();
+      if (document.getElementById("password-reset-request-panel")?.classList.contains("open")) {
+        await requestPasswordReset();
+        return;
+      }
+      if (document.getElementById("password-reset-confirm-panel")?.classList.contains("open")) {
+        await confirmPasswordReset();
+        return;
+      }
       const form = event.target;
       const errorBox = document.getElementById("login-error");
       errorBox.style.display = "none";
+      errorBox.className = "notice error";
 
       try {
         const response = await fetch("/api/login", {
@@ -6157,8 +6399,62 @@
         renderCurrentUser();
         await loadInitialData();
       } catch (error) {
-        errorBox.textContent = error.message;
-        errorBox.style.display = "block";
+        showLoginMessage(error.message);
+      }
+    }
+
+    async function requestPasswordReset() {
+      const identifier = document.getElementById("password-reset-identifier")?.value.trim() || "";
+      if (!identifier) {
+        showLoginMessage("Ingrese su usuario o email.");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/request-password-reset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identifier }),
+        });
+        const result = await response.json();
+        if (!result.ok) throw new Error(result.error || "No se pudo enviar el enlace.");
+        showLoginMessage(result.message || "Revise su email para recuperar la clave.", "success");
+        document.getElementById("password-reset-request-panel")?.classList.remove("open");
+      } catch (error) {
+        showLoginMessage(error.message);
+      }
+    }
+
+    async function confirmPasswordReset() {
+      const password = document.getElementById("password-reset-new-password")?.value || "";
+      const repeatPassword = document.getElementById("password-reset-repeat-password")?.value || "";
+      if (!pendingPasswordResetToken) {
+        showLoginMessage("El enlace de recuperacion no es valido.");
+        return;
+      }
+      if (password.length < 8) {
+        showLoginMessage("La clave nueva debe tener al menos 8 caracteres.");
+        return;
+      }
+      if (password !== repeatPassword) {
+        showLoginMessage("Las claves no coinciden.");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: pendingPasswordResetToken, password }),
+        });
+        const result = await response.json();
+        if (!result.ok) throw new Error(result.error || "No se pudo actualizar la clave.");
+        document.getElementById("password-reset-new-password").value = "";
+        document.getElementById("password-reset-repeat-password").value = "";
+        showLoginOnly();
+        showLoginMessage(result.message || "Clave actualizada. Ya puede iniciar sesion.", "success");
+      } catch (error) {
+        showLoginMessage(error.message);
       }
     }
 
@@ -6307,6 +6603,7 @@
         const hasVisibleSubitem = !!menu.querySelector(".workspace-subitem:not(.hidden)");
         menu.classList.toggle("hidden", !tab || (tab.classList.contains("hidden") && !hasVisibleSubitem));
       });
+      syncMobileModuleSelect();
 
       const activeButton = document.querySelector(".workspace-tab.active:not(.hidden)");
       if (!activeButton) {
@@ -6321,6 +6618,19 @@
       if (permissions.includes("*")) return true;
       const tab = (tabCatalog || []).find((item) => item.id === tabId) || getFallbackTabDefinition(tabId);
       return (tab.requiredAny || ["view"]).some((permission) => permission === "view" || permissions.includes(permission));
+    }
+
+    function syncMobileModuleSelect(activeView = "") {
+      const select = document.getElementById("mobile-module-select");
+      if (!select) return;
+      const visibleTabs = Array.from(document.querySelectorAll(".workspace-tab:not(.hidden)"));
+      const currentValue = activeView || document.querySelector(".workspace-tab.active")?.dataset.view || select.value || "";
+      const options = visibleTabs.map((button) => ({
+        value: button.dataset.view,
+        label: button.textContent.trim(),
+      }));
+      select.innerHTML = options.map((option) => `<option value="${escapeAttribute(option.value)}">${escapeHtml(option.label)}</option>`).join("");
+      if (options.some((option) => option.value === currentValue)) select.value = currentValue;
     }
 
     function getFallbackTabDefinition(tabId) {
@@ -6433,6 +6743,7 @@
       document.querySelectorAll(".workspace-view").forEach((section) => {
         section.classList.toggle("open", section.id === `view-${view}`);
       });
+      syncMobileModuleSelect(view);
 
       let loadTask = Promise.resolve();
       if (view === "customers") loadTask = loadCustomers();
@@ -6797,7 +7108,7 @@
     async function loadSecurityPanel() {
       if (!can("users:write")) return;
       try {
-        await Promise.all([loadPanelUsers(), loadPanelRoles(), loadAuditLog()]);
+        await Promise.all([loadPanelUsers(), loadPanelRoles(), loadAuditLog(), loadServerStats()]);
       } catch (error) {
         showNotice(error.message, "error");
       }
@@ -6853,6 +7164,8 @@
         ["Proveedores", allProviders.length || erpData.providers?.length || 0],
         ["Recetas", erpData.recipes?.length || 0],
         ["Usuarios", panelUsers.length || 0],
+        ["Requests", serverStats?.requests?.total || 0],
+        ["Memoria ERP", formatServerBytes(serverStats?.memory?.heapUsed || 0)],
       ];
       container.innerHTML = `
         <section class="admin-summary-card admin-control-hero">
@@ -6860,6 +7173,7 @@
           <div class="admin-control-actions">
             <button class="approve" type="button" onclick="showModuleSection('security', 'security-roles-section')">Editar permisos</button>
             <button class="filter" type="button" onclick="showModuleSection('security', 'security-users-section')">Usuarios</button>
+            <button class="filter" type="button" onclick="showModuleSection('security', 'security-server-section')">Servidor</button>
             <button class="filter" type="button" onclick="showModuleSection('security', 'security-audit-section')">Historial</button>
             <button class="filter" type="button" onclick="showCostSettingsForm()">Opciones operativas</button>
           </div>
@@ -6897,6 +7211,125 @@
       `;
     }
 
+    async function loadServerStats() {
+      if (!can("users:write")) return;
+      const response = await fetch("/api/server-stats");
+      const result = await readJsonResponse(response);
+      if (!result.ok) throw new Error(result.error || "No se pudieron cargar las estadisticas del servidor.");
+      serverStats = result.stats || null;
+      renderServerStats();
+      renderAdminControlSummary();
+    }
+
+    function renderServerStats() {
+      const container = document.getElementById("server-stats-dashboard");
+      if (!container) return;
+      if (!serverStats) {
+        container.innerHTML = `<div class="empty">Sin estadisticas del servidor para mostrar.</div>`;
+        return;
+      }
+
+      const requests = serverStats.requests || {};
+      const memory = serverStats.memory || {};
+      const cpu = serverStats.cpu || {};
+      const statusEntries = Object.entries(requests.byStatus || {}).sort((a, b) => Number(a[0]) - Number(b[0]));
+      const errorCount = statusEntries.reduce((sum, [status, count]) => sum + (Number(status) >= 400 ? Number(count || 0) : 0), 0);
+      const systemUsed = Math.max(0, Number(memory.systemTotal || 0) - Number(memory.systemFree || 0));
+      const loadAverage = Array.isArray(cpu.loadAverage) ? cpu.loadAverage[0] : 0;
+
+      container.innerHTML = `
+        <section class="purchase-kpis">
+          <div class="kpi-card"><span>Activo hace</span><strong>${escapeHtml(formatServerDuration(serverStats.uptimeSeconds || 0))}</strong></div>
+          <div class="kpi-card"><span>Requests</span><strong>${escapeHtml(formatNumber(requests.total || 0))}</strong></div>
+          <div class="kpi-card ${errorCount ? "warn" : ""}"><span>Errores HTTP</span><strong>${escapeHtml(formatNumber(errorCount))}</strong></div>
+          <div class="kpi-card"><span>Memoria ERP</span><strong>${escapeHtml(formatServerBytes(memory.heapUsed || 0))}</strong></div>
+          <div class="kpi-card"><span>Memoria VPS</span><strong>${escapeHtml(formatServerBytes(systemUsed))} / ${escapeHtml(formatServerBytes(memory.systemTotal || 0))}</strong></div>
+          <div class="kpi-card"><span>CPU</span><strong>${escapeHtml((Number(loadAverage || 0)).toFixed(2))}</strong></div>
+        </section>
+        <div class="admin-summary-grid" style="margin-top:12px;">
+          ${renderAdminSummaryList("Estados HTTP", statusEntries, ([status, count]) => `
+            <div class="summary-row"><strong>${escapeHtml(status)}</strong><span>${escapeHtml(formatNumber(count || 0))} request(s)</span></div>
+          `)}
+          <section class="admin-summary-card">
+            <h3>Servidor</h3>
+            <div class="summary-row"><strong>Ambiente</strong><span>${escapeHtml(serverStats.environment || "development")}</span></div>
+            <div class="summary-row"><strong>Node</strong><span>${escapeHtml(serverStats.nodeVersion || "-")}</span></div>
+            <div class="summary-row"><strong>Plataforma</strong><span>${escapeHtml(serverStats.platform || "-")}</span></div>
+            <div class="summary-row"><strong>Datos</strong><span>${escapeHtml(serverStats.dataDir || "-")}</span></div>
+            <div class="summary-row"><strong>Proceso</strong><span>PID ${escapeHtml(serverStats.process?.pid || "-")}</span></div>
+          </section>
+        </div>
+        <div class="purchase-table-wrap compact-table-wrap" style="margin-top:12px;">
+          <table class="purchase-table">
+            <thead><tr><th>Ruta</th><th>Requests</th><th>Promedio</th><th>Maximo</th><th>Errores</th><th>Ultimo</th></tr></thead>
+            <tbody>${renderServerRouteRows(requests.routes || [])}</tbody>
+          </table>
+        </div>
+        <div class="purchase-table-wrap compact-table-wrap" style="margin-top:12px;">
+          <table class="purchase-table">
+            <thead><tr><th>Hora</th><th>Metodo</th><th>Ruta</th><th>Estado</th><th>Duracion</th></tr></thead>
+            <tbody>${renderServerRecentRows(requests.recent || [])}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderServerRouteRows(routes) {
+      if (!routes.length) {
+        return `<tr><td colspan="6" class="empty">Todavia no hay rutas registradas.</td></tr>`;
+      }
+      return routes.map((route) => `
+        <tr>
+          <td>${escapeHtml(route.route || "-")}</td>
+          <td>${escapeHtml(formatNumber(route.count || 0))}</td>
+          <td>${escapeHtml(route.averageDurationMs || 0)} ms</td>
+          <td>${escapeHtml(route.maxDurationMs || 0)} ms</td>
+          <td>${escapeHtml(formatNumber(route.errorCount || 0))}</td>
+          <td>${escapeHtml(formatDateTime(route.lastAt))}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderServerRecentRows(rows) {
+      if (!rows.length) {
+        return `<tr><td colspan="5" class="empty">Todavia no hay actividad reciente.</td></tr>`;
+      }
+      return rows.map((row) => `
+        <tr>
+          <td>${escapeHtml(formatDateTime(row.at))}</td>
+          <td>${escapeHtml(row.method || "-")}</td>
+          <td>${escapeHtml(row.route || "-")}</td>
+          <td><span class="badge ${Number(row.statusCode || 0) >= 400 ? "warn" : "ok"}">${escapeHtml(row.statusCode || "-")}</span></td>
+          <td>${escapeHtml(row.durationMs || 0)} ms</td>
+        </tr>
+      `).join("");
+    }
+
+    function formatServerBytes(bytes) {
+      let size = Number(bytes || 0);
+      if (!Number.isFinite(size) || size <= 0) return "0 B";
+      const units = ["B", "KB", "MB", "GB", "TB"];
+      let index = 0;
+      while (size >= 1024 && index < units.length - 1) {
+        size /= 1024;
+        index += 1;
+      }
+      return `${size >= 10 || index === 0 ? size.toFixed(0) : size.toFixed(1)} ${units[index]}`;
+    }
+
+    function formatServerDuration(seconds) {
+      let remaining = Math.max(0, Number(seconds || 0));
+      const days = Math.floor(remaining / 86400);
+      remaining %= 86400;
+      const hours = Math.floor(remaining / 3600);
+      remaining %= 3600;
+      const minutes = Math.floor(remaining / 60);
+      if (days) return `${days}d ${hours}h`;
+      if (hours) return `${hours}h ${minutes}m`;
+      if (minutes) return `${minutes}m`;
+      return `${Math.floor(remaining)}s`;
+    }
+
     async function loadAuditLog() {
       const response = await fetch("/api/audit-log?limit=160");
       const result = await readJsonResponse(response);
@@ -6918,8 +7351,10 @@
         <div class="user-row">
           <strong>${escapeHtml(user.displayName || user.username)}</strong>
           <div class="secondary">${escapeHtml(user.username)} | ${escapeHtml(user.roleLabel || user.role)}</div>
+          <div class="secondary">${escapeHtml(user.email || "Sin email")}${user.invitedAt ? ` | invitado ${escapeHtml(formatDateTime(user.invitedAt))}` : ""}</div>
           <div class="actions" style="margin-top:8px;">
             <button class="filter" type="button" onclick="editPanelUser('${escapeAttribute(user.id)}')">Editar</button>
+            <button class="filter" type="button" onclick="invitePanelUser('${escapeAttribute(user.id)}')" ${user.email ? "" : "disabled"}>Enviar invitacion</button>
           </div>
         </div>
       `).join("");
@@ -7088,6 +7523,7 @@
       setFormValue(form, "id", user.id || "");
       setFormValue(form, "displayName", user.displayName || "");
       setFormValue(form, "username", user.username || "");
+      setFormValue(form, "email", user.email || "");
       setFormValue(form, "role", user.role || "comercial");
       setFormValue(form, "password", "");
     }
@@ -7115,6 +7551,31 @@
       renderPanelUsers();
       await loadAuditLog();
       showNotice("Usuario guardado.", "success");
+    }
+
+    async function invitePanelUser(id) {
+      const user = panelUsers.find((item) => item.id === id);
+      if (!user) return;
+      if (!user.email) {
+        showNotice("Ese usuario no tiene email cargado.", "error");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/user-invite", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
+        const result = await readJsonResponse(response);
+        if (!result.ok) throw new Error(result.error || "No se pudo enviar la invitacion.");
+        panelUsers = result.users || panelUsers;
+        renderPanelUsers();
+        await loadAuditLog();
+        showNotice(result.message || "Invitacion enviada.", "success");
+      } catch (error) {
+        showNotice(error.message, "error");
+      }
     }
 
     function downloadErpXlsx() {
@@ -7435,8 +7896,14 @@
         purchasePeriodFilter.preset = "custom";
         renderPurchaseDashboard();
       });
-      document.getElementById("purchase-dashboard-search").addEventListener("input", renderPurchaseTable);
-      document.getElementById("purchase-dashboard-status").addEventListener("change", renderPurchaseTable);
+      document.getElementById("purchase-dashboard-search").addEventListener("input", () => {
+        purchaseTablePage = 1;
+        renderPurchaseTable();
+      });
+      document.getElementById("purchase-dashboard-status").addEventListener("change", () => {
+        purchaseTablePage = 1;
+        renderPurchaseTable();
+      });
       renderPurchaseTable();
       renderPurchaseSecondaryBoards();
     }
@@ -9132,7 +9599,26 @@
         return;
       }
 
+      const totalPages = Math.max(1, Math.ceil(rows.length / PURCHASE_TABLE_PAGE_SIZE));
+      purchaseTablePage = Math.min(Math.max(1, purchaseTablePage), totalPages);
+      const start = (purchaseTablePage - 1) * PURCHASE_TABLE_PAGE_SIZE;
+      const pageRows = rows.slice(start, start + PURCHASE_TABLE_PAGE_SIZE);
+
       container.innerHTML = `
+        <div class="table-pagination">
+          <div>
+            <strong>${escapeHtml(rows.length)} compra(s)</strong>
+            <span class="secondary">Mostrando ${escapeHtml(start + 1)}-${escapeHtml(Math.min(start + pageRows.length, rows.length))}</span>
+          </div>
+          <div class="actions">
+            <button class="filter" type="button" onclick="changePurchaseTablePage(-1)" ${purchaseTablePage <= 1 ? "disabled" : ""}>Anterior</button>
+            <span class="badge">Pagina ${escapeHtml(purchaseTablePage)} / ${escapeHtml(totalPages)}</span>
+            <button class="filter" type="button" onclick="changePurchaseTablePage(1)" ${purchaseTablePage >= totalPages ? "disabled" : ""}>Siguiente</button>
+          </div>
+        </div>
+        <div class="purchase-mobile-cards">
+          ${pageRows.map((purchase) => renderPurchaseMobileCard(purchase)).join("")}
+        </div>
         <div class="purchase-table-wrap">
           <table class="purchase-table">
             <thead>
@@ -9152,7 +9638,7 @@
               </tr>
             </thead>
             <tbody>
-              ${rows.flatMap((purchase) => {
+              ${pageRows.flatMap((purchase) => {
                 const items = purchase.lineItems?.length ? purchase.lineItems : [{ description: purchase.description, quantity: "", unitAmount: "", total: getPurchaseTotal(purchase) }];
                 return items.map((item, index) => `
                   <tr onclick="editPurchase('${escapeAttribute(purchase.id)}')">
@@ -9180,6 +9666,33 @@
             </tbody>
           </table>
         </div>
+      `;
+    }
+
+    function changePurchaseTablePage(delta) {
+      purchaseTablePage += Number(delta || 0);
+      renderPurchaseTable();
+    }
+
+    function renderPurchaseMobileCard(purchase = {}) {
+      const firstItem = purchase.lineItems?.[0] || {};
+      const extraItems = Math.max(0, Number(purchase.lineItems?.length || 0) - 1);
+      return `
+        <article class="purchase-mobile-card" onclick="editPurchase('${escapeAttribute(purchase.id)}')">
+          <div>
+            <strong>${escapeHtml(purchase.provider || "Sin proveedor")}</strong>
+            <span>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "Sin fecha")}</span>
+          </div>
+          <p>${escapeHtml(firstItem.description || purchase.description || "Sin descripcion")}${extraItems ? ` +${extraItems} item(s)` : ""}</p>
+          <div class="purchase-mobile-meta">
+            <span>${escapeHtml(purchase.eventName || "Sin evento")}</span>
+            <strong>${formatCurrency(getPurchaseTotal(purchase) || 0)}</strong>
+          </div>
+          <div class="purchase-mobile-meta">
+            <span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span>
+            <button class="menu-dot" type="button" onclick="event.stopPropagation(); showPurchaseActions('${escapeAttribute(purchase.id)}')">...</button>
+          </div>
+        </article>
       `;
     }
 
@@ -9398,10 +9911,10 @@
 
     function collectRecipeOrderIngredients(recipe, multiplier = 1, source = "") {
       return (recipe.items || []).flatMap((item) => {
-        const itemMultiplier = multiplier * (parseDecimal(item.quantity || 1) || 1);
         if (item.type === "recipe" && item.linkedRecipe) {
+          const linkedQuantity = getLinkedRecipeQuantityInYieldUnits(item, item.linkedRecipe);
           const linkedYield = Number(item.linkedRecipe.portions || 1) || 1;
-          return collectRecipeOrderIngredients(item.linkedRecipe, itemMultiplier / linkedYield, item.name || recipe.name || source);
+          return collectRecipeOrderIngredients(item.linkedRecipe, (multiplier * linkedQuantity) / linkedYield, item.name || recipe.name || source);
         }
         if (item.type === "recipe") return [];
         return [{
@@ -9411,6 +9924,23 @@
           source,
         }];
       });
+    }
+
+    function getLinkedRecipeQuantityInYieldUnits(item = {}, linkedRecipe = {}) {
+      const quantity = parseDecimal(item.quantity || 1) || 1;
+      const itemUnit = normalizeSearch(item.unit || "");
+      const yieldUnit = normalizeSearch(linkedRecipe.yieldUnit || "");
+      const isWeightYield = ["kg", "kilo", "kilos", "kilogramo", "kilogramos"].includes(yieldUnit);
+      const isGramYield = ["g", "gr", "gramo", "gramos"].includes(yieldUnit);
+      const isLiterYield = ["l", "lt", "lts", "litro", "litros"].includes(yieldUnit);
+      const isMlYield = yieldUnit === "ml";
+
+      if (isWeightYield && ["g", "gr", "gramo", "gramos"].includes(itemUnit)) return quantity / 1000;
+      if (isGramYield && ["kg", "kilo", "kilos", "kilogramo", "kilogramos"].includes(itemUnit)) return quantity * 1000;
+      if (isLiterYield && itemUnit === "ml") return quantity / 1000;
+      if (isMlYield && ["l", "lt", "lts", "litro", "litros"].includes(itemUnit)) return quantity * 1000;
+
+      return quantity;
     }
 
     function getOperationalCategoryItemsForOrder(event = {}, category, itemType) {
@@ -17070,4 +17600,3 @@
   </script>
 </body>
 </html>
-
