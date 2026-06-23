@@ -45,13 +45,6 @@ DATA_DIR=./data
 PANEL_AUTH_USER=admin
 PANEL_AUTH_PASSWORD=una-contrasena-segura
 PANEL_SESSION_SECRET=un-texto-largo-aleatorio
-PANEL_PUBLIC_URL=https://sistema.gratitudgourmet.com
-SMTP_HOST=
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=
-SMTP_PASS=
-SMTP_FROM=
 PURCHASE_SHEETS_SYNC_ENABLED=false
 ACCOUNTANT_SHEETS_SYNC_ENABLED=false
 ```
@@ -95,31 +88,14 @@ El hosting debe conservar `DATA_DIR` en un volumen persistente. Ahi se guardan:
 
 ## Seguridad
 
-En `NODE_ENV=production`, el sistema exige `PANEL_AUTH_PASSWORD`. El panel usa login por usuario/email, sesiones, roles y permisos por modulo/funcion.
+En `NODE_ENV=production`, el sistema exige `PANEL_AUTH_PASSWORD`. El panel usa login por usuario, sesiones, roles y permisos por modulo/funcion.
 
 El usuario administrador inicial se crea con:
 
 - `PANEL_AUTH_USER`
 - `PANEL_AUTH_PASSWORD`
 
-Luego se pueden crear usuarios desde `Seguridad > Usuarios`, asociarles email real y asignar rol. El login acepta usuario o email.
-
-Para dar acceso a una persona sin compartir claves manualmente:
-
-1. Crear el usuario en `Seguridad > Usuarios`.
-2. Cargar su email.
-3. Dejar la clave vacia si se usara invitacion.
-4. Guardar.
-5. Tocar `Enviar invitacion`.
-
-El usuario recibe un enlace temporal para crear su propia clave. Las invitaciones vencen en 48 horas.
-
-Para recuperar clave desde el correo se deben configurar:
-
-- `PANEL_PUBLIC_URL`: dominio publico del ERP.
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: casilla SMTP que envia los enlaces.
-
-Si SMTP no esta configurado, el sistema avisa desde la pantalla de login.
+Luego se pueden crear usuarios desde `Seguridad > Usuarios`, asignarles clave y elegir su rol. El recupero de clave por correo queda pendiente hasta configurar una casilla de mail institucional.
 
 Endpoint publico para monitoreo:
 

@@ -31,11 +31,11 @@ Cambios funcionales:
 - Compras mobile: en pantallas chicas la tabla se transforma en tarjetas resumidas y clickeables.
 - Mobile: las pestanas principales se reemplazan por un selector compacto de modulos.
 - Modales largos: en mobile, las acciones finales quedan fijas abajo para guardar/cerrar/finalizar sin perder el contexto.
-- Seguridad: los usuarios pueden guardar email y el login acepta usuario o email.
+- Seguridad: el login queda por usuario y clave, con bloqueo temporal ante intentos fallidos.
 
 Notas operativas:
 
-- Para recuperar clave por correo falta configurar una casilla SMTP real en produccion. El sistema ya puede asociar email a usuarios, pero el envio automatico de recuperacion debe activarse con credenciales de correo.
+- La recuperacion por correo, invitaciones por email y login con mail quedan en standby hasta definir la casilla institucional y la politica final de acceso.
 - Si una orden de compra ya fue generada antes de esta correccion y muestra cantidades absurdas, conviene borrarla y regenerarla desde el evento.
 
 Archivos modificados:
@@ -43,46 +43,21 @@ Archivos modificados:
 - `approval-panel.html`
 - `whatsapp-catering-bot.js`
 
-### Actualizacion 23/06/2026 - Login con email y recuperacion de clave
+### Actualizacion 23/06/2026 - Seguridad sin correo institucional
 
-Se amplio el modulo de Seguridad para que los usuarios puedan tener un email asociado y para que el inicio de sesion acepte usuario o email. Tambien se agrego el flujo de recuperacion de clave desde el login:
+Se dejo en standby el login por email, las invitaciones por correo y la recuperacion de clave por email hasta configurar una casilla institucional y definir la politica final de acceso.
 
-- El usuario toca `Olvide mi clave`.
-- Ingresa usuario o email.
-- El sistema genera un enlace temporal con vencimiento de 60 minutos.
-- El enlace abre el ERP y permite crear una clave nueva.
-- Al cambiar la clave, se invalidan las sesiones abiertas de ese usuario.
+Refuerzo de seguridad vigente:
 
-Refuerzo de seguridad agregado:
-
-- El administrador puede crear usuarios con email sin definirles una clave manual.
-- Desde `Seguridad > Usuarios` se puede usar `Enviar invitacion`.
-- La invitacion llega por email con un enlace temporal para que el usuario cree su propia clave.
-- Las invitaciones vencen en 48 horas.
+- El inicio de sesion funciona por usuario y clave.
 - Los intentos repetidos de login incorrecto se bloquean temporalmente para reducir ataques por fuerza bruta.
 - Las claves nuevas deben tener al menos 8 caracteres.
-
-Configuracion necesaria en produccion:
-
-- `PANEL_PUBLIC_URL`: dominio publico del panel, por ejemplo `https://sistema.gratitudgourmet.com`.
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: datos de la casilla real que enviara los correos.
-- Dependencia agregada: `nodemailer`.
+- El administrador sigue creando usuarios, roles y permisos desde `Seguridad`.
 
 Notas operativas:
 
-- Si SMTP no esta configurado, el sistema avisa claramente que falta configurar el correo de recuperacion.
-- Los emails se cargan desde `Seguridad > Usuarios`.
-- La recuperacion solo funciona para usuarios activos con email cargado.
-- Las invitaciones tambien requieren SMTP configurado.
-
-Archivos modificados:
-
-- `approval-panel.html`
-- `whatsapp-catering-bot.js`
-- `package.json`
-- `package-lock.json`
-- `.env.example`
-- `deploy/env.production.example`
+- No hace falta configurar SMTP para esta version.
+- Cuando se retome correo, se implementara como una etapa separada para no mezclarlo con el despliegue actual.
 
 ### Actualizacion 22/06/2026 - Navegacion ejecutiva y modulo Eventos
 

@@ -21,12 +21,6 @@ const os = require("os");
 const path = require("path");
 const crypto = require("crypto");
 const zlib = require("zlib");
-let nodemailer = null;
-try {
-  nodemailer = require("nodemailer");
-} catch (error) {
-  // La recuperacion por email queda disponible cuando se instale nodemailer y se configure SMTP.
-}
 let DatabaseSync = null;
 try {
   ({ DatabaseSync } = require("node:sqlite"));
@@ -87,13 +81,6 @@ const CATERING_DB_BACKUP_INTERVAL_MS = Number(
 );
 const PANEL_AUTH_USER = process.env.PANEL_AUTH_USER || BOT_CONFIG.panelAuthUser || "admin";
 const PANEL_AUTH_PASSWORD = process.env.PANEL_AUTH_PASSWORD || BOT_CONFIG.panelAuthPassword || "";
-const PANEL_PUBLIC_URL = normalizePublicUrl(process.env.PANEL_PUBLIC_URL || BOT_CONFIG.panelPublicUrl || "");
-const SMTP_HOST = process.env.SMTP_HOST || BOT_CONFIG.smtpHost || "";
-const SMTP_PORT = Number(process.env.SMTP_PORT || BOT_CONFIG.smtpPort || 587);
-const SMTP_USER = process.env.SMTP_USER || BOT_CONFIG.smtpUser || "";
-const SMTP_PASS = process.env.SMTP_PASS || BOT_CONFIG.smtpPass || "";
-const SMTP_FROM = process.env.SMTP_FROM || BOT_CONFIG.smtpFrom || SMTP_USER || "";
-const SMTP_SECURE = parseBooleanLike(process.env.SMTP_SECURE ?? BOT_CONFIG.smtpSecure ?? (SMTP_PORT === 465));
 const PURCHASE_SYNC_TOKEN = process.env.PURCHASE_SYNC_TOKEN || BOT_CONFIG.purchaseSyncToken || "";
 const ACCOUNTANT_PAYMENTS_WEBHOOK_URL =
   process.env.ACCOUNTANT_PAYMENTS_WEBHOOK_URL || BOT_CONFIG.accountantPaymentsWebhookUrl || "";
@@ -833,18 +820,6 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, user: getPublicUser(user), roles: getPanelRoleList() });
       }
 
-      if (request.method === "POST" && requestUrl.pathname === "/api/request-password-reset") {
-        const body = await readJsonBody(request);
-        const result = await requestPanelPasswordReset(body.identifier || body.email || body.username, request);
-        return sendJson(response, { ok: true, ...result });
-      }
-
-      if (request.method === "POST" && requestUrl.pathname === "/api/reset-password") {
-        const body = await readJsonBody(request);
-        resetPanelPassword(body.token, body.password);
-        return sendJson(response, { ok: true, message: "Clave actualizada. Ya puede iniciar sesion." });
-      }
-
       if (request.method === "POST" && requestUrl.pathname === "/api/logout") {
         const user = getPanelSessionUser(request);
         clearPanelSession(request);
@@ -1122,14 +1097,6 @@ function startApprovalPanelServer() {
         const saved = savePanelUserRecord(body);
         recordAudit(user, body.id ? "update" : "create", "user", saved.id, saved.displayName || saved.username, null, getPublicUser(saved));
         return sendJson(response, { ok: true, user: getPublicUser(saved), users: getPanelUserList() });
-      }
-
-      if (request.method === "POST" && requestUrl.pathname === "/api/user-invite") {
-        const user = requirePanelPermission(request, response, "users:write");
-        if (!user) return;
-        const body = await readJsonBody(request);
-        const result = await sendPanelUserInvite(body.id, request, user);
-        return sendJson(response, { ok: true, ...result, users: getPanelUserList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/roles") {
@@ -1958,34 +1925,19 @@ function getPanelUserList() {
   return erpUsers.map(getPublicUser);
 }
 
-function findPanelUserByIdentifier(identifier) {
-  const cleanIdentifier = normalizeText(identifier || "").toLowerCase();
-  if (!cleanIdentifier) return null;
-  return erpUsers.find((user) => user.active && (user.username === cleanIdentifier || user.email === cleanIdentifier)) || null;
-}
-
-function findPanelUserById(id) {
-  const cleanId = normalizeText(id || "");
-  if (!cleanId) return null;
-  return erpUsers.find((user) => user.id === cleanId) || null;
-}
-
 function savePanelUserRecord(input = {}) {
   const username = normalizeText(input.username || "").toLowerCase();
-  const email = normalizeText(input.email || "").toLowerCase();
   if (!username) throw new Error("Ingrese el usuario.");
   if (!getRoleDefinitions()[input.role]) throw new Error("Seleccione un rol valido.");
 
   const id = normalizeText(input.id || "") || `usuario-${username.replace(/[^a-z0-9]+/g, "-") || Date.now()}`;
   const duplicate = erpUsers.find((user) => user.id !== id && user.username === username);
   if (duplicate) throw new Error("Ya existe un usuario con ese nombre.");
-  const duplicateEmail = email ? erpUsers.find((user) => user.id !== id && user.email === email) : null;
-  if (duplicateEmail) throw new Error("Ya existe un usuario con ese email.");
 
   const index = erpUsers.findIndex((user) => user.id === id);
   const previous = index >= 0 ? erpUsers[index] : {};
-  const password = input.password || (index < 0 && email ? crypto.randomBytes(24).toString("base64url") : "");
-  if (index < 0 && !password) throw new Error("Ingrese una clave o un email para invitar al usuario nuevo.");
+  const password = input.password || "";
+  if (index < 0 && !password) throw new Error("Ingrese una clave para el usuario nuevo.");
   if (password && String(password).length < 8) throw new Error("La clave debe tener al menos 8 caracteres.");
 
   const passwordFields = password ? hashPanelPassword(password) : {
@@ -1998,7 +1950,6 @@ function savePanelUserRecord(input = {}) {
     ...passwordFields,
     id,
     username,
-    email,
     displayName: normalizeText(input.displayName || input.name || previous.displayName || username),
     active: input.active !== false && input.active !== "false",
     createdAt: previous.createdAt || new Date().toISOString(),
@@ -3020,7 +2971,6 @@ function normalizePanelUser(user = {}) {
   return {
     id: normalizeText(user.id || `usuario-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     username: normalizeText(user.username || "").toLowerCase(),
-    email: normalizeText(user.email || "").toLowerCase(),
     displayName: normalizeText(user.displayName || user.name || user.username || ""),
     role,
     active: user.active !== false,
@@ -3029,10 +2979,6 @@ function normalizePanelUser(user = {}) {
     createdAt: user.createdAt || new Date().toISOString(),
     updatedAt: user.updatedAt || "",
     lastLoginAt: user.lastLoginAt || "",
-    passwordResetTokenHash: normalizeText(user.passwordResetTokenHash || ""),
-    passwordResetExpiresAt: user.passwordResetExpiresAt || "",
-    invitedAt: user.invitedAt || "",
-    invitedBy: normalizeText(user.invitedBy || ""),
   };
 }
 
@@ -3072,18 +3018,17 @@ function getPublicUser(user) {
   return {
     id: user.id,
     username: user.username,
-    email: user.email || "",
     displayName: user.displayName || user.username,
     role: user.role,
     roleLabel: role.label,
     permissions: role.permissions,
     tabs: role.tabs || [],
-    invitedAt: user.invitedAt || "",
   };
 }
 
 function authenticatePanelUser(username, password) {
-  const user = findPanelUserByIdentifier(username);
+  const cleanUsername = normalizeText(username || "").toLowerCase();
+  const user = erpUsers.find((item) => item.username === cleanUsername && item.active);
   if (!user || !verifyPanelPassword(user, password)) {
     throw new Error("Usuario o clave incorrectos.");
   }
@@ -3130,148 +3075,6 @@ function recordLoginFailure(key) {
 
 function clearLoginFailures(key) {
   LOGIN_ATTEMPTS.delete(key);
-}
-
-async function requestPanelPasswordReset(identifier, request) {
-  const cleanIdentifier = normalizeText(identifier || "").toLowerCase();
-  if (!cleanIdentifier) throw new Error("Ingrese su usuario o email.");
-
-  const user = findPanelUserByIdentifier(cleanIdentifier);
-  if (!user) {
-    return { message: "Si el usuario existe y tiene email cargado, recibira un enlace para recuperar la clave." };
-  }
-
-  if (!user.email) {
-    throw new Error("Ese usuario no tiene email cargado. Pida a un administrador que lo agregue en Seguridad > Usuarios.");
-  }
-
-  if (!isPasswordResetEmailConfigured()) {
-    throw new Error("Falta configurar el correo de recuperacion SMTP en el servidor.");
-  }
-
-  const token = crypto.randomBytes(32).toString("hex");
-  user.passwordResetTokenHash = hashPanelResetToken(token);
-  user.passwordResetExpiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-  user.updatedAt = new Date().toISOString();
-  saveErpUsers();
-
-  const resetUrl = `${getRequestBaseUrl(request)}/?resetToken=${encodeURIComponent(token)}`;
-  await sendPanelPasswordResetEmail(user, resetUrl, "reset");
-  recordAudit(null, "password_reset_request", "user", user.id, user.displayName || user.username);
-
-  return { message: "Enviamos un enlace de recuperacion al email del usuario. Vence en 60 minutos." };
-}
-
-async function sendPanelUserInvite(userId, request, actor) {
-  const user = findPanelUserById(userId);
-  if (!user) throw new Error("No encontre ese usuario.");
-  if (!user.active) throw new Error("Ese usuario esta inactivo.");
-  if (!user.email) throw new Error("Ese usuario no tiene email cargado.");
-  if (!isPasswordResetEmailConfigured()) {
-    throw new Error("Falta configurar el correo SMTP para enviar invitaciones.");
-  }
-
-  const token = crypto.randomBytes(32).toString("hex");
-  user.passwordResetTokenHash = hashPanelResetToken(token);
-  user.passwordResetExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
-  user.invitedAt = new Date().toISOString();
-  user.invitedBy = actor?.id || "";
-  user.updatedAt = new Date().toISOString();
-  saveErpUsers();
-
-  const resetUrl = `${getRequestBaseUrl(request)}/?resetToken=${encodeURIComponent(token)}`;
-  await sendPanelPasswordResetEmail(user, resetUrl, "invite");
-  recordAudit(actor, "invite", "user", user.id, user.displayName || user.username);
-
-  return { message: `Invitacion enviada a ${user.email}. Vence en 48 horas.` };
-}
-
-function resetPanelPassword(token, password) {
-  const cleanToken = normalizeText(token || "");
-  if (!cleanToken) throw new Error("El enlace de recuperacion no es valido.");
-  if (String(password || "").length < 8) throw new Error("La nueva clave debe tener al menos 8 caracteres.");
-
-  const tokenHash = hashPanelResetToken(cleanToken);
-  const user = erpUsers.find((item) =>
-    item.passwordResetTokenHash &&
-    timingSafeEqual(item.passwordResetTokenHash, tokenHash) &&
-    new Date(item.passwordResetExpiresAt || 0).getTime() > Date.now()
-  );
-
-  if (!user) throw new Error("El enlace de recuperacion vencio o no es valido.");
-
-  Object.assign(user, hashPanelPassword(password), {
-    passwordResetTokenHash: "",
-    passwordResetExpiresAt: "",
-    updatedAt: new Date().toISOString(),
-  });
-  saveErpUsers();
-
-  for (const [sessionToken, session] of panelSessions.entries()) {
-    if (session.userId === user.id) {
-      panelSessions.delete(sessionToken);
-    }
-  }
-
-  recordAudit(user, "password_reset", "user", user.id, user.displayName || user.username);
-  return user;
-}
-
-function hashPanelResetToken(token) {
-  return crypto
-    .createHash("sha256")
-    .update(`${PANEL_SESSION_SECRET}:${token}`)
-    .digest("hex");
-}
-
-function isPasswordResetEmailConfigured() {
-  return Boolean(nodemailer && SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS && SMTP_FROM);
-}
-
-async function sendPanelPasswordResetEmail(user, resetUrl, mode = "reset") {
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: SMTP_SECURE,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
-  });
-
-  const isInvite = mode === "invite";
-  const subject = isInvite
-    ? "Invitacion - Gratitud Gourmet ERP"
-    : "Recuperar clave - Gratitud Gourmet ERP";
-  const intro = isInvite
-    ? "Te invitaron a usar el ERP Gratitud Gourmet."
-    : "Recibimos un pedido para recuperar tu clave del ERP Gratitud Gourmet.";
-  const action = isInvite
-    ? "Para crear tu clave e ingresar al sistema, abri este enlace:"
-    : "Para crear una clave nueva, abri este enlace:";
-  const expiration = isInvite
-    ? "El enlace vence en 48 horas."
-    : "El enlace vence en 60 minutos.";
-
-  await transporter.sendMail({
-    from: SMTP_FROM,
-    to: user.email,
-    subject,
-    text: [
-      `Hola ${user.displayName || user.username},`,
-      "",
-      intro,
-      `${action} ${resetUrl}`,
-      "",
-      `${expiration} Si no esperabas este correo, podes ignorarlo.`,
-    ].join("\n"),
-    html: `
-      <p>Hola ${escapeHtmlForEmail(user.displayName || user.username)},</p>
-      <p>${escapeHtmlForEmail(intro)}</p>
-      <p><a href="${escapeHtmlForEmail(resetUrl)}">Crear clave e ingresar</a></p>
-      <p>${escapeHtmlForEmail(expiration)} Si no esperabas este correo, podes ignorarlo.</p>
-    `,
-  });
 }
 
 function createPanelSession(user) {
@@ -11374,29 +11177,6 @@ function renderMessage(message, data = {}) {
 
 function normalizeText(value) {
   return fixMojibakeText(String(value ?? "")).trim().replace(/\s+/g, " ");
-}
-
-function normalizePublicUrl(value) {
-  const cleanValue = String(value || "").trim().replace(/\/+$/, "");
-  if (!cleanValue) return "";
-  return /^https?:\/\//i.test(cleanValue) ? cleanValue : `https://${cleanValue}`;
-}
-
-function getRequestBaseUrl(request) {
-  if (PANEL_PUBLIC_URL) return PANEL_PUBLIC_URL;
-  const forwardedProto = String(request.headers["x-forwarded-proto"] || "").split(",")[0].trim();
-  const protocol = forwardedProto || (IS_PRODUCTION ? "https" : "http");
-  const host = request.headers["x-forwarded-host"] || request.headers.host || `localhost:${process.env.PORT || 3080}`;
-  return normalizePublicUrl(`${protocol}://${host}`);
-}
-
-function escapeHtmlForEmail(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 }
 
 function fixMojibakeText(value) {

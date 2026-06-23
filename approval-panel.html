@@ -212,30 +212,6 @@
       margin-bottom: 18px;
     }
 
-    .login-reset-panel {
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      display: none;
-      gap: 10px;
-      margin-top: 12px;
-      padding: 12px;
-    }
-
-    .login-reset-panel.open {
-      display: grid;
-    }
-
-    .link-action {
-      background: transparent;
-      border: 0;
-      color: var(--brand);
-      cursor: pointer;
-      font-weight: 800;
-      padding: 0;
-      text-align: left;
-    }
-
     .audit-layout {
       display: grid;
       gap: 14px;
@@ -3961,7 +3937,7 @@
       <h2>Ingresar al ERP</h2>
       <p class="subtitle">Cada movimiento queda asociado a tu usuario.</p>
       <div class="form-field full">
-        <label>Usuario o email</label>
+        <label>Usuario</label>
         <input name="username" autocomplete="username" required>
       </div>
       <div class="form-field full">
@@ -3971,33 +3947,6 @@
       <div id="login-error" class="notice error" style="display:none;"></div>
       <div class="actions" style="margin-top:14px;">
         <button class="approve" type="submit">Entrar</button>
-        <button class="link-action" type="button" onclick="showPasswordResetRequest()">Olvide mi clave</button>
-      </div>
-      <div id="password-reset-request-panel" class="login-reset-panel">
-        <p class="secondary" style="margin:0;">Escribi tu usuario o email y te enviamos un enlace para crear una clave nueva.</p>
-        <div class="form-field full">
-          <label>Usuario o email</label>
-          <input id="password-reset-identifier" autocomplete="email">
-        </div>
-        <div class="actions">
-          <button class="approve" type="button" onclick="requestPasswordReset()">Enviar enlace</button>
-          <button class="filter" type="button" onclick="showLoginOnly()">Cancelar</button>
-        </div>
-      </div>
-      <div id="password-reset-confirm-panel" class="login-reset-panel">
-        <p class="secondary" style="margin:0;">Cargue una clave nueva para su cuenta.</p>
-        <div class="form-field full">
-          <label>Nueva clave</label>
-          <input id="password-reset-new-password" type="password" autocomplete="new-password">
-        </div>
-        <div class="form-field full">
-          <label>Repetir clave</label>
-          <input id="password-reset-repeat-password" type="password" autocomplete="new-password">
-        </div>
-        <div class="actions">
-          <button class="approve" type="button" onclick="confirmPasswordReset()">Guardar clave</button>
-          <button class="filter" type="button" onclick="showLoginOnly()">Cancelar</button>
-        </div>
       </div>
       <p class="secondary" style="margin:14px 0 0;">Usuario inicial: admin. Si no definiste clave, la clave inicial es admin.</p>
     </form>
@@ -5098,16 +5047,12 @@
                 <input name="username" required placeholder="Ej: claudia">
               </div>
               <div class="form-field full">
-                <label>Email</label>
-                <input name="email" type="email" placeholder="Ej: claudia@gratitudgourmet.com">
-              </div>
-              <div class="form-field full">
                 <label>Rol</label>
                 <select name="role" id="panel-user-role"></select>
               </div>
               <div class="form-field full">
                 <label>Clave</label>
-                <input name="password" type="password" placeholder="Opcional si usas invitacion por email">
+                <input name="password" type="password" placeholder="Completar para usuario nuevo o cambio de clave">
               </div>
               <div class="actions full">
                 <button class="approve" type="submit">Guardar usuario</button>
@@ -5909,7 +5854,6 @@
     let panelUsers = [];
     let auditLog = [];
     let serverStats = null;
-    let pendingPasswordResetToken = "";
     let logisticsEvents = [];
     let logisticsCategories = [];
     let activeLogisticsEvent = null;
@@ -6256,10 +6200,6 @@
     setupAutocomplete("purchase-provider", "purchase-provider-suggestions", () => purchaseOptions.providers || []);
 
     async function bootstrapPanel() {
-      if (preparePasswordResetFromUrl()) {
-        showLoginScreen();
-        return;
-      }
       const response = await fetch("/api/me");
       const result = await response.json();
       panelRoles = result.roles || [];
@@ -6316,43 +6256,6 @@
       document.getElementById("login-screen").classList.remove("open");
     }
 
-    function preparePasswordResetFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("resetToken") || "";
-      if (!token) return false;
-      pendingPasswordResetToken = token;
-      history.replaceState(null, "", window.location.pathname);
-      showPasswordResetConfirm();
-      return true;
-    }
-
-    function showLoginOnly() {
-      pendingPasswordResetToken = "";
-      document.getElementById("password-reset-request-panel")?.classList.remove("open");
-      document.getElementById("password-reset-confirm-panel")?.classList.remove("open");
-      const errorBox = document.getElementById("login-error");
-      if (errorBox) {
-        errorBox.style.display = "none";
-        errorBox.className = "notice error";
-      }
-    }
-
-    function showPasswordResetRequest() {
-      document.getElementById("password-reset-confirm-panel")?.classList.remove("open");
-      document.getElementById("password-reset-request-panel")?.classList.add("open");
-      document.getElementById("password-reset-identifier")?.focus();
-      const errorBox = document.getElementById("login-error");
-      if (errorBox) errorBox.style.display = "none";
-    }
-
-    function showPasswordResetConfirm() {
-      document.getElementById("password-reset-request-panel")?.classList.remove("open");
-      document.getElementById("password-reset-confirm-panel")?.classList.add("open");
-      document.getElementById("password-reset-new-password")?.focus();
-      const errorBox = document.getElementById("login-error");
-      if (errorBox) errorBox.style.display = "none";
-    }
-
     function showLoginMessage(message, type = "error") {
       const errorBox = document.getElementById("login-error");
       if (!errorBox) return;
@@ -6370,14 +6273,6 @@
 
     async function loginPanel(event) {
       event.preventDefault();
-      if (document.getElementById("password-reset-request-panel")?.classList.contains("open")) {
-        await requestPasswordReset();
-        return;
-      }
-      if (document.getElementById("password-reset-confirm-panel")?.classList.contains("open")) {
-        await confirmPasswordReset();
-        return;
-      }
       const form = event.target;
       const errorBox = document.getElementById("login-error");
       errorBox.style.display = "none";
@@ -6398,61 +6293,6 @@
         hideLoginScreen();
         renderCurrentUser();
         await loadInitialData();
-      } catch (error) {
-        showLoginMessage(error.message);
-      }
-    }
-
-    async function requestPasswordReset() {
-      const identifier = document.getElementById("password-reset-identifier")?.value.trim() || "";
-      if (!identifier) {
-        showLoginMessage("Ingrese su usuario o email.");
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/request-password-reset", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ identifier }),
-        });
-        const result = await response.json();
-        if (!result.ok) throw new Error(result.error || "No se pudo enviar el enlace.");
-        showLoginMessage(result.message || "Revise su email para recuperar la clave.", "success");
-        document.getElementById("password-reset-request-panel")?.classList.remove("open");
-      } catch (error) {
-        showLoginMessage(error.message);
-      }
-    }
-
-    async function confirmPasswordReset() {
-      const password = document.getElementById("password-reset-new-password")?.value || "";
-      const repeatPassword = document.getElementById("password-reset-repeat-password")?.value || "";
-      if (!pendingPasswordResetToken) {
-        showLoginMessage("El enlace de recuperacion no es valido.");
-        return;
-      }
-      if (password.length < 8) {
-        showLoginMessage("La clave nueva debe tener al menos 8 caracteres.");
-        return;
-      }
-      if (password !== repeatPassword) {
-        showLoginMessage("Las claves no coinciden.");
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/reset-password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: pendingPasswordResetToken, password }),
-        });
-        const result = await response.json();
-        if (!result.ok) throw new Error(result.error || "No se pudo actualizar la clave.");
-        document.getElementById("password-reset-new-password").value = "";
-        document.getElementById("password-reset-repeat-password").value = "";
-        showLoginOnly();
-        showLoginMessage(result.message || "Clave actualizada. Ya puede iniciar sesion.", "success");
       } catch (error) {
         showLoginMessage(error.message);
       }
@@ -7351,10 +7191,8 @@
         <div class="user-row">
           <strong>${escapeHtml(user.displayName || user.username)}</strong>
           <div class="secondary">${escapeHtml(user.username)} | ${escapeHtml(user.roleLabel || user.role)}</div>
-          <div class="secondary">${escapeHtml(user.email || "Sin email")}${user.invitedAt ? ` | invitado ${escapeHtml(formatDateTime(user.invitedAt))}` : ""}</div>
           <div class="actions" style="margin-top:8px;">
             <button class="filter" type="button" onclick="editPanelUser('${escapeAttribute(user.id)}')">Editar</button>
-            <button class="filter" type="button" onclick="invitePanelUser('${escapeAttribute(user.id)}')" ${user.email ? "" : "disabled"}>Enviar invitacion</button>
           </div>
         </div>
       `).join("");
@@ -7523,7 +7361,6 @@
       setFormValue(form, "id", user.id || "");
       setFormValue(form, "displayName", user.displayName || "");
       setFormValue(form, "username", user.username || "");
-      setFormValue(form, "email", user.email || "");
       setFormValue(form, "role", user.role || "comercial");
       setFormValue(form, "password", "");
     }
@@ -7551,31 +7388,6 @@
       renderPanelUsers();
       await loadAuditLog();
       showNotice("Usuario guardado.", "success");
-    }
-
-    async function invitePanelUser(id) {
-      const user = panelUsers.find((item) => item.id === id);
-      if (!user) return;
-      if (!user.email) {
-        showNotice("Ese usuario no tiene email cargado.", "error");
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/user-invite", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id }),
-        });
-        const result = await readJsonResponse(response);
-        if (!result.ok) throw new Error(result.error || "No se pudo enviar la invitacion.");
-        panelUsers = result.users || panelUsers;
-        renderPanelUsers();
-        await loadAuditLog();
-        showNotice(result.message || "Invitacion enviada.", "success");
-      } catch (error) {
-        showNotice(error.message, "error");
-      }
     }
 
     function downloadErpXlsx() {
