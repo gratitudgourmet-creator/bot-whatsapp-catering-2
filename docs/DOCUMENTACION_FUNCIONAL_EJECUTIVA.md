@@ -118,6 +118,20 @@ Cambios funcionales:
 - Desde Produccion/Cocina, un usuario con permiso de compras puede abrir una orden de compra preasociada al evento.
 - La orden puede traer `menu y recetas`: si existe una receta con el mismo nombre del item de menu, sugiere insumos de la receta y preparaciones anidadas.
 - El generador de orden considera stock disponible por producto/unidad y lo descuenta de la cantidad sugerida.
+
+### Actualizacion 23/06/2026 - Preparacion para publicar en Hostinger VPS
+
+Se agrego una carpeta de despliegue para publicar el ERP en `sistema.gratitudgourmet.com.ar` usando una arquitectura segura y mantenible:
+
+- `deploy/README_HOSTINGER_VPS.md`: guia paso a paso para Hostinger VPS, DNS, Node.js, Nginx, HTTPS, servicio automatico y backups.
+- `deploy/env.production.example`: variables de entorno para produccion con `BOT_SKIP_WHATSAPP=1`, `DATA_DIR` persistente y credenciales obligatorias.
+- `deploy/nginx/gratitud-erp.conf`: configuracion de proxy para publicar el panel por HTTPS sin exponer directamente el puerto interno.
+- `deploy/systemd/gratitud-erp.service`: servicio Linux para mantener el ERP activo y reiniciarlo ante fallas.
+- `deploy/scripts/backup-data.sh`: backup comprimido de la base JSON con retencion configurable.
+
+Decision operativa: publicar primero el ERP/panel sin WhatsApp en el VPS. WhatsApp puede continuar local o migrarse luego como proceso separado para evitar que problemas de Chrome/WhatsApp Web afecten al panel web.
+
+Decision de datos: Google Sheets no funciona como base operativa. `PURCHASE_SHEETS_SYNC_ENABLED=false` mantiene las compras dentro de la base del ERP (`DATA_DIR`, JSON y SQLite cuando esta disponible). `ACCOUNTANT_SHEETS_SYNC_ENABLED=false` mantiene pagos y deudas dentro de Finanzas. Sheets queda como herramienta de importacion/exportacion manual o sincronizacion activable solo por configuracion explicita.
 - Las lineas de orden incorporan tipo de item: mercaderia, vajilla, alquiler o equipamiento.
 - Se reforzo la sanitizacion de recetas: cocina/cocinero no reciben costos desde backend ni los ven en frontend.
 

@@ -88,6 +88,22 @@ Se agrego una primera base operativa para conectar cocina, recetas, stock y comp
 - Las ordenes descuentan stock disponible cuando coincide producto/unidad y sugieren proveedor segun historial/maestro.
 - Las ordenes separan tipo de item: mercaderia, vajilla, alquiler y equipamiento.
 
+### Publicacion web recomendada - 23/06/2026
+
+Para publicar el sistema en `sistema.gratitudgourmet.com.ar`, se deja preparada la opcion recomendada:
+
+- Dominio y DNS administrados en Hostinger.
+- VPS Ubuntu en Hostinger para ejecutar el ERP.
+- Nginx como puerta de entrada publica con HTTPS.
+- Node.js ejecutando `whatsapp-catering-bot.js` como servicio automatico.
+- Base JSON persistente en `/var/lib/gratitud-erp/data`.
+- Backups diarios en `/var/backups/gratitud-erp`.
+- Panel protegido con usuario y clave obligatoria en produccion.
+- WhatsApp desactivado inicialmente con `BOT_SKIP_WHATSAPP=1` para que el ERP web no dependa de Chrome ni de WhatsApp Web.
+- Google Sheets deja de ser base de datos operativa. Las compras y demas datos quedan guardados en la base del ERP dentro de `DATA_DIR`; Sheets se reserva para importacion/exportacion manual.
+
+La guia paso a paso queda documentada en `deploy/README_HOSTINGER_VPS.md`.
+
 Regla operativa: para que una orden automatica sea precisa, el item del menu debe estar escrito igual o muy parecido al nombre de la receta cargada. Si no hay receta vinculada, el sistema carga el item de menu como pendiente de definir.
 
 ### Actualizacion Inventario operativo para Logistica - 22/06/2026

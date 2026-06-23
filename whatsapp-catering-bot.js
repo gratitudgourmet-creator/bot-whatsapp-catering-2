@@ -85,6 +85,12 @@ const ACCOUNTANT_PAYMENTS_WEBHOOK_URL =
   process.env.ACCOUNTANT_PAYMENTS_WEBHOOK_URL || BOT_CONFIG.accountantPaymentsWebhookUrl || "";
 const ACCOUNTANT_PAYMENTS_TOKEN =
   process.env.ACCOUNTANT_PAYMENTS_TOKEN || BOT_CONFIG.accountantPaymentsToken || PURCHASE_SYNC_TOKEN || "";
+const PURCHASE_SHEETS_SYNC_ENABLED = parseBooleanLike(
+  process.env.PURCHASE_SHEETS_SYNC_ENABLED ?? BOT_CONFIG.purchaseSheetsSyncEnabled ?? false
+);
+const ACCOUNTANT_SHEETS_SYNC_ENABLED = parseBooleanLike(
+  process.env.ACCOUNTANT_SHEETS_SYNC_ENABLED ?? BOT_CONFIG.accountantSheetsSyncEnabled ?? false
+);
 const PURCHASE_BIDIRECTIONAL_SYNC_ENABLED =
   String(process.env.PURCHASE_BIDIRECTIONAL_SYNC_ENABLED || BOT_CONFIG.purchaseBidirectionalSyncEnabled || "").toLowerCase() === "true";
 const PANEL_SESSION_SECRET =
@@ -8350,6 +8356,10 @@ function applyPayerReimbursement(input = {}) {
 }
 
 async function importAccountantPaymentsFromSheets() {
+  if (!ACCOUNTANT_SHEETS_SYNC_ENABLED) {
+    throw new Error("La sincronizacion con la planilla del contador esta desactivada. Los pagos se guardan en la base del ERP.");
+  }
+
   if (!ACCOUNTANT_PAYMENTS_WEBHOOK_URL) {
     throw new Error("Falta configurar accountantPaymentsWebhookUrl en config-bot.json.");
   }
@@ -8430,6 +8440,10 @@ async function importAccountantPaymentsFromSheets() {
 }
 
 async function syncAccountantDebtsToSheets() {
+  if (!ACCOUNTANT_SHEETS_SYNC_ENABLED) {
+    throw new Error("La sincronizacion con la planilla del contador esta desactivada. Las deudas se consultan desde Finanzas en la base del ERP.");
+  }
+
   if (!ACCOUNTANT_PAYMENTS_WEBHOOK_URL) {
     throw new Error("Falta configurar accountantPaymentsWebhookUrl en config-bot.json.");
   }
@@ -9926,10 +9940,20 @@ async function submitPurchaseRecord(input) {
 async function syncPurchaseToSheets(action, purchase) {
   const webhookUrl = process.env.PURCHASE_WEBHOOK_URL || BOT_CONFIG.purchaseWebhookUrl;
 
+  if (!PURCHASE_SHEETS_SYNC_ENABLED) {
+    return {
+      sent: false,
+      storage: "erp_database",
+      message: "Compra guardada en la base del ERP. La sincronizacion automatica con Sheets esta desactivada.",
+      purchase,
+    };
+  }
+
   if (action !== "create" && !PURCHASE_BIDIRECTIONAL_SYNC_ENABLED) {
     return {
       sent: false,
-      message: "Compra actualizada en el dashboard. Active purchaseBidirectionalSyncEnabled despues de actualizar Apps Script para sincronizar ediciones/eliminaciones con Sheets.",
+      storage: "erp_database",
+      message: "Compra actualizada en la base del ERP. Active purchaseBidirectionalSyncEnabled solo si necesita sincronizar ediciones/eliminaciones con Sheets.",
       purchase,
     };
   }
@@ -9939,7 +9963,8 @@ async function syncPurchaseToSheets(action, purchase) {
     console.log(JSON.stringify(purchase, null, 2));
     return {
       sent: false,
-      message: "Webhook de compras no configurado. La compra quedo generada para prueba.",
+      storage: "erp_database",
+      message: "Webhook de compras no configurado. La compra quedo guardada en la base del ERP.",
       purchase,
     };
   }

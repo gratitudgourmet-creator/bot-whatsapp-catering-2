@@ -45,7 +45,26 @@ DATA_DIR=./data
 PANEL_AUTH_USER=admin
 PANEL_AUTH_PASSWORD=una-contrasena-segura
 PANEL_SESSION_SECRET=un-texto-largo-aleatorio
+PURCHASE_SHEETS_SYNC_ENABLED=false
+ACCOUNTANT_SHEETS_SYNC_ENABLED=false
 ```
+
+Para publicar en `https://sistema.gratitudgourmet.com.ar`, la opcion recomendada es Hostinger VPS + Nginx + HTTPS. La guia completa esta en:
+
+```text
+deploy/README_HOSTINGER_VPS.md
+```
+
+Archivos de despliegue incluidos:
+
+- `deploy/env.production.example`: variables seguras para produccion.
+- `deploy/nginx/gratitud-erp.conf`: proxy web para `sistema.gratitudgourmet.com.ar`.
+- `deploy/systemd/gratitud-erp.service`: servicio automatico de Linux.
+- `deploy/scripts/backup-data.sh`: backup diario de la base JSON.
+
+En produccion inicial se recomienda mantener `BOT_SKIP_WHATSAPP=1` para publicar primero el ERP estable. El bot de WhatsApp puede seguir local o configurarse en una segunda etapa.
+
+Sheets no debe usarse como base de datos principal. Por defecto `PURCHASE_SHEETS_SYNC_ENABLED=false` y `ACCOUNTANT_SHEETS_SYNC_ENABLED=false`, por lo que compras, pagos y deudas se guardan en la base del ERP dentro de `DATA_DIR`. Sheets queda solo como importacion/exportacion manual si se habilita explicitamente.
 
 El hosting debe conservar `DATA_DIR` en un volumen persistente. Ahi se guardan:
 
