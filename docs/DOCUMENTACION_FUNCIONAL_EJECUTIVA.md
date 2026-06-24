@@ -59,6 +59,21 @@ Notas operativas:
 - No hace falta configurar SMTP para esta version.
 - Cuando se retome correo, se implementara como una etapa separada para no mezclarlo con el despliegue actual.
 
+### Actualizacion 24/06/2026 - Ordenes de compra sin duplicar menu
+
+Se ajusto la generacion de ordenes de compra desde evento para que tome como fuente principal el menu real cargado en la ficha del evento. Si la orden ya tiene productos cargados, el sistema pregunta si se desean reemplazar; si el usuario cancela, no agrega nada encima.
+
+Regla operativa:
+
+- Cantidad manual cargada en el menu = cantidad final a comprar o producir para ese item.
+- Las sugerencias por persona solo se usan cuando el item no tiene cantidad manual.
+- Para regenerar una orden vieja con cantidades duplicadas, abrir la orden, traer productos desde el evento, aceptar reemplazar productos actuales y guardar.
+
+Correccion posterior:
+
+- Produccion/Cocina volvia a mostrar `Menu 0 item(s)` porque una funcion del formulario de eventos pisaba la funcion que lee el menu del evento. Se separo la lectura del menu guardado y la recoleccion de items del formulario, para que el monitor y las ordenes de compra usen los items reales del evento.
+- El selector manual de productos en ordenes de compra ya no usa platos de menu ni frases descriptivas como opciones. Ahora sugiere insumos/productos comprables desde maestro, compras anteriores e ingredientes de recetas. El menu sigue sirviendo para calcular cantidades al recalcular desde evento, pero no contamina el autocompletado manual ni el maestro de productos.
+
 ### Actualizacion 22/06/2026 - Navegacion ejecutiva y modulo Eventos
 
 Se separo el control integral de eventos en un modulo propio `Eventos`, independiente de `Comercial`. El modulo `ERP` queda enfocado en lectura ejecutiva, KPIs, alertas y accesos rapidos. `Comercial` conserva oportunidades, pipeline, presupuestos, clientes y lugares.

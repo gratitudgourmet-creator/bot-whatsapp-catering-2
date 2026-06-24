@@ -3804,6 +3804,7 @@ function getProductMasterList() {
   const touch = (name, patch = {}) => {
     const cleanName = normalizeText(name || "");
     if (!cleanName) return null;
+    if (!isPurchasableProductName(cleanName)) return null;
     const key = normalizeProductKey(cleanName);
     const current = byKey.get(key) || {
       id: key,
@@ -3932,6 +3933,19 @@ function getProductMasterList() {
       sources: product.sources.sort((a, b) => a.localeCompare(b)),
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function isPurchasableProductName(name) {
+  const cleanName = normalizeText(name || "");
+  if (!cleanName) return false;
+  const key = normalizeSearchKey(cleanName);
+  const words = key.split(/\s+/).filter(Boolean);
+  const hasPurchaseUnit = /\b(x\s*\d+|kg|kgs|gr|g|lt|lts|litro|litros|ml|cc|unidad|unidades|u\.?|pack|caja|bolsa|botella|lata|frasco|bidon|bandeja)\b/.test(key);
+  const knownMenuName = /\b(bruschetta|empanaditas?|mini choris?|shot de|cazuelita|canastita|brioche de autor|chip de hebras|sorrentinos|peras al vino|delicadeza|fritura de estacion|torta frita|tortilla de campo)\b/.test(key);
+  const descriptiveDish = /(sobre pan|pan de campo|artesanal al horno|decorad|emulsion|lluvia de|punto justo|rellen[ao]|rucula|malbec|tostado|crema de|fresca en pan)/.test(key);
+  if (knownMenuName && !hasPurchaseUnit) return false;
+  if (descriptiveDish && words.length > 5 && !hasPurchaseUnit) return false;
+  return true;
 }
 
 function classifyProductCategory(name, itemType = "") {

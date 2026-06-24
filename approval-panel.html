@@ -860,6 +860,21 @@
       color: var(--warning);
     }
 
+    .notice-inline {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: grid;
+      gap: 4px;
+      margin-top: 8px;
+      padding: 10px 12px;
+    }
+
+    .notice-inline.warning {
+      background: var(--warning-soft);
+      border-color: #ead4a8;
+      color: var(--warning);
+    }
+
     .detail {
       background: rgba(16, 24, 32, 0.48);
       display: none;
@@ -5183,9 +5198,10 @@
           <datalist id="purchase-products-datalist"></datalist>
           <datalist id="purchase-providers-datalist"></datalist>
           <div id="purchase-order-items" class="purchase-items"></div>
+          <div id="purchase-order-stale-warning"></div>
           <div class="actions">
             <button class="filter" type="button" onclick="addPurchaseOrderItemRow()">Agregar producto</button>
-            <button class="filter" type="button" onclick="addPurchaseOrderItemsFromEventMenu()">Traer menu y recetas</button>
+            <button class="filter" type="button" onclick="addPurchaseOrderItemsFromEventMenu()">Recalcular desde menu</button>
             <button class="filter" type="button" onclick="applyPurchaseOrderProviderSuggestions()">Sugerir proveedores</button>
           </div>
         </div>
@@ -9536,6 +9552,7 @@
         addPurchaseOrderItemRow();
         syncPurchaseOrderEventData();
       }
+      renderPurchaseOrderFreshnessWarning();
       renderPurchaseOrderPreview();
       document.getElementById("purchase-order-advisor").classList.add("open");
     }
@@ -9568,12 +9585,28 @@
           purchase.description,
           ...(purchase.lineItems || []).map((item) => item.description),
         ]),
-        ...(erpData.recipes || allRecipes || []).flatMap((recipe) => [
-          recipe.name,
-          ...(recipe.items || []).map((item) => item.name),
-        ]),
-        ...(erpData.events || []).flatMap((event) => getKitchenChecklistItems(event).map((item) => item.name)),
-      ].filter(Boolean))).sort((a, b) => String(a).localeCompare(String(b)));
+        ...(erpData.recipes || allRecipes || []).flatMap((recipe) =>
+          (recipe.items || [])
+            .filter((item) => item.type !== "recipe")
+            .map((item) => item.name)
+        ),
+      ]
+        .map((item) => cleanKitchenText(item))
+        .filter(isPurchaseOrderProductOption)
+      )).sort((a, b) => String(a).localeCompare(String(b)));
+    }
+
+    function isPurchaseOrderProductOption(value) {
+      const text = cleanKitchenText(value);
+      if (!text) return false;
+      const key = normalizeSearch(text);
+      const words = key.split(/\s+/).filter(Boolean);
+      const hasPurchaseUnit = /\b(x\s*\d+|kg|kgs|gr|g|lt|lts|litro|litros|ml|cc|unidad|unidades|u\.?|pack|caja|bolsa|botella|lata|frasco|bidon|bandeja)\b/.test(key);
+      const knownMenuName = /\b(bruschetta|empanaditas?|mini choris?|shot de|cazuelita|canastita|brioche de autor|chip de hebras|sorrentinos|peras al vino|delicadeza|fritura de estacion|torta frita|tortilla de campo)\b/.test(key);
+      const descriptiveDish = /(sobre pan|pan de campo|artesanal al horno|decorad|emulsion|lluvia de|punto justo|rellen[ao]|rucula|malbec|tostado|crema de|fresca en pan)/.test(key);
+      if (knownMenuName && !hasPurchaseUnit) return false;
+      if (descriptiveDish && words.length > 5 && !hasPurchaseUnit) return false;
+      return true;
     }
 
     function getPurchaseOrderProviderOptions() {
@@ -9601,6 +9634,7 @@
       if (!form.elements.title.value.trim()) form.elements.title.value = `Orden de compra - ${event.name || "Evento"}`;
       if (!form.elements.menuType.value.trim()) form.elements.menuType.value = event.serviceType || event.eventMoments || "";
       if (!form.elements.neededDate.value && event.eventDate) form.elements.neededDate.value = event.eventDate;
+      renderPurchaseOrderFreshnessWarning();
       renderPurchaseOrderPreview();
     }
 
@@ -9639,6 +9673,7 @@
           const provider = suggestPurchaseOrderProvider(row.querySelector(".po-item-product")?.value || "");
           const providerInput = row.querySelector(".po-item-provider");
           if (provider && providerInput && !providerInput.value.trim()) providerInput.value = provider;
+          renderPurchaseOrderFreshnessWarning();
           renderPurchaseOrderPreview();
         },
         { showOnEmpty: true }
@@ -9657,6 +9692,7 @@
             const providerInput = row.querySelector(".po-item-provider");
             if (provider && !providerInput.value.trim()) providerInput.value = provider;
           }
+          renderPurchaseOrderFreshnessWarning();
           renderPurchaseOrderPreview();
         });
       });
@@ -9675,17 +9711,92 @@
         return;
       }
       const container = document.getElementById("purchase-order-items");
-      if (container.querySelectorAll(".purchase-order-row").length === 1 && !container.querySelector(".po-item-product")?.value.trim()) {
+      const rows = Array.from(container.querySelectorAll(".purchase-order-row"));
+      const hasCurrentItems = rows.some((row) => row.querySelector(".po-item-product")?.value.trim());
+      if (hasCurrentItems) {
+        const shouldReplace = window.confirm("La orden ya tiene productos cargados. ¿Querés reemplazarlos por las cantidades actuales del menú del evento?");
+        if (shouldReplace) {
+          container.innerHTML = "";
+        } else {
+          showNotice("No se modificó la orden. Para recalcular cantidades, aceptá reemplazar los productos actuales.", "info");
+          return;
+        }
+      } else if (rows.length === 1) {
         container.innerHTML = "";
       }
       suggestions.forEach(addPurchaseOrderItemRow);
       applyPurchaseOrderProviderSuggestions();
+      renderPurchaseOrderFreshnessWarning();
       renderPurchaseOrderPreview();
+    }
+
+    function renderPurchaseOrderFreshnessWarning() {
+      const warning = document.getElementById("purchase-order-stale-warning");
+      const form = document.getElementById("purchase-order-advisor-form");
+      if (!warning || !form) return;
+      const event = (erpData.events || []).find((item) => item.id === form.elements.eventId.value);
+      const currentItems = collectPurchaseOrderFormItems();
+      if (!event || !currentItems.length) {
+        warning.innerHTML = "";
+        return;
+      }
+      const expectedItems = buildPurchaseOrderSuggestionsFromEvent(event);
+      const differences = getPurchaseOrderQuantityDifferences(currentItems, expectedItems);
+      warning.innerHTML = differences.length ? `
+        <div class="notice-inline warning">
+          <strong>Orden desactualizada</strong>
+          <span>Las cantidades no coinciden con el menu actual. Recalcule desde menu y guarde la orden.</span>
+          <div class="secondary">${escapeHtml(differences.slice(0, 4).join(" · "))}${differences.length > 4 ? ` · +${differences.length - 4} mas` : ""}</div>
+        </div>
+      ` : "";
+    }
+
+    function collectPurchaseOrderFormItems() {
+      return Array.from(document.querySelectorAll("#purchase-order-items .purchase-order-row"))
+        .map((row) => ({
+          productName: row.querySelector(".po-item-product")?.value.trim() || "",
+          quantity: row.querySelector(".po-item-quantity")?.value.trim() || "",
+          unit: row.querySelector(".po-item-unit")?.value.trim() || "",
+          itemType: row.querySelector(".po-item-type")?.value || "merchandise",
+        }))
+        .filter((item) => item.productName);
+    }
+
+    function getPurchaseOrderQuantityDifferences(currentItems = [], expectedItems = []) {
+      const current = mapPurchaseOrderComparableItems(currentItems);
+      const expected = mapPurchaseOrderComparableItems(expectedItems);
+      const keys = new Set([...current.keys(), ...expected.keys()]);
+      return Array.from(keys).flatMap((key) => {
+        const currentItem = current.get(key);
+        const expectedItem = expected.get(key);
+        if (!currentItem || !expectedItem) {
+          return [`${expectedItem?.productName || currentItem?.productName || "Producto"} ${currentItem ? "ya no corresponde" : "falta"}`];
+        }
+        const currentQuantity = parseDecimal(currentItem.quantity || 0);
+        const expectedQuantity = parseDecimal(expectedItem.quantity || 0);
+        if (Math.abs(currentQuantity - expectedQuantity) > 0.001) {
+          return [`${currentItem.productName}: ${currentItem.quantity || 0} deberia ser ${expectedItem.quantity || 0}`];
+        }
+        return [];
+      });
+    }
+
+    function mapPurchaseOrderComparableItems(items = []) {
+      const grouped = new Map();
+      items.filter((item) => item.productName).forEach((item) => {
+        const key = [normalizeSearch(item.productName), normalizeSearch(item.unit), item.itemType || "merchandise"].join("|");
+        const current = grouped.get(key) || { ...item, quantity: "" };
+        current.productName = current.productName || item.productName;
+        current.unit = current.unit || item.unit || "";
+        current.quantity = formatOrderQuantity(parseDecimal(current.quantity || 0) + parseDecimal(item.quantity || 0), current.unit || item.unit || "");
+        grouped.set(key, current);
+      });
+      return grouped;
     }
 
     function buildPurchaseOrderSuggestionsFromEvent(event = {}) {
       const suggestions = [];
-      const menuItems = getKitchenChecklistItems(event);
+      const menuItems = getPurchaseOrderMenuItems(event);
       const recipesByName = new Map((erpData.recipes || allRecipes || []).map((recipe) => [normalizeSearch(recipe.name || ""), recipe]));
 
       menuItems.forEach((menuItem) => {
@@ -9719,6 +9830,27 @@
       getOperationalCategoryItemsForOrder(event, "bebidas", "merchandise").forEach((item) => suggestions.push(item));
 
       return mergePurchaseOrderSuggestions(suggestions);
+    }
+
+    function getPurchaseOrderMenuItems(event = {}) {
+      const menuItems = flattenEventMenuForKitchen(event);
+      if (menuItems.length) {
+        const categoryCounts = menuItems.reduce((acc, item) => {
+          const key = item.category || "otro";
+          acc[key] = (acc[key] || 0) + 1;
+          return acc;
+        }, {});
+
+        return dedupeKitchenItems(menuItems.map((item) => ({
+          name: cleanKitchenText(item.name || ""),
+          quantity: item.quantity || estimateMenuItemQuantity(item, event, categoryCounts),
+          detail: cleanKitchenText(item.detail || ""),
+          category: item.category || "",
+          suggestedQuantity: item.suggestedQuantity || "",
+        })).filter((item) => item.name));
+      }
+
+      return getKitchenChecklistItems(event);
     }
 
     function collectRecipeOrderIngredients(recipe, multiplier = 1, source = "") {
@@ -9792,7 +9924,7 @@
       const grouped = new Map();
       items.filter((item) => item.productName).forEach((item) => {
         const key = [normalizeSearch(item.productName), normalizeSearch(item.unit), item.itemType || "merchandise", normalizeSearch(item.providerName || item.suggestedProvider || "")].join("|");
-        const current = grouped.get(key) || { ...item, notes: "" };
+        const current = grouped.get(key) || { ...item, quantity: "", notes: "" };
         const currentQuantity = parseDecimal(current.quantity || 0);
         const nextQuantity = parseDecimal(item.quantity || 0);
         current.quantity = currentQuantity || nextQuantity
@@ -11784,6 +11916,11 @@
     }
 
     function showPurchaseOrderForEvent(eventId) {
+      const existingOrder = findEditablePurchaseOrderForEvent(eventId);
+      if (existingOrder) {
+        showPurchaseOrderForm(existingOrder.id);
+        return;
+      }
       showPurchaseOrderForm();
       const form = document.getElementById("purchase-order-advisor-form");
       const event = (erpData.events || []).find((item) => item.id === eventId);
@@ -11797,6 +11934,13 @@
       if (suggestions.length) suggestions.forEach(addPurchaseOrderItemRow);
       else addPurchaseOrderItemRow();
       renderPurchaseOrderPreview();
+    }
+
+    function findEditablePurchaseOrderForEvent(eventId) {
+      const cleanId = String(eventId || "");
+      return (purchaseOrders || erpData.purchaseOrders || [])
+        .filter((order) => order.eventId === cleanId && !["fulfilled", "cancelled"].includes(order.status))
+        .sort((a, b) => String(b.updatedAt || b.createdAt || "").localeCompare(String(a.updatedAt || a.createdAt || "")))[0] || null;
     }
 
     function getEventMenuItems(event = {}) {
@@ -13636,7 +13780,7 @@
       document.getElementById("event-menu-items").insertAdjacentHTML("beforeend", renderEventMenuLine(item));
     }
 
-    function getEventMenuItems() {
+    function collectEventMenuItemsFromForm() {
       return Array.from(document.querySelectorAll("#event-menu-items .menu-line"))
         .map((row) => ({
           quantity: row.querySelector(".event-menu-quantity")?.value.trim() || "",
@@ -13725,7 +13869,7 @@
       const field = form?.elements.dietaryRestrictions;
       if (!field) return;
       const current = field.value.trim();
-      const menuItems = getEventMenuItems().map((item) => item.name).filter(Boolean);
+      const menuItems = collectEventMenuItemsFromForm().map((item) => item.name).filter(Boolean);
       const suggestions = [];
       if (!current) suggestions.push("Sin TACC / celiacos", "Vegetariano", "Sin lactosa");
       if (menuItems.length) {
@@ -13916,7 +14060,7 @@
       payload.serviceType = getCheckedOptionText("serviceType");
       payload.eventMoments = getCheckedOptionText("eventMoments");
       payload.drinkType = getDrinkChipsText();
-      payload.menuItems = getEventMenuItems();
+      payload.menuItems = collectEventMenuItemsFromForm();
       payload.selectedMenu = payload.menuItems.map((item) => [item.name, item.detail].filter(Boolean).join(" - ")).join(", ");
       payload.stockItems = getEventStockItems();
       payload.operationalSheet = collectEventOperationalSheet();

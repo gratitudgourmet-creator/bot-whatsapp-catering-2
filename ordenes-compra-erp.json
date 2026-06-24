@@ -464,7 +464,7 @@
     "updatedBy": "Joaquin"
   },
   {
-    "id": "oc-1782222285209",
+    "id": "oc-1782315153350",
     "title": "Orden de compra - GUSTAVO MOLINELLI CUMPLEAÑOS",
     "eventId": "evento-1782220966184",
     "eventName": "GUSTAVO MOLINELLI CUMPLEAÑOS",
@@ -474,19 +474,7 @@
     "notes": "",
     "items": [
       {
-        "id": "item-1782222212813",
-        "productName": "AGUA",
-        "quantity": "6400",
-        "unit": "litros",
-        "providerName": "YPF LAMADRID / RUMAOS SA",
-        "suggestedProvider": "YPF LAMADRID / RUMAOS SA",
-        "itemType": "merchandise",
-        "category": "",
-        "notes": "Receta PANINI DE POLLO | PASTA DE POLLO PARA PANINI | Menu 80",
-        "checked": false
-      },
-      {
-        "id": "item-1782222212813",
+        "id": "item-1782314487800",
         "productName": "CAZUELA DE CARNE",
         "quantity": "",
         "unit": "",
@@ -498,21 +486,9 @@
         "checked": false
       },
       {
-        "id": "item-1782222212813",
-        "productName": "CEBOLLA",
-        "quantity": "1600",
-        "unit": "unidad",
-        "providerName": "FERIA",
-        "suggestedProvider": "FERIA",
-        "itemType": "merchandise",
-        "category": "",
-        "notes": "Receta PANINI DE POLLO | PASTA DE POLLO PARA PANINI | Menu 80",
-        "checked": false
-      },
-      {
-        "id": "item-1782222212814",
+        "id": "item-1782314487801",
         "productName": "CIBOULETTE XAT",
-        "quantity": "3200",
+        "quantity": "2",
         "unit": "unidad",
         "providerName": "FERIA",
         "suggestedProvider": "FERIA",
@@ -522,9 +498,9 @@
         "checked": false
       },
       {
-        "id": "item-1782222212814",
+        "id": "item-1782314487801",
         "productName": "EMPANADAS",
-        "quantity": "240",
+        "quantity": "120",
         "unit": "",
         "providerName": "LA CUYANITA S.A.",
         "suggestedProvider": "LA CUYANITA S.A.",
@@ -534,9 +510,9 @@
         "checked": false
       },
       {
-        "id": "item-1782222212814",
+        "id": "item-1782314487801",
         "productName": "LAUREL HOJAS",
-        "quantity": "19200",
+        "quantity": "10",
         "unit": "unidad",
         "providerName": "",
         "suggestedProvider": "",
@@ -546,11 +522,11 @@
         "checked": false
       },
       {
-        "id": "item-1782222212814",
+        "id": "item-1782314487801",
         "productName": "LIMON",
-        "quantity": "6400",
+        "quantity": "4",
         "unit": "unidad",
-        "providerName": "BLOW MAX",
+        "providerName": "FERIA",
         "suggestedProvider": "BLOW MAX",
         "itemType": "merchandise",
         "category": "",
@@ -558,11 +534,11 @@
         "checked": false
       },
       {
-        "id": "item-1782222212814",
+        "id": "item-1782314487801",
         "productName": "PAN PANINI",
-        "quantity": "160",
+        "quantity": "80",
         "unit": "unidad",
-        "providerName": "DULCE RINCON",
+        "providerName": "LA PARRA",
         "suggestedProvider": "DULCE RINCON",
         "itemType": "merchandise",
         "category": "",
@@ -570,21 +546,21 @@
         "checked": false
       },
       {
-        "id": "item-1782222212814",
+        "id": "item-1782314487802",
         "productName": "PIMIENTO",
-        "quantity": "1600",
+        "quantity": "1",
         "unit": "unidad",
-        "providerName": "PUESTO 134 / BUENAVIDA",
-        "suggestedProvider": "PUESTO 134 / BUENAVIDA",
+        "providerName": "FERIA",
+        "suggestedProvider": "FERIA",
         "itemType": "merchandise",
         "category": "",
         "notes": "Receta PANINI DE POLLO | PASTA DE POLLO PARA PANINI | Menu 80",
         "checked": false
       },
       {
-        "id": "item-1782222212815",
+        "id": "item-1782314487802",
         "productName": "QUESO FINLANDIA X290G",
-        "quantity": "3200",
+        "quantity": "2",
         "unit": "unidad",
         "providerName": "MORETTI",
         "suggestedProvider": "MORETTI",
@@ -594,9 +570,9 @@
         "checked": false
       },
       {
-        "id": "item-1782222212815",
+        "id": "item-1782314487802",
         "productName": "SANDWICH JYQ",
-        "quantity": "54",
+        "quantity": "27",
         "unit": "",
         "providerName": "VIRGEN DEL VALLE / RACH SA",
         "suggestedProvider": "VIRGEN DEL VALLE / RACH SA",
@@ -606,9 +582,9 @@
         "checked": false
       },
       {
-        "id": "item-1782222212815",
+        "id": "item-1782314487802",
         "productName": "SUPREMA",
-        "quantity": "3584,02",
+        "quantity": "1.8",
         "unit": "kg",
         "providerName": "GRANJA BENEDETTI / ALMA SRL",
         "suggestedProvider": "GRANJA BENEDETTI / ALMA SRL",
@@ -618,21 +594,165 @@
         "checked": false
       },
       {
-        "id": "item-1782222212815",
+        "id": "item-1782314487802",
         "productName": "ZANAHORIA",
-        "quantity": "1600",
+        "quantity": "1",
         "unit": "unidad",
-        "providerName": "GALED / PUESTO 240-241",
+        "providerName": "FERIA",
         "suggestedProvider": "GALED / PUESTO 240-241",
         "itemType": "merchandise",
         "category": "",
         "notes": "Receta PANINI DE POLLO | PASTA DE POLLO PARA PANINI | Menu 80",
         "checked": false
+      },
+      {
+        "id": "item-1782314652761",
+        "productName": "JAMON CRUDO TIPO",
+        "quantity": "300",
+        "unit": "gr",
+        "providerName": "MORETTI",
+        "suggestedProvider": "TORRENT",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314702320",
+        "productName": "QUESO MINI PEPATO X 1KG",
+        "quantity": "500",
+        "unit": "gr",
+        "providerName": "MORETTI",
+        "suggestedProvider": "MORETTI",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314720899",
+        "productName": "LOMO HORNEADO AHUMADO",
+        "quantity": "200",
+        "unit": "gr",
+        "providerName": "MORETTI",
+        "suggestedProvider": "MORETTI",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314745444",
+        "productName": "FRACC QUESO MORBIER LACTEOS PREMIUM",
+        "quantity": "200",
+        "unit": "gr",
+        "providerName": "MORETTI",
+        "suggestedProvider": "MORETTI",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314763822",
+        "productName": "FRACC QUESO AZUL LA QUESERA",
+        "quantity": "200",
+        "unit": "gr",
+        "providerName": "MORETTI",
+        "suggestedProvider": "MORETTI",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314772859",
+        "productName": "FRAC QUESO GRUYERITO LA QUESERA",
+        "quantity": "300",
+        "unit": "gr",
+        "providerName": "MORETTI",
+        "suggestedProvider": "MORETTI",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314791883",
+        "productName": "SALAME FUET LABRATTO X150G",
+        "quantity": "2",
+        "unit": "unidad",
+        "providerName": "MORETTI",
+        "suggestedProvider": "MORETTI",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314840910",
+        "productName": "BONDIOLA FRESCA DE CERDO",
+        "quantity": "200",
+        "unit": "gr",
+        "providerName": "MORETTI",
+        "suggestedProvider": "GRANJA BENEDETTI / ALMA SRL",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314871997",
+        "productName": "PASTRAMI",
+        "quantity": "100",
+        "unit": "gr",
+        "providerName": "MORETTI",
+        "suggestedProvider": "MORETTI",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782314902797",
+        "productName": "PAN CASERO X KG",
+        "quantity": "2",
+        "unit": "unidades",
+        "providerName": "MORETTI",
+        "suggestedProvider": "DULCE RINCON",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782316140682",
+        "productName": "CHERRY X KG",
+        "quantity": "500",
+        "unit": "gr",
+        "providerName": "FERIA",
+        "suggestedProvider": "PUESTO 134 / BUENAVIDA",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
+      },
+      {
+        "id": "item-1782316152085",
+        "productName": "TOMILLO FRESCO X ATADO",
+        "quantity": "1",
+        "unit": "atado",
+        "providerName": "FERIA",
+        "suggestedProvider": "FERIA",
+        "itemType": "merchandise",
+        "category": "",
+        "notes": "PICADA",
+        "checked": false
       }
     ],
-    "createdAt": "2026-06-23T13:44:45.209Z",
+    "createdAt": "2026-06-24T15:32:33.347Z",
     "createdBy": "Joaquin",
-    "updatedAt": "2026-06-23T13:44:45.209Z",
+    "updatedAt": "2026-06-24T15:51:22.939Z",
     "updatedBy": "Joaquin"
   }
 ]
