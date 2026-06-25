@@ -18,6 +18,10 @@ pids
 .runtime/
 .wwebjs_auth/
 .wwebjs_cache/
+
+# Paquetes de deploy generados localmente
+gratitud-erp-deploy.zip
+*-deploy.zip
 data/
 backups/
 

@@ -11159,7 +11159,22 @@
             <button class="approve" type="button" onclick="closeLogisticsOperationalEvent()">Solicitar cierre</button>
           </div>
         </section>
+        <section class="logistics-section">
+          <h3>Ficha para copiar</h3>
+          <p class="subtitle">Texto con los datos del evento para pegar en WhatsApp u otro lado.</p>
+          <textarea id="logistics-sheet-text" style="min-height:280px;">${escapeHtml(buildOperationalSheetText(event))}</textarea>
+          <div class="toolbar-actions" style="justify-content:flex-end;">
+            <button class="approve" type="button" onclick="copyLogisticsOperationalSheet()">Copiar ficha</button>
+          </div>
+        </section>
       `;
+    }
+
+    async function copyLogisticsOperationalSheet() {
+      const textarea = document.getElementById("logistics-sheet-text");
+      if (!textarea) return;
+      await navigator.clipboard.writeText(textarea.value);
+      showNotice("Ficha operativa copiada.");
     }
 
     function logisticsInfo(label, value) {
