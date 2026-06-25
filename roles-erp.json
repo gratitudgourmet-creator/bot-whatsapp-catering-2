@@ -9,6 +9,7 @@
       "commercial",
       "events",
       "purchases",
+      "buyer_purchases",
       "finance",
       "production",
       "logistics_event",
@@ -52,6 +53,17 @@
       "purchases",
       "stock",
       "providers"
+    ]
+  },
+  "compras_calle": {
+    "label": "Compras Calle",
+    "permissions": [
+      "view",
+      "purchase_orders:read",
+      "purchase_orders:check"
+    ],
+    "tabs": [
+      "buyer_purchases"
     ]
   },
   "cocina": {

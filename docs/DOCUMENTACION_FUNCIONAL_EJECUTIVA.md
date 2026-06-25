@@ -20,6 +20,38 @@ Fecha de analisis: 2026-06-19
 
 ## Fase 1 - Inventario del sistema
 
+### Actualizacion 24/06/2026 - Compras Calle y ruta de proveedores
+
+Se agrego una vista operativa para el encargado de compras en calle, pensada para celular y sin exposicion de costos.
+
+Cambios funcionales:
+
+- Nuevo rol `compras_calle`.
+- Nueva pestaña `Compras Calle`.
+- Nuevos permisos:
+  - `purchase_orders:read`: ver ordenes de compra para calle.
+  - `purchase_orders:check`: tildar productos y guardar comentarios.
+- Nuevos endpoints:
+  - `GET /api/buyer-orders`
+  - `POST /api/buyer-order-item`
+- La vista muestra ordenes activas, productos pendientes primero, agrupacion por proveedor y progreso de compra.
+- El comprador puede marcar productos como comprados y agregar comentarios/faltantes/reemplazos.
+- No se muestran costos, margenes ni datos de recetas salvo que admin marque `Mostrar receta / aclaracion tecnica` en la orden.
+- La ficha de proveedor ahora permite cargar multiples ubicaciones/sucursales con el formato `Nombre | Direccion | Telefono | Referencia`.
+- Cada proveedor tiene link de mapa y cada orden puede abrir una hoja de ruta basica en Google Maps con los proveedores pendientes.
+- En ordenes de compra se desactivo el autocompletado nativo del navegador para que no se mezcle con las sugerencias del ERP.
+
+Notas operativas:
+
+- La hoja de ruta actual ordena por proveedores pendientes y abre Google Maps. No calcula todavia la ruta mas corta real porque falta definir punto de partida del comprador.
+- Para crear el usuario del encargado: ir a `Seguridad > Usuarios`, asignar rol `Compras Calle` y entregar usuario/clave.
+
+Archivos modificados:
+
+- `approval-panel.html`
+- `whatsapp-catering-bot.js`
+- `roles-erp.json`
+
 ### Actualizacion 23/06/2026 - Compras livianas, mobile y ordenes de compra
 
 Se corrigio el calculo de ordenes de compra cuando un item de menu usa una receta que a su vez contiene otra receta vinculada. El sistema ahora convierte la cantidad usada de la preparacion vinculada a la unidad de rendimiento de esa receta antes de multiplicar ingredientes. Ejemplo: si una receta usa `80 g` de una preparacion cuyo rendimiento esta en `kg`, se calcula como `0,08 kg`, no como `80 kg`.

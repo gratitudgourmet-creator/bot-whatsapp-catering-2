@@ -209,7 +209,7 @@ const DEFAULT_ROLE_DEFINITIONS = {
   admin: {
     label: "Administracion general",
     permissions: ["*"],
-    tabs: ["erp", "commercial", "events", "purchases", "finance", "production", "logistics_event", "recipes", "stock", "providers", "customers", "hr", "sanitation", "security", "reports", "payment_orders"],
+    tabs: ["erp", "commercial", "events", "purchases", "buyer_purchases", "finance", "production", "logistics_event", "recipes", "stock", "providers", "customers", "hr", "sanitation", "security", "reports", "payment_orders"],
   },
   comercial: {
     label: "Comercial",
@@ -220,6 +220,11 @@ const DEFAULT_ROLE_DEFINITIONS = {
     label: "Compras",
     permissions: ["view", "purchases:write", "stock:read", "providers:write", "venues:read", "events:read"],
     tabs: ["purchases", "stock", "providers"],
+  },
+  compras_calle: {
+    label: "Compras Calle",
+    permissions: ["view", "purchase_orders:read", "purchase_orders:check"],
+    tabs: ["buyer_purchases"],
   },
   cocina: {
     label: "Cocinero",
@@ -257,6 +262,7 @@ const TAB_DEFINITIONS = [
   { id: "commercial", label: "Comercial", requiredAny: ["events:read", "events:write", "quotes:write", "customers:write"] },
   { id: "events", label: "Eventos", requiredAny: ["events:read", "events:write"] },
   { id: "purchases", label: "Compras", requiredAny: ["purchases:write"] },
+  { id: "buyer_purchases", label: "Compras Calle", requiredAny: ["purchase_orders:read", "purchase_orders:check"] },
   { id: "finance", label: "Finanzas", requiredAny: ["finance:read", "finance:write"] },
   { id: "production", label: "Produccion/Cocina", requiredAny: ["production:read", "recipes:read", "recipes:write"] },
   { id: "logistics_event", label: "Logistica Evento", requiredAny: ["logistics:read", "logistics:write"] },
@@ -293,6 +299,8 @@ const PERMISSION_DEFINITIONS = [
   { id: "quotes:write", label: "Crear y editar presupuestos", group: "Presupuestos" },
   { id: "customers:write", label: "Crear y editar clientes", group: "Clientes" },
   { id: "purchases:write", label: "Compras, pagos y deudas", group: "Compras" },
+  { id: "purchase_orders:read", label: "Ver ordenes de compra en calle", group: "Compras" },
+  { id: "purchase_orders:check", label: "Tildar ordenes y comentar items", group: "Compras" },
   { id: "providers:write", label: "Crear y editar proveedores", group: "Proveedores" },
   { id: "recipes:write", label: "Crear y editar recetas", group: "Recetas" },
   { id: "venues:write", label: "Crear y editar lugares", group: "Lugares" },
@@ -1362,6 +1370,21 @@ function startApprovalPanelServer() {
         const user = requirePanelPermission(request, response, "purchases:write");
         if (!user) return;
         return sendJson(response, { ok: true, orders: getPurchaseOrderList() });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/buyer-orders") {
+        const user = requireAnyPanelPermission(request, response, ["purchase_orders:read", "purchase_orders:check", "purchases:write"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, orders: getBuyerPurchaseOrderList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/buyer-order-item") {
+        const user = requireAnyPanelPermission(request, response, ["purchase_orders:check", "purchases:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const result = updateBuyerPurchaseOrderItem(body, user);
+        recordAudit(user, "update", "purchase_order_item", body.itemId || body.orderId || "", "Compras en calle", null, result);
+        return sendJson(response, { ok: true, order: result, orders: getBuyerPurchaseOrderList() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase-order") {
@@ -3198,6 +3221,12 @@ function getProviderList() {
 function normalizeProviderRecord(provider = {}, stats = {}) {
   const now = new Date().toISOString();
   const name = normalizeText(provider.name || provider.displayName || "");
+  const hasLocationsText = Object.prototype.hasOwnProperty.call(provider, "locationsText");
+  const locations = normalizeProviderLocations(
+    hasLocationsText ? parseProviderLocationsText(provider.locationsText) : provider.locations || provider.addresses || [],
+    provider.address
+  );
+  const primaryLocation = locations[0] || {};
   return {
     id: provider.id || createProviderId(name),
     name,
@@ -3207,7 +3236,8 @@ function normalizeProviderRecord(provider = {}, stats = {}) {
     contactName: normalizeText(provider.contactName || ""),
     phone: normalizeText(provider.phone || ""),
     email: normalizeText(provider.email || ""),
-    address: normalizeText(provider.address || ""),
+    address: normalizeText(provider.address || primaryLocation.address || ""),
+    locations,
     bankName: normalizeText(provider.bankName || ""),
     bankAccountType: normalizeText(provider.bankAccountType || ""),
     bankAccountNumber: normalizeText(provider.bankAccountNumber || ""),
@@ -3222,6 +3252,51 @@ function normalizeProviderRecord(provider = {}, stats = {}) {
     lastPurchaseDate: stats.lastPurchaseDate || provider.lastPurchaseDate || "",
     createdAt: provider.createdAt || now,
     updatedAt: provider.updatedAt || provider.createdAt || now,
+  };
+}
+
+function normalizeProviderLocations(input = [], fallbackAddress = "") {
+  const rawLocations = Array.isArray(input) ? input : [];
+  const normalized = rawLocations
+    .map((location, index) => normalizeProviderLocation(location, index))
+    .filter((location) => location.address || location.name || location.mapsUrl);
+  const cleanFallback = normalizeText(fallbackAddress || "");
+  if (cleanFallback && !normalized.some((location) => normalizeSearchKey(location.address) === normalizeSearchKey(cleanFallback))) {
+    normalized.unshift(normalizeProviderLocation({ name: "Principal", address: cleanFallback, isPrimary: true }, 0));
+  }
+  return normalized.map((location, index) => ({ ...location, isPrimary: index === 0 || parseBooleanLike(location.isPrimary) }));
+}
+
+function parseProviderLocationsText(value = "") {
+  return String(value || "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, index) => {
+      const parts = line.split("|").map((part) => part.trim());
+      if (parts.length === 1) {
+        return { name: index === 0 ? "Principal" : `Sucursal ${index + 1}`, address: parts[0] };
+      }
+      return {
+        name: parts[0] || (index === 0 ? "Principal" : `Sucursal ${index + 1}`),
+        address: parts[1] || "",
+        phone: parts[2] || "",
+        notes: parts.slice(3).join(" | "),
+      };
+    });
+}
+
+function normalizeProviderLocation(location = {}, index = 0) {
+  return {
+    id: normalizeText(location.id || `loc-${index + 1}`),
+    name: normalizeText(location.name || location.label || (index === 0 ? "Principal" : `Sucursal ${index + 1}`)),
+    address: normalizeText(location.address || location.direccion || ""),
+    phone: normalizeText(location.phone || location.telefono || ""),
+    notes: normalizeText(location.notes || location.reference || location.referencias || ""),
+    mapsUrl: normalizeText(location.mapsUrl || location.googleMapsUrl || ""),
+    lat: normalizeText(location.lat || location.latitude || ""),
+    lng: normalizeText(location.lng || location.longitude || ""),
+    isPrimary: parseBooleanLike(location.isPrimary),
   };
 }
 
@@ -3301,6 +3376,7 @@ function mergeDuplicateProviderData(current = {}, incoming = {}, purchaseNameKey
     "phone",
     "email",
     "address",
+    "locations",
     "bankName",
     "bankAccountType",
     "bankAccountNumber",
@@ -3311,6 +3387,10 @@ function mergeDuplicateProviderData(current = {}, incoming = {}, purchaseNameKey
     "category",
     "notes",
   ].forEach((field) => {
+    if (field === "locations") {
+      merged[field] = normalizeProviderLocations(current[field]?.length ? current[field] : incoming[field], current.address || incoming.address || "");
+      return;
+    }
     merged[field] = normalizeText(current[field] || incoming[field] || "");
   });
   merged.createdAt = [current.createdAt, incoming.createdAt].filter(Boolean).sort()[0] || new Date().toISOString();
@@ -5173,6 +5253,7 @@ function normalizePurchaseOrderRecord(input = {}) {
     status: normalizePurchaseOrderStatus(input.status || "draft"),
     neededDate: normalizePanelDate(input.neededDate || input.date || "") || "",
     notes: normalizeText(input.notes || ""),
+    showRecipeNotesForBuyer: parseBooleanLike(input.showRecipeNotesForBuyer),
     items,
     createdAt: input.createdAt || new Date().toISOString(),
     createdBy: normalizeText(input.createdBy || ""),
@@ -5197,6 +5278,10 @@ function normalizePurchaseOrderItems(items = []) {
         category: normalizeText(item.category || ""),
         notes: normalizeText(item.notes || item.note || ""),
         checked: parseBooleanLike(item.checked),
+        buyerNotes: normalizeText(item.buyerNotes || item.buyerNote || item.comment || item.comments || ""),
+        checkedAt: normalizeText(item.checkedAt || ""),
+        checkedBy: normalizeText(item.checkedBy || ""),
+        adminShowRecipeNotes: parseBooleanLike(item.adminShowRecipeNotes),
       };
     })
     .filter((item) => item.productName);
@@ -5271,6 +5356,179 @@ function savePurchaseOrderRecord(input = {}, user = null) {
   }
   saveErpPurchaseOrders();
   return order;
+}
+
+function getBuyerPurchaseOrderList() {
+  const providersByKey = new Map(getProviderList().map((provider) => [normalizeSearchKey(provider.name), provider]));
+  return getPurchaseOrderList()
+    .filter((order) => !["fulfilled", "cancelled"].includes(order.status))
+    .map((order) => buildBuyerPurchaseOrder(order, providersByKey))
+    .filter((order) => order.items.length)
+    .sort((a, b) => {
+      if (b.progress.pending !== a.progress.pending) return b.progress.pending - a.progress.pending;
+      return String(a.neededDate || "9999-12-31").localeCompare(String(b.neededDate || "9999-12-31"));
+    });
+}
+
+function buildBuyerPurchaseOrder(order = {}, providersByKey = new Map()) {
+  const items = (order.items || [])
+    .map((item) => {
+      const providerName = normalizeText(item.providerName || item.suggestedProvider || "Sin proveedor");
+      const provider = providersByKey.get(normalizeSearchKey(providerName)) || normalizeProviderRecord({ name: providerName });
+      const locations = getBuyerProviderLocations(provider, providerName);
+      const showNotes = parseBooleanLike(order.showRecipeNotesForBuyer) || parseBooleanLike(item.adminShowRecipeNotes);
+      return {
+        id: item.id,
+        productName: item.productName,
+        quantity: item.quantity,
+        unit: item.unit,
+        providerName,
+        checked: parseBooleanLike(item.checked),
+        buyerNotes: item.buyerNotes || "",
+        checkedAt: item.checkedAt || "",
+        checkedBy: item.checkedBy || "",
+        itemType: item.itemType || "merchandise",
+        note: showNotes ? item.notes || "" : "",
+        locations,
+        mapsUrl: locations[0]?.mapsUrl || buildMapsSearchUrl(provider.address || providerName),
+      };
+    })
+    .sort((a, b) => Number(a.checked) - Number(b.checked) || a.providerName.localeCompare(b.providerName) || a.productName.localeCompare(b.productName));
+
+  const providers = Array.from(items.reduce((groups, item) => {
+    const key = normalizeSearchKey(item.providerName || "Sin proveedor") || "sin-proveedor";
+    if (!groups.has(key)) {
+      groups.set(key, {
+        providerName: item.providerName || "Sin proveedor",
+        locations: item.locations || [],
+        mapsUrl: item.mapsUrl || "",
+        pendingItems: [],
+        doneItems: [],
+      });
+    }
+    const group = groups.get(key);
+    (item.checked ? group.doneItems : group.pendingItems).push(item);
+    return groups;
+  }, new Map()).values())
+    .sort((a, b) => b.pendingItems.length - a.pendingItems.length || a.providerName.localeCompare(b.providerName));
+
+  const total = items.length;
+  const done = items.filter((item) => item.checked).length;
+  const route = providers
+    .filter((provider) => provider.pendingItems.length)
+    .map((provider) => ({
+      providerName: provider.providerName,
+      pendingCount: provider.pendingItems.length,
+      itemCount: provider.pendingItems.length + provider.doneItems.length,
+      locations: provider.locations,
+      mapsUrl: provider.mapsUrl,
+    }));
+  const routeUrl = buildRouteMapsUrl(route);
+
+  return {
+    id: order.id,
+    title: order.title,
+    eventId: order.eventId,
+    eventName: order.eventName,
+    menuType: order.menuType,
+    status: order.status,
+    neededDate: order.neededDate,
+    notes: order.notes || "",
+    showRecipeNotesForBuyer: parseBooleanLike(order.showRecipeNotesForBuyer),
+    progress: {
+      total,
+      done,
+      pending: total - done,
+      percent: total ? Math.round((done / total) * 100) : 0,
+    },
+    route,
+    routeUrl,
+    providers,
+    items,
+  };
+}
+
+function getBuyerProviderLocations(provider = {}, fallbackName = "") {
+  const locations = normalizeProviderLocations(provider.locations || [], provider.address || "");
+  if (locations.length) {
+    return locations.map((location) => ({
+      ...location,
+      mapsUrl: location.mapsUrl || buildMapsSearchUrl(location.address || fallbackName),
+    }));
+  }
+  const fallback = normalizeText(provider.address || fallbackName || "Sin direccion");
+  return [{
+    id: "loc-1",
+    name: "Principal",
+    address: fallback,
+    phone: provider.phone || "",
+    notes: "",
+    mapsUrl: buildMapsSearchUrl(fallback),
+    isPrimary: true,
+  }];
+}
+
+function buildMapsSearchUrl(query = "") {
+  const cleanQuery = normalizeText(query || "");
+  if (!cleanQuery) return "";
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanQuery)}`;
+}
+
+function buildRouteMapsUrl(route = []) {
+  const stops = route
+    .map((stop) => stop.locations?.[0]?.address || stop.providerName || "")
+    .map((stop) => normalizeText(stop))
+    .filter(Boolean);
+  if (!stops.length) return "";
+  const destination = stops[stops.length - 1];
+  const waypoints = stops.slice(0, -1);
+  const params = new URLSearchParams({
+    api: "1",
+    travelmode: "driving",
+    destination,
+  });
+  if (waypoints.length) params.set("waypoints", waypoints.join("|"));
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
+
+function updateBuyerPurchaseOrderItem(input = {}, user = null) {
+  const orderId = normalizeText(input.orderId || "");
+  const itemId = normalizeText(input.itemId || "");
+  if (!orderId || !itemId) throw new Error("No encontre el item de la orden.");
+
+  const orderIndex = erpPurchaseOrders.findIndex((order) => order.id === orderId);
+  if (orderIndex < 0) throw new Error("No encontre esa orden de compra.");
+
+  const previousOrder = normalizePurchaseOrderRecord(erpPurchaseOrders[orderIndex]);
+  const itemIndex = previousOrder.items.findIndex((item) => item.id === itemId);
+  if (itemIndex < 0) throw new Error("No encontre ese producto dentro de la orden.");
+
+  const now = new Date().toISOString();
+  const nextItems = previousOrder.items.map((item, index) => {
+    if (index !== itemIndex) return item;
+    const checked = Object.prototype.hasOwnProperty.call(input, "checked")
+      ? parseBooleanLike(input.checked)
+      : parseBooleanLike(item.checked);
+    return {
+      ...item,
+      checked,
+      buyerNotes: normalizeText(input.buyerNotes ?? item.buyerNotes ?? ""),
+      checkedAt: checked ? now : "",
+      checkedBy: checked ? user?.displayName || user?.username || item.checkedBy || "" : "",
+    };
+  });
+
+  const nextOrder = normalizePurchaseOrderRecord({
+    ...previousOrder,
+    items: nextItems,
+    updatedAt: now,
+    updatedBy: user?.displayName || user?.username || previousOrder.updatedBy || "",
+  });
+  erpPurchaseOrders[orderIndex] = nextOrder;
+  saveErpPurchaseOrders();
+
+  const providersByKey = new Map(getProviderList().map((provider) => [normalizeSearchKey(provider.name), provider]));
+  return buildBuyerPurchaseOrder(nextOrder, providersByKey);
 }
 
 function deletePurchaseOrderRecord(id) {

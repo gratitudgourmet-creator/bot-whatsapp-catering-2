@@ -127185,5 +127185,19 @@
       "updatedAt": "2026-06-24T18:41:10.903Z"
     },
     "metadata": {}
+  },
+  {
+    "id": "historial-1782386752417-889e4cd1b0e02",
+    "at": "2026-06-25T11:25:52.417Z",
+    "userId": "usuario-admin",
+    "userName": "Joaquin",
+    "userRole": "admin",
+    "action": "login",
+    "entityType": "session",
+    "entityId": "usuario-admin",
+    "label": "Inicio de sesion",
+    "before": null,
+    "after": null,
+    "metadata": {}
   }
 ]

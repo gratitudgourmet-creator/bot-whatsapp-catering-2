@@ -1036,6 +1036,110 @@
       margin-top: 14px;
     }
 
+    .buyer-shell {
+      max-width: 980px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .buyer-orders-dashboard,
+    .buyer-order-list,
+    .buyer-provider-list,
+    .buyer-item-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .buyer-order-card,
+    .buyer-provider-card,
+    .buyer-item-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      padding: 14px;
+    }
+
+    .buyer-order-head,
+    .buyer-provider-head,
+    .buyer-item-main {
+      align-items: start;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .buyer-title,
+    .buyer-provider-name,
+    .buyer-product {
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .buyer-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+      overflow-wrap: anywhere;
+    }
+
+    .buyer-progress {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .buyer-progress span {
+      background: var(--green);
+      display: block;
+      height: 100%;
+      min-width: 0;
+    }
+
+    .buyer-route {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .buyer-route a,
+    .buyer-map-link {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 800;
+      min-height: 32px;
+      padding: 6px 10px;
+      text-decoration: none;
+    }
+
+    .buyer-item-card.done {
+      background: #f8fbfa;
+      opacity: .78;
+    }
+
+    .buyer-check {
+      align-items: center;
+      display: inline-flex;
+      gap: 8px;
+      font-weight: 900;
+      min-height: 38px;
+      white-space: nowrap;
+    }
+
+    .buyer-note {
+      margin-top: 10px;
+      width: 100%;
+    }
+
     .purchase-order-result-grid {
       display: grid;
       gap: 10px;
@@ -3755,6 +3859,19 @@
         grid-template-columns: 1fr;
       }
 
+      .buyer-order-head,
+      .buyer-provider-head,
+      .buyer-item-main {
+        grid-template-columns: 1fr;
+      }
+
+      .buyer-check,
+      .buyer-map-link,
+      .buyer-route a {
+        justify-content: center;
+        width: 100%;
+      }
+
       .panel-grid,
       .erp-grid,
       .recipe-item,
@@ -4008,6 +4125,12 @@
           <button class="workspace-subitem" data-view="purchases" data-anchor="purchase-orders-section">Órdenes de compra</button>
           <button class="workspace-subitem" data-view="purchases" data-anchor="purchase-inventory-section">Inventario</button>
           <button class="workspace-subitem" data-view="purchases" data-anchor="purchase-variations-section">Insumos con variación</button>
+        </div>
+      </div>
+      <div class="workspace-menu" data-menu-view="buyer_purchases">
+        <button class="workspace-tab" data-view="buyer_purchases">Compras Calle</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="buyer_purchases" data-anchor="buyer-orders-section">Órdenes pendientes</button>
         </div>
       </div>
       <div class="workspace-menu" data-menu-view="finance">
@@ -4608,6 +4731,19 @@
       </section>
     </section>
 
+    <section id="view-buyer_purchases" class="workspace-view" data-permission="purchase_orders:read">
+      <section id="buyer-orders-section" class="erp-section buyer-shell">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2>Compras Calle</h2>
+            <p class="subtitle">Órdenes para comprar desde el celular. No muestra costos ni recetas salvo autorización admin.</p>
+          </div>
+          <button class="filter" type="button" onclick="loadBuyerOrders()">Actualizar</button>
+        </div>
+        <div id="buyer-orders-dashboard" class="buyer-orders-dashboard"></div>
+      </section>
+    </section>
+
     <section id="view-finance" class="workspace-view" data-permission="finance:read">
       <section id="finance-summary-section" class="erp-section">
         <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
@@ -4864,8 +5000,12 @@
               <input name="category" placeholder="Carnes, verduras, logistica">
             </div>
             <div class="form-field full">
-              <label>Direccion</label>
+              <label>Direccion principal</label>
               <input name="address">
+            </div>
+            <div class="form-field full">
+              <label>Sucursales / ubicaciones</label>
+              <textarea name="locationsText" placeholder="Principal | San Martin 123, Mendoza | 261... | Referencia&#10;Sucursal 2 | Godoy Cruz 456, Mendoza | 261... | Referencia"></textarea>
             </div>
             <div class="form-field">
               <label>Banco</label>
@@ -5192,6 +5332,13 @@
         <div class="form-field">
           <label>Necesario para</label>
           <input name="neededDate" type="date">
+        </div>
+        <div class="form-field">
+          <label>Detalle para comprador</label>
+          <label class="check-item">
+            <input name="showRecipeNotesForBuyer" type="checkbox">
+            Mostrar receta / aclaracion tecnica
+          </label>
         </div>
         <div class="form-field full">
           <label>Productos de la orden</label>
@@ -5851,6 +5998,7 @@
     let allProviders = [];
     let allRecipes = [];
     let purchaseOrders = [];
+    let buyerOrders = [];
     let purchaseReceipts = [];
     let pendingRecipeEdits = [];
     let erpData = {
@@ -5949,6 +6097,13 @@
           { label: "Maestro de insumos", description: "Productos consolidados desde compras, recetas, stock y ordenes.", view: "stock", anchor: "product-master-section" },
           { label: "Inventario", description: "Stock generado por recepciones aceptadas.", anchor: "purchase-inventory-section" },
           { label: "Insumos con variación", description: "Cambios fuertes de precio e impacto en recetas.", anchor: "purchase-variations-section" },
+        ],
+      },
+      buyer_purchases: {
+        title: "Compras Calle",
+        subtitle: "Checklist simple para comprar desde el celular, comentar faltantes y abrir ubicaciones de proveedores.",
+        items: [
+          { label: "Órdenes pendientes", description: "Productos pendientes primero, agrupados por proveedor.", anchor: "buyer-orders-section" },
         ],
       },
       finance: {
@@ -6086,6 +6241,9 @@
         "purchase-inventory-section": ["purchase-inventory-section"],
         "purchase-variations-section": ["purchase-variations-section"],
       },
+      buyer_purchases: {
+        "buyer-orders-section": ["buyer-orders-section"],
+      },
       finance: {
         "finance-summary-section": ["finance-summary-section"],
         "finance-events-section": ["finance-summary-section"],
@@ -6145,6 +6303,7 @@
       commercial: "commercial-opportunities-section",
       events: "events-control-section",
       purchases: "purchase-sheet-section",
+      buyer_purchases: "buyer-orders-section",
       finance: "finance-summary-section",
       production: "production-home-section",
       hr: "hr-staff-section",
@@ -6256,6 +6415,7 @@
       if (canAccessTab("recipes") || canAccessTab("production")) tasks.push(loadRecipes());
       if (["erp", "commercial", "events", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].some((view) => canAccessTab(view))) tasks.push(loadErp());
       if (canAccessTab("logistics_event")) tasks.push(loadLogisticsEvents());
+      if (canAccessTab("buyer_purchases")) tasks.push(loadBuyerOrders());
       await Promise.all(tasks);
       if (stateRefreshTimer) clearInterval(stateRefreshTimer);
       if (canAccessTab("commercial")) {
@@ -6385,6 +6545,7 @@
       if (view === "providers") return loadProviders();
       if (view === "recipes") return loadRecipes();
       if (view === "logistics_event") return loadLogisticsEvents();
+      if (view === "buyer_purchases") return loadBuyerOrders();
       if (view === "security") return loadSecurityPanel();
       if (["erp", "commercial", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].includes(view)) return loadErp();
       return Promise.resolve();
@@ -6495,6 +6656,7 @@
         commercial: { requiredAny: ["events:read", "events:write", "quotes:write", "customers:write"] },
         events: { requiredAny: ["events:read", "events:write"] },
         purchases: { requiredAny: ["purchases:write"] },
+        buyer_purchases: { requiredAny: ["purchase_orders:read", "purchase_orders:check"] },
         finance: { requiredAny: ["finance:read", "finance:write"] },
         production: { requiredAny: ["production:read", "recipes:read", "recipes:write"] },
         stock: { requiredAny: ["stock:read", "purchases:write"] },
@@ -6558,6 +6720,128 @@
       }
     }
 
+    async function loadBuyerOrders() {
+      const container = document.getElementById("buyer-orders-dashboard");
+      if (container) container.innerHTML = `<div class="empty compact-empty">Cargando órdenes...</div>`;
+      try {
+        const response = await fetch("/api/buyer-orders");
+        const result = await readJsonResponse(response);
+        if (!result.ok) throw new Error(result.error || "No se pudieron cargar las ordenes.");
+        buyerOrders = result.orders || [];
+        renderBuyerOrders();
+      } catch (error) {
+        if (container) container.innerHTML = `<div class="notice error open">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function renderBuyerOrders() {
+      const container = document.getElementById("buyer-orders-dashboard");
+      if (!container) return;
+      if (!buyerOrders.length) {
+        container.innerHTML = `<div class="empty compact-empty">No hay órdenes pendientes para comprar.</div>`;
+        return;
+      }
+      container.innerHTML = `
+        <div class="buyer-order-list">
+          ${buyerOrders.map(renderBuyerOrderCard).join("")}
+        </div>
+      `;
+    }
+
+    function renderBuyerOrderCard(order) {
+      const route = (order.route || []).filter((item) => item.pendingCount);
+      return `
+        <article class="buyer-order-card">
+          <div class="buyer-order-head">
+            <div>
+              <div class="buyer-title">${escapeHtml(order.title || "Orden de compra")}</div>
+              <div class="buyer-meta">${escapeHtml([order.eventName, formatShortDate(order.neededDate), order.menuType].filter(Boolean).join(" · ") || "Sin evento")}</div>
+            </div>
+            <span class="badge ${order.progress?.pending ? "missing_info" : "confirmed"}">${order.progress?.pending ? `${escapeHtml(order.progress.pending)} pendiente(s)` : "Completa"}</span>
+          </div>
+          <div class="buyer-progress" title="${escapeAttribute(order.progress?.percent || 0)}% completo"><span style="width:${Number(order.progress?.percent || 0)}%"></span></div>
+          ${route.length ? `
+            <div class="buyer-route">
+              ${order.routeUrl ? `<a href="${escapeAttribute(order.routeUrl)}" target="_blank" rel="noopener">Abrir hoja de ruta</a>` : ""}
+              ${route.map((stop, index) => `
+                <a href="${escapeAttribute(stop.mapsUrl || "#")}" target="_blank" rel="noopener">
+                  ${index + 1}. ${escapeHtml(stop.providerName)} · ${escapeHtml(stop.pendingCount)} pendiente(s)
+                </a>
+              `).join("")}
+            </div>
+          ` : `<p class="buyer-meta">Todo comprado. Revise comentarios antes de cerrar la orden.</p>`}
+          <div class="buyer-provider-list">
+            ${(order.providers || []).map((provider) => renderBuyerProviderCard(order, provider)).join("")}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderBuyerProviderCard(order, provider) {
+      const items = [...(provider.pendingItems || []), ...(provider.doneItems || [])];
+      const primaryLocation = (provider.locations || [])[0] || {};
+      return `
+        <section class="buyer-provider-card">
+          <div class="buyer-provider-head">
+            <div>
+              <div class="buyer-provider-name">${escapeHtml(provider.providerName || "Sin proveedor")}</div>
+              <div class="buyer-meta">${escapeHtml(primaryLocation.address || "Sin direccion cargada")}</div>
+              ${primaryLocation.notes ? `<div class="buyer-meta">Ref: ${escapeHtml(primaryLocation.notes)}</div>` : ""}
+            </div>
+            ${provider.mapsUrl ? `<a class="buyer-map-link" href="${escapeAttribute(provider.mapsUrl)}" target="_blank" rel="noopener">Mapa</a>` : ""}
+          </div>
+          ${provider.locations?.length > 1 ? `
+            <div class="buyer-route">
+              ${provider.locations.map((location) => `
+                <a href="${escapeAttribute(location.mapsUrl || "#")}" target="_blank" rel="noopener">
+                  ${escapeHtml(location.name || "Sucursal")} · ${escapeHtml(location.address || "Sin direccion")}
+                </a>
+              `).join("")}
+            </div>
+          ` : ""}
+          <div class="buyer-item-list">
+            ${items.map((item) => renderBuyerItemCard(order, item)).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderBuyerItemCard(order, item) {
+      return `
+        <div class="buyer-item-card ${item.checked ? "done" : ""}">
+          <div class="buyer-item-main">
+            <div>
+              <div class="buyer-product">${escapeHtml(item.productName || "Producto")}</div>
+              <div class="buyer-meta">${escapeHtml([item.quantity, item.unit].filter(Boolean).join(" ") || "Sin cantidad")}</div>
+              ${item.note ? `<div class="buyer-meta">${escapeHtml(item.note)}</div>` : ""}
+              ${item.checkedAt ? `<div class="buyer-meta">Marcado por ${escapeHtml(item.checkedBy || "usuario")} · ${escapeHtml(formatDateTime(item.checkedAt))}</div>` : ""}
+            </div>
+            <label class="buyer-check">
+              <input type="checkbox" ${item.checked ? "checked" : ""} onchange="updateBuyerOrderItem('${escapeAttribute(order.id)}', '${escapeAttribute(item.id)}', { checked: this.checked })">
+              Comprado
+            </label>
+          </div>
+          <textarea class="buyer-note" rows="2" placeholder="Comentario, reemplazo o faltante" onblur="updateBuyerOrderItem('${escapeAttribute(order.id)}', '${escapeAttribute(item.id)}', { buyerNotes: this.value })">${escapeHtml(item.buyerNotes || "")}</textarea>
+        </div>
+      `;
+    }
+
+    async function updateBuyerOrderItem(orderId, itemId, patch = {}) {
+      try {
+        const response = await fetch("/api/buyer-order-item", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, itemId, ...patch }),
+        });
+        const result = await readJsonResponse(response);
+        if (!result.ok) throw new Error(result.error || "No se pudo actualizar el producto.");
+        buyerOrders = result.orders || buyerOrders;
+        renderBuyerOrders();
+      } catch (error) {
+        showNotice(error.message, "error");
+      }
+    }
+
     function fillSelect(id, items, placeholder) {
       const select = document.getElementById(id);
       if (!select) return;
@@ -6609,6 +6893,7 @@
         loadTask = ensureErpForNavigation();
       }
       if (view === "logistics_event") loadTask = loadLogisticsEvents();
+      if (view === "buyer_purchases") loadTask = loadBuyerOrders();
       if (view === "security") loadTask = loadSecurityPanel();
       Promise.resolve(loadTask).finally(() => {
         setTimeout(() => runWorkspaceSubNavigation(view, navigationOptions), 80);
@@ -9547,6 +9832,9 @@
         setFormValue(form, "status", order.status || "draft");
         setFormValue(form, "neededDate", order.neededDate || "");
         setFormValue(form, "notes", order.notes || "");
+        if (form.elements.showRecipeNotesForBuyer) {
+          form.elements.showRecipeNotesForBuyer.checked = Boolean(order.showRecipeNotesForBuyer);
+        }
         (order.items || []).forEach(addPurchaseOrderItemRow);
       } else {
         addPurchaseOrderItemRow();
@@ -9646,7 +9934,7 @@
       row.dataset.itemId = item.id || `item-${Date.now()}`;
       row.innerHTML = `
         <div class="autocomplete">
-          <input class="po-item-product" autocomplete="off" placeholder="Producto / insumo" value="${escapeAttribute(item.productName || "")}" list="purchase-products-datalist">
+          <input class="po-item-product" autocomplete="new-password" autocapitalize="off" spellcheck="false" name="po-product-${escapeAttribute(row.dataset.itemId)}" placeholder="Producto / insumo" value="${escapeAttribute(item.productName || "")}">
           <div class="autocomplete-list"></div>
         </div>
         <input class="po-item-quantity" placeholder="Cant." value="${escapeAttribute(item.quantity || "")}">
@@ -9658,7 +9946,7 @@
           <option value="equipment" ${normalizeSearch(item.itemType || "") === "equipment" ? "selected" : ""}>Equipamiento</option>
         </select>
         <div class="autocomplete">
-          <input class="po-item-provider" autocomplete="off" placeholder="Proveedor sugerido/asignado" value="${escapeAttribute(item.providerName || item.suggestedProvider || "")}" list="purchase-providers-datalist">
+          <input class="po-item-provider" autocomplete="new-password" autocapitalize="off" spellcheck="false" name="po-provider-${escapeAttribute(row.dataset.itemId)}" placeholder="Proveedor sugerido/asignado" value="${escapeAttribute(item.providerName || item.suggestedProvider || "")}">
           <div class="autocomplete-list"></div>
         </div>
         <input class="po-item-notes" placeholder="Nota" value="${escapeAttribute(item.notes || "")}">
@@ -10042,6 +10330,7 @@
         status: form.elements.status.value,
         neededDate: form.elements.neededDate.value,
         notes: form.elements.notes.value.trim(),
+        showRecipeNotesForBuyer: Boolean(form.elements.showRecipeNotesForBuyer?.checked),
         items: Array.from(document.querySelectorAll("#purchase-order-items .purchase-order-row"))
           .map((row) => ({
             id: row.dataset.itemId || "",
@@ -10125,6 +10414,7 @@
 
     function buildPurchaseOrderText() {
       const order = collectPurchaseOrderPayload();
+      const cleanTitle = (order.title || "SIN TITULO").replace(/^orden de compra\s*-\s*/i, "");
       const grouped = order.items.reduce((groups, item) => {
         const provider = item.providerName || item.suggestedProvider || "Sin proveedor";
         groups[provider] = groups[provider] || [];
@@ -10132,14 +10422,14 @@
         return groups;
       }, {});
       return [
-        `ORDEN DE COMPRA - ${(order.title || "SIN TITULO").toUpperCase()}`,
+        `ORDEN DE COMPRA - ${cleanTitle.toUpperCase()}`,
         `Evento: ${order.eventName || "Sin evento"}`,
         `Tipo/menu: ${order.menuType || "Sin definir"}`,
         `Necesario para: ${order.neededDate || "Sin fecha"}`,
         "",
         ...Object.entries(grouped).flatMap(([provider, items]) => [
           provider.toUpperCase(),
-          ...items.map((item) => `- ${[item.quantity, item.unit, item.productName].filter(Boolean).join(" ")}${item.notes ? ` (${item.notes})` : ""}`),
+          ...items.map((item) => `- ${[item.quantity, item.unit, item.productName].filter(Boolean).join(" ")}${order.showRecipeNotesForBuyer && item.notes ? ` (${item.notes})` : ""}`),
           "",
         ]),
         order.notes ? `Notas: ${order.notes}` : "",
@@ -14713,7 +15003,8 @@
               <div class="form-field"><label>Telefono</label><input name="phone"></div>
               <div class="form-field"><label>Email</label><input name="email" type="email"></div>
               <div class="form-field"><label>Categoria</label><input name="category" placeholder="Carnes, verduras, logistica"></div>
-              <div class="form-field full"><label>Direccion</label><input name="address"></div>
+              <div class="form-field full"><label>Direccion principal</label><input name="address"></div>
+              <div class="form-field full"><label>Sucursales / ubicaciones</label><textarea name="locationsText" placeholder="Principal | San Martin 123, Mendoza | 261... | Referencia&#10;Sucursal 2 | Godoy Cruz 456, Mendoza | 261... | Referencia"></textarea></div>
               <div class="form-field"><label>Banco</label><input name="bankName"></div>
               <div class="form-field"><label>Tipo de cuenta</label><input name="bankAccountType" placeholder="CC, CA, billetera"></div>
               <div class="form-field"><label>Nro cuenta</label><input name="bankAccountNumber"></div>
@@ -14744,6 +15035,7 @@
         provider.bankName,
         provider.cbu,
         provider.alias,
+        ...(provider.locations || []).flatMap((location) => [location.name, location.address, location.phone, location.notes]),
       ].join(" ")).includes(term));
       list.innerHTML = filtered.length ? filtered.map((provider) => `
         <article class="provider-card">
@@ -14756,6 +15048,7 @@
             <button class="menu-dot" type="button" onclick="editProviderInModal('${escapeAttribute(provider.id)}')">...</button>
           </div>
           <div class="provider-meta">${escapeHtml([provider.bankName, provider.alias || provider.cbu].filter(Boolean).join(" · ") || "Datos bancarios pendientes")}</div>
+          <div class="provider-meta">${escapeHtml(provider.locations?.[0]?.address || provider.address || "Direccion pendiente")}</div>
         </article>
       `).join("") : `<div class="empty">No hay proveedores para ese filtro.</div>`;
     }
@@ -14807,6 +15100,7 @@
         provider.cbu,
         provider.alias,
         provider.category,
+        ...(provider.locations || []).flatMap((location) => [location.name, location.address, location.phone, location.notes]),
         provider.notes,
       ].join(" ")).includes(term));
 
@@ -14833,6 +15127,7 @@
           </div>
           <div class="provider-meta"><strong>Banco:</strong> ${escapeHtml([provider.bankName, provider.alias || provider.cbu, provider.bankAccountHolder].filter(Boolean).join(" · ") || "Datos bancarios pendientes")}</div>
           <div class="provider-meta"><strong>Contacto:</strong> ${escapeHtml([provider.contactName, provider.phone, provider.email].filter(Boolean).join(" · ") || "Contacto pendiente")}</div>
+          <div class="provider-meta"><strong>Direccion:</strong> ${escapeHtml(provider.locations?.[0]?.address || provider.address || "Direccion pendiente")}</div>
         </article>
       `).join("");
     }
@@ -14860,7 +15155,7 @@
         <section class="logistics-mini-list" style="margin-top:12px;">
           <div class="row"><strong>Banco</strong><div class="secondary">${escapeHtml([provider.bankName, provider.bankAccountType, provider.bankAccountNumber, provider.cbu, provider.alias, provider.bankAccountHolder].filter(Boolean).join(" · ") || "Datos bancarios pendientes")}</div></div>
           <div class="row"><strong>Contacto</strong><div class="secondary">${escapeHtml([provider.contactName, provider.phone, provider.email].filter(Boolean).join(" · ") || "Contacto pendiente")}</div></div>
-          <div class="row"><strong>Direccion</strong><div class="secondary">${escapeHtml(provider.address || "Sin direccion")}</div></div>
+          <div class="row"><strong>Direcciones</strong><div class="secondary">${renderProviderLocationsInline(provider)}</div></div>
         </section>
         <div class="actions" style="margin-top:14px;">
           <button class="approve" type="button" onclick="document.getElementById('detail').classList.remove('open'); editProvider('${escapeAttribute(provider.id)}')">Editar proveedor</button>
@@ -14868,6 +15163,18 @@
         </div>
       `;
       detail.classList.add("open");
+    }
+
+    function renderProviderLocationsInline(provider = {}) {
+      const locations = provider.locations?.length ? provider.locations : (provider.address ? [{ name: "Principal", address: provider.address }] : []);
+      if (!locations.length) return "Sin direccion";
+      return locations.map((location, index) => {
+        const label = [location.name || `Sucursal ${index + 1}`, location.address].filter(Boolean).join(": ");
+        const mapsUrl = location.mapsUrl || (location.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}` : "");
+        return mapsUrl
+          ? `<a href="${escapeAttribute(mapsUrl)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`
+          : escapeHtml(label);
+      }).join("<br>");
     }
 
     function fillProviderForm(form, provider) {
@@ -14881,6 +15188,7 @@
         "phone",
         "email",
         "address",
+        "locationsText",
         "bankName",
         "bankAccountType",
         "bankAccountNumber",
@@ -14890,7 +15198,21 @@
         "paymentTerms",
         "category",
         "notes",
-      ].forEach((field) => setFormValue(form, field, provider[field] || ""));
+      ].forEach((field) => {
+        const value = field === "locationsText" ? formatProviderLocationsText(provider) : provider[field] || "";
+        setFormValue(form, field, value);
+      });
+    }
+
+    function formatProviderLocationsText(provider = {}) {
+      const locations = provider.locations || [];
+      if (!locations.length && provider.address) return `Principal | ${provider.address}`;
+      return locations.map((location, index) => [
+        location.name || (index === 0 ? "Principal" : `Sucursal ${index + 1}`),
+        location.address || "",
+        location.phone || "",
+        location.notes || "",
+      ].filter(Boolean).join(" | ")).join("\n");
     }
 
     function resetProviderForm() {
