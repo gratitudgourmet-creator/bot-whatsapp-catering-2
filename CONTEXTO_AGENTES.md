@@ -21,6 +21,56 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-06-25] Claude (sesion 2 - deploy a produccion y SQLite para historial)
+
+**De que se hablo:** se actualizo produccion (sistema.gratitudgourmet.com)
+por primera vez con Claude operando el VPS por SSH directo (se armo una
+llave SSH dedicada, ver `~/.ssh/id_ed25519_gratitud_vps`, alias `ssh
+gratitud-vps`). Se confirmo que la data real de produccion vive en
+`/var/lib/gratitud-erp/data`, SEPARADA del repo git en `/opt/gratitud-erp`
+— un `git pull` ahi NO toca la base de datos real. Se revisaron mejoras
+de base de datos pedidas por el usuario ("que sea mucho mas solida,
+el sistema va a crecer mucho").
+
+**Decisiones tomadas:**
+- Se agrego el boton "Copiar ficha" tambien en la vista de checklist
+  operativo de eventos (antes solo aparecia para usuarios sin permiso
+  `logistics:write`).
+- Se migro el log de auditoria (`historial-erp.json`, que se reescribia
+  completo en cada accion del sistema, ~3.8MB por escritura) a una
+  tabla SQLite (`audit_log` en `catering.db`), siguiendo el mismo
+  patron dual-write ya probado con `compras-erp.json`. Ahora cada
+  evento de auditoria es un INSERT puntual, no una reescritura total.
+  El JSON viejo se migra una sola vez al arrancar y queda como backup
+  historico (no se borra).
+- Se agrego un checkpoint periodico del WAL de `catering.db` (cada 5
+  minutos) para que `catering.db-wal` no siga creciendo sin control.
+- Se elimino `usuarios-erp.backup.json` en produccion (copia manual
+  vieja, ya superada por backups automaticos).
+
+**Cambios en el codigo:**
+- Commit `ccb1f56`: boton "Copiar ficha" en vista de checklist.
+- Commit `3d1f7a3`: migracion de auditoria a SQLite (`audit_log`) +
+  checkpoint periodico del WAL.
+- Ambos ya deployados y verificados en produccion (`/health` OK,
+  migracion de 462 registros de auditoria confirmada 1:1 JSON vs SQLite).
+
+**Pendiente para la proxima sesion:**
+- Migrar el resto de entidades JSON (eventos, ordenes de compra,
+  ordenes de pago, etc.) al mismo patron SQLite, empezando por las de
+  mayor escritura (`eventos-erp.json`, `ordenes-compra-erp.json`).
+  Estas son de menor riesgo/urgencia que el historial, asi que se
+  dejaron para una segunda pasada.
+- Agregar swap (1-2GB) al VPS — no se toco infraestructura del
+  sistema operativo en esta sesion, solo la app.
+- Sincronizar la carpeta `backups/` del VPS a almacenamiento externo
+  (ej. rclone) para no depender de un unico disco.
+- IMPORTANTE: la contrasena de `root` del VPS quedo expuesta en el
+  historial de chat de la sesion anterior (no esta sesion). Sigue
+  pendiente que el usuario la cambie manualmente.
+
+---
+
 ## [2026-06-25] Claude
 
 **De que se hablo:** revision completa del historial de commits del proyecto
