@@ -1743,6 +1743,8 @@ function startApprovalPanelServer() {
     console.error("No se pudo iniciar el panel de aprobaciones:", error.message);
     console.error("Si el puerto esta ocupado, cambie PORT/PANEL_PORT o panelPort en config-bot.json.");
   });
+
+  setInterval(checkpointCateringDatabaseWal, 5 * 60 * 1000);
 }
 
 function validateRuntimeConfig() {
@@ -2547,7 +2549,7 @@ function loadBusinessData() {
   erpPaymentOrders = normalizePaymentOrderList(readJsonFile(ERP_PAYMENT_ORDERS_FILE, []));
   panelRoleDefinitions = normalizeRoleDefinitions(readJsonFile(ERP_ROLES_FILE, {}));
   erpUsers = normalizeUserList(readJsonFile(ERP_USERS_FILE, []));
-  auditRecords = readJsonFile(ERP_AUDIT_FILE, []);
+  auditRecords = loadAuditFromStorage();
   ensureDefaultAdminUser();
   syncProvidersFromPurchasesAndConfig();
   syncVenuesFromEventsAndConfig();
@@ -2673,6 +2675,24 @@ function initCateringDatabase() {
       CREATE INDEX IF NOT EXISTS idx_purchases_provider ON purchases(provider);
       CREATE INDEX IF NOT EXISTS idx_purchases_date ON purchases(date);
       CREATE INDEX IF NOT EXISTS idx_purchase_payments_purchase ON purchase_payments(purchase_id);
+
+      CREATE TABLE IF NOT EXISTS audit_log (
+        id TEXT PRIMARY KEY,
+        at TEXT NOT NULL,
+        user_id TEXT,
+        user_name TEXT,
+        user_role TEXT,
+        action TEXT,
+        entity_type TEXT,
+        entity_id TEXT,
+        label TEXT,
+        data_json TEXT NOT NULL,
+        created_at TEXT
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_audit_at ON audit_log(at);
+      CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_log(entity_type, entity_id);
+      CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_log(user_id);
     `);
     return true;
   } catch (error) {
@@ -2798,6 +2818,105 @@ function deletePurchaseFromDatabase(id) {
   }
 }
 
+function loadAuditFromStorage() {
+  if (!initCateringDatabase()) {
+    return readJsonFile(ERP_AUDIT_FILE, []);
+  }
+
+  const dbCount = getAuditCountFromDatabase();
+  if (dbCount > 0) {
+    return readAuditFromDatabase();
+  }
+
+  const jsonAudit = readJsonFile(ERP_AUDIT_FILE, []);
+  if (jsonAudit.length) {
+    migrateAuditToDatabase(jsonAudit);
+  }
+  return jsonAudit;
+}
+
+function getAuditCountFromDatabase() {
+  if (!cateringDb) return 0;
+  try {
+    return cateringDb.prepare("SELECT COUNT(*) AS total FROM audit_log").get().total;
+  } catch (error) {
+    console.warn("No se pudo contar historial en catering.db:", error.message);
+    return 0;
+  }
+}
+
+function readAuditFromDatabase(limit = 1000) {
+  if (!cateringDb) return [];
+  try {
+    return cateringDb
+      .prepare("SELECT data_json FROM audit_log ORDER BY at DESC LIMIT ?")
+      .all(limit)
+      .map((row) => JSON.parse(row.data_json))
+      .reverse();
+  } catch (error) {
+    console.warn("No se pudo leer historial desde catering.db:", error.message);
+    return [];
+  }
+}
+
+function migrateAuditToDatabase(records) {
+  if (!cateringDb) return;
+  try {
+    cateringDb.exec("BEGIN");
+    for (const record of records) {
+      insertAuditRecordToDatabase(record);
+    }
+    cateringDb.exec("COMMIT");
+    backupCateringDatabase({ force: true, reason: "audit-initial-migration" });
+  } catch (error) {
+    try {
+      cateringDb.exec("ROLLBACK");
+    } catch (rollbackError) {
+      // Ya no habia una transaccion activa.
+    }
+    console.warn("No se pudo migrar historial a catering.db:", error.message);
+  }
+}
+
+function insertAuditRecordToDatabase(record) {
+  if (!initCateringDatabase()) return false;
+  try {
+    cateringDb
+      .prepare(`
+        INSERT INTO audit_log (
+          id, at, user_id, user_name, user_role, action, entity_type, entity_id, label, data_json, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO NOTHING
+      `)
+      .run(
+        record.id,
+        record.at || new Date().toISOString(),
+        record.userId || "",
+        record.userName || "",
+        record.userRole || "",
+        record.action || "",
+        record.entityType || "",
+        record.entityId || "",
+        record.label || "",
+        JSON.stringify(record),
+        record.at || new Date().toISOString()
+      );
+    return true;
+  } catch (error) {
+    console.warn("No se pudo guardar historial en catering.db:", error.message);
+    return false;
+  }
+}
+
+function checkpointCateringDatabaseWal() {
+  if (!cateringDb) return;
+  try {
+    cateringDb.exec("PRAGMA wal_checkpoint(PASSIVE)");
+  } catch (error) {
+    console.warn("No se pudo hacer checkpoint del WAL de catering.db:", error.message);
+  }
+}
+
 function backupCateringDatabase(options = {}) {
   if (!cateringDb || !fs.existsSync(CATERING_DB_FILE)) return;
 
@@ -2920,8 +3039,10 @@ function saveErpUsers() {
   writeJsonFile(ERP_USERS_FILE, erpUsers);
 }
 
-function saveAuditRecords() {
-  writeJsonFile(ERP_AUDIT_FILE, auditRecords.slice(-1000));
+function saveAuditRecords(record) {
+  if (!insertAuditRecordToDatabase(record)) {
+    writeJsonFile(ERP_AUDIT_FILE, auditRecords.slice(-1000));
+  }
 }
 
 function savePanelRoles() {
@@ -3197,7 +3318,7 @@ function recordAudit(user, action, entityType, entityId, label, before = null, a
   };
   auditRecords.push(record);
   if (auditRecords.length > 1000) auditRecords = auditRecords.slice(-1000);
-  saveAuditRecords();
+  saveAuditRecords(record);
   return record;
 }
 
