@@ -21,7 +21,8 @@
       "sanitation",
       "security",
       "reports",
-      "payment_orders"
+      "payment_orders",
+      "comandas"
     ]
   },
   "comercial": {
@@ -118,7 +119,8 @@
     "tabs": [
       "finance",
       "reports",
-      "payment_orders"
+      "payment_orders",
+      "comandas"
     ]
   },
   "rrhh": {

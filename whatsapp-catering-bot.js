@@ -82,6 +82,7 @@ const CATERING_DB_BACKUP_INTERVAL_MS = Number(
 const PANEL_AUTH_USER = process.env.PANEL_AUTH_USER || BOT_CONFIG.panelAuthUser || "admin";
 const PANEL_AUTH_PASSWORD = process.env.PANEL_AUTH_PASSWORD || BOT_CONFIG.panelAuthPassword || "";
 const PURCHASE_SYNC_TOKEN = process.env.PURCHASE_SYNC_TOKEN || BOT_CONFIG.purchaseSyncToken || "";
+const COMANDAS_SYNC_TOKEN = process.env.COMANDAS_SYNC_TOKEN || BOT_CONFIG.comandasSyncToken || "";
 const ACCOUNTANT_PAYMENTS_WEBHOOK_URL =
   process.env.ACCOUNTANT_PAYMENTS_WEBHOOK_URL || BOT_CONFIG.accountantPaymentsWebhookUrl || "";
 const ACCOUNTANT_PAYMENTS_TOKEN =
@@ -209,7 +210,7 @@ const DEFAULT_ROLE_DEFINITIONS = {
   admin: {
     label: "Administracion general",
     permissions: ["*"],
-    tabs: ["erp", "commercial", "events", "purchases", "buyer_purchases", "finance", "production", "logistics_event", "recipes", "stock", "providers", "customers", "hr", "sanitation", "security", "reports", "payment_orders"],
+    tabs: ["erp", "commercial", "events", "purchases", "buyer_purchases", "finance", "production", "logistics_event", "recipes", "stock", "providers", "customers", "hr", "sanitation", "security", "reports", "payment_orders", "comandas"],
   },
   comercial: {
     label: "Comercial",
@@ -244,7 +245,7 @@ const DEFAULT_ROLE_DEFINITIONS = {
   finanzas: {
     label: "Finanzas",
     permissions: ["view", "finance:read", "finance:write", "payment_orders:read", "payment_orders:write", "reports:read"],
-    tabs: ["finance", "reports", "payment_orders"],
+    tabs: ["finance", "reports", "payment_orders", "comandas"],
   },
   rrhh: {
     label: "Personal/RRHH",
@@ -275,6 +276,7 @@ const TAB_DEFINITIONS = [
   { id: "payment_orders", label: "Ordenes de pago", requiredAny: ["payment_orders:read", "payment_orders:write", "payment_orders:approve"] },
   { id: "security", label: "Seguridad", requiredAny: ["users:write"] },
   { id: "reports", label: "Reportes", requiredAny: ["reports:read"] },
+  { id: "comandas", label: "Comandas", requiredAny: ["reports:read"] },
 ];
 const PERMISSION_DEFINITIONS = [
   { id: "users:write", label: "Usuarios, roles e historial", group: "Seguridad" },
@@ -844,8 +846,25 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, result, dashboard: getErpDashboard(), purchases: getErpPurchaseList() });
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/comandas-sync/ventas") {
+        const body = await readJsonBody(request);
+        validateComandasSyncToken(body);
+        const result = applyComandasVentasSync(body);
+        recordAudit(null, "sync", "comandas_venta", result.instalacionId || "", "Sincronizacion desde sistema de comandas", null, result);
+        return sendJson(response, { ok: true, result });
+      }
+
       if (!isAuthorizedPanelRequest(request)) {
         return requestPanelAuth(response);
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/comandas-stats") {
+        const requestedUrl = new URL(request.url, "http://localhost");
+        const stats = getComandasStats({
+          desde: requestedUrl.searchParams.get("desde"),
+          hasta: requestedUrl.searchParams.get("hasta"),
+        });
+        return sendJson(response, { ok: true, stats });
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/state") {
@@ -2693,6 +2712,20 @@ function initCateringDatabase() {
       CREATE INDEX IF NOT EXISTS idx_audit_at ON audit_log(at);
       CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_log(entity_type, entity_id);
       CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_log(user_id);
+
+      CREATE TABLE IF NOT EXISTS comandas_ventas (
+        id TEXT PRIMARY KEY,
+        instalacion_id TEXT,
+        ticket_id INTEGER,
+        mesa TEXT,
+        dispositivo TEXT,
+        fecha TEXT,
+        total REAL DEFAULT 0,
+        data_json TEXT NOT NULL,
+        created_at TEXT
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_comandas_ventas_fecha ON comandas_ventas(fecha);
     `);
     return true;
   } catch (error) {
@@ -2906,6 +2939,100 @@ function insertAuditRecordToDatabase(record) {
     console.warn("No se pudo guardar historial en catering.db:", error.message);
     return false;
   }
+}
+
+function insertComandaVentaToDatabase(instalacionId, venta) {
+  if (!initCateringDatabase()) return false;
+  try {
+    const id = `${instalacionId}-${venta.id}`;
+    cateringDb
+      .prepare(`
+        INSERT INTO comandas_ventas (
+          id, instalacion_id, ticket_id, mesa, dispositivo, fecha, total, data_json, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO NOTHING
+      `)
+      .run(
+        id,
+        instalacionId || "",
+        Number(venta.id || 0),
+        venta.mesa || "",
+        venta.dispositivo || "",
+        String(venta.fecha || ""),
+        Number(venta.total || 0),
+        JSON.stringify(venta),
+        new Date().toISOString()
+      );
+    return true;
+  } catch (error) {
+    console.warn("No se pudo guardar venta de comandas en catering.db:", error.message);
+    return false;
+  }
+}
+
+function readComandasVentasFromDatabase({ desde, hasta } = {}) {
+  if (!initCateringDatabase()) return [];
+  try {
+    const desdeMs = desde ? Number(desde) : 0;
+    const hastaMs = hasta ? Number(hasta) : Number.MAX_SAFE_INTEGER;
+    return cateringDb
+      .prepare("SELECT data_json FROM comandas_ventas WHERE CAST(fecha AS INTEGER) BETWEEN ? AND ? ORDER BY fecha DESC")
+      .all(desdeMs, hastaMs)
+      .map((row) => JSON.parse(row.data_json));
+  } catch (error) {
+    console.warn("No se pudieron leer ventas de comandas desde catering.db:", error.message);
+    return [];
+  }
+}
+
+function applyComandasVentasSync(input = {}) {
+  const instalacionId = normalizeText(input.instalacionId || "");
+  const ventas = Array.isArray(input.ventas) ? input.ventas : [];
+  let inserted = 0;
+  for (const venta of ventas) {
+    if (insertComandaVentaToDatabase(instalacionId, venta)) inserted += 1;
+  }
+  backupCateringDatabase();
+  return { instalacionId, recibidas: ventas.length, procesadas: inserted };
+}
+
+function validateComandasSyncToken(body = {}) {
+  if (!COMANDAS_SYNC_TOKEN) return;
+
+  const token = normalizeText(body.token || body.syncToken || "");
+  if (token !== COMANDAS_SYNC_TOKEN) {
+    throw new Error("Token de sincronizacion de comandas invalido.");
+  }
+}
+
+function getComandasStats({ desde, hasta } = {}) {
+  const ventas = readComandasVentasFromDatabase({ desde, hasta });
+  const totalVentas = ventas.length;
+  const totalFacturado = ventas.reduce((acc, v) => acc + Number(v.total || 0), 0);
+
+  const porProducto = new Map();
+  const porMesa = new Map();
+  for (const venta of ventas) {
+    const mesaKey = String(venta.mesa || "Sin mesa");
+    porMesa.set(mesaKey, (porMesa.get(mesaKey) || 0) + Number(venta.total || 0));
+
+    for (const item of venta.items || []) {
+      const key = item.name || "Sin nombre";
+      const previo = porProducto.get(key) || { name: key, qty: 0, total: 0 };
+      previo.qty += Number(item.qty || 0);
+      previo.total += Number(item.qty || 0) * Number(item.price || 0);
+      porProducto.set(key, previo);
+    }
+  }
+
+  const topProductos = Array.from(porProducto.values())
+    .sort((a, b) => b.qty - a.qty)
+    .slice(0, 10);
+  const ventasPorMesa = Array.from(porMesa.entries())
+    .map(([mesa, total]) => ({ mesa, total }))
+    .sort((a, b) => b.total - a.total);
+
+  return { totalVentas, totalFacturado, topProductos, ventasPorMesa };
 }
 
 function checkpointCateringDatabaseWal() {

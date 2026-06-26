@@ -4216,6 +4216,12 @@
           <button class="workspace-subitem" data-view="security" data-anchor="security-audit-section">Historial</button>
         </div>
       </div>
+      <div class="workspace-menu" data-menu-view="comandas">
+        <button class="workspace-tab" data-view="comandas">Comandas</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="comandas" data-anchor="comandas-home-section">Resumen</button>
+        </div>
+      </div>
       <div class="workspace-menu" data-menu-view="reports">
         <button class="workspace-tab" data-view="reports">Reportes</button>
         <div class="workspace-menu-panel">
@@ -4821,6 +4827,21 @@
       <section id="stock-variations-section" class="erp-section">
         <h2>Insumos con variacion</h2>
         <div id="stock-product-alert-list"></div>
+      </section>
+    </section>
+
+    <section id="view-comandas" class="workspace-view" data-permission="reports:read">
+      <section id="comandas-home-section" class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2>Comandas</h2>
+            <p class="subtitle">Ventas sincronizadas desde el sistema de comandas del local (La Línea).</p>
+          </div>
+          <div class="actions">
+            <button class="filter" type="button" onclick="loadComandas()">Actualizar</button>
+          </div>
+        </div>
+        <div id="comandas-dashboard"></div>
       </section>
     </section>
 
@@ -6316,6 +6337,7 @@
       logistics_event: "logistics-event-list-section",
       security: "security-users-section",
       reports: "reports-home-section",
+      comandas: "comandas-home-section",
     };
 
     const rows = document.getElementById("rows");
@@ -6669,6 +6691,7 @@
         logistics_event: { requiredAny: ["logistics:read", "logistics:write"] },
         security: { requiredAny: ["users:write"] },
         reports: { requiredAny: ["reports:read"] },
+        comandas: { requiredAny: ["reports:read"] },
       }[tabId] || { requiredAny: ["view"] };
     }
 
@@ -6893,6 +6916,7 @@
         loadTask = ensureErpForNavigation();
       }
       if (view === "logistics_event") loadTask = loadLogisticsEvents();
+      if (view === "comandas") loadTask = loadComandas();
       if (view === "buyer_purchases") loadTask = loadBuyerOrders();
       if (view === "security") loadTask = loadSecurityPanel();
       Promise.resolve(loadTask).finally(() => {
@@ -6928,6 +6952,37 @@
         loadErp({ silent: true });
       }
       return Promise.resolve();
+    }
+
+    async function loadComandas() {
+      const container = document.getElementById("comandas-dashboard");
+      if (!container) return;
+      try {
+        const response = await fetch("/api/comandas-stats");
+        const data = await response.json();
+        if (!data.ok) throw new Error(data.error || "No se pudo cargar comandas");
+        const stats = data.stats;
+
+        const productosHtml = (stats.topProductos || [])
+          .map((p) => `<div class="kpi"><span>${escapeHtml(p.name)}</span><strong>${escapeHtml(String(p.qty))} · ${escapeHtml(formatCurrency(p.total))}</strong></div>`)
+          .join("");
+        const mesasHtml = (stats.ventasPorMesa || [])
+          .map((m) => `<div class="kpi"><span>Mesa ${escapeHtml(m.mesa)}</span><strong>${escapeHtml(formatCurrency(m.total))}</strong></div>`)
+          .join("");
+
+        container.innerHTML = `
+          <section class="kpi-grid">
+            <div class="kpi"><span>Ventas registradas</span><strong>${escapeHtml(String(stats.totalVentas || 0))}</strong></div>
+            <div class="kpi"><span>Total facturado</span><strong>${escapeHtml(formatCurrency(stats.totalFacturado || 0))}</strong></div>
+          </section>
+          <h3 style="margin-top:18px;">Productos más vendidos</h3>
+          <section class="kpi-grid">${productosHtml || "<p class='subtitle'>Sin datos todavía.</p>"}</section>
+          <h3 style="margin-top:18px;">Ventas por mesa</h3>
+          <section class="kpi-grid">${mesasHtml || "<p class='subtitle'>Sin datos todavía.</p>"}</section>
+        `;
+      } catch (error) {
+        container.innerHTML = `<p class="subtitle">No se pudieron cargar las estadísticas de comandas: ${escapeHtml(error.message)}</p>`;
+      }
     }
 
     async function loadErp(options = {}) {
