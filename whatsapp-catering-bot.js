@@ -281,6 +281,9 @@ const TAB_DEFINITIONS = [
 ];
 const PERMISSION_DEFINITIONS = [
   { id: "users:write", label: "Usuarios, roles e historial", group: "Seguridad" },
+  { id: "sensitive:security", label: "Cambios sensibles de seguridad", group: "Acciones sensibles" },
+  { id: "sensitive:delete", label: "Eliminar registros criticos", group: "Acciones sensibles" },
+  { id: "sensitive:payments", label: "Pagos y movimientos de fondos", group: "Acciones sensibles" },
   { id: "reports:read", label: "Ver reportes", group: "Reportes" },
   { id: "finance:read", label: "Ver pagos y deudas", group: "Finanzas" },
   { id: "finance:write", label: "Registrar pagos de proveedores", group: "Finanzas" },
@@ -1127,6 +1130,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/user") {
         const user = requirePanelPermission(request, response, "users:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:security", "modificar usuarios")) return;
         const body = await readJsonBody(request);
         const saved = savePanelUserRecord(body);
         recordAudit(user, body.id ? "update" : "create", "user", saved.id, saved.displayName || saved.username, null, getPublicUser(saved));
@@ -1136,6 +1140,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/roles") {
         const user = requirePanelPermission(request, response, "users:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:security", "modificar roles y permisos")) return;
         const body = await readJsonBody(request);
         const before = getPanelRoleList();
         panelRoleDefinitions = saveRolePermissionConfig(body.roles || []);
@@ -1235,6 +1240,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-purchase") {
         const user = requirePanelPermission(request, response, "purchases:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar compras")) return;
         const body = await readJsonBody(request);
         const before = erpPurchases.find((purchase) => purchase.id === body.id);
         const result = await deletePurchaseRecord(body.id, { syncSheets: true });
@@ -1245,6 +1251,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/provider-payment") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "finance:write"]);
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:payments", "registrar pagos de proveedores")) return;
         const body = await readJsonBody(request);
         try {
           const result = await applyProviderPayment(body);
@@ -1258,6 +1265,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/payer-reimbursement") {
         const user = requirePanelPermission(request, response, "finance:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:payments", "registrar reintegros")) return;
         const body = await readJsonBody(request);
         try {
           const result = applyPayerReimbursement(body);
@@ -1373,6 +1381,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/payment-order-status") {
         const user = requirePanelPermission(request, response, "payment_orders:approve");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:payments", "aprobar ordenes de pago")) return;
         const body = await readJsonBody(request);
         try {
           const before = erpPaymentOrders.find((item) => item.id === body.id);
@@ -1426,6 +1435,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-purchase-order") {
         const user = requirePanelPermission(request, response, "purchases:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar ordenes de compra")) return;
         const body = await readJsonBody(request);
         const before = erpPurchaseOrders.find((order) => order.id === body.id);
         deletePurchaseOrderRecord(body.id);
@@ -1512,6 +1522,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-operational-inventory") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "events:write"]);
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar inventario operativo")) return;
         const body = await readJsonBody(request);
         const operationalInventory = deleteOperationalInventoryItem(body.id, user);
         return sendJson(response, { ok: true, operationalInventory });
@@ -1556,6 +1567,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/import-accountant-payments") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "finance:write"]);
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:payments", "importar pagos del contador")) return;
         try {
           const result = await importAccountantPaymentsFromSheets();
           recordAudit(user, "import", "payment", "contador", "Importar pagos contador", null, result);
@@ -1580,6 +1592,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/finance-event-payment") {
         const user = requireAnyPanelPermission(request, response, ["finance:write", "events:write"]);
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:payments", "registrar cobros de eventos")) return;
         const body = await readJsonBody(request);
         const before = erpEvents.find((event) => event.id === body.id);
         const event = updateEventCollectionRecord(body);
@@ -1607,6 +1620,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-erp-event") {
         const user = requirePanelPermission(request, response, "events:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar eventos")) return;
         const body = await readJsonBody(request);
         const before = erpEvents.find((event) => event.id === body.id);
         deleteErpEventRecord(body.id);
@@ -1636,6 +1650,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-erp-quote") {
         const user = requirePanelPermission(request, response, "quotes:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar presupuestos")) return;
         const body = await readJsonBody(request);
         const before = erpQuotes.find((quote) => quote.id === body.id);
         deleteErpQuoteRecord(body.id);
@@ -1662,6 +1677,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-provider") {
         const user = requirePanelPermission(request, response, "providers:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar proveedores")) return;
         const body = await readJsonBody(request);
         const before = erpProviders.find((provider) => provider.id === body.id);
         const result = deleteProviderRecord(body.id);
@@ -1688,6 +1704,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-customer") {
         const user = requirePanelPermission(request, response, "customers:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar clientes")) return;
         const body = await readJsonBody(request);
         const before = customerRecords[body.id];
         const result = deleteCustomerRecord(body.id);
@@ -1708,6 +1725,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-venue") {
         const user = requirePanelPermission(request, response, "venues:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar lugares")) return;
         const body = await readJsonBody(request);
         const before = erpVenues.find((venue) => venue.id === body.id);
         const result = deleteVenueRecord(body.id);
@@ -1778,6 +1796,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-recipe") {
         const user = requirePanelPermission(request, response, "recipes:write");
         if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar recetas")) return;
         if (user.role === "cocina" && !hasPanelPermission(user, "*")) {
           return sendJson(response, { ok: false, error: "Cocina no puede eliminar recetas. Envie una correccion a administracion." }, 403);
         }
@@ -2038,7 +2057,11 @@ function savePanelUserRecord(input = {}) {
     id,
     username,
     displayName: normalizeText(input.displayName || input.name || previous.displayName || username),
-    active: input.active !== false && input.active !== "false",
+    area: normalizeText(input.area || previous.area || ""),
+    phone: normalizeText(input.phone || previous.phone || ""),
+    notes: normalizeText(input.notes || previous.notes || ""),
+    status: normalizeUserStatus(input.status || previous.status || (input.active === false || input.active === "false" ? "suspended" : "active")),
+    mustChangePassword: input.mustChangePassword === true || ["true", "on", "1"].includes(String(input.mustChangePassword || "").toLowerCase()),
     createdAt: previous.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
@@ -3281,19 +3304,34 @@ function normalizeUserList(users) {
 
 function normalizePanelUser(user = {}) {
   const role = getRoleDefinitions()[user.role] ? user.role : "comercial";
+  const status = normalizeUserStatus(user.status || (user.active === false ? "suspended" : "active"));
 
   return {
     id: normalizeText(user.id || `usuario-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     username: normalizeText(user.username || "").toLowerCase(),
     displayName: normalizeText(user.displayName || user.name || user.username || ""),
     role,
-    active: user.active !== false,
+    area: normalizeText(user.area || ""),
+    phone: normalizeText(user.phone || ""),
+    notes: normalizeText(user.notes || ""),
+    status,
+    active: status === "active" || status === "invited",
+    mustChangePassword: user.mustChangePassword === true || user.mustChangePassword === "true",
     passwordHash: normalizeText(user.passwordHash || ""),
     passwordSalt: normalizeText(user.passwordSalt || ""),
     createdAt: user.createdAt || new Date().toISOString(),
     updatedAt: user.updatedAt || "",
     lastLoginAt: user.lastLoginAt || "",
   };
+}
+
+function normalizeUserStatus(status) {
+  const clean = normalizeSearchKey(status || "");
+  if (["active", "activo"].includes(clean)) return "active";
+  if (["invited", "invitado"].includes(clean)) return "invited";
+  if (["suspended", "suspendido", "inactive", "inactivo"].includes(clean)) return "suspended";
+  if (["offboarded", "baja"].includes(clean)) return "offboarded";
+  return "active";
 }
 
 function ensureDefaultAdminUser() {
@@ -3335,6 +3373,15 @@ function getPublicUser(user) {
     displayName: user.displayName || user.username,
     role: user.role,
     roleLabel: role.label,
+    area: user.area || "",
+    phone: user.phone || "",
+    notes: user.notes || "",
+    active: user.active !== false,
+    status: user.status || (user.active === false ? "suspended" : "active"),
+    mustChangePassword: Boolean(user.mustChangePassword),
+    createdAt: user.createdAt || "",
+    updatedAt: user.updatedAt || "",
+    lastLoginAt: user.lastLoginAt || "",
     permissions: role.permissions,
     tabs: role.tabs || [],
   };
@@ -3461,6 +3508,16 @@ function requireAnyPanelPermission(request, response, permissions = []) {
     return null;
   }
   return user;
+}
+
+function requireSensitivePermission(user, response, permission, label = "esta accion sensible") {
+  if (hasPanelPermission(user, permission)) return true;
+  sendJson(
+    response,
+    { ok: false, error: `Su usuario no tiene autorizacion para ${label}.` },
+    403
+  );
+  return false;
 }
 
 function getAuditLog(limit = 120) {

@@ -52,15 +52,15 @@
       background: linear-gradient(135deg, #102d26 0%, #1b4d3f 100%);
       border-bottom: 1px solid rgba(209, 169, 101, .45);
       color: #fff;
-      padding: 14px 24px;
+      padding: 10px 22px;
     }
 
     .header-inner {
       color: #fff;
       align-items: center;
       display: grid;
-      gap: 16px;
-      grid-template-columns: minmax(220px, auto) minmax(280px, 1fr) minmax(260px, auto);
+      gap: 12px;
+      grid-template-columns: minmax(210px, auto) minmax(300px, 1fr) auto;
       margin: 0 auto;
       max-width: 1280px;
     }
@@ -75,17 +75,26 @@
     .brand-logo {
       background: rgba(255, 255, 255, .96);
       border: 1px solid rgba(209, 169, 101, .5);
-      border-radius: 10px;
-      height: 54px;
+      border-radius: 8px;
+      height: 42px;
       object-fit: contain;
-      padding: 5px 8px;
-      width: 78px;
+      padding: 4px 7px;
+      width: 64px;
     }
 
     h1 {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 700;
       margin: 0;
+      white-space: nowrap;
+    }
+
+    .brand-title-mobile {
+      display: none;
+    }
+
+    .brand-title-desktop {
+      display: inline;
     }
 
     .subtitle {
@@ -96,17 +105,19 @@
 
     header .subtitle {
       color: rgba(255, 255, 255, .72);
-      margin-top: 3px;
+      font-size: 12px;
+      margin-top: 1px;
     }
 
     .updated {
+      display: none;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(209, 169, 101, .45);
-      border-radius: 6px;
+      border-radius: 999px;
       font-weight: bold;
       color: var(--gold);
-      font-size: 13px;
-      padding: 8px 10px;
+      font-size: 12px;
+      padding: 6px 9px;
       white-space: nowrap;
     }
 
@@ -119,14 +130,17 @@
     }
 
     .header-search {
+      justify-self: center;
+      max-width: 760px;
       min-width: 0;
       position: relative;
+      width: 100%;
     }
 
     .header-search input {
       background: rgba(255, 255, 255, .95);
       border-color: rgba(209, 169, 101, .5);
-      min-height: 40px;
+      min-height: 34px;
     }
 
     .header-search .global-results {
@@ -157,25 +171,112 @@
     }
 
     .user-pill {
+      display: none;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(209, 169, 101, .45);
-      border-radius: 6px;
+      border-radius: 999px;
       color: var(--gold);
       font-weight: bold;
-      font-size: 13px;
-      padding: 8px 10px;
+      font-size: 12px;
+      padding: 6px 9px;
       white-space: nowrap;
     }
 
     .logout-button {
+      display: none;
       background: transparent;
       border: 1px solid rgba(209, 169, 101, .45);
-      border-radius: 6px;
+      border-radius: 999px;
       font-weight: bold;
       color: var(--gold);
       cursor: pointer;
+      font-size: 12px;
+      min-height: 30px;
+      padding: 0 9px;
+    }
+
+    .profile-menu-wrap {
+      position: relative;
+    }
+
+    .profile-button {
+      align-items: center;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(209, 169, 101, .62);
+      border-radius: 999px;
+      color: var(--gold);
+      cursor: pointer;
+      display: inline-grid;
+      font-size: 13px;
+      font-weight: 900;
+      height: 34px;
+      justify-content: center;
+      letter-spacing: .02em;
+      padding: 0;
+      width: 34px;
+    }
+
+    .profile-button:hover,
+    .profile-button:focus-visible {
+      background: rgba(209, 169, 101, .14);
+      outline: none;
+    }
+
+    .profile-dropdown {
+      background: rgba(255, 255, 255, .98);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 18px 42px rgba(16, 24, 32, .18);
+      color: var(--text);
+      display: none;
+      min-width: 248px;
+      padding: 10px;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 9px);
+      z-index: 95;
+    }
+
+    .profile-dropdown.open {
+      display: grid;
+      gap: 8px;
+    }
+
+    .profile-menu-name {
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+
+    .profile-menu-meta,
+    .profile-menu-updated {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .profile-menu-updated {
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+    }
+
+    .profile-menu-logout {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
       min-height: 34px;
+      text-align: left;
       padding: 0 10px;
+    }
+
+    .profile-menu-logout:hover {
+      background: var(--danger-soft);
+      border-color: rgba(139, 30, 45, .22);
+      color: var(--danger);
     }
 
     .login-screen {
@@ -277,6 +378,20 @@
 
     .permission-check.muted-option {
       opacity: 0.55;
+    }
+
+    .checkline {
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      display: flex;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 10px;
+    }
+
+    .checkline input {
+      margin: 0;
     }
 
     main {
@@ -1770,11 +1885,20 @@
     }
 
     .workspace-tabs {
+      align-items: center;
+      background: rgba(255, 255, 255, .78);
+      border: 1px solid rgba(214, 222, 230, .9);
+      border-radius: 10px;
+      box-shadow: 0 8px 18px rgba(23, 33, 43, 0.045);
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-wrap: nowrap;
+      gap: 4px;
       margin-bottom: 14px;
-      align-items: flex-start;
+      min-height: 42px;
+      overflow: visible;
+      padding: 4px;
+      width: max-content;
+      max-width: 100%;
       position: relative;
       z-index: 20;
     }
@@ -1792,19 +1916,95 @@
       text-transform: uppercase;
     }
 
+    .mobile-module-control {
+      align-items: center;
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 8px 18px rgba(23, 33, 43, 0.045);
+      display: grid;
+      gap: 2px;
+      padding: 7px 10px;
+    }
+
     .workspace-menu {
       position: relative;
+    }
+
+    .workspace-group-panel .workspace-menu {
+      order: 0;
+    }
+
+    .workspace-group {
+      position: relative;
+    }
+
+    .workspace-group-trigger {
+      align-items: center;
+      background: transparent;
+      border: 0;
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: default;
+      display: inline-flex;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 800;
+      height: 32px;
+      letter-spacing: .01em;
+      padding: 0 11px;
+      white-space: nowrap;
+    }
+
+    .workspace-group-trigger::after {
+      border-color: var(--muted) transparent transparent;
+      border-style: solid;
+      border-width: 4px 4px 0;
+      content: "";
+      margin-top: 2px;
+    }
+
+    .workspace-group.active .workspace-group-trigger,
+    .workspace-group:hover .workspace-group-trigger,
+    .workspace-group:focus-within .workspace-group-trigger {
+      background: var(--surface-strong);
+      color: var(--gold);
+    }
+
+    .workspace-group.active .workspace-group-trigger::after,
+    .workspace-group:hover .workspace-group-trigger::after,
+    .workspace-group:focus-within .workspace-group-trigger::after {
+      border-top-color: var(--gold);
+    }
+
+    .workspace-group-panel {
+      background: rgba(255, 255, 255, .98);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 18px 42px rgba(16, 24, 32, .18);
+      display: none;
+      gap: 6px;
+      left: 0;
+      min-width: 224px;
+      padding: 8px;
+      position: absolute;
+      top: calc(100% + 8px);
+      z-index: 42;
+    }
+
+    .workspace-group-panel.align-right {
+      left: auto;
+      right: 0;
+    }
+
+    .workspace-group:hover .workspace-group-panel,
+    .workspace-group:focus-within .workspace-group-panel {
+      display: grid;
     }
 
     .workspace-menu::after {
       content: "";
       display: none;
-      height: 10px;
-      left: 0;
-      position: absolute;
-      right: 0;
-      top: 100%;
-      z-index: 39;
     }
 
     .workspace-menu:hover::after,
@@ -1829,15 +2029,14 @@
     .workspace-menu[data-menu-view="reports"] { order: 15; }
 
     .workspace-menu-panel {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0;
-      min-width: 210px;
+      position: static;
+      min-width: 0;
       padding: 8px;
-      border: 1px solid var(--line);
+      border: 0;
+      border-top: 1px solid var(--line);
       border-radius: 8px;
-      background: var(--surface);
-      box-shadow: 0 18px 38px rgba(16, 24, 32, .16);
+      background: var(--surface-soft);
+      box-shadow: none;
       display: none;
       z-index: 40;
     }
@@ -1855,20 +2054,19 @@
     .workspace-subitem {
       width: 100%;
       text-align: left;
-      background: #fff;
+      background: transparent;
       color: var(--text);
-      border: 1px solid var(--line);
-      padding: 9px 10px;
+      border: 0;
+      padding: 8px 10px;
       border-radius: 6px;
       font-size: 13px;
-      min-height: 34px;
+      min-height: 32px;
       transition: background .12s ease, border-color .12s ease, color .12s ease;
     }
 
     .workspace-subitem:hover,
     .workspace-subitem.active {
       background: #fff7e6;
-      border-color: #e6c27a;
       color: var(--surface-strong);
     }
 
@@ -1877,9 +2075,21 @@
     }
 
     .workspace-tab {
-      background: var(--surface);
-      border: 1px solid var(--line);
+      background: transparent;
+      border: 0;
+      border-radius: 7px;
       color: var(--text);
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      min-height: 34px;
+      padding: 0 10px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .workspace-tab:hover {
+      background: var(--surface-soft);
     }
 
     .workspace-tab.active {
@@ -3752,27 +3962,91 @@
 
     @media (max-width: 980px) {
       header {
-        padding: 14px;
+        padding: 9px 10px;
       }
 
       .header-inner {
-        align-items: stretch;
+        align-items: center;
         display: grid;
-        grid-template-columns: 1fr;
+        gap: 8px;
+        grid-template-columns: minmax(0, 1fr) auto;
       }
 
       .brand-lockup {
         align-items: center;
+        gap: 8px;
+      }
+
+      .brand-logo {
+        height: 34px;
+        width: 52px;
+      }
+
+      h1 {
+        font-size: 16px;
+      }
+
+      .brand-title-desktop {
+        display: none;
+      }
+
+      .brand-title-mobile {
+        display: inline;
+      }
+
+      header .subtitle {
+        display: none;
+      }
+
+      .header-search {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+        max-width: none;
+        order: 3;
+      }
+
+      .header-search input {
+        min-height: 34px;
       }
 
       .header-status {
-        align-items: stretch;
-        display: grid;
-        grid-template-columns: 1fr;
+        align-items: center;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 5px;
+        justify-content: flex-end;
+      }
+
+      .user-pill,
+      .updated {
+        font-size: 11px;
+        max-width: 132px;
+        overflow: hidden;
+        padding: 5px 7px;
+        text-overflow: ellipsis;
+      }
+
+      .updated {
+        display: none;
+      }
+
+      .logout-button {
+        font-size: 11px;
+        min-height: 27px;
+        padding: 0 8px;
+      }
+
+      .profile-button {
+        height: 32px;
+        width: 32px;
+      }
+
+      .profile-dropdown {
+        min-width: min(264px, calc(100vw - 20px));
       }
 
       main {
-        margin: 12px auto;
+        margin: 8px auto;
         padding: 0 10px 24px;
         width: 100%;
       }
@@ -3786,6 +4060,12 @@
       }
 
       .mobile-module-switcher select {
+        background-color: transparent;
+        border: 0;
+        font-size: 15px;
+        font-weight: 800;
+        min-height: 24px;
+        padding: 0 28px 0 0;
         width: 100%;
       }
 
@@ -4047,7 +4327,10 @@
       <div class="brand-lockup">
         <img class="brand-logo" src="/assets/gratitud-gourmet-logo.png" alt="Gratitud Gourmet">
         <div>
-          <h1>Gratitud Gourmet ERP</h1>
+          <h1>
+            <span class="brand-title-desktop">Gratitud Gourmet ERP</span>
+            <span class="brand-title-mobile">Gratitud ERP</span>
+          </h1>
           <p class="subtitle">Gestión integral de eventos</p>
         </div>
       </div>
@@ -4059,6 +4342,15 @@
         <div id="session-user" class="user-pill">Sin sesion</div>
         <div id="updated" class="updated">Actualizando...</div>
         <button class="logout-button" type="button" onclick="logoutPanel()">Salir</button>
+        <div class="profile-menu-wrap">
+          <button id="profile-menu-button" class="profile-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Abrir perfil de usuario" onclick="toggleProfileMenu(event)">?</button>
+          <div id="profile-menu" class="profile-dropdown" aria-labelledby="profile-menu-button">
+            <div id="profile-menu-name" class="profile-menu-name">Sin sesion</div>
+            <div id="profile-menu-meta" class="profile-menu-meta">Sin rol</div>
+            <div id="profile-menu-updated" class="profile-menu-updated">Actualizando...</div>
+            <button class="profile-menu-logout" type="button" onclick="logoutPanel()">Salir</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -4088,11 +4380,16 @@
     <div id="notice" class="notice"></div>
 
     <div class="mobile-module-switcher">
-      <label for="mobile-module-select">Modulo</label>
-      <select id="mobile-module-select" onchange="showWorkspaceView(this.value)"></select>
+      <div class="mobile-module-control">
+        <label for="mobile-module-select">Modulo</label>
+        <select id="mobile-module-select" onchange="showWorkspaceView(this.value)"></select>
+      </div>
     </div>
 
     <div class="workspace-tabs">
+      <div class="workspace-group" data-nav-group="direction">
+        <button class="workspace-group-trigger" type="button">Dirección</button>
+        <div class="workspace-group-panel">
       <div class="workspace-menu" data-menu-view="erp">
         <button class="workspace-tab active" data-view="erp">ERP</button>
         <div class="workspace-menu-panel">
@@ -4100,6 +4397,25 @@
           <button class="workspace-subitem" data-view="erp" data-anchor="erp-alerts-section">Alertas</button>
         </div>
       </div>
+      <div class="workspace-menu" data-menu-view="reports">
+        <button class="workspace-tab" data-view="reports">Reportes</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="reports" data-anchor="reports-home-section">Resumen</button>
+          <button class="workspace-subitem" data-view="reports" data-anchor="reports-period-section">Filtros por periodo</button>
+          <button class="workspace-subitem" data-view="reports" data-action="downloadErpXlsx">Exportar Excel</button>
+        </div>
+      </div>
+      <div class="workspace-menu" data-menu-view="comandas">
+        <button class="workspace-tab" data-view="comandas">Comandas</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="comandas" data-anchor="comandas-home-section">Resumen</button>
+        </div>
+      </div>
+        </div>
+      </div>
+      <div class="workspace-group" data-nav-group="commercial">
+        <button class="workspace-group-trigger" type="button">Comercial</button>
+        <div class="workspace-group-panel">
       <div class="workspace-menu" data-menu-view="commercial">
         <button class="workspace-tab" data-view="commercial">Comercial</button>
         <div class="workspace-menu-panel">
@@ -4118,6 +4434,18 @@
           <button class="workspace-subitem" data-view="events" data-action="showBlankErpEventForm">Nuevo evento / oportunidad</button>
         </div>
       </div>
+      <div class="workspace-menu" data-menu-view="customers">
+        <button class="workspace-tab" data-view="customers">Clientes</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="customers" data-anchor="customer-list-section">Listado</button>
+          <button class="workspace-subitem" data-view="customers" data-anchor="customer-form-section">Ficha de cliente</button>
+        </div>
+      </div>
+        </div>
+      </div>
+      <div class="workspace-group" data-nav-group="purchases">
+        <button class="workspace-group-trigger" type="button">Compras & Stock</button>
+        <div class="workspace-group-panel">
       <div class="workspace-menu" data-menu-view="purchases">
         <button class="workspace-tab" data-view="purchases">Compras</button>
         <div class="workspace-menu-panel">
@@ -4133,6 +4461,37 @@
           <button class="workspace-subitem" data-view="buyer_purchases" data-anchor="buyer-orders-section">Órdenes pendientes</button>
         </div>
       </div>
+      <div class="workspace-menu" data-menu-view="stock">
+        <button class="workspace-tab" data-view="stock">Stock</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="stock" data-anchor="product-master-section">Maestro de insumos</button>
+          <button class="workspace-subitem" data-view="stock" data-anchor="operational-inventory-section">Inventario operativo</button>
+          <button class="workspace-subitem" data-view="stock" data-anchor="stock-summary-section">Inventario</button>
+          <button class="workspace-subitem" data-view="stock" data-anchor="stock-receptions-section">Recepciones</button>
+          <button class="workspace-subitem" data-view="stock" data-anchor="stock-variations-section">Insumos con variación</button>
+        </div>
+      </div>
+      <div class="workspace-menu" data-menu-view="providers">
+        <button class="workspace-tab" data-view="providers">Proveedores</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="providers" data-anchor="provider-list-section">Listado</button>
+          <button class="workspace-subitem" data-view="providers" data-anchor="provider-form-section">Ficha bancaria/fiscal</button>
+        </div>
+      </div>
+      <div class="workspace-menu" data-menu-view="recipes">
+        <button class="workspace-tab" data-view="recipes">Recetas</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="recipes" data-anchor="recipe-list-section">Listado</button>
+          <button class="workspace-subitem" data-view="recipes" data-action="showRecipeForm">Cargar receta</button>
+          <button class="workspace-subitem" data-view="recipes" data-action="showBudgetBuilder">Presupuestar recetas</button>
+          <button class="workspace-subitem" data-view="recipes" data-action="showCostSettingsForm">Costos generales</button>
+        </div>
+      </div>
+        </div>
+      </div>
+      <div class="workspace-group" data-nav-group="finance">
+        <button class="workspace-group-trigger" type="button">Finanzas</button>
+        <div class="workspace-group-panel">
       <div class="workspace-menu" data-menu-view="finance">
         <button class="workspace-tab" data-view="finance">Finanzas</button>
         <div class="workspace-menu-panel">
@@ -4143,6 +4502,11 @@
           <button class="workspace-subitem" data-view="payment_orders">Órdenes de pago</button>
         </div>
       </div>
+        </div>
+      </div>
+      <div class="workspace-group" data-nav-group="operations">
+        <button class="workspace-group-trigger" type="button">Operación</button>
+        <div class="workspace-group-panel">
       <div class="workspace-menu" data-menu-view="production">
         <button class="workspace-tab" data-view="production">Producción/Cocina</button>
         <div class="workspace-menu-panel">
@@ -4167,45 +4531,17 @@
           <button class="workspace-subitem" data-view="sanitation" data-anchor="sanitation-records-section">Registros y aprobaciones</button>
         </div>
       </div>
-      <div class="workspace-menu" data-menu-view="customers">
-        <button class="workspace-tab" data-view="customers">Clientes</button>
-        <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="customers" data-anchor="customer-list-section">Listado</button>
-          <button class="workspace-subitem" data-view="customers" data-anchor="customer-form-section">Ficha de cliente</button>
-        </div>
-      </div>
-      <div class="workspace-menu" data-menu-view="providers">
-        <button class="workspace-tab" data-view="providers">Proveedores</button>
-        <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="providers" data-anchor="provider-list-section">Listado</button>
-          <button class="workspace-subitem" data-view="providers" data-anchor="provider-form-section">Ficha bancaria/fiscal</button>
-        </div>
-      </div>
-      <div class="workspace-menu" data-menu-view="recipes">
-        <button class="workspace-tab" data-view="recipes">Recetas</button>
-        <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="recipes" data-anchor="recipe-list-section">Listado</button>
-          <button class="workspace-subitem" data-view="recipes" data-action="showRecipeForm">Cargar receta</button>
-          <button class="workspace-subitem" data-view="recipes" data-action="showBudgetBuilder">Presupuestar recetas</button>
-          <button class="workspace-subitem" data-view="recipes" data-action="showCostSettingsForm">Costos generales</button>
-        </div>
-      </div>
-      <div class="workspace-menu" data-menu-view="stock">
-        <button class="workspace-tab" data-view="stock">Stock</button>
-        <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="stock" data-anchor="product-master-section">Maestro de insumos</button>
-          <button class="workspace-subitem" data-view="stock" data-anchor="operational-inventory-section">Inventario operativo</button>
-          <button class="workspace-subitem" data-view="stock" data-anchor="stock-summary-section">Inventario</button>
-          <button class="workspace-subitem" data-view="stock" data-anchor="stock-receptions-section">Recepciones</button>
-          <button class="workspace-subitem" data-view="stock" data-anchor="stock-variations-section">Insumos con variación</button>
-        </div>
-      </div>
       <div class="workspace-menu" data-menu-view="logistics_event">
         <button class="workspace-tab" data-view="logistics_event">Logística Evento</button>
         <div class="workspace-menu-panel">
           <button class="workspace-subitem" data-view="logistics_event" data-anchor="logistics-event-list-section">Eventos confirmados</button>
         </div>
       </div>
+        </div>
+      </div>
+      <div class="workspace-group" data-nav-group="system">
+        <button class="workspace-group-trigger" type="button">Sistema</button>
+        <div class="workspace-group-panel align-right">
       <div class="workspace-menu" data-menu-view="security" data-permission="users:write">
         <button class="workspace-tab" data-view="security">Seguridad</button>
         <div class="workspace-menu-panel">
@@ -4216,18 +4552,6 @@
           <button class="workspace-subitem" data-view="security" data-anchor="security-audit-section">Historial</button>
         </div>
       </div>
-      <div class="workspace-menu" data-menu-view="comandas">
-        <button class="workspace-tab" data-view="comandas">Comandas</button>
-        <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="comandas" data-anchor="comandas-home-section">Resumen</button>
-        </div>
-      </div>
-      <div class="workspace-menu" data-menu-view="reports">
-        <button class="workspace-tab" data-view="reports">Reportes</button>
-        <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="reports" data-anchor="reports-home-section">Resumen</button>
-          <button class="workspace-subitem" data-view="reports" data-anchor="reports-period-section">Filtros por periodo</button>
-          <button class="workspace-subitem" data-view="reports" data-action="downloadErpXlsx">Exportar Excel</button>
         </div>
       </div>
     </div>
@@ -5229,9 +5553,44 @@
                 <label>Rol</label>
                 <select name="role" id="panel-user-role"></select>
               </div>
+              <div class="form-field">
+                <label>Area</label>
+                <select name="area">
+                  <option value="">Sin definir</option>
+                  <option>Comercial</option>
+                  <option>Compras</option>
+                  <option>Finanzas</option>
+                  <option>Cocina</option>
+                  <option>Operacion</option>
+                  <option>RRHH</option>
+                  <option>Bromatologia</option>
+                  <option>Administracion</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Estado</label>
+                <select name="status">
+                  <option value="active">Activo</option>
+                  <option value="invited">Invitado</option>
+                  <option value="suspended">Suspendido</option>
+                  <option value="offboarded">Baja</option>
+                </select>
+              </div>
+              <div class="form-field full">
+                <label>Telefono</label>
+                <input name="phone" placeholder="Telefono o WhatsApp interno">
+              </div>
               <div class="form-field full">
                 <label>Clave</label>
                 <input name="password" type="password" placeholder="Completar para usuario nuevo o cambio de clave">
+              </div>
+              <label class="checkline full">
+                <input name="mustChangePassword" type="checkbox">
+                <span>Debe cambiar clave al ingresar</span>
+              </label>
+              <div class="form-field full">
+                <label>Notas internas</label>
+                <textarea name="notes" placeholder="Responsabilidades, restricciones o aclaraciones"></textarea>
               </div>
               <div class="actions full">
                 <button class="approve" type="submit">Guardar usuario</button>
@@ -5273,6 +5632,8 @@
         <h2>Historial de acciones</h2>
         <div class="toolbar-actions" style="margin-bottom:10px;">
           <select id="audit-user-filter" onchange="renderAuditLog()"></select>
+          <select id="audit-action-filter" onchange="renderAuditLog()"></select>
+          <select id="audit-entity-filter" onchange="renderAuditLog()"></select>
         </div>
         <div id="audit-list" class="audit-list"></div>
       </section>
@@ -6395,9 +6756,18 @@
     document.getElementById("erp-quote-form").addEventListener("input", updateErpQuotePreview);
     document.getElementById("erp-quote-form").addEventListener("change", updateErpQuotePreview);
     document.getElementById("global-search").addEventListener("input", renderGlobalSearch);
+    window.addEventListener("resize", syncGlobalSearchPlaceholder);
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".profile-menu-wrap")) closeProfileMenu();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeProfileMenu();
+    });
     document.getElementById("role-filter").addEventListener("change", renderErp);
     document.getElementById("invoice-photo")?.addEventListener("change", previewInvoicePhoto);
     setupAutocomplete("purchase-provider", "purchase-provider-suggestions", () => purchaseOptions.providers || []);
+    syncGlobalSearchPlaceholder();
+    renderProfileMenu();
 
     async function bootstrapPanel() {
       const response = await fetch("/api/me");
@@ -6451,6 +6821,8 @@
     function showLoginScreen() {
       document.getElementById("login-screen").classList.add("open");
       document.getElementById("session-user").textContent = "Sin sesion";
+      closeProfileMenu();
+      renderProfileMenu();
     }
 
     function hideLoginScreen() {
@@ -6469,7 +6841,59 @@
       document.getElementById("session-user").textContent = currentUser
         ? `${currentUser.displayName || currentUser.username} | ${currentUser.roleLabel || currentUser.role}`
         : "Sin sesion";
+      renderProfileMenu();
       applyPermissionVisibility();
+    }
+
+    function getProfileName() {
+      return currentUser?.displayName || currentUser?.username || "Sin sesion";
+    }
+
+    function getProfileMeta() {
+      return currentUser?.roleLabel || currentUser?.area || currentUser?.role || "Sin rol";
+    }
+
+    function getProfileInitial() {
+      const source = getProfileName().trim();
+      return source && source !== "Sin sesion" ? source.charAt(0).toUpperCase() : "?";
+    }
+
+    function renderProfileMenu() {
+      const button = document.getElementById("profile-menu-button");
+      const name = document.getElementById("profile-menu-name");
+      const meta = document.getElementById("profile-menu-meta");
+      const menuUpdated = document.getElementById("profile-menu-updated");
+      if (button) button.textContent = getProfileInitial();
+      if (name) name.textContent = getProfileName();
+      if (meta) meta.textContent = getProfileMeta();
+      if (menuUpdated) menuUpdated.textContent = updated?.textContent || "Actualizando...";
+    }
+
+    function toggleProfileMenu(event) {
+      event.stopPropagation();
+      const menu = document.getElementById("profile-menu");
+      const button = document.getElementById("profile-menu-button");
+      if (!menu || !button) return;
+      const willOpen = !menu.classList.contains("open");
+      menu.classList.toggle("open", willOpen);
+      button.setAttribute("aria-expanded", String(willOpen));
+      if (willOpen) renderProfileMenu();
+    }
+
+    function closeProfileMenu() {
+      const menu = document.getElementById("profile-menu");
+      const button = document.getElementById("profile-menu-button");
+      if (!menu || !button) return;
+      menu.classList.remove("open");
+      button.setAttribute("aria-expanded", "false");
+    }
+
+    function syncGlobalSearchPlaceholder() {
+      const input = document.getElementById("global-search");
+      if (!input) return;
+      input.placeholder = window.matchMedia("(max-width: 980px)").matches
+        ? "Buscar en el ERP"
+        : "Buscar evento, cliente, proveedor, producto o receta";
     }
 
     async function loginPanel(event) {
@@ -6500,6 +6924,7 @@
     }
 
     async function logoutPanel() {
+      closeProfileMenu();
       await fetch("/api/logout", { method: "POST" });
       currentUser = null;
       if (stateRefreshTimer) clearInterval(stateRefreshTimer);
@@ -6645,6 +7070,10 @@
         const hasVisibleSubitem = !!menu.querySelector(".workspace-subitem:not(.hidden)");
         menu.classList.toggle("hidden", !tab || (tab.classList.contains("hidden") && !hasVisibleSubitem));
       });
+      document.querySelectorAll(".workspace-group").forEach((group) => {
+        const hasVisibleMenu = !!group.querySelector(".workspace-menu:not(.hidden)");
+        group.classList.toggle("hidden", !hasVisibleMenu);
+      });
       syncMobileModuleSelect();
 
       const activeButton = document.querySelector(".workspace-tab.active:not(.hidden)");
@@ -6716,6 +7145,7 @@
         renderMetrics(state.metrics || {});
         renderRows();
         updated.textContent = `Actualizado ${new Date().toLocaleTimeString()}`;
+        renderProfileMenu();
       } catch (error) {
         rows.innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
       }
@@ -6902,6 +7332,9 @@
       };
       document.querySelectorAll(".workspace-tab").forEach((button) => {
         button.classList.toggle("active", button.dataset.view === view);
+      });
+      document.querySelectorAll(".workspace-group").forEach((group) => {
+        group.classList.toggle("active", !!group.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`));
       });
       document.querySelectorAll(".workspace-subitem").forEach((button) => {
         button.classList.toggle("active", button.dataset.view === view && (button.dataset.anchor || "") === (navigationOptions.anchor || "") && (button.dataset.action || "") === (navigationOptions.action || ""));
@@ -7534,8 +7967,10 @@
       const result = await readJsonResponse(response);
       if (!result.ok) throw new Error(result.error || "No se pudo cargar el historial.");
       auditLog = result.audit || [];
-      const filter = document.getElementById("audit-user-filter");
-      if (filter) filter.dataset.ready = "";
+      ["audit-user-filter", "audit-action-filter", "audit-entity-filter"].forEach((id) => {
+        const filter = document.getElementById(id);
+        if (filter) filter.dataset.ready = "";
+      });
       renderAuditLog();
     }
 
@@ -7548,13 +7983,70 @@
       }
       list.innerHTML = panelUsers.map((user) => `
         <div class="user-row">
-          <strong>${escapeHtml(user.displayName || user.username)}</strong>
-          <div class="secondary">${escapeHtml(user.username)} | ${escapeHtml(user.roleLabel || user.role)}</div>
+          <div class="toolbar-actions" style="justify-content:space-between;align-items:flex-start;gap:8px;">
+            <div>
+              <strong>${escapeHtml(user.displayName || user.username)}</strong>
+              <div class="secondary">${escapeHtml(user.username)} | ${escapeHtml(user.roleLabel || user.role)} | ${escapeHtml(user.area || "Area sin definir")}</div>
+            </div>
+            <span class="badge ${escapeAttribute(getUserStatusClass(user.status))}">${escapeHtml(getUserStatusLabel(user.status))}</span>
+          </div>
+          <div class="secondary">Ultimo ingreso: ${escapeHtml(formatDateTime(user.lastLoginAt) || "Sin ingresos")} | Creado: ${escapeHtml(formatDate(user.createdAt) || "-")}</div>
+          <div class="secondary">${escapeHtml(user.phone || "Telefono pendiente")}${user.mustChangePassword ? " | Debe cambiar clave" : ""}</div>
+          ${renderUserRiskLine(user)}
+          ${renderUserRecentActivity(user)}
           <div class="actions" style="margin-top:8px;">
             <button class="filter" type="button" onclick="editPanelUser('${escapeAttribute(user.id)}')">Editar</button>
+            <button class="filter" type="button" onclick="filterAuditByUser('${escapeAttribute(user.displayName || user.username)}')">Ver historial</button>
           </div>
         </div>
       `).join("");
+    }
+
+    function getUserStatusLabel(status) {
+      return {
+        active: "Activo",
+        invited: "Invitado",
+        suspended: "Suspendido",
+        offboarded: "Baja",
+      }[status] || "Activo";
+    }
+
+    function getUserStatusClass(status) {
+      return {
+        active: "confirmed",
+        invited: "ready_to_quote",
+        suspended: "missing_info",
+        offboarded: "lost",
+      }[status] || "confirmed";
+    }
+
+    function renderUserRiskLine(user) {
+      const permissions = new Set(user.permissions || []);
+      const risks = [];
+      if (permissions.has("*")) risks.push("Administrador total");
+      if (permissions.has("sensitive:security")) risks.push("Seguridad sensible");
+      if (permissions.has("sensitive:payments")) risks.push("Pagos/fondos");
+      if (permissions.has("sensitive:delete")) risks.push("Eliminaciones");
+      return `<div class="secondary">${risks.length ? `Permisos sensibles: ${escapeHtml(risks.join(", "))}` : "Sin permisos sensibles directos"}</div>`;
+    }
+
+    function renderUserRecentActivity(user) {
+      const activities = auditLog
+        .filter((item) => item.userId === user.id || (item.userName && item.userName === (user.displayName || user.username)))
+        .slice(0, 2);
+      if (!activities.length) return `<div class="secondary">Actividad reciente: sin movimientos cargados.</div>`;
+      return `<div class="secondary">Actividad reciente: ${activities.map((item) => `${getAuditActionLabel(item.action)} ${item.label || item.entityType || ""}`).map(escapeHtml).join(" / ")}</div>`;
+    }
+
+    function filterAuditByUser(name) {
+      showModuleSection("security", "security-audit-section");
+      const filter = document.getElementById("audit-user-filter");
+      if (!filter) return;
+      if (![...filter.options].some((option) => option.value === name)) {
+        filter.innerHTML += `<option value="${escapeAttribute(name)}">${escapeHtml(name)}</option>`;
+      }
+      filter.value = name;
+      renderAuditLog();
     }
 
     function renderRolePermissions() {
@@ -7573,6 +8065,7 @@
           <div class="user-row role-permission-card" data-role-id="${escapeAttribute(role.id)}">
             <strong>${escapeHtml(role.label)}</strong>
             <div class="secondary">${isAdmin ? "Acceso total protegido" : "Seleccione funciones disponibles para este rol"}</div>
+            ${renderRoleAccessMatrix(role)}
             <div class="secondary" style="margin-top:8px;">Funciones</div>
             <div class="permission-grid">
               ${permissionCatalog.map((permission) => {
@@ -7604,6 +8097,42 @@
           </div>
         `;
       }).join("");
+    }
+
+    function renderRoleAccessMatrix(role) {
+      const permissions = new Set(role.permissions || []);
+      const isAdmin = role.id === "admin" || permissions.has("*");
+      const rows = [
+        { label: "Compras", view: ["purchases:write", "stock:read"], edit: ["purchases:write"], approve: [], delete: ["sensitive:delete"], sensitive: ["sensitive:payments"] },
+        { label: "Finanzas", view: ["finance:read"], edit: ["finance:write"], approve: ["payment_orders:approve"], delete: [], sensitive: ["sensitive:payments"] },
+        { label: "Eventos", view: ["events:read", "events:write"], edit: ["events:write"], approve: [], delete: ["sensitive:delete"], sensitive: [] },
+        { label: "Recetas", view: ["recipes:read"], edit: ["recipes:write"], approve: [], delete: ["sensitive:delete"], sensitive: [] },
+        { label: "Stock", view: ["stock:read"], edit: ["purchases:write"], approve: [], delete: ["sensitive:delete"], sensitive: [] },
+        { label: "RRHH", view: ["hr:read"], edit: ["hr:write", "payroll:write"], approve: [], delete: [], sensitive: [] },
+        { label: "Bromatologia", view: ["sanitation:read"], edit: ["sanitation:write"], approve: ["sanitation:approve"], delete: [], sensitive: [] },
+        { label: "Seguridad", view: ["users:write"], edit: ["users:write"], approve: [], delete: [], sensitive: ["sensitive:security"] },
+      ];
+      const canAny = (items) => isAdmin || items.some((permission) => permissions.has(permission));
+      const mark = (items) => `<span class="badge ${canAny(items) ? "confirmed" : "missing_info"}">${canAny(items) ? "Si" : "-"}</span>`;
+      return `
+        <div class="purchase-table-wrap compact-table-wrap" style="margin-top:10px;">
+          <table class="purchase-table">
+            <thead><tr><th>Modulo</th><th>Ver</th><th>Editar</th><th>Aprobar</th><th>Eliminar</th><th>Sensible</th></tr></thead>
+            <tbody>
+              ${rows.map((row) => `
+                <tr>
+                  <td>${escapeHtml(row.label)}</td>
+                  <td>${mark(row.view)}</td>
+                  <td>${mark(row.edit)}</td>
+                  <td>${mark(row.approve)}</td>
+                  <td>${mark(row.delete)}</td>
+                  <td>${mark(row.sensitive)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
     }
 
     function focusRolePermissionCard(roleId) {
@@ -7664,13 +8193,31 @@
       const list = document.getElementById("audit-list");
       if (!list) return;
       const filter = document.getElementById("audit-user-filter");
+      const actionFilter = document.getElementById("audit-action-filter");
+      const entityFilter = document.getElementById("audit-entity-filter");
       if (filter && !filter.dataset.ready) {
         const users = Array.from(new Set(auditLog.map((item) => item.userName || "Sistema").filter(Boolean))).sort();
         filter.innerHTML = `<option value="">Todos los usuarios</option>${users.map((user) => `<option value="${escapeAttribute(user)}">${escapeHtml(user)}</option>`).join("")}`;
         filter.dataset.ready = "true";
       }
+      if (actionFilter && !actionFilter.dataset.ready) {
+        const actions = Array.from(new Set(auditLog.map((item) => item.action || "").filter(Boolean))).sort();
+        actionFilter.innerHTML = `<option value="">Todas las acciones</option>${actions.map((action) => `<option value="${escapeAttribute(action)}">${escapeHtml(getAuditActionLabel(action))}</option>`).join("")}`;
+        actionFilter.dataset.ready = "true";
+      }
+      if (entityFilter && !entityFilter.dataset.ready) {
+        const entities = Array.from(new Set(auditLog.map((item) => item.entityType || "").filter(Boolean))).sort();
+        entityFilter.innerHTML = `<option value="">Todos los modulos</option>${entities.map((entity) => `<option value="${escapeAttribute(entity)}">${escapeHtml(getAuditEntityLabel(entity))}</option>`).join("")}`;
+        entityFilter.dataset.ready = "true";
+      }
       const selectedUser = filter?.value || "";
-      const visibleAudit = selectedUser ? auditLog.filter((item) => (item.userName || "Sistema") === selectedUser) : auditLog;
+      const selectedAction = actionFilter?.value || "";
+      const selectedEntity = entityFilter?.value || "";
+      const visibleAudit = auditLog.filter((item) =>
+        (!selectedUser || (item.userName || "Sistema") === selectedUser) &&
+        (!selectedAction || item.action === selectedAction) &&
+        (!selectedEntity || item.entityType === selectedEntity)
+      );
       if (!visibleAudit.length) {
         list.innerHTML = `<div class="empty">Todavia no hay movimientos registrados.</div>`;
         return;
@@ -7721,6 +8268,11 @@
       setFormValue(form, "displayName", user.displayName || "");
       setFormValue(form, "username", user.username || "");
       setFormValue(form, "role", user.role || "comercial");
+      setFormValue(form, "area", user.area || "");
+      setFormValue(form, "status", user.status || "active");
+      setFormValue(form, "phone", user.phone || "");
+      setFormValue(form, "notes", user.notes || "");
+      setFormValue(form, "mustChangePassword", Boolean(user.mustChangePassword));
       setFormValue(form, "password", "");
     }
 
@@ -17769,7 +18321,11 @@
     function setFormValue(form, name, value) {
       const field = form.elements[name];
       if (field) {
-        field.value = value;
+        if (field.type === "checkbox") {
+          field.checked = Boolean(value);
+        } else {
+          field.value = value;
+        }
       }
     }
 
