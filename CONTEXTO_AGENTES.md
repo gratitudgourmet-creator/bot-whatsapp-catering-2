@@ -21,6 +21,45 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-01] Claude (sesion 4 - integracion comandas + toma de inventario movil)
+
+**De que se hablo:** dos temas principales.
+1. Deploy del sistema de comandas "La Linea" al VPS (estaba pendiente del commit 2124bc1).
+2. Nuevo modulo de toma de inventario movil para la mudanza al salon nuevo en Guaymallan.
+
+**Decisiones tomadas:**
+- Se completo el deploy del commit 2124bc1 (integracion comandas) al VPS. El token
+  COMANDAS_SYNC_TOKEN ya estaba configurado en /etc/gratitud-erp/gratitud-erp.env y
+  roles-erp.json en produccion ya tenia "comandas" en el rol admin.
+- Para el inventario: el usuario va a RECIBIR todo en el salon nuevo (San Ignacio de
+  Loyola 2457, Guaymallan) y contar ahi, no de salida de los depositos viejos.
+  Se decidio una pagina movil standalone en /inventario, optimizada para celular,
+  con sesion compartida entre dispositivos (varios pueden contar en paralelo).
+- Los botones del pie se fijaron con position:fixed tras feedback del usuario.
+
+**Cambios en el codigo:**
+- Commit 4675f76: nueva pagina /inventario (inventario-movil.html, 570 lineas),
+  funciones de sesion en whatsapp-catering-bot.js (start/update/close/cancel),
+  5 rutas nuevas (/api/inventario-sesion y subendpoints), boton en approval-panel.html.
+- Commit 4610043: fix barra de botones fija en pantalla (position:fixed).
+- Ambos deployados y verificados en produccion (/health OK).
+
+**Como funciona la sesion de inventario:**
+- Archivo: /var/lib/gratitud-erp/data/inventario-sesion.json
+- Al cerrar la sesion: actualiza quantity y location de los items contados en
+  inventario-operativo-erp.json (el inventario operativo del panel).
+- Items NO contados no se tocan. Items nuevos se pueden agregar desde el celular.
+
+**Pendiente para la proxima sesion:**
+- El usuario va a trabajar con Codex en cambios locales — verificar que no haya
+  conflictos con los archivos tocados hoy (whatsapp-catering-bot.js, approval-panel.html,
+  inventario-movil.html nuevo).
+- Mejoras de gestion de usuarios (propuesto en sesion anterior, no implementado aun):
+  toggle activo/inactivo y filtro por nombre/rol.
+- Pendientes historicos: swap en VPS, backups externos (rclone), cambiar password root VPS.
+
+---
+
 ## [2026-06-25] Claude (sesion 2 - deploy a produccion y SQLite para historial)
 
 **De que se hablo:** se actualizo produccion (sistema.gratitudgourmet.com)
