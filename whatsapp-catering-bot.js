@@ -67,6 +67,7 @@ const ERP_PAYMENT_ORDERS_FILE = dataPath("ordenes-pago-erp.json");
 const ERP_USERS_FILE = dataPath("usuarios-erp.json");
 const ERP_AUDIT_FILE = dataPath("historial-erp.json");
 const ERP_ROLES_FILE = dataPath("roles-erp.json");
+const ERP_INVENTARIO_SESION_FILE = dataPath("inventario-sesion.json");
 const ERP_CONFORMITIES_DIR = dataPath("conformidades-eventos");
 const CATERING_DB_FILE = dataPath(process.env.CATERING_DB_FILE || BOT_CONFIG.cateringDbFile || "catering.db");
 const CATERING_BACKUP_DIR = path.resolve(
@@ -854,6 +855,12 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, result });
       }
 
+      if (request.method === "GET" && requestUrl.pathname === "/inventario") {
+        const html = fs.readFileSync(path.join(__dirname, "inventario-movil.html"), "utf8");
+        response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+        return response.end(html);
+      }
+
       if (!isAuthorizedPanelRequest(request)) {
         return requestPanelAuth(response);
       }
@@ -1508,6 +1515,42 @@ function startApprovalPanelServer() {
         const body = await readJsonBody(request);
         const operationalInventory = deleteOperationalInventoryItem(body.id, user);
         return sendJson(response, { ok: true, operationalInventory });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/inventario-sesion") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, ...getInventarioSesionView() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/start") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const sesion = startInventarioSesion(body.location, user);
+        return sendJson(response, { ok: true, sesion });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/item") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const sesion = updateInventarioSesionItem(body.itemId, body.counted, body.qty, user);
+        return sendJson(response, { ok: true, sesion });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/close") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
+        if (!user) return;
+        const result = closeInventarioSesion(user);
+        return sendJson(response, { ok: true, result });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/cancel") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
+        if (!user) return;
+        cancelInventarioSesion(user);
+        return sendJson(response, { ok: true });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/import-accountant-payments") {
@@ -6293,6 +6336,69 @@ function deleteOperationalInventoryItem(id, user = null) {
   saveErpOperationalInventory();
   recordAudit(user, "delete", "operational_inventory", cleanId, before?.name || cleanId, before, null);
   return getOperationalInventoryAdminView();
+}
+
+/* ===================== SESION DE TOMA DE INVENTARIO ===================== */
+
+function loadInventarioSesion() {
+  try {
+    const raw = fs.readFileSync(ERP_INVENTARIO_SESION_FILE, "utf8");
+    return JSON.parse(raw);
+  } catch {
+    return { active: false, location: "", startedAt: null, startedBy: null, counts: {} };
+  }
+}
+
+function saveInventarioSesion(data) {
+  fs.writeFileSync(ERP_INVENTARIO_SESION_FILE, JSON.stringify(data, null, 2));
+}
+
+function startInventarioSesion(location, user) {
+  const sesion = { active: true, location: normalizeText(location || ""), startedAt: new Date().toISOString(), startedBy: user?.username || null, counts: {} };
+  saveInventarioSesion(sesion);
+  recordAudit(user, "create", "inventario_sesion", "sesion", "Toma de inventario iniciada", null, { location: sesion.location });
+  return sesion;
+}
+
+function updateInventarioSesionItem(itemId, counted, qty, user) {
+  const sesion = loadInventarioSesion();
+  if (!sesion.active) throw new Error("No hay una sesion de inventario activa.");
+  sesion.counts[itemId] = { counted: Boolean(counted), qty: Math.max(0, Number(qty) || 0) };
+  saveInventarioSesion(sesion);
+  return sesion;
+}
+
+function closeInventarioSesion(user) {
+  const sesion = loadInventarioSesion();
+  if (!sesion.active) throw new Error("No hay una sesion de inventario activa.");
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const now = new Date().toISOString();
+  let updated = 0;
+  data.items = data.items.map((item) => {
+    const count = sesion.counts[item.id];
+    if (!count || !count.counted) return item;
+    updated++;
+    return { ...item, quantity: count.qty, location: sesion.location, updatedAt: now };
+  });
+  erpOperationalInventory = { ...data, updatedAt: now };
+  saveErpOperationalInventory();
+  saveInventarioSesion({ active: false, location: sesion.location, closedAt: now, closedBy: user?.username || null, counts: sesion.counts });
+  recordAudit(user, "update", "inventario_sesion", "sesion", "Toma de inventario cerrada", null, { location: sesion.location, itemsUpdated: updated });
+  return { updated, location: sesion.location };
+}
+
+function cancelInventarioSesion(user) {
+  const sesion = loadInventarioSesion();
+  saveInventarioSesion({ ...sesion, active: false, cancelledAt: new Date().toISOString() });
+  recordAudit(user, "delete", "inventario_sesion", "sesion", "Toma de inventario cancelada");
+}
+
+function getInventarioSesionView() {
+  const sesion = loadInventarioSesion();
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const total = data.items.length;
+  const counted = Object.values(sesion.counts || {}).filter((c) => c.counted).length;
+  return { sesion, items: data.items, categories: data.categories, total, counted };
 }
 
 function upsertInventoryMovementsFromReceipt(receipt = {}) {

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Toma de inventario</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f5f5f5;--surface:#fff;--border:#e5e5e5;--text:#1a1a1a;--muted:#888;
+  --accent:#1d9e75;--accent-bg:#e1f5ee;--accent-text:#0f6e56;
+  --danger:#d85a30;--danger-bg:#faece7;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
+body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* LOGIN */
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px;gap:16px}
+#login-screen h1{font-size:20px;font-weight:600;text-align:center}
+#login-screen p{font-size:14px;color:var(--muted);text-align:center}
+.login-form{width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px}
+.login-form input{padding:14px;border:1px solid var(--border);border-radius:12px;font-size:16px;background:var(--surface);width:100%}
+.login-form input:focus{outline:none;border-color:var(--accent)}
+.btn-primary{padding:14px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;width:100%}
+.btn-primary:active{opacity:0.85}
+.error-msg{color:var(--danger);font-size:13px;text-align:center}
+
+/* SETUP SESSION */
+#setup-screen{display:none;flex-direction:column;flex:1;padding:20px;gap:16px;overflow-y:auto}
+#setup-screen h2{font-size:18px;font-weight:600}
+#setup-screen p{font-size:14px;color:var(--muted)}
+.setup-form{display:flex;flex-direction:column;gap:12px}
+.setup-form label{font-size:13px;font-weight:500;color:var(--muted)}
+.setup-form input{padding:14px;border:1px solid var(--border);border-radius:12px;font-size:15px;background:var(--surface);width:100%}
+.setup-form input:focus{outline:none;border-color:var(--accent)}
+.session-info{background:var(--accent-bg);border-radius:12px;padding:16px}
+.session-info .si-label{font-size:12px;color:var(--accent-text);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.session-info .si-value{font-size:15px;color:var(--text);margin-top:4px;font-weight:500}
+.session-info .si-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.btn-row{display:flex;gap:10px}
+.btn-secondary{flex:1;padding:14px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:500;cursor:pointer}
+.btn-secondary:active{background:var(--bg)}
+.btn-danger{flex:1;padding:14px;background:var(--danger-bg);color:var(--danger);border:1px solid #f5c4b3;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer}
+
+/* MAIN */
+#main-screen{display:none;flex-direction:column;height:100%;overflow:hidden}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;flex-shrink:0}
+.header-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.back-btn{background:none;border:none;padding:4px;cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
+.header-title{flex:1}
+.header-title h1{font-size:16px;font-weight:600}
+.header-title p{font-size:12px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.progress-wrap{margin-top:2px}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.progress-label{font-size:11px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between}
+
+/* SEARCH + FILTERS */
+.search-area{background:var(--surface);padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.search-input-wrap{position:relative;margin-bottom:8px}
+.search-input-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search-input-wrap input{width:100%;padding:10px 12px 10px 38px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg)}
+.search-input-wrap input:focus{outline:none;border-color:var(--accent)}
+.filter-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filter-chips::-webkit-scrollbar{display:none}
+.chip{padding:6px 14px;border-radius:20px;font-size:13px;border:1px solid var(--border);cursor:pointer;white-space:nowrap;background:var(--surface);color:var(--muted);transition:all .15s}
+.chip.active{background:var(--accent-bg);border-color:var(--accent-text);color:var(--accent-text);font-weight:600}
+
+/* ITEM LIST */
+.item-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.item{display:flex;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid var(--border);background:var(--surface);transition:background .15s}
+.item.counted{background:#f0fbf6}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-cat{font-size:12px;color:var(--muted);margin-top:2px}
+.qty-ctrl{display:flex;align-items:center;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface)}
+.qty-btn{width:40px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;color:var(--muted);font-weight:300;user-select:none;flex-shrink:0}
+.qty-btn:active{background:var(--bg)}
+.qty-val{width:44px;text-align:center;font-size:15px;font-weight:600;border:none;background:transparent;color:var(--text);padding:0}
+.qty-val:focus{outline:none}
+.check-btn{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--border);background:var(--surface);flex-shrink:0;transition:all .15s}
+.check-btn:active{transform:scale(.93)}
+.check-btn.on{background:var(--accent);border-color:var(--accent)}
+.check-btn.on svg{stroke:#fff}
+.check-btn svg{stroke:var(--muted)}
+
+/* EMPTY STATE */
+.empty-state{padding:48px 24px;text-align:center;color:var(--muted)}
+.empty-state svg{margin:0 auto 12px;display:block;stroke:var(--border)}
+.empty-state p{font-size:15px}
+
+/* BOTTOM BAR */
+.bottom-bar{background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:10px;flex-shrink:0}
+.btn-add{flex:0 0 auto;padding:14px 18px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-add:active{background:var(--bg)}
+.btn-close{flex:1;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
+.btn-close:active{opacity:.85}
+.btn-close:disabled{opacity:.5;cursor:default}
+
+/* NEW ITEM MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-height:90vh;overflow-y:auto}
+.modal h3{font-size:17px;font-weight:600;margin-bottom:16px}
+.modal-form{display:flex;flex-direction:column;gap:12px}
+.modal-form label{font-size:13px;font-weight:500;color:var(--muted)}
+.modal-form input,.modal-form select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg)}
+.modal-form input:focus,.modal-form select:focus{outline:none;border-color:var(--accent)}
+.modal-btns{display:flex;gap:10px;margin-top:4px}
+
+/* CONFIRM CLOSE MODAL */
+#confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:24px}
+#confirm-overlay.open{display:flex}
+.confirm-card{background:var(--surface);border-radius:16px;padding:24px;width:100%;max-width:360px}
+.confirm-card h3{font-size:17px;font-weight:600;margin-bottom:8px}
+.confirm-card p{font-size:14px;color:var(--muted);margin-bottom:20px}
+.confirm-btns{display:flex;gap:10px}
+
+/* TOAST */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div>
+    <h1>Gratitud Gourmet</h1>
+    <p style="margin-top:4px">Toma de inventario</p>
+  </div>
+  <div class="login-form">
+    <input type="text" id="login-user" placeholder="Usuario" autocomplete="username" autocapitalize="none">
+    <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
+    <div class="error-msg" id="login-error"></div>
+    <button class="btn-primary" onclick="doLogin()">Ingresar</button>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div id="setup-screen">
+  <h2>Toma de inventario</h2>
+  <p>Antes de empezar, confirma el lugar donde están llegando los artículos.</p>
+
+  <div id="active-session-info" style="display:none">
+    <div class="session-info">
+      <div class="si-label">Sesion en curso</div>
+      <div class="si-value" id="asi-location"></div>
+      <div class="si-sub" id="asi-started"></div>
+    </div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn-secondary" onclick="goToMain()">Continuar contando</button>
+      <button class="btn-danger" onclick="cancelSession()">Cancelar sesion</button>
+    </div>
+  </div>
+
+  <div id="new-session-form">
+    <div class="setup-form">
+      <label>Ubicacion de llegada</label>
+      <input type="text" id="session-location" value="Salon Guaymallan, San Ignacio de Loyola 2457" placeholder="Nombre del salon o deposito">
+    </div>
+    <button class="btn-primary" onclick="startSession()" style="margin-top:4px">Comenzar conteo</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main-screen">
+  <div class="header">
+    <div class="header-top">
+      <button class="back-btn" onclick="goToSetup()" aria-label="Volver">&#8592;</button>
+      <div class="header-title">
+        <h1>Inventario</h1>
+        <p id="header-location">Salon Guaymallan</p>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="progress-label"><span id="prog-label">0 contados</span><span id="prog-pct">0%</span></div>
+    </div>
+  </div>
+
+  <div class="search-area">
+    <div class="search-input-wrap">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" id="search-input" placeholder="Buscar..." oninput="renderItems()">
+    </div>
+    <div class="filter-chips" id="filter-chips">
+      <div class="chip active" data-filter="" onclick="setFilter(this)">Todos</div>
+    </div>
+  </div>
+
+  <div class="item-list" id="item-list"></div>
+
+  <div class="bottom-bar">
+    <button class="btn-add" onclick="openNewItemModal()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      Nuevo
+    </button>
+    <button class="btn-close" id="btn-close" onclick="openConfirm()">Cerrar inventario</button>
+  </div>
+</div>
+
+<!-- MODAL NUEVO ITEM -->
+<div class="modal-overlay" id="new-item-overlay" onclick="closeNewItemModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Agregar item</h3>
+    <div class="modal-form">
+      <div>
+        <label>Nombre</label>
+        <input type="text" id="ni-name" placeholder="Ej: Platos llanos">
+      </div>
+      <div>
+        <label>Categoria</label>
+        <select id="ni-category"></select>
+      </div>
+      <div>
+        <label>Cantidad contada</label>
+        <input type="number" id="ni-qty" value="1" min="0" step="1">
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-secondary" onclick="closeNewItemModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveNewItem()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM CERRAR -->
+<div id="confirm-overlay" onclick="closeConfirm(event)">
+  <div class="confirm-card" onclick="event.stopPropagation()">
+    <h3>Cerrar inventario</h3>
+    <p id="confirm-msg">Los items contados actualizaran sus cantidades y quedaran en el salon nuevo.</p>
+    <div class="confirm-btns">
+      <button class="btn-secondary" onclick="closeConfirm()">Volver</button>
+      <button class="btn-primary" onclick="closeSession()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentUser = null;
+let sesion = null;
+let items = [];
+let categories = [];
+let activeFilter = '';
+let syncTimer = null;
+
+// --- AUTH ---
+async function doLogin() {
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!username || !password) { errEl.textContent = 'Ingresa usuario y contrasena.'; return; }
+  try {
+    const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, password}) });
+    const data = await res.json();
+    if (!data.ok) { errEl.textContent = data.error || 'Error al ingresar.'; return; }
+    currentUser = data.user;
+    goToSetup();
+  } catch { errEl.textContent = 'No se pudo conectar al servidor.'; }
+}
+
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/me');
+    const data = await res.json();
+    if (data.authenticated) { currentUser = data.user; return true; }
+  } catch {}
+  return false;
+}
+
+// --- SETUP ---
+async function goToSetup() {
+  show('setup-screen');
+  try {
+    const res = await fetch('/api/inventario-sesion');
+    const data = await res.json();
+    if (!data.ok) return;
+    sesion = data.sesion;
+    items = data.items || [];
+    categories = data.categories || [];
+    const activeEl = document.getElementById('active-session-info');
+    const newEl = document.getElementById('new-session-form');
+    if (sesion.active) {
+      document.getElementById('asi-location').textContent = sesion.location;
+      document.getElementById('asi-started').textContent = 'Iniciada: ' + fmtDate(sesion.startedAt) + (sesion.startedBy ? ' por ' + sesion.startedBy : '');
+      activeEl.style.display = 'block';
+      newEl.style.display = 'none';
+    } else {
+      activeEl.style.display = 'none';
+      newEl.style.display = 'block';
+    }
+  } catch {}
+}
+
+async function startSession() {
+  const location = document.getElementById('session-location').value.trim();
+  if (!location) { toast('Ingresa la ubicacion de llegada.'); return; }
+  try {
+    const res = await fetch('/api/inventario-sesion/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({location}) });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'Error al iniciar.'); return; }
+    sesion = data.sesion;
+    goToMain();
+  } catch { toast('No se pudo iniciar la sesion.'); }
+}
+
+async function cancelSession() {
+  if (!confirm('Cancelar la sesion? Se perderan los conteos sin cerrar.')) return;
+  await fetch('/api/inventario-sesion/cancel', { method:'POST' });
+  sesion = null;
+  goToSetup();
+}
+
+// --- MAIN ---
+async function goToMain() {
+  await loadSesion();
+  show('main-screen');
+  buildFilterChips();
+  renderItems();
+  startSync();
+}
+
+async function loadSesion() {
+  try {
+    const res = await fetch('/api/inventario-sesion');
+    const data = await res.json();
+    if (!data.ok) return;
+    sesion = data.sesion;
+    items = data.items || [];
+    categories = data.categories || [];
+    updateProgress();
+  } catch {}
+}
+
+function startSync() {
+  clearInterval(syncTimer);
+  syncTimer = setInterval(loadSesion, 5000);
+}
+
+function buildFilterChips() {
+  const el = document.getElementById('filter-chips');
+  const cats = [...new Set(items.map(i => i.categoryId))].sort();
+  const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
+  el.innerHTML = '<div class="chip active" data-filter="" onclick="setFilter(this)">Todos</div>';
+  cats.forEach(catId => {
+    const div = document.createElement('div');
+    div.className = 'chip';
+    div.dataset.filter = catId;
+    div.textContent = catMap[catId] || catId;
+    div.onclick = () => setFilter(div);
+    el.appendChild(div);
+  });
+}
+
+function setFilter(el) {
+  document.querySelectorAll('#filter-chips .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter = el.dataset.filter;
+  renderItems();
+}
+
+function renderItems() {
+  const list = document.getElementById('item-list');
+  const term = (document.getElementById('search-input').value || '').toLowerCase();
+  const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
+  const visible = items.filter(item => {
+    if (activeFilter && item.categoryId !== activeFilter) return false;
+    if (term && !item.name.toLowerCase().includes(term) && !(catMap[item.categoryId]||'').toLowerCase().includes(term)) return false;
+    return true;
+  });
+
+  // ordenar: no contados primero
+  visible.sort((a, b) => {
+    const ca = sesion?.counts?.[a.id]?.counted ? 1 : 0;
+    const cb = sesion?.counts?.[b.id]?.counted ? 1 : 0;
+    return ca - cb || a.name.localeCompare(b.name);
+  });
+
+  if (!visible.length) {
+    list.innerHTML = '<div class="empty-state"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg><p>Sin resultados</p></div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  visible.forEach(item => {
+    const count = sesion?.counts?.[item.id];
+    const isCounted = count?.counted || false;
+    const qty = count?.qty ?? item.quantity ?? 0;
+    const catLabel = catMap[item.categoryId] || item.categoryId || '';
+
+    const div = document.createElement('div');
+    div.className = 'item' + (isCounted ? ' counted' : '');
+    div.innerHTML = `
+      <div class="item-info">
+        <div class="item-name">${esc(item.name)}</div>
+        <div class="item-cat">${esc(catLabel)}${item.subcategory ? ' · ' + esc(item.subcategory) : ''}</div>
+      </div>
+      <div class="qty-ctrl">
+        <div class="qty-btn" ontouchstart="" onclick="changeQty('${item.id}', ${qty}, -1)">&#8722;</div>
+        <input class="qty-val" type="number" value="${qty}" min="0" id="qty-${item.id}"
+          onchange="setQtyDirect('${item.id}', this.value)"
+          onfocus="this.select()">
+        <div class="qty-btn" ontouchstart="" onclick="changeQty('${item.id}', ${qty}, 1)">&#43;</div>
+      </div>
+      <div class="check-btn ${isCounted ? 'on' : ''}" ontouchstart="" onclick="toggleCount('${item.id}')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>`;
+    list.appendChild(div);
+  });
+
+  document.getElementById('header-location').textContent = sesion?.location || '';
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = items.length;
+  const counted = Object.values(sesion?.counts || {}).filter(c => c.counted).length;
+  const pct = total ? Math.round(counted / total * 100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = counted + ' de ' + total + ' contados';
+  document.getElementById('prog-pct').textContent = pct + '%';
+  const btn = document.getElementById('btn-close');
+  btn.disabled = counted === 0;
+}
+
+async function changeQty(itemId, currentQty, delta) {
+  const newQty = Math.max(0, Number(currentQty) + delta);
+  const input = document.getElementById('qty-' + itemId);
+  if (input) input.value = newQty;
+  await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false);
+  if (input) {
+    // update onclick delta reference
+    input.previousElementSibling.onclick = () => changeQty(itemId, newQty, -1);
+    input.nextElementSibling.onclick = () => changeQty(itemId, newQty, 1);
+  }
+}
+
+async function setQtyDirect(itemId, val) {
+  const newQty = Math.max(0, Number(val) || 0);
+  await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false);
+}
+
+async function toggleCount(itemId) {
+  const count = sesion?.counts?.[itemId];
+  const isCounted = count?.counted || false;
+  const qty = count?.qty ?? (items.find(i => i.id === itemId)?.quantity ?? 0);
+  await patchItem(itemId, qty, !isCounted);
+  renderItems();
+}
+
+async function patchItem(itemId, qty, counted) {
+  try {
+    const res = await fetch('/api/inventario-sesion/item', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({itemId, qty, counted}) });
+    const data = await res.json();
+    if (data.ok) {
+      sesion = data.sesion;
+      updateProgress();
+    }
+  } catch {}
+}
+
+// --- NEW ITEM ---
+function openNewItemModal() {
+  const sel = document.getElementById('ni-category');
+  sel.innerHTML = categories.map(c => `<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
+  document.getElementById('ni-name').value = '';
+  document.getElementById('ni-qty').value = '1';
+  document.getElementById('new-item-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('ni-name').focus(), 100);
+}
+
+function closeNewItemModal(e) {
+  if (!e || e.target === document.getElementById('new-item-overlay'))
+    document.getElementById('new-item-overlay').classList.remove('open');
+}
+
+async function saveNewItem() {
+  const name = document.getElementById('ni-name').value.trim();
+  const categoryId = document.getElementById('ni-category').value;
+  const qty = Math.max(0, Number(document.getElementById('ni-qty').value) || 0);
+  if (!name) { toast('Ingresa el nombre del item.'); return; }
+  try {
+    const res = await fetch('/api/operational-inventory', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ item: { name, categoryId, quantity: qty, location: sesion?.location || '', status: 'available' } }) });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'Error al guardar.'); return; }
+    closeNewItemModal();
+    toast('Item agregado');
+    await loadSesion();
+    buildFilterChips();
+    renderItems();
+    // marcar como contado automaticamente
+    const newItem = (data.operationalInventory?.items || []).find(i => i.name.toLowerCase() === name.toLowerCase());
+    if (newItem) await patchItem(newItem.id, qty, true);
+    renderItems();
+  } catch { toast('Error al guardar el item.'); }
+}
+
+// --- CLOSE SESSION ---
+function openConfirm() {
+  const counted = Object.values(sesion?.counts || {}).filter(c => c.counted).length;
+  document.getElementById('confirm-msg').textContent = `Se van a actualizar ${counted} items. Sus cantidades quedan registradas en "${sesion?.location || 'el nuevo salon'}".`;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function closeConfirm(e) {
+  if (!e || e.target === document.getElementById('confirm-overlay'))
+    document.getElementById('confirm-overlay').classList.remove('open');
+}
+
+async function closeSession() {
+  closeConfirm();
+  try {
+    const res = await fetch('/api/inventario-sesion/close', { method:'POST' });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'Error al cerrar.'); return; }
+    clearInterval(syncTimer);
+    toast('Inventario cerrado. ' + (data.result?.updated || 0) + ' items actualizados.');
+    setTimeout(() => goToSetup(), 1500);
+  } catch { toast('Error al cerrar el inventario.'); }
+}
+
+// --- UTILS ---
+function show(id) {
+  ['login-screen','setup-screen','main-screen'].forEach(s => {
+    const el = document.getElementById(s);
+    el.style.display = s === id ? (id === 'main-screen' ? 'flex' : 'flex') : 'none';
+  });
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// --- INIT ---
+(async () => {
+  const authed = await checkAuth();
+  if (authed) {
+    goToSetup();
+  } else {
+    show('login-screen');
+    // enter en password
+    document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+    document.getElementById('login-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+  }
+})();
+</script>
+</body>
+</html>
