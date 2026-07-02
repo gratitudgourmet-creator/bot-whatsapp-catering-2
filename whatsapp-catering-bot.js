@@ -884,6 +884,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/comandas-stats") {
+        if (!requirePanelPermission(request, response, "view")) return;
         const requestedUrl = new URL(request.url, "http://localhost");
         const stats = getComandasStats({
           desde: requestedUrl.searchParams.get("desde"),
@@ -893,6 +894,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/state") {
+        if (!requirePanelPermission(request, response, "view")) return;
         if (cleanupStalePendingRecords()) {
           savePersistentState();
         }
@@ -907,6 +909,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/purchase-options") {
+        if (!requireAnyPanelPermission(request, response, ["purchases:write", "finance:read", "finance:write"])) return;
         return sendJson(response, {
           ok: true,
           providers: getConfigList("purchaseProviders"),
@@ -918,6 +921,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/customers") {
+        if (!requireAnyPanelPermission(request, response, ["customers:write", "events:read", "events:write", "quotes:write"])) return;
         return sendJson(response, {
           ok: true,
           customers: getCustomerInsights(),
@@ -925,6 +929,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/providers") {
+        if (!requireAnyPanelPermission(request, response, ["providers:write", "purchases:write", "finance:read", "finance:write"])) return;
         return sendJson(response, {
           ok: true,
           providers: getProviderList(),
@@ -932,6 +937,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/venues") {
+        if (!requireAnyPanelPermission(request, response, ["venues:read", "venues:write", "events:read", "events:write", "quotes:write"])) return;
         return sendJson(response, {
           ok: true,
           venues: getVenueList(),
@@ -939,12 +945,14 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/map-search") {
+        if (!requirePanelPermission(request, response, "view")) return;
         const results = await searchMapPlaces(requestUrl.searchParams.get("q") || "");
         return sendJson(response, { ok: true, results });
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/recipes") {
-        const sessionUser = getPanelSessionUser(request);
+        const sessionUser = requireAnyPanelPermission(request, response, ["recipes:read", "recipes:write", "production:read"]);
+        if (!sessionUser) return;
         return sendJson(response, {
           ok: true,
           recipes: getRecipeListForUser(sessionUser),
@@ -1199,10 +1207,12 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/proposal.txt") {
+        if (!requireAnyPanelPermission(request, response, ["quotes:write", "events:read", "events:write"])) return;
         return sendProposalText(response, requestUrl.searchParams.get("quoteId"));
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/sheets") {
+        if (!requirePanelPermission(request, response, "reports:read")) return;
         return sendJson(response, {
           ok: true,
           sheets: buildGoogleSheetsModel(),
@@ -1210,10 +1220,12 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/export.xlsx") {
+        if (!requirePanelPermission(request, response, "reports:read")) return;
         return sendXlsxExport(response);
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/approve") {
+        if (!requirePanelPermission(request, response, "view")) return;
         const body = await readJsonBody(request);
         const pending = await approvePendingConversation(body.id);
 
@@ -1232,6 +1244,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/reject") {
+        if (!requirePanelPermission(request, response, "view")) return;
         const body = await readJsonBody(request);
         const pending = rejectPendingConversation(body.id);
 
@@ -1704,6 +1717,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase-option") {
+        if (!requirePanelPermission(request, response, "purchases:write")) return;
         const body = await readJsonBody(request);
         const result = addPurchaseOption(body.type, body.value);
         return sendJson(response, { ok: true, result });
@@ -1731,6 +1745,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase-invoice-ocr") {
+        if (!requirePanelPermission(request, response, "purchases:write")) return;
         const body = await readJsonBody(request);
         const result = await extractPurchaseInvoiceData(body);
         return sendJson(response, { ok: true, result });
@@ -1833,6 +1848,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-option") {
+        if (!requireAnyPanelPermission(request, response, ["production:read", "events:write"])) return;
         const body = await readJsonBody(request);
         const settings = addOperationalOption(body.type, body.value);
         return sendJson(response, { ok: true, settings });
