@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Estado de artículos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f5f5f5;--surface:#fff;--border:#e5e5e5;--text:#1a1a1a;--muted:#888;
+  --accent:#1d9e75;--accent-bg:#e1f5ee;--accent-text:#0f6e56;
+  --danger:#d85a30;--danger-bg:#faece7;
+  --warn:#c47c00;--warn-bg:#fff7e0;
+  --c-ok:#1d9e75;--c-roto:#d85a30;--c-sucio:#c47c00;
+  --c-desoldado:#b45309;--c-falta:#7c3aed;--c-otro:#6b7280;
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
+body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* LOGIN */
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px;gap:16px}
+#login-screen h1{font-size:20px;font-weight:600;text-align:center}
+#login-screen p{font-size:14px;color:var(--muted);text-align:center}
+.login-form{width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px}
+.login-form input{padding:14px;border:1px solid var(--border);border-radius:12px;font-size:16px;background:var(--surface);width:100%}
+.login-form input:focus{outline:none;border-color:var(--accent)}
+.btn-primary{padding:14px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;width:100%}
+.btn-primary:active{opacity:.85}
+.error-msg{color:var(--danger);font-size:13px;text-align:center}
+
+/* MAIN */
+#main-screen{display:none;flex-direction:column;height:100%;overflow:hidden}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;flex-shrink:0}
+.header h1{font-size:17px;font-weight:700}
+.header-sub{display:flex;gap:12px;margin-top:6px}
+.stat-pill{font-size:12px;padding:3px 10px;border-radius:20px;font-weight:500}
+.stat-pill.issues{background:var(--danger-bg);color:var(--danger)}
+.stat-pill.ok{background:var(--accent-bg);color:var(--accent-text)}
+.stat-pill.none{background:var(--bg);color:var(--muted)}
+
+/* SEARCH + FILTERS */
+.search-area{background:var(--surface);padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.search-input-wrap{position:relative;margin-bottom:8px}
+.search-input-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search-input-wrap input{width:100%;padding:10px 12px 10px 38px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg)}
+.search-input-wrap input:focus{outline:none;border-color:var(--accent)}
+.filter-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filter-chips::-webkit-scrollbar{display:none}
+.chip{padding:6px 14px;border-radius:20px;font-size:13px;border:1px solid var(--border);cursor:pointer;white-space:nowrap;background:var(--surface);color:var(--muted)}
+.chip.active{background:var(--accent-bg);border-color:var(--accent-text);color:var(--accent-text);font-weight:600}
+
+/* ITEM LIST */
+.item-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px}
+.item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--surface);cursor:pointer;transition:background .1s}
+.item:active{background:var(--bg)}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.condition-badge{flex-shrink:0;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.badge-ok{background:var(--accent-bg);color:var(--accent-text)}
+.badge-roto{background:var(--danger-bg);color:var(--danger)}
+.badge-sucio{background:var(--warn-bg);color:var(--warn)}
+.badge-desoldado{background:#fef3c7;color:#92400e}
+.badge-falta_pieza{background:#ede9fe;color:#5b21b6}
+.badge-otro{background:#f3f4f6;color:#374151}
+.badge-none{background:var(--bg);color:var(--muted)}
+.item-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
+.item-thumb-placeholder{width:44px;height:44px;border-radius:8px;background:var(--bg);flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);color:var(--muted)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:flex-end}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:0;width:100%;max-height:92vh;overflow-y:auto;display:flex;flex-direction:column}
+.modal-drag{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+.modal-header{padding:16px 20px 12px;border-bottom:1px solid var(--border)}
+.modal-header h3{font-size:17px;font-weight:700}
+.modal-header p{font-size:13px;color:var(--muted);margin-top:3px}
+.modal-body{padding:16px 20px;display:flex;flex-direction:column;gap:14px;flex:1}
+.modal-footer{padding:12px 20px 28px;display:flex;gap:10px;border-top:1px solid var(--border)}
+
+/* PHOTO SECTION */
+.photo-section{display:flex;flex-direction:column;gap:8px}
+.photo-preview{width:100%;max-height:200px;object-fit:cover;border-radius:12px;border:1px solid var(--border);display:block}
+.photo-placeholder{width:100%;height:140px;border:2px dashed var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted);cursor:pointer;background:var(--bg)}
+.photo-placeholder:active{background:var(--border)}
+.photo-actions{display:flex;gap:8px}
+.btn-photo{flex:1;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-photo:active{background:var(--bg)}
+
+/* CONDITION SELECTOR */
+.condition-label{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px}
+.condition-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.cond-btn{padding:10px 6px;border:2px solid var(--border);border-radius:10px;background:var(--surface);font-size:13px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cond-btn .cond-icon{font-size:18px}
+.cond-btn.selected-ok{border-color:var(--c-ok);background:var(--accent-bg);color:var(--c-ok)}
+.cond-btn.selected-roto{border-color:var(--c-roto);background:var(--danger-bg);color:var(--c-roto)}
+.cond-btn.selected-sucio{border-color:var(--c-sucio);background:var(--warn-bg);color:var(--c-sucio)}
+.cond-btn.selected-desoldado{border-color:var(--c-desoldado);background:#fef3c7;color:var(--c-desoldado)}
+.cond-btn.selected-falta_pieza{border-color:var(--c-falta);background:#ede9fe;color:var(--c-falta)}
+.cond-btn.selected-otro{border-color:var(--c-otro);background:#f3f4f6;color:var(--c-otro)}
+
+/* NOTES */
+.notes-textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;background:var(--bg);resize:none;min-height:80px}
+.notes-textarea:focus{outline:none;border-color:var(--accent)}
+
+/* REPORTED BY */
+.reported-by{font-size:12px;color:var(--muted);text-align:center}
+
+/* BUTTONS */
+.btn-secondary{flex:1;padding:14px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:500;cursor:pointer}
+.btn-secondary:active{background:var(--bg)}
+
+/* EMPTY */
+.empty-state{padding:60px 24px;text-align:center;color:var(--muted)}
+.empty-state svg{margin:0 auto 12px;display:block;opacity:.3}
+.empty-state p{font-size:15px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+#file-input{display:none}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div>
+    <h1>Gratitud Gourmet</h1>
+    <p style="margin-top:4px">Estado de artículos</p>
+  </div>
+  <div class="login-form">
+    <input type="text" id="login-user" placeholder="Usuario" autocomplete="username" autocapitalize="none">
+    <input type="password" id="login-pass" placeholder="Contraseña" autocomplete="current-password">
+    <div class="error-msg" id="login-error"></div>
+    <button class="btn-primary" onclick="doLogin()">Ingresar</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main-screen">
+  <div class="header">
+    <h1>Estado de artículos</h1>
+    <div class="header-sub" id="header-stats"></div>
+  </div>
+  <div class="search-area">
+    <div class="search-input-wrap">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="search" id="search-input" placeholder="Buscar artículo..." oninput="renderItems()">
+    </div>
+    <div class="filter-chips" id="filter-chips">
+      <div class="chip active" data-filter="" onclick="setFilter(this,'')">Todos</div>
+      <div class="chip" data-filter="__issues__" onclick="setFilter(this,'__issues__')">Con problemas</div>
+    </div>
+  </div>
+  <div class="item-list" id="item-list"></div>
+</div>
+
+<!-- MODAL DETALLE / EDITAR -->
+<div class="modal-overlay" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <h3 id="modal-item-name">-</h3>
+      <p id="modal-item-meta">-</p>
+    </div>
+    <div class="modal-body">
+      <!-- FOTO -->
+      <div class="photo-section">
+        <img id="photo-preview" class="photo-preview" style="display:none" src="" alt="Foto estado">
+        <div class="photo-placeholder" id="photo-placeholder" onclick="triggerCamera()">
+          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span style="font-size:14px">Agregar foto</span>
+        </div>
+        <div class="photo-actions" id="photo-actions" style="display:none">
+          <button class="btn-photo" onclick="triggerCamera()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Cambiar foto
+          </button>
+          <button class="btn-photo" onclick="removePhoto()" style="color:var(--danger)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+            Quitar
+          </button>
+        </div>
+      </div>
+      <!-- CONDICION -->
+      <div>
+        <div class="condition-label">Condición</div>
+        <div class="condition-grid">
+          <button class="cond-btn" data-cond="ok" onclick="selectCondition('ok')"><span class="cond-icon">✅</span>Ok</button>
+          <button class="cond-btn" data-cond="sucio" onclick="selectCondition('sucio')"><span class="cond-icon">🟡</span>Sucio</button>
+          <button class="cond-btn" data-cond="roto" onclick="selectCondition('roto')"><span class="cond-icon">🔴</span>Roto</button>
+          <button class="cond-btn" data-cond="desoldado" onclick="selectCondition('desoldado')"><span class="cond-icon">🔧</span>Desoldado</button>
+          <button class="cond-btn" data-cond="falta_pieza" onclick="selectCondition('falta_pieza')"><span class="cond-icon">🔩</span>Falta pieza</button>
+          <button class="cond-btn" data-cond="otro" onclick="selectCondition('otro')"><span class="cond-icon">📝</span>Otro</button>
+        </div>
+      </div>
+      <!-- NOTAS -->
+      <div>
+        <div class="condition-label">Notas (opcional)</div>
+        <textarea class="notes-textarea" id="modal-notes" placeholder="Ej: Puerta no cierra, manija rota..."></textarea>
+      </div>
+      <div class="reported-by" id="modal-reported-by"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeDetail()">Cancelar</button>
+      <button class="btn-primary" style="flex:2" onclick="saveCondition()">Guardar estado</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file-input" accept="image/*" capture="environment" onchange="handlePhoto(event)">
+<div class="toast" id="toast"></div>
+
+<script>
+let currentUser = null;
+let items = [];
+let categories = [];
+let activeFilter = '';
+let activeItem = null;
+let pendingImageBase64 = null;
+let pendingImagePath = null;
+let removingPhoto = false;
+let selectedCondition = null;
+
+const CONDITIONS = {
+  ok:         { label: 'Ok',          badgeClass: 'badge-ok' },
+  roto:       { label: 'Roto',        badgeClass: 'badge-roto' },
+  sucio:      { label: 'Sucio',       badgeClass: 'badge-sucio' },
+  desoldado:  { label: 'Desoldado',   badgeClass: 'badge-desoldado' },
+  falta_pieza:{ label: 'Falta pieza', badgeClass: 'badge-falta_pieza' },
+  otro:       { label: 'Otro',        badgeClass: 'badge-otro' },
+};
+
+// --- AUTH ---
+async function doLogin() {
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!username || !password) { errEl.textContent = 'Ingresa usuario y contraseña.'; return; }
+  try {
+    const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, password}) });
+    const data = await res.json();
+    if (!data.ok) { errEl.textContent = data.error || 'Error al ingresar.'; return; }
+    currentUser = data.user;
+    await loadData();
+    showMain();
+  } catch { errEl.textContent = 'No se pudo conectar al servidor.'; }
+}
+
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/me');
+    const data = await res.json();
+    if (data.authenticated) { currentUser = data.user; return true; }
+  } catch {}
+  return false;
+}
+
+// --- DATA ---
+async function loadData() {
+  try {
+    const res = await fetch('/api/estado-inventario');
+    if (res.status === 401) { showLogin(); return; }
+    const data = await res.json();
+    if (!data.ok) { toast('Error al cargar datos.'); return; }
+    items = data.items || [];
+    categories = data.categories || [];
+    buildFilterChips();
+    renderItems();
+    renderStats();
+  } catch { toast('Error de conexión.'); }
+}
+
+// --- RENDER ---
+function renderStats() {
+  const issues = items.filter(i => i.condition && i.condition !== 'ok').length;
+  const reported = items.filter(i => i.condition).length;
+  const total = items.length;
+  const el = document.getElementById('header-stats');
+  el.innerHTML = `
+    <span class="stat-pill ${issues > 0 ? 'issues' : 'ok'}">${issues > 0 ? issues + ' con problemas' : 'Sin problemas activos'}</span>
+    <span class="stat-pill none">${reported} de ${total} reportados</span>
+  `;
+}
+
+function buildFilterChips() {
+  const el = document.getElementById('filter-chips');
+  const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
+  const usedCats = [...new Set(items.map(i => i.categoryId))].sort();
+  // keep first two chips (Todos, Con problemas), append categories
+  const fixed = `
+    <div class="chip ${activeFilter==='' ? 'active' : ''}" data-filter="" onclick="setFilter(this,'')">Todos</div>
+    <div class="chip ${activeFilter==='__issues__' ? 'active' : ''}" data-filter="__issues__" onclick="setFilter(this,'__issues__')">Con problemas</div>
+  `;
+  const cats = usedCats.map(cid => `<div class="chip ${activeFilter===cid ? 'active' : ''}" data-filter="${esc(cid)}" onclick="setFilter(this,'${esc(cid)}')">${esc(catMap[cid] || cid)}</div>`).join('');
+  el.innerHTML = fixed + cats;
+}
+
+function setFilter(el, val) {
+  activeFilter = val;
+  buildFilterChips();
+  renderItems();
+}
+
+function renderItems() {
+  const list = document.getElementById('item-list');
+  const term = (document.getElementById('search-input').value || '').toLowerCase();
+  const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
+
+  let visible = items.filter(item => {
+    if (activeFilter === '__issues__' && (!item.condition || item.condition === 'ok')) return false;
+    if (activeFilter && activeFilter !== '__issues__' && item.categoryId !== activeFilter) return false;
+    if (term && !item.name.toLowerCase().includes(term) && !(catMap[item.categoryId]||'').toLowerCase().includes(term)) return false;
+    return true;
+  });
+
+  // ordenar: con problemas primero, luego sin reporte, luego ok
+  visible.sort((a, b) => {
+    const rank = c => c && c !== 'ok' ? 0 : c === 'ok' ? 2 : 1;
+    return rank(a.condition) - rank(b.condition) || a.name.localeCompare(b.name);
+  });
+
+  if (!visible.length) {
+    list.innerHTML = `<div class="empty-state"><svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg><p>Sin artículos</p></div>`;
+    return;
+  }
+
+  list.innerHTML = '';
+  visible.forEach(item => {
+    const cond = CONDITIONS[item.condition];
+    const catLabel = catMap[item.categoryId] || item.categoryId || '';
+    const metaParts = [catLabel, item.subcategory, item.location].filter(Boolean);
+
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.onclick = () => openDetail(item);
+    div.innerHTML = `
+      ${item.conditionImagePath
+        ? `<img class="item-thumb" src="/images/${esc(item.conditionImagePath)}" alt="" loading="lazy" onerror="this.style.display='none'">`
+        : `<div class="item-thumb-placeholder"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
+      }
+      <div class="item-info">
+        <div class="item-name">${esc(item.name)}</div>
+        <div class="item-meta">${esc(metaParts.join(' · '))}${item.conditionAt ? ' · ' + fmtDate(item.conditionAt) : ''}</div>
+      </div>
+      <span class="condition-badge ${cond ? cond.badgeClass : 'badge-none'}">${cond ? cond.label : 'Sin reporte'}</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+// --- DETAIL MODAL ---
+function openDetail(item) {
+  activeItem = item;
+  selectedCondition = item.condition || null;
+  pendingImageBase64 = null;
+  pendingImagePath = null;
+  removingPhoto = false;
+
+  document.getElementById('modal-item-name').textContent = item.name;
+  const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
+  const metaParts = [catMap[item.categoryId] || item.categoryId, item.subcategory, item.location].filter(Boolean);
+  document.getElementById('modal-item-meta').textContent = metaParts.join(' · ') || '';
+  document.getElementById('modal-notes').value = item.conditionNotes || '';
+
+  // photo
+  updatePhotoUI(item.conditionImagePath ? `/images/${item.conditionImagePath}` : null);
+
+  // condition buttons
+  document.querySelectorAll('.cond-btn').forEach(btn => {
+    btn.className = 'cond-btn' + (btn.dataset.cond === selectedCondition ? ` selected-${selectedCondition}` : '');
+  });
+
+  // reported by
+  const rb = document.getElementById('modal-reported-by');
+  if (item.conditionAt && item.conditionBy) {
+    rb.textContent = `Reportado por ${item.conditionBy} el ${fmtDate(item.conditionAt)}`;
+  } else {
+    rb.textContent = 'Sin reporte previo';
+  }
+
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
+function closeDetail(e) {
+  if (!e || e.target === document.getElementById('detail-overlay')) {
+    document.getElementById('detail-overlay').classList.remove('open');
+    activeItem = null;
+  }
+}
+
+function selectCondition(cond) {
+  selectedCondition = selectedCondition === cond ? null : cond;
+  document.querySelectorAll('.cond-btn').forEach(btn => {
+    btn.className = 'cond-btn' + (btn.dataset.cond === selectedCondition ? ` selected-${selectedCondition}` : '');
+  });
+}
+
+// --- PHOTO ---
+function triggerCamera() {
+  document.getElementById('file-input').click();
+}
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    // compress via canvas
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      pendingImageBase64 = canvas.toDataURL('image/jpeg', 0.82);
+      pendingImagePath = null;
+      removingPhoto = false;
+      updatePhotoUI(pendingImageBase64);
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function removePhoto() {
+  pendingImageBase64 = null;
+  pendingImagePath = '';
+  removingPhoto = true;
+  updatePhotoUI(null);
+}
+
+function updatePhotoUI(src) {
+  const preview = document.getElementById('photo-preview');
+  const placeholder = document.getElementById('photo-placeholder');
+  const actions = document.getElementById('photo-actions');
+  if (src) {
+    preview.src = src;
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+    actions.style.display = 'flex';
+  } else {
+    preview.src = '';
+    preview.style.display = 'none';
+    placeholder.style.display = 'flex';
+    actions.style.display = 'none';
+  }
+}
+
+// --- SAVE ---
+async function saveCondition() {
+  if (!activeItem) return;
+  const notes = document.getElementById('modal-notes').value.trim();
+
+  // si hay imagen nueva, subirla primero
+  let imagePath = undefined;
+  if (pendingImageBase64) {
+    try {
+      toast('Subiendo foto...');
+      const res = await fetch('/api/upload-condition-image', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ itemId: activeItem.id, image: pendingImageBase64 })
+      });
+      const data = await res.json();
+      if (!data.ok) { toast(data.error || 'Error al subir la foto.'); return; }
+      imagePath = data.imagePath;
+    } catch { toast('Error al subir la foto.'); return; }
+  } else if (removingPhoto) {
+    imagePath = '';
+  }
+
+  try {
+    const body = { itemId: activeItem.id, condition: selectedCondition, notes };
+    if (imagePath !== undefined) body.imagePath = imagePath;
+    const res = await fetch('/api/operational-inventory-condition', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'Error al guardar.'); return; }
+    // actualizar item local
+    const idx = items.findIndex(i => i.id === activeItem.id);
+    if (idx >= 0) items[idx] = { ...items[idx], ...data.item, conditionLabel: CONDITIONS[data.item.condition]?.label || null };
+    closeDetail();
+    toast('Estado guardado');
+    renderItems();
+    renderStats();
+  } catch { toast('Error al guardar.'); }
+}
+
+// --- UTILS ---
+function showMain() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'flex';
+}
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('main-screen').style.display = 'none';
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// --- INIT ---
+(async () => {
+  const authed = await checkAuth();
+  if (authed) {
+    await loadData();
+    showMain();
+  } else {
+    document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+    document.getElementById('login-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+  }
+})();
+</script>
+</body>
+</html>

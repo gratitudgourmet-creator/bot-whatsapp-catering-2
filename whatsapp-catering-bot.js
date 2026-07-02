@@ -273,6 +273,11 @@ const DEFAULT_ROLE_DEFINITIONS = {
     permissions: ["view", "sanitation:read", "sanitation:write", "sanitation:approve"],
     tabs: ["sanitation"],
   },
+  mantenimiento: {
+    label: "Mantenimiento",
+    permissions: ["view", "maintenance:read"],
+    tabs: [],
+  },
 };
 const TAB_DEFINITIONS = [
   { id: "erp", label: "ERP", requiredAny: ["view"] },
@@ -314,6 +319,7 @@ const PERMISSION_DEFINITIONS = [
   { id: "sanitation:approve", label: "Aprobar decomisos y controles", group: "Bromatologia" },
   { id: "production:read", label: "Ver Produccion/Cocina", group: "Produccion/Cocina" },
   { id: "stock:read", label: "Ver stock e inventario", group: "Stock" },
+  { id: "maintenance:read", label: "Ver y reportar estado de articulos", group: "Mantenimiento" },
   { id: "logistics:read", label: "Ver Logistica Evento", group: "Logistica" },
   { id: "logistics:write", label: "Editar ficha logistica", group: "Logistica" },
   { id: "events:write", label: "Crear y editar eventos", group: "Eventos" },
@@ -877,6 +883,25 @@ function startApprovalPanelServer() {
         const html = fs.readFileSync(path.join(__dirname, "inventario-movil.html"), "utf8");
         response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
         return response.end(html);
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/estado-inventario") {
+        const html = fs.readFileSync(path.join(__dirname, "estado-inventario-movil.html"), "utf8");
+        response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+        return response.end(html);
+      }
+
+      if (request.method === "GET" && requestUrl.pathname.startsWith("/images/condition/")) {
+        const filename = path.basename(requestUrl.pathname);
+        const filepath = dataPath(path.join("images", "condition", filename));
+        try {
+          const buf = fs.readFileSync(filepath);
+          response.writeHead(200, { "Content-Type": "image/jpeg", "Cache-Control": "max-age=31536000" });
+          return response.end(buf);
+        } catch {
+          response.writeHead(404);
+          return response.end("Not found");
+        }
       }
 
       if (!isAuthorizedPanelRequest(request)) {
@@ -1620,6 +1645,30 @@ function startApprovalPanelServer() {
         if (!user) return;
         cancelInventarioSesion(user);
         return sendJson(response, { ok: true });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/estado-inventario") {
+        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:read", "purchases:write"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, ...getEstadoInventarioView() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-condition") {
+        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:read", "purchases:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        if (!body.itemId) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
+        const item = updateItemCondition(body.itemId, body.condition, body.notes, body.imagePath !== undefined ? body.imagePath : undefined, user);
+        return sendJson(response, { ok: true, item });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/upload-condition-image") {
+        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:read", "purchases:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        if (!body.itemId || !body.image) return sendJson(response, { ok: false, error: "itemId e image requeridos." }, 400);
+        const imagePath = await saveConditionImage(body.itemId, body.image);
+        return sendJson(response, { ok: true, imagePath });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/import-accountant-payments") {
@@ -6271,6 +6320,11 @@ function normalizeOperationalInventoryItem(input = {}) {
     status: normalizeOperationalInventoryStatus(input.status || "available"),
     location: normalizeText(input.location || ""),
     notes: normalizeText(input.notes || ""),
+    condition: input.condition || null,
+    conditionNotes: normalizeText(input.conditionNotes || ""),
+    conditionImagePath: normalizeText(input.conditionImagePath || ""),
+    conditionAt: input.conditionAt || null,
+    conditionBy: normalizeText(input.conditionBy || ""),
     updatedAt: input.updatedAt || new Date().toISOString(),
   };
 }
@@ -6528,6 +6582,51 @@ function getInventarioSesionView() {
   const total = data.items.length;
   const counted = Object.values(sesion.counts || {}).filter((c) => c.counted).length;
   return { sesion, items: data.items, categories: data.categories, total, counted };
+}
+
+function getEstadoInventarioView() {
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const CONDITION_LABELS = { ok: "Ok", roto: "Roto", sucio: "Sucio", desoldado: "Desoldado", falta_pieza: "Falta pieza", otro: "Otro" };
+  return {
+    categories: data.categories,
+    items: data.items.map((item) => ({
+      ...item,
+      conditionLabel: CONDITION_LABELS[item.condition] || null,
+    })),
+  };
+}
+
+function updateItemCondition(itemId, condition, notes, imagePath, user) {
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const idx = data.items.findIndex((item) => item.id === itemId);
+  if (idx < 0) throw new Error("Articulo no encontrado.");
+  const item = data.items[idx];
+  const now = new Date().toISOString();
+  data.items[idx] = {
+    ...item,
+    condition: condition || null,
+    conditionNotes: normalizeText(notes || ""),
+    conditionImagePath: imagePath != null ? normalizeText(imagePath) : item.conditionImagePath,
+    conditionAt: now,
+    conditionBy: normalizeText(user?.username || ""),
+    updatedAt: now,
+  };
+  erpOperationalInventory = { ...data, updatedAt: now };
+  saveErpOperationalInventory();
+  recordAudit(user, "update", "inventario_condicion", itemId, item.name, { condition: item.condition }, { condition });
+  return data.items[idx];
+}
+
+async function saveConditionImage(itemId, base64Data) {
+  const imagesDir = dataPath("images/condition");
+  if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
+  const clean = String(base64Data || "").replace(/^data:image\/\w+;base64,/, "");
+  if (!clean) throw new Error("Imagen vacia.");
+  const buffer = Buffer.from(clean, "base64");
+  if (buffer.length > 5 * 1024 * 1024) throw new Error("La imagen es demasiado grande (max 5MB).");
+  const filename = `cond-${normalizeText(itemId)}-${Date.now()}.jpg`;
+  fs.writeFileSync(path.join(imagesDir, filename), buffer);
+  return `condition/${filename}`;
 }
 
 function upsertInventoryMovementsFromReceipt(receipt = {}) {

@@ -89,6 +89,33 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .check-btn.on svg{stroke:#fff}
 .check-btn svg{stroke:var(--muted)}
 
+/* CONDITION MINI BUTTON */
+.cond-mini-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;transition:all .15s}
+.cond-mini-btn:active{background:var(--bg)}
+.cond-mini-btn.has-issue{border-color:#f5a623;background:#fff7e0}
+
+/* CONDITION MODAL */
+#cond-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;align-items:flex-end}
+#cond-overlay.open{display:flex}
+#cond-modal{background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px 32px;width:100%;max-height:90vh;overflow-y:auto}
+#cond-modal h3{font-size:16px;font-weight:600;margin-bottom:4px}
+#cond-modal .cond-item-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.cond-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.cond-opt{padding:10px 4px;border:2px solid var(--border);border-radius:10px;background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cond-opt .ci{font-size:18px}
+.cond-opt.sel-ok{border-color:var(--accent);background:var(--accent-bg);color:var(--accent-text)}
+.cond-opt.sel-roto{border-color:var(--danger);background:var(--danger-bg);color:var(--danger)}
+.cond-opt.sel-sucio{border-color:#c47c00;background:#fff7e0;color:#c47c00}
+.cond-opt.sel-desoldado{border-color:#b45309;background:#fef3c7;color:#b45309}
+.cond-opt.sel-falta_pieza{border-color:#7c3aed;background:#ede9fe;color:#7c3aed}
+.cond-opt.sel-otro{border-color:#6b7280;background:#f3f4f6;color:#374151}
+.cond-notes{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:var(--bg);resize:none;min-height:64px;margin-bottom:10px}
+.cond-notes:focus{outline:none;border-color:var(--accent)}
+.cond-photo-row{display:flex;gap:8px;margin-bottom:14px}
+.cond-photo-btn{flex:1;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+.cond-photo-btn:active{background:var(--bg)}
+.cond-photo-preview{width:100%;max-height:160px;object-fit:cover;border-radius:10px;margin-bottom:10px;display:none;border:1px solid var(--border)}
+
 /* EMPTY STATE */
 .empty-state{padding:48px 24px;text-align:center;color:var(--muted)}
 .empty-state svg{margin:0 auto 12px;display:block;stroke:var(--border)}
@@ -241,6 +268,33 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
     </div>
   </div>
 </div>
+
+<!-- CONDITION MODAL -->
+<div id="cond-overlay" onclick="closeCondModal(event)">
+  <div id="cond-modal" onclick="event.stopPropagation()">
+    <h3 id="cond-item-name">-</h3>
+    <div class="cond-item-sub" id="cond-item-sub"></div>
+    <div class="cond-grid">
+      <div class="cond-opt" data-cond="ok" onclick="selectCond('ok')"><span class="ci">✅</span>Ok</div>
+      <div class="cond-opt" data-cond="sucio" onclick="selectCond('sucio')"><span class="ci">🟡</span>Sucio</div>
+      <div class="cond-opt" data-cond="roto" onclick="selectCond('roto')"><span class="ci">🔴</span>Roto</div>
+      <div class="cond-opt" data-cond="desoldado" onclick="selectCond('desoldado')"><span class="ci">🔧</span>Desoldado</div>
+      <div class="cond-opt" data-cond="falta_pieza" onclick="selectCond('falta_pieza')"><span class="ci">🔩</span>Falta pieza</div>
+      <div class="cond-opt" data-cond="otro" onclick="selectCond('otro')"><span class="ci">📝</span>Otro</div>
+    </div>
+    <textarea class="cond-notes" id="cond-notes" placeholder="Notas (opcional)..."></textarea>
+    <img id="cond-photo-preview" class="cond-photo-preview" alt="foto">
+    <div class="cond-photo-row">
+      <button class="cond-photo-btn" onclick="document.getElementById('cond-file-input').click()">📷 Foto</button>
+      <button class="cond-photo-btn" id="cond-remove-photo-btn" onclick="removeCondPhoto()" style="display:none;color:var(--danger)">🗑 Quitar</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="closeCondModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveCondModal()">Guardar</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="cond-file-input" accept="image/*" capture="environment" onchange="handleCondPhoto(event)" style="display:none">
 
 <div class="toast" id="toast"></div>
 
@@ -413,7 +467,8 @@ function renderItems() {
       </div>
       <div class="check-btn ${isCounted ? 'on' : ''}" ontouchstart="" onclick="toggleCount('${item.id}')">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-      </div>`;
+      </div>
+      <div class="cond-mini-btn ${item.condition && item.condition !== 'ok' ? 'has-issue' : ''}" ontouchstart="" onclick="openCondModal('${item.id}')" title="Estado del artículo">🔧</div>`;
     list.appendChild(div);
   });
 
@@ -551,6 +606,115 @@ function fmtDate(iso) {
 
 function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// --- CONDITION MODAL ---
+let condItemId = null;
+let condSelected = null;
+let condImageBase64 = null;
+let condRemovePhoto = false;
+
+function openCondModal(itemId) {
+  const item = items.find(i => i.id === itemId);
+  if (!item) return;
+  condItemId = itemId;
+  condSelected = item.condition || null;
+  condImageBase64 = null;
+  condRemovePhoto = false;
+  const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
+  document.getElementById('cond-item-name').textContent = item.name;
+  document.getElementById('cond-item-sub').textContent = [catMap[item.categoryId], item.subcategory].filter(Boolean).join(' · ');
+  document.getElementById('cond-notes').value = item.conditionNotes || '';
+  const preview = document.getElementById('cond-photo-preview');
+  const removeBtn = document.getElementById('cond-remove-photo-btn');
+  if (item.conditionImagePath) {
+    preview.src = '/images/' + item.conditionImagePath;
+    preview.style.display = 'block';
+    removeBtn.style.display = '';
+  } else {
+    preview.src = '';
+    preview.style.display = 'none';
+    removeBtn.style.display = 'none';
+  }
+  document.querySelectorAll('.cond-opt').forEach(el => {
+    el.className = 'cond-opt' + (el.dataset.cond === condSelected ? ' sel-' + condSelected : '');
+  });
+  document.getElementById('cond-overlay').classList.add('open');
+}
+
+function closeCondModal(e) {
+  if (!e || e.target === document.getElementById('cond-overlay'))
+    document.getElementById('cond-overlay').classList.remove('open');
+}
+
+function selectCond(val) {
+  condSelected = condSelected === val ? null : val;
+  document.querySelectorAll('.cond-opt').forEach(el => {
+    el.className = 'cond-opt' + (el.dataset.cond === condSelected ? ' sel-' + condSelected : '');
+  });
+}
+
+function handleCondPhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) { if (w > h) { h = Math.round(h * MAX / w); w = MAX; } else { w = Math.round(w * MAX / h); h = MAX; } }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      condImageBase64 = canvas.toDataURL('image/jpeg', 0.82);
+      condRemovePhoto = false;
+      const preview = document.getElementById('cond-photo-preview');
+      preview.src = condImageBase64;
+      preview.style.display = 'block';
+      document.getElementById('cond-remove-photo-btn').style.display = '';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function removeCondPhoto() {
+  condImageBase64 = null;
+  condRemovePhoto = true;
+  const preview = document.getElementById('cond-photo-preview');
+  preview.src = '';
+  preview.style.display = 'none';
+  document.getElementById('cond-remove-photo-btn').style.display = 'none';
+}
+
+async function saveCondModal() {
+  const notes = document.getElementById('cond-notes').value.trim();
+  let imagePath = undefined;
+  if (condImageBase64) {
+    try {
+      const res = await fetch('/api/upload-condition-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ itemId: condItemId, image: condImageBase64 }) });
+      const data = await res.json();
+      if (!data.ok) { toast(data.error || 'Error al subir foto.'); return; }
+      imagePath = data.imagePath;
+    } catch { toast('Error al subir foto.'); return; }
+  } else if (condRemovePhoto) {
+    imagePath = '';
+  }
+  try {
+    const body = { itemId: condItemId, condition: condSelected, notes };
+    if (imagePath !== undefined) body.imagePath = imagePath;
+    const res = await fetch('/api/operational-inventory-condition', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'Error al guardar.'); return; }
+    // update local item
+    const idx = items.findIndex(i => i.id === condItemId);
+    if (idx >= 0) items[idx] = { ...items[idx], ...data.item };
+    closeCondModal();
+    toast('Estado guardado');
+    renderItems();
+  } catch { toast('Error al guardar.'); }
 }
 
 // --- INIT ---
