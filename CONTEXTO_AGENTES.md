@@ -39,7 +39,7 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 **Pendiente para la proxima sesion:**
 - Hito 3: paginacion/carga on-demand de eventos, compras, clientes, recetas. Los slices de ?view= siguen siendo pesados (ej. finance 644KB).
 - Hito 4: mediciones de timing en el frontend (time to visible layout, first useful block).
-- Seguridad adicional: revisar /api/status, /api/manual-budget, /api/update-budget, /api/delete-budget (no se auditaron en esta sesion).
+- Seguridad adicional (pospuesto, base ya solida): loguear intentos fallidos de login en audit_log, invalidar sesiones al cambiar password, panel de sesiones activas, bajar limite de intentos de 8 a 5, TOTP/2FA para admin. No es urgente.
 - Data hygiene: sacar config-bot.json, usuarios-erp.json, JSON de negocio y catering.db* del tracking de git.
 - Gestion de usuarios: toggle activo/inactivo + filtro por nombre/rol.
 - VPS: agregar swap 1-2GB, backups externos (rclone), cambiar password root.
