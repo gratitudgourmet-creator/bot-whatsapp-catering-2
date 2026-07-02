@@ -650,6 +650,203 @@
       .drawer-row { grid-template-columns: 1fr; }
     }
 
+    /* ── ROLES: NUEVA UI ────────────────────────────────────────── */
+    .role-layout {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .role-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Selector izquierdo */
+    .role-selector { display: flex; flex-direction: column; gap: 6px; }
+    .role-selector-card {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .role-selector-card:hover { border-color: var(--accent); }
+    .role-selector-card.active {
+      border-color: var(--accent);
+      background: var(--accent-soft, #e8f5ee);
+    }
+    .rsc-name { font-size: 14px; font-weight: 600; }
+    .rsc-meta { font-size: 11px; color: var(--secondary); margin-top: 2px; }
+    .rsc-dots { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+    .rsc-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      title: attr(data-group);
+    }
+
+    /* Editor derecho */
+    .role-editor {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      overflow: hidden;
+      min-height: 300px;
+    }
+    .re-empty {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 60px 24px; color: var(--secondary);
+      gap: 10px; font-size: 14px;
+    }
+    .re-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .re-title { font-size: 17px; font-weight: 700; }
+    .re-subtitle { font-size: 12px; color: var(--secondary); margin-top: 2px; }
+    .re-admin-banner {
+      margin: 0 20px 0;
+      padding: 10px 14px;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #856404;
+    }
+    .re-body { padding: 6px 0 0; max-height: 520px; overflow-y: auto; }
+    .re-footer {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .btn-save-role {
+      padding: 10px 20px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-save-role:hover { opacity: .9; }
+    .role-unsaved-hint {
+      font-size: 12px;
+      color: var(--secondary);
+      display: none;
+    }
+    .role-unsaved-hint.visible { display: block; color: #a67c00; }
+
+    /* Grupos de permisos colapsables */
+    .perm-group { border-bottom: 1px solid var(--line); }
+    .perm-group:last-child { border-bottom: none; }
+    .perm-group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .1s;
+    }
+    .perm-group-header:hover { background: var(--surface-soft); }
+    .pgh-label { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
+    .pgh-count { font-size: 11px; color: var(--secondary); white-space: nowrap; }
+    .pgh-chevron {
+      color: var(--secondary);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    .perm-group.open .pgh-chevron { transform: rotate(90deg); }
+    .perm-group-body {
+      display: none;
+      flex-direction: column;
+      padding: 0 20px 10px;
+      gap: 2px;
+    }
+    .perm-group.open .perm-group-body { display: flex; }
+    .perm-master-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0 8px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 6px;
+    }
+    .perm-master-label { flex: 1; font-size: 12px; color: var(--secondary); }
+    .btn-pg-all {
+      font-size: 11px;
+      padding: 3px 10px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--surface);
+      cursor: pointer;
+      color: var(--secondary);
+      white-space: nowrap;
+    }
+    .btn-pg-all:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Toggle switch */
+    .perm-switch-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      cursor: pointer;
+    }
+    .perm-switch-row:hover .perm-switch-label { color: var(--text); }
+    .perm-switch-label { flex: 1; font-size: 13px; color: var(--secondary); transition: color .1s; }
+    .perm-switch-row input[type=checkbox] { display: none; }
+    .perm-switch {
+      width: 36px; height: 20px; border-radius: 10px;
+      background: var(--line);
+      position: relative;
+      flex-shrink: 0;
+      transition: background .2s;
+    }
+    .perm-switch::after {
+      content: ''; position: absolute;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #fff; top: 3px; left: 3px;
+      transition: transform .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .perm-switch-row input:checked ~ .perm-switch { background: var(--accent); }
+    .perm-switch-row input:checked ~ .perm-switch::after { transform: translateX(16px); }
+    .perm-switch-row input:disabled ~ .perm-switch { opacity: .5; }
+    .perm-switch-row input:disabled ~ .perm-switch-label { opacity: .5; }
+
+    /* Sección de pestañas */
+    .re-tabs-section { padding: 14px 20px; border-top: 1px solid var(--line); }
+    .re-tabs-label { font-size: 12px; font-weight: 600; color: var(--secondary); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; }
+    .re-tabs-grid {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .tab-toggle-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--secondary);
+      transition: all .15s;
+      user-select: none;
+    }
+    .tab-toggle-chip input[type=checkbox] { display: none; }
+    .tab-toggle-chip.checked {
+      border-color: var(--accent);
+      background: var(--accent-soft, #e8f5ee);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .tab-toggle-chip.disabled { opacity: .4; cursor: not-allowed; }
+
     .audit-row,
     .user-row {
       background: var(--surface-soft);
@@ -6374,16 +6571,19 @@
         </div>
         <div id="user-cards" class="user-cards"></div>
 
-        <!-- ROLES (sin cambios) -->
+        <!-- ROLES -->
         <div id="security-roles-section" style="margin-top:28px">
-            <h2>Permisos por rol</h2>
-            <form id="role-permissions-form" onsubmit="saveRolePermissions(event)">
-              <div id="role-permissions-list" class="user-list"></div>
-              <div class="actions" style="margin-top:12px;">
-                <button class="approve" type="submit">Guardar permisos</button>
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:14px">Roles y permisos</h3>
+          <div class="role-layout">
+            <div class="role-selector" id="role-selector"></div>
+            <div class="role-editor" id="role-editor">
+              <div class="re-empty">
+                <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                <span>Seleccioná un rol para editar sus permisos</span>
               </div>
-            </form>
+            </div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -8819,7 +9019,7 @@
           <button class="summary-row" type="button" onclick="showWorkspaceView('${escapeAttribute(view.id)}')"><strong>${escapeHtml(view.label || view.id)}</strong><span>${escapeHtml(view.id)}</span></button>
         `)}
         ${renderAdminSummaryList("Funciones / permisos", permissionCatalog, (permission) => `
-          <button class="summary-row" type="button" onclick="showModuleSection('security', 'security-roles-section'); document.getElementById('role-permissions-list')?.scrollIntoView({behavior:'smooth'});"><strong>${escapeHtml(permission.label || permission.id)}</strong><span>${escapeHtml(permission.group || "General")} · ${escapeHtml(permission.id)}</span></button>
+          <button class="summary-row" type="button" onclick="showModuleSection('security', 'security-roles-section');"><strong>${escapeHtml(permission.label || permission.id)}</strong><span>${escapeHtml(permission.group || "General")} · ${escapeHtml(permission.id)}</span></button>
         `)}
         <section class="admin-summary-card">
           <h3>Opciones editables</h3>
@@ -9119,98 +9319,218 @@
       renderAuditLog();
     }
 
-    function renderRolePermissions() {
-      const list = document.getElementById("role-permissions-list");
-      if (!list) return;
-      if (!panelRoles.length || !permissionCatalog.length) {
-        list.innerHTML = `<div class="empty">Sin permisos para mostrar.</div>`;
-        return;
-      }
+    // ── ROLES: NUEVA UI ──────────────────────────────────────────
+    let _selectedRoleId = null;
 
-      list.innerHTML = panelRoles.map((role) => {
-        const isAdmin = role.id === "admin";
-        const rolePermissions = new Set(role.permissions || []);
-        const roleTabs = new Set(role.tabs || []);
+    const _GROUP_COLORS = {
+      "Eventos": "#2563eb", "Presupuestos": "#7c3aed", "Clientes": "#db2777",
+      "Compras": "#d97706", "Finanzas": "#059669", "RRHH": "#0891b2",
+      "Bromatologia": "#16a34a", "Produccion/Cocina": "#ea580c",
+      "Stock": "#ca8a04", "Mantenimiento": "#6d28d9", "Logistica": "#0f766e",
+      "Reportes": "#4f46e5", "Seguridad": "#dc2626", "Acciones sensibles": "#b91c1c",
+      "Recetas": "#9333ea", "Proveedores": "#c2410c", "Lugares": "#15803d",
+      "Lectura": "#64748b",
+    };
+
+    function _roleUserCount(roleId) {
+      return panelUsers.filter(u => u.role === roleId).length;
+    }
+
+    function renderRolePermissions() {
+      renderRoleSelector();
+      if (_selectedRoleId) renderRoleEditor();
+    }
+
+    function renderRoleSelector() {
+      const el = document.getElementById("role-selector");
+      if (!el) return;
+      if (!panelRoles.length) { el.innerHTML = `<div class="empty">Sin roles.</div>`; return; }
+
+      const groups = [...new Set(permissionCatalog.map(p => p.group))];
+
+      el.innerHTML = panelRoles.map(role => {
+        const perms = new Set(role.permissions || []);
+        const isAdmin = role.id === "admin" || perms.has("*");
+        const userCount = _roleUserCount(role.id);
+        const permCount = isAdmin ? "Acceso total" : `${perms.size} permisos`;
+        const activeGroups = isAdmin
+          ? groups
+          : groups.filter(g => permissionCatalog.filter(p => p.group === g).some(p => perms.has(p.id)));
+        const dots = activeGroups.slice(0, 10).map(g =>
+          `<div class="rsc-dot" style="background:${_GROUP_COLORS[g] || '#888'}" title="${escapeHtml(g)}"></div>`
+        ).join("");
         return `
-          <div class="user-row role-permission-card" data-role-id="${escapeAttribute(role.id)}">
-            <strong>${escapeHtml(role.label)}</strong>
-            <div class="secondary">${isAdmin ? "Acceso total protegido" : "Seleccione funciones disponibles para este rol"}</div>
-            ${renderRoleAccessMatrix(role)}
-            <div class="secondary" style="margin-top:8px;">Funciones</div>
-            <div class="permission-grid">
-              ${permissionCatalog.map((permission) => {
-                const checked = isAdmin || rolePermissions.has("*") || rolePermissions.has(permission.id);
-                return `
-                  <label class="permission-check permission-option">
-                    <input type="checkbox" value="${escapeAttribute(permission.id)}" ${checked ? "checked" : ""} ${isAdmin ? "disabled" : ""}>
-                    <span>${escapeHtml(permission.label)}</span>
-                    <small>${escapeHtml(permission.group)}</small>
-                  </label>
-                `;
-              }).join("")}
-            </div>
-            <div class="secondary" style="margin-top:12px;">Pestañas visibles</div>
-            <div class="permission-grid">
-              ${tabCatalog.map((tab) => {
-                const requiredForAdmin = isAdmin && tab.id === "security";
-                const allowed = isAdmin || rolePermissions.has("*") || (tab.requiredAny || []).some((permission) => permission === "view" || rolePermissions.has(permission));
-                const checked = requiredForAdmin || (allowed && roleTabs.has(tab.id));
-                return `
-                  <label class="permission-check tab-option ${allowed ? "" : "muted-option"}">
-                    <input type="checkbox" value="${escapeAttribute(tab.id)}" ${checked ? "checked" : ""} ${requiredForAdmin || !allowed ? "disabled" : ""}>
-                    <span>${escapeHtml(tab.label)}</span>
-                    <small>${requiredForAdmin ? "Siempre visible para administrar" : allowed ? "Disponible para el rol" : "Requiere habilitar funcion"}</small>
-                  </label>
-                `;
-              }).join("")}
-            </div>
-          </div>
-        `;
+          <div class="role-selector-card ${_selectedRoleId === role.id ? 'active' : ''}"
+               onclick="selectRole('${escapeAttribute(role.id)}')">
+            <div class="rsc-name">${escapeHtml(role.label)}</div>
+            <div class="rsc-meta">${userCount} usuario${userCount !== 1 ? "s" : ""} · ${permCount}</div>
+            <div class="rsc-dots">${dots}</div>
+          </div>`;
       }).join("");
     }
 
-    function renderRoleAccessMatrix(role) {
-      const permissions = new Set(role.permissions || []);
-      const isAdmin = role.id === "admin" || permissions.has("*");
-      const rows = [
-        { label: "Compras", view: ["purchases:write", "stock:read"], edit: ["purchases:write"], approve: [], delete: ["sensitive:delete"], sensitive: ["sensitive:payments"] },
-        { label: "Finanzas", view: ["finance:read"], edit: ["finance:write"], approve: ["payment_orders:approve"], delete: [], sensitive: ["sensitive:payments"] },
-        { label: "Eventos", view: ["events:read", "events:write"], edit: ["events:write"], approve: [], delete: ["sensitive:delete"], sensitive: [] },
-        { label: "Recetas", view: ["recipes:read"], edit: ["recipes:write"], approve: [], delete: ["sensitive:delete"], sensitive: [] },
-        { label: "Stock", view: ["stock:read"], edit: ["purchases:write"], approve: [], delete: ["sensitive:delete"], sensitive: [] },
-        { label: "RRHH", view: ["hr:read"], edit: ["hr:write", "payroll:write"], approve: [], delete: [], sensitive: [] },
-        { label: "Bromatologia", view: ["sanitation:read"], edit: ["sanitation:write"], approve: ["sanitation:approve"], delete: [], sensitive: [] },
-        { label: "Seguridad", view: ["users:write"], edit: ["users:write"], approve: [], delete: [], sensitive: ["sensitive:security"] },
-      ];
-      const canAny = (items) => isAdmin || items.some((permission) => permissions.has(permission));
-      const mark = (items) => `<span class="badge ${canAny(items) ? "confirmed" : "missing_info"}">${canAny(items) ? "Si" : "-"}</span>`;
-      return `
-        <div class="purchase-table-wrap compact-table-wrap" style="margin-top:10px;">
-          <table class="purchase-table">
-            <thead><tr><th>Modulo</th><th>Ver</th><th>Editar</th><th>Aprobar</th><th>Eliminar</th><th>Sensible</th></tr></thead>
-            <tbody>
-              ${rows.map((row) => `
-                <tr>
-                  <td>${escapeHtml(row.label)}</td>
-                  <td>${mark(row.view)}</td>
-                  <td>${mark(row.edit)}</td>
-                  <td>${mark(row.approve)}</td>
-                  <td>${mark(row.delete)}</td>
-                  <td>${mark(row.sensitive)}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-      `;
+    function selectRole(id) {
+      _selectedRoleId = id;
+      renderRoleSelector();
+      renderRoleEditor();
     }
 
-    function focusRolePermissionCard(roleId) {
-      const card = document.querySelector(`.role-permission-card[data-role-id="${cssEscape(roleId)}"]`);
-      if (!card) return;
-      card.scrollIntoView({ behavior: "smooth", block: "center" });
-      card.classList.add("section-focus");
-      setTimeout(() => card.classList.remove("section-focus"), 1400);
+    function renderRoleEditor() {
+      const el = document.getElementById("role-editor");
+      if (!el) return;
+      const role = panelRoles.find(r => r.id === _selectedRoleId);
+      if (!role) return;
+
+      const perms = new Set(role.permissions || []);
+      const tabs = new Set(role.tabs || []);
+      const isAdmin = role.id === "admin" || perms.has("*");
+      const userCount = _roleUserCount(role.id);
+      const initials = role.label.slice(0, 2).toUpperCase();
+      const color = _userAvatarColor(role.id);
+
+      // Group permissions by catalog group
+      const groupMap = {};
+      permissionCatalog.forEach(p => {
+        if (!groupMap[p.group]) groupMap[p.group] = [];
+        groupMap[p.group].push(p);
+      });
+
+      const permGroupsHtml = Object.entries(groupMap).map(([group, groupPerms]) => {
+        const activeCount = groupPerms.filter(p => isAdmin || perms.has(p.id)).length;
+        const color = _GROUP_COLORS[group] || "#888";
+        const switchRows = groupPerms.map(p => {
+          const checked = isAdmin || perms.has(p.id);
+          return `
+            <label class="perm-switch-row">
+              <input type="checkbox" class="re-perm-cb" value="${escapeAttribute(p.id)}"
+                ${checked ? "checked" : ""} ${isAdmin ? "disabled" : ""}
+                onchange="markRoleUnsaved()">
+              <span class="perm-switch-label">${escapeHtml(p.label)}</span>
+              <div class="perm-switch"></div>
+            </label>`;
+        }).join("");
+
+        return `
+          <div class="perm-group" data-group="${escapeAttribute(group)}">
+            <div class="perm-group-header" onclick="togglePermGroup(this)">
+              <div class="rsc-dot" style="background:${color};width:10px;height:10px;flex-shrink:0"></div>
+              <span class="pgh-label">${escapeHtml(group)}</span>
+              <span class="pgh-count">${activeCount}/${groupPerms.length}</span>
+              <svg class="pgh-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+            <div class="perm-group-body">
+              ${!isAdmin ? `
+              <div class="perm-master-row">
+                <span class="perm-master-label">${escapeHtml(group)}</span>
+                <button class="btn-pg-all" type="button"
+                  onclick="toggleGroupAll('${escapeAttribute(group)}', ${activeCount < groupPerms.length})">
+                  ${activeCount === groupPerms.length ? "Quitar todo" : "Activar todo"}
+                </button>
+              </div>` : ""}
+              ${switchRows}
+            </div>
+          </div>`;
+      }).join("");
+
+      const tabsHtml = tabCatalog.map(tab => {
+        const requiredForAdmin = isAdmin && tab.id === "security";
+        const allowed = isAdmin || perms.has("*") || (tab.requiredAny || []).some(p => p === "view" || perms.has(p));
+        const checked = requiredForAdmin || (allowed && tabs.has(tab.id));
+        const disabled = requiredForAdmin || (!allowed && !isAdmin);
+        return `
+          <label class="tab-toggle-chip ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}"
+                 onclick="${disabled ? "event.preventDefault()" : "toggleTabChip(this)"}">
+            <input type="checkbox" class="re-tab-cb" value="${escapeAttribute(tab.id)}"
+              ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}>
+            ${escapeHtml(tab.label)}
+          </label>`;
+      }).join("");
+
+      el.innerHTML = `
+        <div class="re-header">
+          <div class="user-avatar" style="background:${color};width:38px;height:38px;font-size:13px">${escapeHtml(initials)}</div>
+          <div style="flex:1">
+            <div class="re-title">${escapeHtml(role.label)}</div>
+            <div class="re-subtitle">${userCount} usuario${userCount !== 1 ? "s" : ""} asignado${userCount !== 1 ? "s" : ""}</div>
+          </div>
+        </div>
+        ${isAdmin ? `<div class="re-admin-banner">⚠ Rol de administración — permisos protegidos, no se pueden modificar.</div>` : ""}
+        <div class="re-body" id="re-body">
+          ${permGroupsHtml}
+          <div class="re-tabs-section">
+            <div class="re-tabs-label">Pestañas visibles en el panel</div>
+            <div class="re-tabs-grid" id="re-tabs-grid">${tabsHtml}</div>
+          </div>
+        </div>
+        <div class="re-footer">
+          <span class="role-unsaved-hint" id="role-unsaved-hint">Cambios sin guardar</span>
+          ${!isAdmin ? `<button class="btn-save-role" onclick="saveSelectedRole()">Guardar cambios</button>` : ""}
+        </div>`;
+    }
+
+    function togglePermGroup(headerEl) {
+      headerEl.closest(".perm-group").classList.toggle("open");
+    }
+
+    function toggleGroupAll(group, activate) {
+      document.querySelectorAll(`.perm-group[data-group="${CSS.escape(group)}"] .re-perm-cb:not(:disabled)`)
+        .forEach(cb => { cb.checked = activate; });
+      // update count label
+      const groupEl = document.querySelector(`.perm-group[data-group="${CSS.escape(group)}"]`);
+      if (groupEl) {
+        const total = groupEl.querySelectorAll(".re-perm-cb").length;
+        const active = groupEl.querySelectorAll(".re-perm-cb:checked").length;
+        const countEl = groupEl.querySelector(".pgh-count");
+        if (countEl) countEl.textContent = `${active}/${total}`;
+        const btn = groupEl.querySelector(".btn-pg-all");
+        if (btn) btn.textContent = activate ? "Quitar todo" : "Activar todo";
+      }
+      markRoleUnsaved();
+    }
+
+    function toggleTabChip(label) {
+      const cb = label.querySelector("input[type=checkbox]");
+      if (!cb || cb.disabled) return;
+      cb.checked = !cb.checked;
+      label.classList.toggle("checked", cb.checked);
+      markRoleUnsaved();
+    }
+
+    function markRoleUnsaved() {
+      const hint = document.getElementById("role-unsaved-hint");
+      if (hint) hint.classList.add("visible");
+    }
+
+    function focusRolePermissionCard(roleId) { selectRole(roleId); }
+
+    async function saveSelectedRole() {
+      if (!_selectedRoleId) return;
+      const permissions = Array.from(document.querySelectorAll("#re-body .re-perm-cb:checked")).map(cb => cb.value);
+      const tabs = Array.from(document.querySelectorAll("#re-body .re-tab-cb:checked")).map(cb => cb.value);
+      const roles = panelRoles.map(r =>
+        r.id === _selectedRoleId
+          ? { id: r.id, permissions, tabs }
+          : { id: r.id, permissions: r.permissions || [], tabs: r.tabs || [] }
+      );
+      const response = await fetch("/api/roles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roles }),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) { showNotice(result.error || "No se pudieron guardar permisos.", "error"); return; }
+      panelRoles = result.roles || panelRoles;
+      permissionCatalog = result.permissions || permissionCatalog;
+      renderRoleSelector();
+      renderRoleEditor();
+      await refreshCurrentUser();
+      await loadAuditLog();
+      showNotice("Permisos guardados.", "success");
+    }
+
+    async function saveRolePermissions(event) {
+      if (event) event.preventDefault();
+      await saveSelectedRole();
     }
 
     function cssEscape(value) {
@@ -9222,31 +9542,6 @@
       const div = document.createElement("div");
       div.innerHTML = String(html || "");
       return div.textContent || div.innerText || "";
-    }
-
-    async function saveRolePermissions(event) {
-      event.preventDefault();
-      const roles = Array.from(document.querySelectorAll(".role-permission-card")).map((card) => ({
-        id: card.dataset.roleId,
-        permissions: Array.from(card.querySelectorAll(".permission-option input[type='checkbox']:checked")).map((input) => input.value),
-        tabs: Array.from(card.querySelectorAll(".tab-option input[type='checkbox']:checked")).map((input) => input.value),
-      }));
-      const response = await fetch("/api/roles", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roles }),
-      });
-      const result = await readJsonResponse(response);
-      if (!result.ok) {
-        showNotice(result.error || "No se pudieron guardar permisos.", "error");
-        return;
-      }
-      panelRoles = result.roles || panelRoles;
-      permissionCatalog = result.permissions || permissionCatalog;
-      renderRolePermissions();
-      await refreshCurrentUser();
-      await loadAuditLog();
-      showNotice("Permisos guardados.", "success");
     }
 
     async function refreshCurrentUser() {
