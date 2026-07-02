@@ -3490,6 +3490,175 @@
       box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
     }
 
+    .events-cockpit-head {
+      align-items: start;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      margin-bottom: 14px;
+    }
+
+    .events-cockpit-head h2 {
+      font-size: 24px;
+      margin: 0 0 4px;
+    }
+
+    .events-cockpit-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .events-cockpit-actions .filter,
+    .events-cockpit-actions .approve {
+      min-height: 32px;
+      padding: 0 11px;
+    }
+
+    .events-refresh {
+      background: transparent;
+      border-color: rgba(102, 117, 138, .32);
+      color: var(--muted);
+    }
+
+    .events-operational-summary,
+    .events-status-strip {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .events-summary-tile,
+    .events-status-tile {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      padding: 12px;
+    }
+
+    .events-summary-tile span,
+    .events-status-tile span,
+    .event-operational-meta,
+    .event-next-action span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .events-summary-tile strong,
+    .events-status-tile strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.1;
+      margin-top: 5px;
+    }
+
+    .events-summary-tile p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      margin: 7px 0 0;
+    }
+
+    .events-stage-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .events-stage-card,
+    .events-quotes-shell {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      padding: 14px;
+    }
+
+    .events-stage-card.full {
+      grid-column: 1 / -1;
+    }
+
+    .events-stage-head,
+    .events-section-head {
+      align-items: start;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      margin-bottom: 12px;
+    }
+
+    .events-stage-head h3,
+    .events-section-head h2 {
+      margin: 0 0 3px;
+    }
+
+    .events-stage-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .event-operational-row {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) minmax(150px, .35fr) auto;
+      min-width: 0;
+      padding: 12px;
+      transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .event-operational-row:hover {
+      background: #fff;
+      border-color: #b6c7d6;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, .055);
+    }
+
+    .event-operational-title {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .event-operational-title strong {
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .event-next-action {
+      min-width: 0;
+    }
+
+    .event-next-action strong {
+      display: block;
+      font-size: 13px;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .event-operational-row .filter {
+      min-height: 31px;
+      white-space: nowrap;
+    }
+
+    .event-close-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin: -2px 0 12px;
+    }
+
     .erp-card-head {
       align-items: flex-start;
       display: flex;
@@ -4491,6 +4660,13 @@
       .erp-kpis,
       .erp-home-head,
       .erp-home-grid,
+      .events-cockpit-head,
+      .events-operational-summary,
+      .events-status-strip,
+      .events-stage-grid,
+      .events-stage-head,
+      .events-section-head,
+      .event-operational-row,
       .today-kpi-grid,
       .erp-quote-line,
       .event-finance,
@@ -4525,6 +4701,19 @@
 
       .erp-home-actions {
         justify-content: flex-start;
+      }
+
+      .events-cockpit-head h2 {
+        font-size: 21px;
+      }
+
+      .events-cockpit-actions,
+      .events-section-head {
+        justify-content: flex-start;
+      }
+
+      .event-operational-row .filter {
+        justify-self: start;
       }
 
       .erp-home-export {
@@ -4670,8 +4859,8 @@
       <div class="workspace-menu" data-menu-view="events">
         <button class="workspace-tab" data-view="events">Eventos</button>
         <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="events" data-anchor="events-control-section">Control integral</button>
-          <button class="workspace-subitem" data-view="events" data-anchor="event-status-section">Estados y cierres</button>
+          <button class="workspace-subitem" data-view="events" data-anchor="events-control-section">Cockpit operativo</button>
+          <button class="workspace-subitem" data-view="events" data-anchor="event-status-section">Pendientes de cierre</button>
           <button class="workspace-subitem" data-view="events" data-anchor="events-quotes-section">Presupuestos asociados</button>
           <button class="workspace-subitem" data-view="events" data-action="showBlankErpEventForm">Nuevo evento / oportunidad</button>
         </div>
@@ -5268,29 +5457,33 @@
 
     <section id="view-events" class="workspace-view">
       <section id="events-control-section" class="erp-section events-command-center">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+        <div class="events-cockpit-head">
           <div>
             <h2>Eventos</h2>
-            <p class="subtitle">Control integral de venta, operación, compras, cobros, conformidad y cierre.</p>
+            <p class="subtitle">Planificación, operación y cierre de cada servicio.</p>
           </div>
-          <div class="actions">
+          <div class="events-cockpit-actions">
             <button class="approve" type="button" onclick="showBlankErpEventForm()" data-permission="events:write">Crear evento</button>
-            <button class="filter" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Presupuesto rentable</button>
-            <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+            <button class="filter" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Presupuesto</button>
+            <button class="filter events-refresh" type="button" onclick="loadErp()">Actualizar</button>
           </div>
         </div>
+        <div id="events-operational-summary" class="events-operational-summary"></div>
         <div id="erp-event-list"></div>
       </section>
 
       <section id="event-status-section" class="erp-section">
-        <h2>Estados y cierres</h2>
-        <p class="subtitle">Eventos activos, realizados, perdidos y cancelados con conformidad, facturación y autorización de cierre.</p>
+        <h2>Pendientes de cierre</h2>
+        <p class="subtitle">Eventos que necesitan conformidad, autorización o cierre administrativo.</p>
         <div id="event-status-dashboard"></div>
       </section>
 
       <section id="events-quotes-section" class="erp-section">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-          <h2>Presupuestos asociados</h2>
+        <div class="events-section-head">
+          <div>
+            <h2>Presupuestos asociados</h2>
+            <p class="subtitle">Versiones abiertas y archivadas vinculadas a eventos.</p>
+          </div>
           <button class="filter" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Nuevo presupuesto</button>
         </div>
         <div id="events-quote-list"></div>
@@ -6728,10 +6921,10 @@
       },
       events: {
         title: "Eventos",
-        subtitle: "Control integral de cada evento: comercial, operativo, financiero y cierre.",
+        subtitle: "Planificación, operación y cierre de cada servicio.",
         items: [
-          { label: "Control integral", description: "Eventos activos con venta, costos, compras, checklist y acciones.", anchor: "events-control-section" },
-          { label: "Estados y cierres", description: "Historial, perdidos, cancelados, conformidades y autorizaciones.", anchor: "event-status-section" },
+          { label: "Cockpit operativo", description: "Próximos eventos, producción, cierres y acciones.", anchor: "events-control-section" },
+          { label: "Pendientes de cierre", description: "Conformidades, autorizaciones y cierre administrativo.", anchor: "event-status-section" },
           { label: "Presupuestos asociados", description: "Versiones de presupuesto vinculadas a eventos.", anchor: "events-quotes-section" },
           { label: "Nuevo evento / oportunidad", description: "Abrir carga unificada para consulta, presupuesto o evento confirmado.", action: "showBlankErpEventForm" },
         ],
@@ -6879,7 +7072,7 @@
         "commercial-venues-section": ["commercial-venues-section"],
       },
       events: {
-        "events-control-section": ["events-control-section"],
+        "events-control-section": ["events-control-section", "event-status-section", "events-quotes-section"],
         "event-status-section": ["event-status-section"],
         "events-quotes-section": ["events-quotes-section"],
       },
@@ -7758,6 +7951,7 @@
         renderCommercialCustomers();
       }
       if (canAccessTab("events")) {
+        renderEventsOperationalSummary(dashboard);
         renderEventStatusDashboard(dashboard);
         renderErpEvents();
         renderErpQuotes();
@@ -7908,56 +8102,63 @@
       `;
     }
 
+    function renderEventsOperationalSummary(dashboard = {}) {
+      const container = document.getElementById("events-operational-summary");
+      if (!container) return;
+      const events = erpData.events || [];
+      const upcoming = getUpcomingOperationalEvents(events);
+      const production = getProductionOperationalEvents(events);
+      const pendingClose = getEventsPendingClose(events);
+      const openQuotes = Number(dashboard.openQuotes || (erpData.quotes || []).filter((quote) => quote.status !== "accepted" && quote.status !== "archived").length || 0);
+      const tiles = [
+        ["Próximos eventos", upcoming.length, "Fechas activas para revisar y operar."],
+        ["En producción", production.length, "Servicios que ya están en preparación."],
+        ["Pendientes de cierre", pendingClose.length, "Conformidad, autorización o cierre admin."],
+        ["Presupuestos abiertos", openQuotes, "Oportunidades vinculadas a eventos."],
+      ];
+      container.innerHTML = tiles.map(([label, value, detail]) => `
+        <article class="events-summary-tile">
+          <span>${escapeHtml(label)}</span>
+          <strong>${escapeHtml(value)}</strong>
+          <p>${escapeHtml(detail)}</p>
+        </article>
+      `).join("");
+    }
+
     function renderEventStatusDashboard(dashboard = {}) {
       const container = document.getElementById("event-status-dashboard");
       if (!container) return;
       const events = erpData.events || [];
       const statusGroups = [
-        ["lead", "Consulta"],
-        ["quoted", "Presupuestado"],
         ["confirmed", "Confirmado"],
-        ["production", "Produccion"],
+        ["production", "Producción"],
         ["done", "Realizado"],
         ["lost", "Perdido"],
         ["cancelled", "Cancelado"],
       ];
       const counts = dashboard.statusCounts || {};
-      const sortedEvents = events
-        .slice()
-        .sort((a, b) => String(b.eventDate || "").localeCompare(String(a.eventDate || "")));
+      const pendingClose = getEventsPendingClose(events).slice(0, 8);
       container.innerHTML = `
-        <div class="event-finance">
-          <button class="event-number status-tile" type="button" onclick="filterEventStatusRows('all')">
-            <span>Todos</span>
-            <strong>${escapeHtml(events.length || 0)}</strong>
-          </button>
+        <div class="events-status-strip">
           ${statusGroups.map(([status, label]) => `
-            <button class="event-number status-tile" type="button" onclick="filterEventStatusRows('${escapeAttribute(status)}')">
+            <div class="events-status-tile">
               <span>${escapeHtml(label)}</span>
               <strong>${escapeHtml(counts[status] || 0)}</strong>
-            </button>
+            </div>
           `).join("")}
-          <button class="event-number status-tile" type="button" onclick="filterEventStatusRows('missing_conformity')">
+          <div class="events-status-tile">
             <span>Sin conformidad</span>
             <strong>${escapeHtml(dashboard.conformityPending || 0)}</strong>
-          </button>
+          </div>
         </div>
-        <div class="purchase-table-wrap event-status-table-wrap" style="margin-top:12px;">
-          <table class="purchase-table event-status-table">
-            <thead>
-              <tr>
-                <th>Evento</th>
-                <th>Fecha</th>
-                <th>Cliente</th>
-                <th>Estado</th>
-                <th>Conformidad</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="event-status-rows">
-              ${renderEventStatusRows(sortedEvents)}
-            </tbody>
-          </table>
+        <p class="event-close-copy">Eventos que necesitan conformidad, autorización o cierre administrativo.</p>
+        <div class="events-stage-list">
+          ${pendingClose.length
+            ? pendingClose.map((event) => renderEventOperationalRow(event, "close")).join("")
+            : `<div class="empty compact-empty">
+                <strong>No hay cierres pendientes por ahora.</strong>
+                <div class="secondary">Cuando un evento necesite revisión final, va a aparecer acá.</div>
+              </div>`}
         </div>
       `;
     }
@@ -13692,40 +13893,119 @@
       const container = document.getElementById("erp-event-list");
       if (!container) return;
       const events = erpData.events || [];
-      const activeEvents = events
-        .filter((event) => !["done", "lost", "cancelled"].includes(event.status))
-        .sort(compareEventsByDate);
-      const completedEvents = events
-        .filter((event) => event.status === "done")
-        .sort(compareEventsByDate);
-      const urgentEvents = activeEvents.filter((event) => isEventWithinHours(event, 48));
+      const upcomingEvents = getUpcomingOperationalEvents(events).slice(0, 8);
+      const productionEvents = getProductionOperationalEvents(events).slice(0, 6);
 
-      if (!events.length) {
-        container.innerHTML = `<div class="empty">Todavia no hay eventos cargados.</div>`;
-        return;
-      }
-
-      const urgentHtml = urgentEvents.length
-        ? `<div class="event-section-head">
-            <div></div>
-            <div class="event-urgent-alert">${urgentEvents.length} evento(s) dentro de 48 hs</div>
-          </div>`
-        : "";
-
-      const activeHtml = activeEvents.length
-        ? activeEvents.map(renderEventControlCard).join("")
-        : `<div class="empty">No hay eventos activos. Los realizados quedan en el historial.</div>`;
-
-      const historyHtml = `
-        <details class="event-history" ${completedEvents.length ? "" : "open"}>
-          <summary>Historial realizados (${completedEvents.length})</summary>
-          ${completedEvents.length
-            ? completedEvents.map(renderEventHistoryRow).join("")
-            : `<div class="empty">Todavia no hay eventos realizados.</div>`}
-        </details>
+      container.innerHTML = `
+        <div class="events-stage-grid">
+          ${renderEventsStage({
+            title: "Próximos eventos",
+            subtitle: "Servicios activos ordenados por fecha.",
+            items: upcomingEvents,
+            context: "upcoming",
+            emptyTitle: "No hay eventos próximos cargados.",
+            emptyDetail: "Cuando confirmes un evento, va a aparecer acá.",
+          })}
+          ${renderEventsStage({
+            title: "En producción",
+            subtitle: "Eventos en preparación o muy cerca de operar.",
+            items: productionEvents,
+            context: "production",
+            emptyTitle: "No hay eventos en producción ahora.",
+            emptyDetail: "Cuando un evento avance, lo vas a ver acá.",
+          })}
+        </div>
       `;
+    }
 
-      container.innerHTML = urgentHtml + activeHtml + historyHtml;
+    function getUpcomingOperationalEvents(events = []) {
+      const today = new Date().toISOString().slice(0, 10);
+      return events
+        .filter((event) => {
+          const date = normalizePurchaseDate(event.eventDate);
+          return date && date >= today && !["done", "lost", "cancelled"].includes(event.status);
+        })
+        .sort(compareEventsByDate);
+    }
+
+    function getProductionOperationalEvents(events = []) {
+      return events
+        .filter((event) => {
+          if (["done", "lost", "cancelled"].includes(event.status)) return false;
+          return event.status === "production" || isEventWithinHours(event, 72);
+        })
+        .sort(compareEventsByDate);
+    }
+
+    function getEventsPendingClose(events = []) {
+      return events
+        .filter((event) => {
+          if (event.logisticsStatus === "pending_admin_close") return true;
+          if (event.status === "done" && getEventConformityState(event) === "missing") return true;
+          if (event.status === "production" && hasCloseWithoutConformityRequest(event)) return true;
+          return false;
+        })
+        .sort(compareEventsByDate);
+    }
+
+    function renderEventsStage({ title, subtitle, items, context, emptyTitle, emptyDetail }) {
+      return `
+        <section class="events-stage-card">
+          <div class="events-stage-head">
+            <div>
+              <h3>${escapeHtml(title)}</h3>
+              <p class="subtitle">${escapeHtml(subtitle)}</p>
+            </div>
+            <span class="erp-status">${escapeHtml(items.length)}</span>
+          </div>
+          <div class="events-stage-list">
+            ${items.length
+              ? items.map((event) => renderEventOperationalRow(event, context)).join("")
+              : `<div class="empty compact-empty">
+                  <strong>${escapeHtml(emptyTitle)}</strong>
+                  <div class="secondary">${escapeHtml(emptyDetail)}</div>
+                </div>`}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderEventOperationalRow(event, context = "upcoming") {
+      const statusLabel = getErpEventStatusLabel(event.status);
+      return `
+        <article class="event-operational-row" onclick="showEventOverview('${escapeAttribute(event.id)}')">
+          <div>
+            <div class="event-operational-title">
+              <strong>${escapeHtml(event.name || "Evento sin nombre")}</strong>
+              <span class="badge ${escapeAttribute(getEventBadgeClass(event.status))}">${escapeHtml(statusLabel)}</span>
+            </div>
+            <div class="event-operational-meta">
+              ${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} · ${escapeHtml(event.clientName || "Sin cliente")}
+            </div>
+          </div>
+          <div class="event-next-action">
+            <span>Próxima acción</span>
+            <strong>${escapeHtml(event.nextAction || getEventNextActionLabel(event, context))}</strong>
+          </div>
+          <button class="filter" type="button" onclick="event.stopPropagation(); showEventOverview('${escapeAttribute(event.id)}')">Abrir ficha</button>
+        </article>
+      `;
+    }
+
+    function getEventNextActionLabel(event = {}, context = "upcoming") {
+      if (event.logisticsStatus === "pending_admin_close") return "Autorizar cierre administrativo";
+      if (eventRequiresConformity(event) && !event.clientConformity?.fileName) return "Revisar conformidad";
+      if (context === "production" || event.status === "production") return "Revisar operación y checklist";
+      if (event.status === "quoted") return "Convertir presupuesto o dar seguimiento";
+      if (event.status === "lead") return "Completar datos para presupuestar";
+      return "Abrir ficha y revisar pendientes";
+    }
+
+    function getEventBadgeClass(status) {
+      if (status === "confirmed" || status === "production" || status === "done") return "confirmed";
+      if (status === "lost" || status === "cancelled") return "lost";
+      if (status === "quoted") return "ready_to_quote";
+      return "missing_info";
     }
 
     function compareEventsByDate(a, b) {
@@ -14532,13 +14812,18 @@
 
       if (!quotes.length) {
         containers.forEach((container) => {
-          container.innerHTML = `<div class="empty">No hay presupuestos ERP guardados.</div>`;
+          container.innerHTML = `
+            <div class="empty compact-empty">
+              <strong>Todavia no hay presupuestos asociados.</strong>
+              <div class="secondary">Cuando cargues un presupuesto, va a aparecer en esta bandeja.</div>
+            </div>
+          `;
         });
         return;
       }
 
       const renderQuoteCard = (quote) => `
-        <article class="erp-card">
+        <article class="erp-card events-quote-card">
           <div class="erp-card-head">
             <div>
               <div class="erp-card-title">${escapeHtml(quote.eventName || "Presupuesto sin evento")}</div>
@@ -14561,7 +14846,10 @@
       const html = `
         ${activeQuotes.length
           ? activeQuotes.map(renderQuoteCard).join("")
-          : `<div class="empty">No hay presupuestos activos. Los de eventos realizados quedan archivados.</div>`}
+          : `<div class="empty compact-empty">
+              <strong>No hay presupuestos activos.</strong>
+              <div class="secondary">Los presupuestos de eventos realizados quedan archivados.</div>
+            </div>`}
         <details class="event-history">
           <summary>Presupuestos archivados (${archivedQuotes.length})</summary>
           ${archivedQuotes.length ? archivedQuotes.map(renderQuoteCard).join("") : `<div class="empty">Sin presupuestos archivados.</div>`}
