@@ -2103,6 +2103,44 @@
       outline-offset: 3px;
     }
 
+    @keyframes _shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .loading-placeholder {
+      background: linear-gradient(90deg, #f0ede8 25%, #e8e4de 50%, #f0ede8 75%);
+      background-size: 800px 100%;
+      animation: _shimmer 1.4s ease-in-out infinite;
+      border-radius: 6px;
+    }
+    .loading-card {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      color: transparent;
+      margin-bottom: 8px;
+    }
+    .loading-list { display: flex; flex-direction: column; gap: 8px; padding: 4px 0; }
+    .loading-row  { height: 18px; border-radius: 4px; }
+    .empty-state-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 20px 0;
+      color: var(--muted, #999);
+      font-size: 13px;
+    }
+    .error-state-inline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 0;
+      color: var(--danger, #b00);
+      font-size: 13px;
+    }
+    .error-state-inline button { flex-shrink: 0; }
+
     .module-home,
     .module-section {
       display: none;
@@ -7258,6 +7296,28 @@
       });
     }
 
+    /* ---- helpers de estado de carga (UX premium, sin spinners agresivos) ---- */
+    function renderLoadingCard(label = "Cargando…") {
+      return `<div class="loading-placeholder loading-card" aria-busy="true"><span>${escapeHtml(label)}</span></div>`;
+    }
+    function renderLoadingList(label = "Cargando…", rows = 3) {
+      const bars = Array.from({ length: rows }, (_, i) =>
+        `<div class="loading-placeholder loading-row" style="width:${70 + (i % 3) * 10}%" aria-busy="true"></div>`
+      ).join("");
+      return `<div class="loading-list" aria-label="${escapeHtml(label)}">${bars}</div>`;
+    }
+    function renderEmptyState(message = "No hay datos cargados.", icon = "") {
+      return `<div class="empty-state-inline">${icon ? `<span class="empty-icon">${escapeHtml(icon)}</span>` : ""}<span>${escapeHtml(message)}</span></div>`;
+    }
+    function renderErrorState(message = "No se pudo actualizar.", retryAction = "loadErp()") {
+      return `<div class="error-state-inline"><span>${escapeHtml(message)}</span><button class="filter" type="button" onclick="${escapeAttribute(retryAction)}">Reintentar</button></div>`;
+    }
+    function setButtonLoading(button, isLoading, defaultLabel = "Actualizar") {
+      if (!button) return;
+      button.disabled = isLoading;
+      button.textContent = isLoading ? "Actualizando…" : defaultLabel;
+    }
+
     async function loadInitialData() {
       const tasks = [];
       if (canAccessTab("commercial")) tasks.push(loadState());
@@ -7886,8 +7946,27 @@
       }
     }
 
+    function _showErpLoadingState() {
+      const targets = [
+        { id: "erp-upcoming-events",  label: "Cargando eventos…",   rows: 3 },
+        { id: "erp-alerts",           label: "Cargando alertas…",   rows: 2 },
+        { id: "purchase-dashboard",   label: "Cargando compras…",   rows: 4 },
+        { id: "finance-dashboard",    label: "Cargando finanzas…",  rows: 3 },
+        { id: "production-dashboard", label: "Cargando producción…",rows: 3 },
+        { id: "stock-dashboard",      label: "Cargando stock…",     rows: 3 },
+        { id: "reports-dashboard",    label: "Cargando reportes…",  rows: 3 },
+        { id: "hr-dashboard",         label: "Cargando personal…",  rows: 3 },
+      ];
+      targets.forEach(({ id, label, rows }) => {
+        const el = document.getElementById(id);
+        if (el && !el.dataset.loaded) el.innerHTML = renderLoadingList(label, rows);
+      });
+      document.querySelectorAll("button[onclick='loadErp()']").forEach((btn) => setButtonLoading(btn, true));
+    }
+
     async function loadErp(options = {}) {
       if (erpLoadPromise) return erpLoadPromise;
+      if (!options.silent) _showErpLoadingState();
       erpLoadPromise = (async () => {
       const response = await fetch("/api/erp");
       const result = await readJsonResponse(response);
@@ -7908,6 +7987,9 @@
       purchaseReceipts = result.purchaseReceipts || purchaseReceipts || [];
       renderCurrentUser();
       renderErp();
+      document.querySelectorAll("button[onclick='loadErp()']").forEach((btn) => setButtonLoading(btn, false));
+      ["erp-upcoming-events","erp-alerts","purchase-dashboard","finance-dashboard","production-dashboard","stock-dashboard","reports-dashboard","hr-dashboard"]
+        .forEach((id) => { const el = document.getElementById(id); if (el) el.dataset.loaded = "1"; });
       })();
       try {
         return await erpLoadPromise;

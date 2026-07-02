@@ -192,6 +192,21 @@ let costSettings = {};
 let erpEvents = [];
 let erpQuotes = [];
 let erpPurchases = [];
+
+/* ---- cache de corto plazo para computos caros (TTL 12s) ---- */
+const _erpCache = new Map();
+function _fromCache(key, ttlMs, compute) {
+  const hit = _erpCache.get(key);
+  if (hit && Date.now() < hit.exp) return hit.val;
+  const val = compute();
+  _erpCache.set(key, { val, exp: Date.now() + ttlMs });
+  return val;
+}
+function _bustCache(...keys) {
+  if (!keys.length) { _erpCache.clear(); return; }
+  keys.forEach((k) => _erpCache.delete(k));
+}
+const CACHE_TTL = 12000;
 let erpPurchaseOrders = [];
 let erpPurchaseReceipts = [];
 let erpInventoryMovements = [];
@@ -949,6 +964,7 @@ function startApprovalPanelServer() {
 
       if (request.method === "GET" && requestUrl.pathname === "/api/erp") {
         const sessionUser = getPanelSessionUser(request);
+        const _t0 = Date.now();
         const publicUser = getPublicUser(sessionUser);
         const canSeeEverything = hasPanelPermission(sessionUser, "*");
         const canSeeCommercial = canSeeEverything || hasPanelPermission(sessionUser, "events:read") || hasPanelPermission(sessionUser, "events:write") || hasPanelPermission(sessionUser, "quotes:write") || hasPanelPermission(sessionUser, "customers:write");
@@ -1044,6 +1060,7 @@ function startApprovalPanelServer() {
           sanitationDashboard: canSeeSanitation ? getSanitationDashboard() : undefined,
           paymentOrdersDashboard: canSeePaymentOrders ? getPaymentOrdersDashboard() : undefined,
         });
+        console.log(`[/api/erp] ${publicUser?.username || "?"} role=${publicUser?.role || "?"} total=${Date.now() - _t0}ms`);
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/logistics-events") {
@@ -3172,35 +3189,43 @@ function saveCostSettings() {
 }
 
 function saveErpEvents() {
+  _bustCache("evt", "dashboard", "pipeline", "finance", "prodmaster");
   writeJsonFile(ERP_EVENTS_FILE, erpEvents);
 }
 
 function saveErpQuotes() {
+  _bustCache("quot", "dashboard", "pipeline");
   writeJsonFile(ERP_QUOTES_FILE, erpQuotes);
 }
 
 function saveErpPurchaseOrders() {
+  _bustCache("purchase_orders", "prodmaster");
   writeJsonFile(ERP_PURCHASE_ORDERS_FILE, erpPurchaseOrders);
 }
 
 function saveErpPurchaseReceipts() {
+  _bustCache("purch", "inventory", "prodmaster", "dashboard", "finance");
   writeJsonFile(ERP_PURCHASE_RECEIPTS_FILE, erpPurchaseReceipts);
 }
 
 function saveErpInventory() {
+  _bustCache("inventory", "prodmaster");
   writeJsonFile(ERP_INVENTORY_FILE, erpInventoryMovements);
 }
 
 function saveErpOperationalInventory() {
+  _bustCache("op_inventory");
   writeJsonFile(ERP_OPERATIONAL_INVENTORY_FILE, erpOperationalInventory);
 }
 
 function saveErpPurchases() {
+  _bustCache("purch", "dashboard", "finance", "prodmaster");
   savePurchasesToDatabase(erpPurchases);
   writeJsonFile(ERP_PURCHASES_FILE, erpPurchases);
 }
 
 function saveErpProviders() {
+  _bustCache("providers", "prodmaster");
   writeJsonFile(ERP_PROVIDERS_FILE, erpProviders);
 }
 
@@ -4227,6 +4252,9 @@ function getProductMasterListForUser(user) {
 }
 
 function getProductMasterList() {
+  return _fromCache("prodmaster", CACHE_TTL, _computeProductMasterList);
+}
+function _computeProductMasterList() {
   const byKey = new Map();
 
   const touch = (name, patch = {}) => {
@@ -7749,10 +7777,12 @@ function findRecipesUsingProduct(productName) {
 }
 
 function getErpEventList() {
-  return erpEvents.map(normalizeErpEvent).sort((a, b) => {
-    const dateCompare = String(a.eventDate || "9999-12-31").localeCompare(String(b.eventDate || "9999-12-31"));
-    return dateCompare || a.name.localeCompare(b.name);
-  });
+  return _fromCache("evt", CACHE_TTL, () =>
+    erpEvents.map(normalizeErpEvent).sort((a, b) => {
+      const dateCompare = String(a.eventDate || "9999-12-31").localeCompare(String(b.eventDate || "9999-12-31"));
+      return dateCompare || a.name.localeCompare(b.name);
+    })
+  );
 }
 
 function getProductionEventList() {
@@ -8066,7 +8096,9 @@ function deleteErpEventRecord(id) {
 }
 
 function getErpQuoteList() {
-  return erpQuotes.map(normalizeErpQuote).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
+  return _fromCache("quot", CACHE_TTL, () =>
+    erpQuotes.map(normalizeErpQuote).sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))
+  );
 }
 
 async function importQuoteFromDocument(input = {}) {
@@ -8810,6 +8842,9 @@ function getBestQuoteForEvent(eventId) {
 }
 
 function getErpPurchaseList() {
+  return _fromCache("purch", CACHE_TTL, () => _computeErpPurchaseList());
+}
+function _computeErpPurchaseList() {
   return erpPurchases.map((purchase) => {
     const amounts = getPurchaseAmounts(purchase);
     const paidAmount = getPurchasePaidAmount(purchase, amounts.totalAmount);
