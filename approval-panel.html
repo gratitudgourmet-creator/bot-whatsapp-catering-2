@@ -328,6 +328,328 @@
       padding-right: 4px;
     }
 
+    /* ── USUARIOS: NUEVA UI ─────────────────────────────────────── */
+    .user-mgr-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .user-search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 160px;
+    }
+    .user-search-wrap svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary);
+      pointer-events: none;
+    }
+    .user-search-wrap input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--surface);
+      color: var(--text);
+    }
+    .user-search-wrap input:focus { outline: none; border-color: var(--accent); }
+    .user-filter-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .user-chip {
+      padding: 5px 13px;
+      border-radius: 20px;
+      font-size: 13px;
+      border: 1px solid var(--line);
+      cursor: pointer;
+      background: var(--surface);
+      color: var(--secondary);
+      white-space: nowrap;
+      transition: all .15s;
+    }
+    .user-chip.active {
+      background: var(--accent-soft, #e8f5ee);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .btn-new-user {
+      padding: 8px 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-new-user:hover { opacity: .9; }
+
+    /* CARDS GRID */
+    .user-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .user-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow .15s;
+      cursor: pointer;
+    }
+    .user-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    .user-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      letter-spacing: .5px;
+    }
+    .user-card-info { flex: 1; min-width: 0; }
+    .user-card-name {
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-card-meta {
+      font-size: 12px;
+      color: var(--secondary);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-status-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .upill-active   { background: #e2f7ee; color: #1a7a52; }
+    .upill-invited  { background: #fef9e7; color: #a67c00; }
+    .upill-suspended{ background: #fce8e8; color: #b94040; }
+    .upill-offboarded{ background: #f0f0f0; color: #888; }
+    .user-card-role-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      color: var(--secondary);
+    }
+    .user-card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--secondary);
+    }
+    .user-card-last-login { font-size: 12px; color: var(--secondary); }
+    .user-sensitive-tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+    .sensitive-tag {
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 4px;
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffc107;
+      font-weight: 500;
+    }
+
+    /* STATUS TOGGLE ON CARD */
+    .user-card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .btn-user-action {
+      flex: 1;
+      padding: 7px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text);
+      text-align: center;
+      transition: background .1s;
+    }
+    .btn-user-action:hover { background: var(--surface-soft); }
+    .btn-user-action.danger { color: #b94040; border-color: #f5c4c4; }
+    .btn-user-action.success { color: #1a7a52; border-color: #b8e6cf; }
+
+    /* DRAWER */
+    .user-drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.35);
+      z-index: 300;
+    }
+    .user-drawer-overlay.open { display: block; }
+    .user-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 420px;
+      max-width: 100vw;
+      background: var(--surface);
+      box-shadow: -4px 0 24px rgba(0,0,0,.12);
+      z-index: 301;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .25s cubic-bezier(.4,0,.2,1);
+    }
+    .user-drawer.open { transform: translateX(0); }
+    .drawer-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .drawer-header h3 { font-size: 17px; font-weight: 700; flex: 1; }
+    .drawer-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: var(--surface-soft);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--secondary);
+    }
+    .drawer-close:hover { background: var(--line); }
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .drawer-field { display: flex; flex-direction: column; gap: 5px; }
+    .drawer-field label { font-size: 12px; font-weight: 600; color: var(--secondary); text-transform: uppercase; letter-spacing: .4px; }
+    .drawer-field input,
+    .drawer-field select,
+    .drawer-field textarea {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--surface);
+      color: var(--text);
+      font-family: inherit;
+      width: 100%;
+    }
+    .drawer-field input:focus,
+    .drawer-field select:focus,
+    .drawer-field textarea:focus { outline: none; border-color: var(--accent); }
+    .drawer-field textarea { resize: vertical; min-height: 72px; }
+    .drawer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .drawer-checkline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+    .drawer-checkline input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
+    .drawer-footer {
+      padding: 16px 24px 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 10px;
+    }
+    .drawer-footer .btn-save {
+      flex: 1;
+      padding: 12px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .drawer-footer .btn-save:hover { opacity: .9; }
+    .drawer-footer .btn-cancel {
+      padding: 12px 20px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .drawer-footer .btn-cancel:hover { background: var(--surface-soft); }
+    .drawer-divider {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 4px 0;
+    }
+    .drawer-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--secondary);
+      margin-bottom: -4px;
+    }
+    @media (max-width: 480px) {
+      .user-drawer { width: 100vw; }
+      .drawer-row { grid-template-columns: 1fr; }
+    }
+
     .audit-row,
     .user-row {
       background: var(--surface-soft);
@@ -6024,77 +6346,36 @@
 
     <section id="view-security" class="workspace-view" data-permission="users:write">
       <section id="security-users-section" class="erp-section">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:16px;">
           <div>
             <h2>Seguridad</h2>
             <p class="subtitle">Usuarios, permisos por rol e historial de movimientos.</p>
           </div>
           <button class="filter" type="button" onclick="loadSecurityPanel()">Actualizar</button>
         </div>
-        <div class="audit-layout">
-          <div>
-            <h2>Usuarios</h2>
-            <form id="user-form" class="form-grid" onsubmit="savePanelUser(event)">
-              <input type="hidden" name="id">
-              <div class="form-field full">
-                <label>Nombre</label>
-                <input name="displayName" required placeholder="Ej: Claudia">
-              </div>
-              <div class="form-field full">
-                <label>Usuario</label>
-                <input name="username" required placeholder="Ej: claudia">
-              </div>
-              <div class="form-field full">
-                <label>Rol</label>
-                <select name="role" id="panel-user-role"></select>
-              </div>
-              <div class="form-field">
-                <label>Area</label>
-                <select name="area">
-                  <option value="">Sin definir</option>
-                  <option>Comercial</option>
-                  <option>Compras</option>
-                  <option>Finanzas</option>
-                  <option>Cocina</option>
-                  <option>Operacion</option>
-                  <option>RRHH</option>
-                  <option>Bromatologia</option>
-                  <option>Administracion</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label>Estado</label>
-                <select name="status">
-                  <option value="active">Activo</option>
-                  <option value="invited">Invitado</option>
-                  <option value="suspended">Suspendido</option>
-                  <option value="offboarded">Baja</option>
-                </select>
-              </div>
-              <div class="form-field full">
-                <label>Telefono</label>
-                <input name="phone" placeholder="Telefono o WhatsApp interno">
-              </div>
-              <div class="form-field full">
-                <label>Clave</label>
-                <input name="password" type="password" placeholder="Completar para usuario nuevo o cambio de clave">
-              </div>
-              <label class="checkline full">
-                <input name="mustChangePassword" type="checkbox">
-                <span>Debe cambiar clave al ingresar</span>
-              </label>
-              <div class="form-field full">
-                <label>Notas internas</label>
-                <textarea name="notes" placeholder="Responsabilidades, restricciones o aclaraciones"></textarea>
-              </div>
-              <div class="actions full">
-                <button class="approve" type="submit">Guardar usuario</button>
-                <button class="filter" type="button" onclick="resetPanelUserForm()">Nuevo</button>
-              </div>
-            </form>
-            <div id="user-list" class="user-list" style="margin-top:12px;"></div>
+
+        <!-- USUARIOS -->
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">Usuarios</h3>
+        <div class="user-mgr-toolbar">
+          <div class="user-search-wrap">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" id="user-search" placeholder="Buscar por nombre o usuario…" oninput="renderPanelUsers()">
           </div>
-          <div id="security-roles-section">
+          <div class="user-filter-chips">
+            <div class="user-chip active" data-ufilter="" onclick="setUserFilter(this,'')">Todos</div>
+            <div class="user-chip" data-ufilter="active" onclick="setUserFilter(this,'active')">Activos</div>
+            <div class="user-chip" data-ufilter="invited" onclick="setUserFilter(this,'invited')">Invitados</div>
+            <div class="user-chip" data-ufilter="suspended" onclick="setUserFilter(this,'suspended')">Suspendidos</div>
+          </div>
+          <button class="btn-new-user" onclick="openUserDrawer()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Nuevo usuario
+          </button>
+        </div>
+        <div id="user-cards" class="user-cards"></div>
+
+        <!-- ROLES (sin cambios) -->
+        <div id="security-roles-section" style="margin-top:28px">
             <h2>Permisos por rol</h2>
             <form id="role-permissions-form" onsubmit="saveRolePermissions(event)">
               <div id="role-permissions-list" class="user-list"></div>
@@ -6134,6 +6415,86 @@
       </section>
     </section>
   </main>
+
+  <!-- USER DRAWER -->
+  <div class="user-drawer-overlay" id="user-drawer-overlay" onclick="closeUserDrawer()"></div>
+  <div class="user-drawer" id="user-drawer">
+    <div class="drawer-header">
+      <h3 id="drawer-title">Nuevo usuario</h3>
+      <button class="drawer-close" onclick="closeUserDrawer()" title="Cerrar">&#x2715;</button>
+    </div>
+    <div class="drawer-body">
+      <form id="user-form" onsubmit="savePanelUser(event)">
+        <input type="hidden" name="id">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="drawer-row">
+            <div class="drawer-field">
+              <label>Nombre</label>
+              <input name="displayName" required placeholder="Ej: Claudia">
+            </div>
+            <div class="drawer-field">
+              <label>Usuario</label>
+              <input name="username" required placeholder="Ej: claudia" autocapitalize="none">
+            </div>
+          </div>
+          <div class="drawer-row">
+            <div class="drawer-field">
+              <label>Rol</label>
+              <select name="role" id="panel-user-role"></select>
+            </div>
+            <div class="drawer-field">
+              <label>Estado</label>
+              <select name="status">
+                <option value="active">Activo</option>
+                <option value="invited">Invitado</option>
+                <option value="suspended">Suspendido</option>
+                <option value="offboarded">Baja</option>
+              </select>
+            </div>
+          </div>
+          <div class="drawer-row">
+            <div class="drawer-field">
+              <label>Área</label>
+              <select name="area">
+                <option value="">Sin definir</option>
+                <option>Comercial</option>
+                <option>Compras</option>
+                <option>Finanzas</option>
+                <option>Cocina</option>
+                <option>Operacion</option>
+                <option>RRHH</option>
+                <option>Bromatologia</option>
+                <option>Administracion</option>
+              </select>
+            </div>
+            <div class="drawer-field">
+              <label>Teléfono</label>
+              <input name="phone" placeholder="WhatsApp interno">
+            </div>
+          </div>
+          <hr class="drawer-divider">
+          <div class="drawer-section-label">Acceso</div>
+          <div class="drawer-field">
+            <label>Contraseña</label>
+            <input name="password" type="password" placeholder="Dejar vacío para no cambiar">
+          </div>
+          <label class="drawer-checkline">
+            <input name="mustChangePassword" type="checkbox">
+            <span>Debe cambiar contraseña al ingresar</span>
+          </label>
+          <hr class="drawer-divider">
+          <div class="drawer-section-label">Notas internas</div>
+          <div class="drawer-field">
+            <textarea name="notes" placeholder="Responsabilidades, restricciones o aclaraciones…"></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn-cancel" type="button" onclick="closeUserDrawer()">Cancelar</button>
+      <button class="btn-save" type="button" onclick="document.getElementById('user-form').requestSubmit()">Guardar usuario</button>
+    </div>
+  </div>
 
   <section id="detail" class="detail" onclick="closeDetail(event)">
     <aside class="detail-panel" onclick="event.stopPropagation()">
@@ -8618,50 +8979,115 @@
       renderAuditLog();
     }
 
+    let _userFilter = "";
+
+    function setUserFilter(el, val) {
+      _userFilter = val;
+      document.querySelectorAll(".user-chip").forEach(c => c.classList.toggle("active", c.dataset.ufilter === val));
+      renderPanelUsers();
+    }
+
+    function _userAvatarColor(str) {
+      const palette = ["#2563eb","#7c3aed","#db2777","#dc2626","#d97706","#059669","#0891b2","#4f46e5","#065f46","#92400e"];
+      let h = 0;
+      for (let i = 0; i < (str||"").length; i++) h = (h * 31 + str.charCodeAt(i)) & 0xffffffff;
+      return palette[Math.abs(h) % palette.length];
+    }
+
+    function _userInitials(user) {
+      const name = user.displayName || user.username || "?";
+      const parts = name.trim().split(/\s+/);
+      return parts.length >= 2
+        ? (parts[0][0] + parts[1][0]).toUpperCase()
+        : name.slice(0, 2).toUpperCase();
+    }
+
     function renderPanelUsers() {
-      const list = document.getElementById("user-list");
-      if (!list) return;
-      if (!panelUsers.length) {
-        list.innerHTML = `<div class="empty">Sin usuarios cargados.</div>`;
+      const grid = document.getElementById("user-cards");
+      if (!grid) return;
+
+      const term = (document.getElementById("user-search")?.value || "").toLowerCase();
+      let visible = panelUsers.filter(u => {
+        if (_userFilter && u.status !== _userFilter) return false;
+        if (term) {
+          const hay = `${u.displayName} ${u.username} ${u.roleLabel || u.role} ${u.area || ""}`.toLowerCase();
+          if (!hay.includes(term)) return false;
+        }
+        return true;
+      });
+
+      if (!visible.length) {
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1">Sin usuarios que coincidan.</div>`;
         return;
       }
-      list.innerHTML = panelUsers.map((user) => `
-        <div class="user-row">
-          <div class="toolbar-actions" style="justify-content:space-between;align-items:flex-start;gap:8px;">
-            <div>
-              <strong>${escapeHtml(user.displayName || user.username)}</strong>
-              <div class="secondary">${escapeHtml(user.username)} | ${escapeHtml(user.roleLabel || user.role)} | ${escapeHtml(user.area || "Area sin definir")}</div>
+
+      const STATUS = {
+        active:    { label: "Activo",     cls: "upill-active" },
+        invited:   { label: "Invitado",   cls: "upill-invited" },
+        suspended: { label: "Suspendido", cls: "upill-suspended" },
+        offboarded:{ label: "Baja",       cls: "upill-offboarded" },
+      };
+
+      grid.innerHTML = visible.map(user => {
+        const st = STATUS[user.status] || STATUS.active;
+        const initials = _userInitials(user);
+        const color = _userAvatarColor(user.username || user.id);
+        const perms = new Set(user.permissions || []);
+        const risks = [];
+        if (perms.has("*"))                 risks.push("Admin total");
+        if (perms.has("sensitive:security"))risks.push("Seguridad");
+        if (perms.has("sensitive:payments"))risks.push("Pagos");
+        if (perms.has("sensitive:delete"))  risks.push("Eliminaciones");
+        const lastLogin = user.lastLoginAt ? formatDateTime(user.lastLoginAt) : "Sin ingresos";
+        const isSuspended = user.status === "suspended" || user.status === "offboarded";
+
+        return `
+        <div class="user-card" onclick="openUserDrawer('${escapeAttribute(user.id)}')">
+          <div class="user-card-top">
+            <div class="user-avatar" style="background:${color}">${escapeHtml(initials)}</div>
+            <div class="user-card-info">
+              <div class="user-card-name">${escapeHtml(user.displayName || user.username)}</div>
+              <div class="user-card-meta">@${escapeHtml(user.username)}${user.area ? " · " + escapeHtml(user.area) : ""}</div>
+              <div style="margin-top:5px">
+                <span class="user-card-role-badge">${escapeHtml(user.roleLabel || user.role || "-")}</span>
+              </div>
             </div>
-            <span class="badge ${escapeAttribute(getUserStatusClass(user.status))}">${escapeHtml(getUserStatusLabel(user.status))}</span>
+            <span class="user-status-pill ${st.cls}">${st.label}</span>
           </div>
-          <div class="secondary">Ultimo ingreso: ${escapeHtml(formatDateTime(user.lastLoginAt) || "Sin ingresos")} | Creado: ${escapeHtml(formatDate(user.createdAt) || "-")}</div>
-          <div class="secondary">${escapeHtml(user.phone || "Telefono pendiente")}${user.mustChangePassword ? " | Debe cambiar clave" : ""}</div>
-          ${renderUserRiskLine(user)}
-          ${renderUserRecentActivity(user)}
-          <div class="actions" style="margin-top:8px;">
-            <button class="filter" type="button" onclick="editPanelUser('${escapeAttribute(user.id)}')">Editar</button>
-            <button class="filter" type="button" onclick="filterAuditByUser('${escapeAttribute(user.displayName || user.username)}')">Ver historial</button>
+          ${risks.length ? `<div class="user-sensitive-tags">${risks.map(r => `<span class="sensitive-tag">${escapeHtml(r)}</span>`).join("")}</div>` : ""}
+          <div class="user-card-bottom">
+            <span class="user-card-last-login">Último ingreso: ${escapeHtml(lastLogin)}</span>
+            ${user.mustChangePassword ? `<span style="font-size:11px;color:#a67c00">⚠ Clave pendiente</span>` : ""}
           </div>
-        </div>
-      `).join("");
+          <div class="user-card-actions" onclick="event.stopPropagation()">
+            <button class="btn-user-action" onclick="filterAuditByUser('${escapeAttribute(user.displayName || user.username)}')">Ver historial</button>
+            <button class="btn-user-action ${isSuspended ? 'success' : 'danger'}"
+              onclick="quickToggleUserStatus('${escapeAttribute(user.id)}','${isSuspended ? 'active' : 'suspended'}')">
+              ${isSuspended ? "Activar" : "Suspender"}
+            </button>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    async function quickToggleUserStatus(id, newStatus) {
+      const user = panelUsers.find(u => u.id === id);
+      if (!user) return;
+      const payload = { id, displayName: user.displayName, username: user.username, role: user.role, area: user.area || "", status: newStatus, phone: user.phone || "", notes: user.notes || "", mustChangePassword: user.mustChangePassword ? "on" : "" };
+      const response = await fetch("/api/user", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const result = await readJsonResponse(response);
+      if (!result.ok) { showNotice(result.error || "No se pudo actualizar el estado.", "error"); return; }
+      panelUsers = result.users || panelUsers;
+      renderPanelUsers();
+      showNotice(`Usuario ${newStatus === "active" ? "activado" : "suspendido"}.`, "success");
     }
 
     function getUserStatusLabel(status) {
-      return {
-        active: "Activo",
-        invited: "Invitado",
-        suspended: "Suspendido",
-        offboarded: "Baja",
-      }[status] || "Activo";
+      return { active:"Activo", invited:"Invitado", suspended:"Suspendido", offboarded:"Baja" }[status] || "Activo";
     }
 
     function getUserStatusClass(status) {
-      return {
-        active: "confirmed",
-        invited: "ready_to_quote",
-        suspended: "missing_info",
-        offboarded: "lost",
-      }[status] || "confirmed";
+      return { active:"confirmed", invited:"ready_to_quote", suspended:"missing_info", offboarded:"lost" }[status] || "confirmed";
     }
 
     function renderUserRiskLine(user) {
@@ -8904,26 +9330,40 @@
       }[type] || type || "Registro";
     }
 
-    function editPanelUser(id) {
-      const user = panelUsers.find((item) => item.id === id);
-      if (!user) return;
+    function openUserDrawer(id) {
       const form = document.getElementById("user-form");
-      setFormValue(form, "id", user.id || "");
-      setFormValue(form, "displayName", user.displayName || "");
-      setFormValue(form, "username", user.username || "");
-      setFormValue(form, "role", user.role || "comercial");
-      setFormValue(form, "area", user.area || "");
-      setFormValue(form, "status", user.status || "active");
-      setFormValue(form, "phone", user.phone || "");
-      setFormValue(form, "notes", user.notes || "");
-      setFormValue(form, "mustChangePassword", Boolean(user.mustChangePassword));
-      setFormValue(form, "password", "");
+      const title = document.getElementById("drawer-title");
+      form.reset();
+      form.elements.id.value = "";
+      if (id) {
+        const user = panelUsers.find(u => u.id === id);
+        if (!user) return;
+        title.textContent = user.displayName || user.username;
+        setFormValue(form, "id", user.id || "");
+        setFormValue(form, "displayName", user.displayName || "");
+        setFormValue(form, "username", user.username || "");
+        setFormValue(form, "role", user.role || "comercial");
+        setFormValue(form, "area", user.area || "");
+        setFormValue(form, "status", user.status || "active");
+        setFormValue(form, "phone", user.phone || "");
+        setFormValue(form, "notes", user.notes || "");
+        setFormValue(form, "mustChangePassword", Boolean(user.mustChangePassword));
+        setFormValue(form, "password", "");
+      } else {
+        title.textContent = "Nuevo usuario";
+      }
+      document.getElementById("user-drawer-overlay").classList.add("open");
+      document.getElementById("user-drawer").classList.add("open");
     }
 
-    function resetPanelUserForm() {
-      document.getElementById("user-form").reset();
-      document.getElementById("user-form").elements.id.value = "";
+    function closeUserDrawer() {
+      document.getElementById("user-drawer-overlay").classList.remove("open");
+      document.getElementById("user-drawer").classList.remove("open");
     }
+
+    function editPanelUser(id) { openUserDrawer(id); }
+
+    function resetPanelUserForm() { openUserDrawer(); }
 
     async function savePanelUser(event) {
       event.preventDefault();
@@ -8939,7 +9379,7 @@
         return;
       }
       panelUsers = result.users || panelUsers;
-      resetPanelUserForm();
+      closeUserDrawer();
       renderPanelUsers();
       await loadAuditLog();
       showNotice("Usuario guardado.", "success");
