@@ -970,6 +970,10 @@
       .sanit-tab { padding: 8px 10px; gap: 5px; font-size: 11px; white-space: nowrap; flex-shrink: 0; }
       .sanit-tab svg { width: 15px; height: 15px; }
       .sanit-tab-badge { font-size: 9px; padding: 1px 5px; }
+      .sanit-hist-toolbar { flex-direction: column; }
+      .sanit-date-range { flex-direction: row; gap: 4px; }
+      .sanit-date-range input[type="date"] { flex: 1; width: auto; min-width: 0; }
+      .sanit-date-sep { display: none; }
     }
 
     /* ── IP / DEVICE TAG ───────────────────────────────────────── */
@@ -5882,7 +5886,7 @@
               <p class="subtitle">Prioridades, eventos y movimientos que necesitan atención.</p>
             </div>
             <div class="erp-home-actions">
-              <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+              <button class="filter" type="button" onclick="refreshWorkspaceView('erp')">Actualizar</button>
               <button class="filter erp-home-export" type="button" onclick="downloadErpXlsx()" data-permission="users:write">Descargar Excel</button>
             </div>
           </div>
@@ -6351,7 +6355,7 @@
           <div class="events-cockpit-actions">
             <button class="approve" type="button" onclick="showBlankErpEventForm()" data-permission="events:write">Crear evento</button>
             <button class="filter" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Presupuesto</button>
-            <button class="filter events-refresh" type="button" onclick="loadErp()">Actualizar</button>
+            <button class="filter events-refresh" type="button" onclick="refreshWorkspaceView('events')">Actualizar</button>
           </div>
         </div>
         <div id="events-operational-summary" class="events-operational-summary"></div>
@@ -6424,7 +6428,7 @@
             <p class="subtitle">Cuenta corriente de proveedores, pagos pendientes y pagos realizados.</p>
           </div>
           <div class="actions">
-            <button class="filter" onclick="loadErp()">Actualizar</button>
+            <button class="filter" onclick="refreshWorkspaceView('finance')">Actualizar</button>
             <button class="filter" onclick="showProviderDebtWindow()">Deudas proveedores</button>
             <button class="filter" onclick="showReimbursementWindow()">Reintegros</button>
             <button class="filter" onclick="syncAccountantDebts()" data-permission="finance:write">Actualizar planilla contador</button>
@@ -6445,7 +6449,7 @@
           <div class="actions">
             <button class="filter" type="button" onclick="showWorkspaceView('recipes', { anchor: 'recipe-list-section' })">Libro de recetas</button>
             <button class="filter" type="button" onclick="showRecipeReviewInbox()">Revisiones</button>
-            <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+            <button class="filter" type="button" onclick="refreshWorkspaceView('production')">Actualizar</button>
           </div>
         </div>
         <div id="production-dashboard"></div>
@@ -6463,7 +6467,7 @@
             <h2>Maestro de insumos</h2>
             <p class="subtitle">Productos consolidados desde recetas, compras, stock, ordenes y precios historicos.</p>
           </div>
-          <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+          <button class="filter" type="button" onclick="refreshWorkspaceView('stock')">Actualizar</button>
         </div>
         <div id="product-master-dashboard"></div>
       </section>
@@ -6487,7 +6491,7 @@
             <h2>Stock</h2>
             <p class="subtitle">Inventario, recepciones y variaciones de insumos.</p>
           </div>
-          <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+          <button class="filter" type="button" onclick="refreshWorkspaceView('stock')">Actualizar</button>
         </div>
         <div id="stock-dashboard"></div>
       </section>
@@ -6523,7 +6527,7 @@
             <p class="subtitle">Ventas, compras, margen, stock, proveedores, clientes, eventos y exportaciones.</p>
           </div>
           <div class="actions">
-            <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+            <button class="filter" type="button" onclick="refreshWorkspaceView('reports')">Actualizar</button>
             <button class="approve" type="button" onclick="downloadErpXlsx()">Exportar Excel</button>
           </div>
         </div>
@@ -6548,7 +6552,7 @@
             <h2>Personal/RRHH</h2>
             <p class="subtitle">Legajos, disponibilidad, asistencia, horas, sueldos y pagos pendientes.</p>
           </div>
-          <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+          <button class="filter" type="button" onclick="refreshWorkspaceView('hr')">Actualizar</button>
         </div>
         <div id="hr-dashboard"></div>
       </section>
@@ -6561,7 +6565,7 @@
             <h2>Bromatología</h2>
             <p class="subtitle">Documentación, etiquetas, vencimientos, decomisos y aprobaciones.</p>
           </div>
-          <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+          <button class="filter" type="button" onclick="refreshWorkspaceView('sanitation')">Actualizar</button>
         </div>
         <div id="sanitation-dashboard"></div>
       </section>
@@ -6574,7 +6578,7 @@
             <h2>Órdenes de pago</h2>
             <p class="subtitle">Pagos formales a proveedores, personas, reintegros y gastos con aprobación.</p>
           </div>
-          <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+          <button class="filter" type="button" onclick="refreshWorkspaceView('payment_orders')">Actualizar</button>
         </div>
         <div id="payment-orders-dashboard"></div>
       </section>
@@ -8131,6 +8135,19 @@
       reports: "reports-home-section",
       comandas: "comandas-home-section",
     };
+    const ERP_DATA_VIEWS = new Set([
+      "erp", "commercial", "events", "purchases", "finance",
+      "production", "stock", "reports", "hr", "sanitation", "payment_orders",
+    ]);
+    const MUTATION_REFRESH_VIEWS = {
+      event: ["events", "erp", "commercial", "production", "finance"],
+      quote: ["events", "commercial", "erp"],
+      purchase: ["purchases", "stock", "finance", "erp"],
+      providerPayment: ["finance", "purchases"],
+      sanitation: ["sanitation"],
+      paymentOrder: ["payment_orders", "finance"],
+      inventory: ["stock", "purchases"],
+    };
 
     const rows = document.getElementById("rows");
     const search = document.getElementById("search");
@@ -8211,7 +8228,9 @@
       hideLoginScreen();
       renderCurrentUser();
       applyInventoryButtonVisibility();
-      await loadInitialData();
+      const initialView = resolveInitialWorkspaceView();
+      activateWorkspaceViewShell(initialView);
+      await loadInitialData(initialView);
     }
 
     function applyInventoryButtonVisibility() {
@@ -8256,7 +8275,7 @@
     function renderEmptyState(message = "No hay datos cargados.", icon = "") {
       return `<div class="empty-state-inline">${icon ? `<span class="empty-icon">${escapeHtml(icon)}</span>` : ""}<span>${escapeHtml(message)}</span></div>`;
     }
-    function renderErrorState(message = "No se pudo actualizar.", retryAction = "loadErp()") {
+    function renderErrorState(message = "No se pudo actualizar.", retryAction = "refreshWorkspaceView(getCurrentErpView())") {
       return `<div class="error-state-inline"><span>${escapeHtml(message)}</span><button class="filter" type="button" onclick="${escapeAttribute(retryAction)}">Reintentar</button></div>`;
     }
     function setButtonLoading(button, isLoading, defaultLabel = "Actualizar") {
@@ -8265,16 +8284,14 @@
       button.textContent = isLoading ? "Actualizando…" : defaultLabel;
     }
 
-    async function loadInitialData() {
+    async function loadInitialData(initialView = resolveInitialWorkspaceView()) {
       const tasks = [];
       if (canAccessTab("commercial")) tasks.push(loadState());
       if (canAccessTab("purchases") || canAccessTab("finance")) tasks.push(loadPurchaseOptions());
       if (canAccessTab("customers")) tasks.push(loadCustomers());
       if (canAccessTab("recipes") || canAccessTab("production")) tasks.push(loadRecipes());
-      if (["erp", "commercial", "events", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].some((v) => canAccessTab(v))) {
-        const _initialView = document.querySelector(".workspace-tab.active:not(.hidden)")?.dataset.view || "erp";
-        const _erpViews = ["erp","commercial","events","purchases","finance","production","stock","reports","hr","sanitation","payment_orders"];
-        tasks.push(loadErp(_erpViews.includes(_initialView) ? { view: _initialView } : {}));
+      if (Array.from(ERP_DATA_VIEWS).some((v) => canAccessTab(v))) {
+        tasks.push(loadErp(ERP_DATA_VIEWS.has(initialView) ? { view: initialView } : {}));
       }
       if (canAccessTab("logistics_event")) tasks.push(loadLogisticsEvents());
       if (canAccessTab("buyer_purchases")) tasks.push(loadBuyerOrders());
@@ -8283,8 +8300,10 @@
       if (canAccessTab("commercial")) {
         stateRefreshTimer = setInterval(loadState, 5000);
       }
-      const _urlView = new URLSearchParams(location.search).get("view");
-      if (_urlView) showWorkspaceView(_urlView);
+      runWorkspaceSubNavigation(initialView, {
+        anchor: MODULE_DEFAULT_SECTIONS[initialView] || "",
+        explicitAnchor: false,
+      });
     }
 
     function showLoginScreen() {
@@ -8401,7 +8420,9 @@
         form.reset();
         hideLoginScreen();
         renderCurrentUser();
-        await loadInitialData();
+        const initialView = resolveInitialWorkspaceView();
+        activateWorkspaceViewShell(initialView);
+        await loadInitialData(initialView);
       } catch (error) {
         showLoginMessage(error.message);
       }
@@ -8475,6 +8496,51 @@
       });
     }
 
+    function resolveInitialWorkspaceView() {
+      const requestedView = new URLSearchParams(location.search).get("view") || "";
+      if (requestedView && document.getElementById(`view-${requestedView}`) && canAccessTab(requestedView)) {
+        return requestedView;
+      }
+      const activeVisible = document.querySelector(".workspace-tab.active:not(.hidden)")?.dataset.view;
+      if (activeVisible && canAccessTab(activeVisible)) return activeVisible;
+      return document.querySelector(".workspace-tab:not(.hidden)")?.dataset.view || "erp";
+    }
+
+    function activateWorkspaceViewShell(view) {
+      if (!view || !document.getElementById(`view-${view}`) || !canAccessTab(view)) return;
+      document.querySelectorAll(".workspace-tab").forEach((button) => {
+        button.classList.toggle("active", button.dataset.view === view);
+      });
+      document.querySelectorAll(".workspace-group").forEach((group) => {
+        group.classList.toggle("active", !!group.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`));
+      });
+      document.querySelectorAll(".workspace-subitem").forEach((button) => {
+        button.classList.toggle("active", button.dataset.view === view && (button.dataset.anchor || "") === (MODULE_DEFAULT_SECTIONS[view] || ""));
+      });
+      document.querySelectorAll(".workspace-view").forEach((section) => {
+        section.classList.toggle("open", section.id === `view-${view}`);
+      });
+      syncMobileModuleSelect(view);
+    }
+
+    function getCurrentErpView() {
+      return document.querySelector(".workspace-view.open")?.id?.replace("view-", "") || "erp";
+    }
+
+    async function refreshErpContext(view = getCurrentErpView(), options = {}) {
+      if (!ERP_DATA_VIEWS.has(view)) return Promise.resolve();
+      _erpLoadedViews.delete("full");
+      _erpLoadedViews.delete(view);
+      return loadErp({ view, ...options });
+    }
+
+    async function refreshAfterMutation(type, preferredView = getCurrentErpView()) {
+      const affected = MUTATION_REFRESH_VIEWS[type] || [preferredView];
+      _erpLoadedViews.delete("full");
+      affected.forEach((view) => _erpLoadedViews.delete(view));
+      return refreshErpContext(preferredView);
+    }
+
     function refreshWorkspaceView(view) {
       if (view === "customers") return loadCustomers();
       if (view === "providers") return loadProviders();
@@ -8482,7 +8548,7 @@
       if (view === "logistics_event") return loadLogisticsEvents();
       if (view === "buyer_purchases") return loadBuyerOrders();
       if (view === "security") return loadSecurityPanel();
-      if (["erp", "commercial", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].includes(view)) return loadErp();
+      if (ERP_DATA_VIEWS.has(view)) return refreshErpContext(view);
       return Promise.resolve();
     }
 
@@ -8840,7 +8906,7 @@
       if (view === "customers") loadTask = loadCustomers();
       if (view === "providers") loadTask = loadProviders();
       if (view === "recipes") loadTask = loadRecipes();
-      if (["erp", "commercial", "events", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].includes(view)) {
+      if (ERP_DATA_VIEWS.has(view)) {
         loadTask = ensureErpForNavigation(view);
       }
       if (view === "logistics_event") loadTask = loadLogisticsEvents();
@@ -8880,13 +8946,13 @@
       // Already have full data: just render
       if (_erpLoadedViews.has("full")) {
         renderErp();
-        if (Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) loadErp({ silent: true });
+        if (view && Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) refreshErpContext(view, { silent: true });
         return Promise.resolve();
       }
       // Have partial data but not this view yet: lazy-load it silently
       if (view && !_erpLoadedViews.has(view)) return loadErp({ view, silent: true });
       renderErp();
-      if (Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) loadErp({ silent: true });
+      if (view && Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) refreshErpContext(view, { silent: true });
       return Promise.resolve();
     }
 
@@ -8936,7 +9002,7 @@
         const el = document.getElementById(id);
         if (el && !el.dataset.loaded) el.innerHTML = renderLoadingList(label, rows);
       });
-      document.querySelectorAll("button[onclick='loadErp()']").forEach((btn) => setButtonLoading(btn, true));
+      document.querySelectorAll("button[onclick^='refreshWorkspaceView']").forEach((btn) => setButtonLoading(btn, true));
     }
 
     async function loadErp(options = {}) {
@@ -8981,7 +9047,7 @@
         if (result.purchaseReceipts !== undefined) purchaseReceipts = result.purchaseReceipts;
         renderCurrentUser();
         renderErp();
-        document.querySelectorAll("button[onclick='loadErp()']").forEach((btn) => setButtonLoading(btn, false));
+        document.querySelectorAll("button[onclick^='refreshWorkspaceView']").forEach((btn) => setButtonLoading(btn, false));
         ["erp-upcoming-events","erp-alerts","purchase-dashboard","finance-dashboard","production-dashboard","stock-dashboard","reports-dashboard","hr-dashboard"]
           .forEach((id) => { const el = document.getElementById(id); if (el) el.dataset.loaded = "1"; });
       };
@@ -11524,8 +11590,9 @@
             <input type="hidden" name="recordCategory" value="temperatura">
             <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" required ${disabled}></div>
             <div class="form-field"><label>Hora</label><input name="hora" type="time" required ${disabled}></div>
-            <div class="form-field full">
-              <label style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Temperatura registrada (°C)</span><span style="font-size:11px;color:#6b7280">Ref: Frío &lt;5°C · Congelado &lt;-18°C</span></label>
+            <div class="form-field"><label>Equipo <span style="font-weight:400;color:#6b7280">(heladera, freezer…)</span></label><input name="alimento" placeholder="Ej: Heladera 1" required ${disabled}></div>
+            <div class="form-field">
+              <label style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Temperatura (°C)</span><span style="font-size:11px;color:#6b7280">Frío &lt;5°C · Cong. &lt;-18°C</span></label>
               <input name="temperatura" type="number" step="0.1" placeholder="Ej: 3.5" required ${disabled} class="sanit-temp-field" oninput="_sanitTempColor(this)">
             </div>
             <div class="form-field"><label>Responsable</label><input name="responsable" value="${resp}" required ${disabled}></div>
@@ -11852,7 +11919,8 @@
       if (dateEl) dateEl.value = toDateValue(new Date());
       const respEl = form.elements.responsable;
       if (respEl) respEl.value = currentUser?.displayName || currentUser?.username || "";
-      renderSanitPanel(cat, erpData.sanitationDashboard);
+      renderSanitationDashboard();
+      await refreshAfterMutation("sanitation", "sanitation");
       showToast("Registro guardado");
     }
 
@@ -11876,6 +11944,7 @@
       if (!result.ok) return showToast(result.error || "Error al aprobar", "error");
       erpData.sanitationDashboard = result.sanitationDashboard;
       renderSanitPanel(_sanitTab, erpData.sanitationDashboard);
+      await refreshAfterMutation("sanitation", "sanitation");
       showToast("Aprobación actualizada");
     }
 
@@ -11969,6 +12038,7 @@
       if (!result.ok) return showNotice(result.error || "No se pudo guardar la orden de pago.", "error");
       erpData.paymentOrdersDashboard = result.paymentOrdersDashboard;
       renderPaymentOrdersDashboard();
+      await refreshAfterMutation("paymentOrder", "payment_orders");
       showNotice("Orden de pago guardada.", "success");
     }
 
@@ -11978,6 +12048,7 @@
       if (!result.ok) return showNotice(result.error || "No se pudo actualizar la orden.", "error");
       erpData.paymentOrdersDashboard = result.paymentOrdersDashboard;
       renderPaymentOrdersDashboard();
+      await refreshAfterMutation("paymentOrder", "payment_orders");
       showNotice("Orden de pago actualizada.", "success");
     }
 
@@ -11997,6 +12068,7 @@
       erpData.financeDashboard = result.financeDashboard || erpData.financeDashboard;
       renderFinanceDashboard();
       hidePurchaseRankDetail();
+      await refreshAfterMutation("providerPayment", "finance");
       showNotice("Cobro del evento actualizado.");
     }
 
@@ -12470,6 +12542,7 @@
       } else {
         hidePurchaseRankDetail();
       }
+      await refreshAfterMutation("providerPayment", "finance");
       showNotice(`Pago aplicado: ${formatCurrency(result.result?.appliedAmount || 0)}. Saldo restante: ${formatCurrency(result.result?.debtAfter || 0)}.`, "success");
     }
 
@@ -12501,6 +12574,7 @@
       } else {
         showReimbursementWindow();
       }
+      await refreshAfterMutation("providerPayment", "finance");
       showNotice(`Reintegro aplicado: ${formatCurrency(result.result?.appliedAmount || 0)}. Pendiente: ${formatCurrency(result.result?.debtAfter || 0)}.`, "success");
     }
 
@@ -13911,7 +13985,7 @@
         return;
       }
 
-      await loadErp();
+      await refreshAfterMutation("purchase", "purchases");
       const imported = result.result?.imported || 0;
       const skipped = result.result?.skipped || 0;
       const detail = skipped ? ` ${skipped} fila(s) incompleta(s) fueron omitidas.` : "";
@@ -13933,7 +14007,7 @@
         return;
       }
 
-      await loadErp();
+      await refreshAfterMutation("providerPayment", "finance");
       const imported = result.result?.imported || 0;
       const skipped = result.result?.skipped || 0;
       const firstError = result.result?.errors?.[0] ? ` Primer error: ${result.result.errors[0]}` : "";
@@ -14660,7 +14734,7 @@
       hideLogisticsEventDetail();
       activeLogisticsEvent = null;
       await loadLogisticsEvents();
-      await loadErp();
+      await refreshAfterMutation("event", "events");
     }
 
     function hideLogisticsEventDetail() {
@@ -15483,6 +15557,7 @@
       if (!result.ok) return showNotice(result.error || "No se pudo guardar el inventario operativo.", "error");
       erpData.operationalInventory = result.operationalInventory;
       renderOperationalInventoryManager();
+      await refreshAfterMutation("inventory", "stock");
       showNotice("Item operativo guardado.", "success");
     }
 
@@ -15515,6 +15590,7 @@
       erpData.operationalInventory = result.operationalInventory;
       form.reset();
       renderOperationalInventoryManager();
+      await refreshAfterMutation("inventory", "stock");
       showNotice("Categoria guardada.", "success");
     }
 
@@ -15525,6 +15601,7 @@
       if (!result.ok) return showNotice(result.error || "No se pudo eliminar el item.", "error");
       erpData.operationalInventory = result.operationalInventory;
       renderOperationalInventoryManager();
+      await refreshAfterMutation("inventory", "stock");
       showNotice("Item eliminado.", "success");
     }
 
@@ -15946,7 +16023,7 @@
       }
       showNotice("Evento finalizado con autorizacion sin conformidad.", "success");
       if (closeDetailAfter) hideDetail();
-      await loadErp();
+      await refreshAfterMutation("event", "events");
     }
 
     function renderEventHistoryRow(event) {
@@ -16083,7 +16160,7 @@
         const result = await readJsonResponse(response);
         if (!result.ok) throw new Error(result.error || "No se pudo subir la conformidad.");
         showNotice("Conformidad cargada correctamente.", "success");
-        await loadErp();
+        await refreshAfterMutation("event", "events");
         showEventOverview(id);
       } catch (error) {
         showNotice(error.message, "error");
@@ -16947,12 +17024,12 @@
       const quoteResult = await readJsonResponse(quoteResponse);
       if (!quoteResult.ok) {
         showNotice(quoteResult.error || "El evento se guardo, pero no se pudo crear el presupuesto.", "error");
-        await loadErp();
+        await refreshAfterMutation("quote", "commercial");
         return;
       }
       showNotice("Presupuesto importado y asociado al evento.", "success");
       hideDetail();
-      await loadErp();
+      await refreshAfterMutation("quote", "commercial");
     }
 
     function fillEventFormFromImportedQuote() {
@@ -17410,7 +17487,7 @@
       showNotice("Evento guardado.", "success");
       resetErpEventForm();
       hideErpForms();
-      await loadErp();
+      await refreshAfterMutation("event", "events");
       await loadPurchaseOptions();
     }
 
@@ -17445,7 +17522,7 @@
       }
 
       showNotice("Evento marcado como realizado.");
-      await loadErp();
+      await refreshAfterMutation("event", "events");
     }
 
     async function approveLogisticsEventClose(id) {
@@ -17472,7 +17549,7 @@
       showNotice(withoutConformity
         ? "Cierre sin conformidad autorizado. Evento marcado como realizado."
         : "Cierre logistico autorizado. Evento marcado como realizado.", "success");
-      await loadErp();
+      await refreshAfterMutation("event", "events");
       if (canAccessTab("logistics_event")) await loadLogisticsEvents();
     }
 
@@ -17525,7 +17602,7 @@
       }
 
       showNotice("Evento eliminado.", "success");
-      await loadErp();
+      await refreshAfterMutation("event", "events");
     }
 
     function startErpQuoteForEvent(eventId) {
@@ -17727,7 +17804,7 @@
       showNotice("Presupuesto guardado.", "success");
       resetErpQuoteForm();
       hideErpForms();
-      await loadErp();
+      await refreshAfterMutation("quote", "commercial");
     }
 
     function editErpQuote(id) {
@@ -17792,7 +17869,7 @@
       }
 
       showNotice("Presupuesto eliminado.", "success");
-      await loadErp();
+      await refreshAfterMutation("quote", "commercial");
     }
 
     function getErpEventStatusLabel(status) {
@@ -20553,7 +20630,7 @@
       clearPurchaseDraft();
       hidePurchaseForm();
       await loadPurchaseOptions();
-      await loadErp();
+      await refreshAfterMutation("purchase", "purchases");
       const added = result.result?.addedOptions || {};
       const extraMessage = [
         added.provider ? "proveedor nuevo guardado" : "",
@@ -20579,7 +20656,7 @@
         return;
       }
 
-      await loadErp();
+      await refreshAfterMutation("purchase", "purchases");
       showNotice(result.result?.message || "Compra eliminada correctamente.");
     }
 
