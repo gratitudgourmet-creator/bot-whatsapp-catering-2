@@ -1070,32 +1070,36 @@ function startApprovalPanelServer() {
           });
         }
         if (publicUser?.role === "finanzas") {
-          const financeDashboard = getFinanceDashboard();
+          const needsFinanceDashboard = _has("financeDashboard") || _has("dashboard") || _has("events");
+          const financeDashboard = needsFinanceDashboard ? getFinanceDashboard() : null;
           console.log(`[/api/erp] ${publicUser?.username || "?"} role=finanzas view=${_view} total=${Date.now() - _t0}ms`);
           return sendJson(response, {
             ok: true,
             me: publicUser,
             roles: getPanelRoleList(),
-            dashboard: financeDashboard.summary,
-            financeDashboard,
-            pipeline: { columns: [] },
-            events: financeDashboard.events,
-            confirmedEvents: [],
-            quotes: [],
-            purchases: getErpPurchaseList(),
-            purchaseOrders: [],
-            purchaseReceipts: [],
-            inventory: [],
-            inventoryMovements: [],
-            productMaster: [],
-            providers: getProviderList(),
-            recipes: [],
-            customers: [],
-            venues: [],
-            productAlerts: [],
-            hrDashboard: undefined,
-            sanitationDashboard: undefined,
-            paymentOrdersDashboard: getPaymentOrdersDashboard(),
+            _view,
+            _partial,
+            dashboard: _has("dashboard") ? (financeDashboard?.summary || {}) : undefined,
+            financeDashboard: _has("financeDashboard") ? financeDashboard : undefined,
+            pipeline: _has("pipeline") ? { columns: [] } : undefined,
+            events: _has("events") ? (financeDashboard?.events || []) : undefined,
+            confirmedEvents: _has("confirmedEvents") ? [] : undefined,
+            quotes: _has("quotes") ? [] : undefined,
+            purchases: _has("purchases") ? getErpPurchaseList() : undefined,
+            purchaseOrders: _has("purchaseOrders") ? [] : undefined,
+            purchaseReceipts: _has("purchaseReceipts") ? [] : undefined,
+            inventory: _has("inventory") ? [] : undefined,
+            inventoryMovements: _has("inventoryMovements") ? [] : undefined,
+            operationalInventory: _has("operationalInventory") ? undefined : undefined,
+            productMaster: _has("productMaster") ? [] : undefined,
+            providers: _has("providers") ? getProviderList() : undefined,
+            recipes: _has("recipes") ? [] : undefined,
+            customers: _has("customers") ? [] : undefined,
+            venues: _has("venues") ? [] : undefined,
+            productAlerts: _has("productAlerts") ? [] : undefined,
+            hrDashboard: _has("hrDashboard") ? undefined : undefined,
+            sanitationDashboard: _has("sanitationDashboard") ? undefined : undefined,
+            paymentOrdersDashboard: _has("paymentOrdersDashboard") ? getPaymentOrdersDashboard() : undefined,
           });
         }
         const _erpPayload = {
