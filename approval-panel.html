@@ -3187,6 +3187,160 @@
       margin-top: 4px;
     }
 
+    .erp-home-shell {
+      display: grid;
+      gap: 16px;
+    }
+
+    .erp-home-head {
+      align-items: start;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .erp-home-head h2 {
+      font-size: 24px;
+      margin: 0 0 4px;
+    }
+
+    .erp-home-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .erp-home-actions .filter,
+    .erp-home-actions .approve {
+      min-height: 32px;
+      padding: 0 11px;
+    }
+
+    .erp-home-export {
+      background: transparent;
+      border-color: rgba(102, 117, 138, .32);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .erp-home-export:hover {
+      background: var(--surface-soft);
+      border-color: rgba(102, 117, 138, .45);
+      color: var(--text);
+    }
+
+    .erp-home-grid {
+      align-items: start;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, .9fr);
+    }
+
+    .erp-home-stack {
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .priority-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    }
+
+    .priority-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+      padding: 13px;
+    }
+
+    .priority-card.priority-focus {
+      border-color: rgba(209, 169, 101, .56);
+      box-shadow: 0 8px 18px rgba(23, 33, 43, .045);
+    }
+
+    .priority-eyebrow,
+    .home-kpi span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .priority-card strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1.1;
+      overflow-wrap: break-word;
+    }
+
+    .priority-card p {
+      color: var(--muted);
+      line-height: 1.42;
+      margin: 0;
+    }
+
+    .priority-card .filter,
+    .priority-card .approve {
+      justify-self: start;
+      min-height: 31px;
+      padding: 0 10px;
+    }
+
+    .today-event-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .today-event-row {
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      min-width: 0;
+      padding: 11px 12px;
+    }
+
+    .today-event-row strong,
+    .today-event-row span {
+      overflow-wrap: break-word;
+    }
+
+    .today-event-row .secondary {
+      margin-top: 3px;
+    }
+
+    .today-kpi-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .home-kpi {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      padding: 11px;
+    }
+
+    .home-kpi strong {
+      display: block;
+      font-size: 17px;
+      margin-top: 4px;
+      overflow-wrap: break-word;
+    }
+
     .alert-grid {
       display: grid;
       gap: 10px;
@@ -4335,6 +4489,9 @@
       }
 
       .erp-kpis,
+      .erp-home-head,
+      .erp-home-grid,
+      .today-kpi-grid,
       .erp-quote-line,
       .event-finance,
       .event-purchase-row,
@@ -4360,6 +4517,31 @@
       .audit-layout,
       .permission-grid {
         grid-template-columns: 1fr;
+      }
+
+      .erp-home-head h2 {
+        font-size: 21px;
+      }
+
+      .erp-home-actions {
+        justify-content: flex-start;
+      }
+
+      .erp-home-export {
+        display: none;
+      }
+
+      .priority-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .today-event-row {
+        align-items: start;
+        grid-template-columns: 1fr;
+      }
+
+      .today-event-row .filter {
+        justify-self: start;
       }
 
       .executive-actions {
@@ -4453,8 +4635,8 @@
       <div class="workspace-menu" data-menu-view="erp">
         <button class="workspace-tab active" data-view="erp">ERP</button>
         <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="erp" data-anchor="erp-executive-summary-section">Lectura rápida</button>
-          <button class="workspace-subitem" data-view="erp" data-anchor="erp-alerts-section">Alertas</button>
+          <button class="workspace-subitem" data-view="erp" data-anchor="erp-executive-summary-section">Prioridades</button>
+          <button class="workspace-subitem" data-view="erp" data-anchor="erp-alerts-section">Requiere atención</button>
         </div>
       </div>
       <div class="workspace-menu" data-menu-view="reports">
@@ -4617,37 +4799,58 @@
     </div>
 
     <section id="view-erp" class="workspace-view open">
-      <section class="erp-kpis">
-        <div class="erp-kpi"><span>Eventos proximos</span><strong id="erp-kpi-upcoming">0</strong></div>
-        <div class="erp-kpi"><span>Presupuestos abiertos</span><strong id="erp-kpi-open-quotes">0</strong></div>
-        <div class="erp-kpi"><span>Venta aceptada</span><strong id="erp-kpi-revenue">$0</strong></div>
-        <div class="erp-kpi"><span>Eventos realizados</span><strong id="erp-kpi-done">0</strong></div>
-        <div class="erp-kpi"><span>Margen estimado</span><strong id="erp-kpi-margin">$0</strong></div>
-      </section>
-
-      <div class="erp-grid">
-        <div>
-          <section id="erp-alerts-section" class="erp-section">
-            <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-              <div>
-                <h2>Centro de alertas</h2>
-                <p class="subtitle">Puntos que requieren atencion y resolucion rapida.</p>
-              </div>
-              <div class="actions">
-                <button class="filter" onclick="loadErp()">Actualizar</button>
-              <button class="approve" onclick="downloadErpXlsx()" data-permission="users:write">Descargar Excel</button>
-              </div>
+      <div class="erp-home-shell">
+        <section class="erp-section">
+          <div class="erp-home-head">
+            <div>
+              <h2>Hoy en Gratitud</h2>
+              <p class="subtitle">Prioridades, eventos y movimientos que necesitan atención.</p>
             </div>
+            <div class="erp-home-actions">
+              <button class="filter" type="button" onclick="loadErp()">Actualizar</button>
+              <button class="filter erp-home-export" type="button" onclick="downloadErpXlsx()" data-permission="users:write">Descargar Excel</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="erp-home-grid">
+          <div class="erp-home-stack">
+            <section id="erp-executive-summary-section" class="erp-section">
+              <h2>Prioridades de hoy</h2>
+              <p class="subtitle">Lo más importante para decidir la próxima acción.</p>
+              <div id="erp-executive-summary" class="compact-insight"></div>
+            </section>
+
+            <section id="erp-upcoming-events-section" class="erp-section">
+              <h2>Próximos eventos</h2>
+              <p class="subtitle">Fechas activas para revisar responsables, checklist y pendientes.</p>
+              <div id="erp-upcoming-events"></div>
+            </section>
+          </div>
+
+          <div class="erp-home-stack">
+          <section id="erp-alerts-section" class="erp-section">
+            <h2>Requiere atención</h2>
+            <p class="subtitle">Puntos para revisar antes de que se conviertan en urgencia.</p>
             <input id="role-filter" type="hidden" value="">
             <div id="erp-alerts"></div>
           </section>
 
-      <section id="erp-executive-summary-section" class="erp-section">
-        <h2>Lectura rapida</h2>
-        <div id="erp-executive-summary" class="compact-insight"></div>
-      </section>
+            <section id="erp-secondary-kpis-section" class="erp-section">
+              <h2>Indicadores secundarios</h2>
+              <p class="subtitle">Lectura compacta del estado general.</p>
+              <div class="today-kpi-grid">
+                <div class="home-kpi"><span>Venta aceptada</span><strong id="erp-kpi-revenue">$0</strong></div>
+                <div class="home-kpi"><span>Margen estimado</span><strong id="erp-kpi-margin">$0</strong></div>
+                <div class="home-kpi"><span>Eventos realizados</span><strong id="erp-kpi-done">0</strong></div>
+                <div class="home-kpi"><span>Presupuestos abiertos</span><strong id="erp-kpi-open-quotes">0</strong></div>
+                <div class="home-kpi hidden"><span>Eventos proximos</span><strong id="erp-kpi-upcoming">0</strong></div>
+              </div>
+            </section>
+          </div>
 
         </div>
+      </div>
 
         <div id="erp-form-modal" class="detail" onclick="closeErpForms(event)">
           <aside class="detail-panel extra-wide" onclick="event.stopPropagation()">
@@ -6506,11 +6709,11 @@
     const activeModuleSections = {};
     const MODULE_HOMES = {
       erp: {
-        title: "ERP",
-        subtitle: "Resumen ejecutivo, alertas y estado general del negocio.",
+        title: "Hoy en Gratitud",
+        subtitle: "Prioridades, eventos y movimientos que necesitan atención.",
         items: [
-          { label: "Lectura rápida", description: "KPIs, compras recientes, deudas y próximos movimientos.", anchor: "erp-executive-summary-section" },
-          { label: "Alertas", description: "Puntos que requieren atención administrativa u operativa.", anchor: "erp-alerts-section" },
+          { label: "Prioridades de hoy", description: "Qué revisar y cuál es la próxima acción.", anchor: "erp-executive-summary-section" },
+          { label: "Requiere atención", description: "Puntos administrativos u operativos para revisar.", anchor: "erp-alerts-section" },
         ],
       },
       commercial: {
@@ -6666,7 +6869,7 @@
     };
     const MODULE_SECTION_GROUPS = {
       erp: {
-        "erp-executive-summary-section": ["erp-executive-summary-section"],
+        "erp-executive-summary-section": ["erp-executive-summary-section", "erp-upcoming-events-section", "erp-alerts-section", "erp-secondary-kpis-section"],
         "erp-alerts-section": ["erp-alerts-section"],
       },
       commercial: {
@@ -7005,6 +7208,7 @@
 
     function ensureModuleHomes() {
       Object.entries(MODULE_HOMES).forEach(([view, config]) => {
+        if (view === "erp") return;
         const container = document.getElementById(`view-${view}`);
         if (!container || container.querySelector(`:scope > .module-home`)) return;
         const home = document.createElement("section");
@@ -7062,6 +7266,10 @@
     }
 
     function showModuleHome(view) {
+      if (view === "erp") {
+        showModuleSection("erp", "erp-executive-summary-section", { scroll: false, focus: false });
+        return;
+      }
       const container = document.getElementById(`view-${view}`);
       if (!container) return;
       activeModuleSections[view] = "";
@@ -7070,7 +7278,7 @@
       container.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function showModuleSection(view, anchor) {
+    function showModuleSection(view, anchor, options = {}) {
       const container = document.getElementById(`view-${view}`);
       if (!container || !anchor) return;
       activeModuleSections[view] = anchor;
@@ -7080,10 +7288,12 @@
         section.classList.toggle("active", visibleIds.has(section.id));
       });
       const target = document.getElementById(anchor);
-      if (target) {
+      if (target && options.scroll !== false) {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
-        target.classList.add("section-focus");
-        setTimeout(() => target.classList.remove("section-focus"), 1200);
+        if (options.focus !== false) {
+          target.classList.add("section-focus");
+          setTimeout(() => target.classList.remove("section-focus"), 1200);
+        }
       }
     }
 
@@ -7389,6 +7599,7 @@
       const navigationOptions = {
         ...options,
         anchor: options.anchor || (!options.action ? MODULE_DEFAULT_SECTIONS[view] || "" : ""),
+        explicitAnchor: Boolean(options.anchor),
       };
       document.querySelectorAll(".workspace-tab").forEach((button) => {
         button.classList.toggle("active", button.dataset.view === view);
@@ -7422,12 +7633,13 @@
 
     function runWorkspaceSubNavigation(view, options = {}) {
       if (options.action && typeof window[options.action] === "function") {
-        showModuleSection(view, MODULE_DEFAULT_SECTIONS[view] || "");
+        showModuleSection(view, MODULE_DEFAULT_SECTIONS[view] || "", { scroll: false, focus: false });
         window[options.action]();
         return;
       }
       if (options.anchor) {
-        showModuleSection(view, options.anchor);
+        const shouldScroll = options.explicitAnchor || view !== "erp";
+        showModuleSection(view, options.anchor, { scroll: shouldScroll, focus: shouldScroll });
         return;
       }
       showModuleHome(view);
@@ -7521,6 +7733,7 @@
       if (canAccessTab("erp")) {
         renderErpAlerts(dashboard.alerts || []);
         renderExecutiveSummary(dashboard);
+        renderUpcomingEventsHome();
         renderGlobalSearch();
       }
       if (canAccessTab("purchases")) {
@@ -7583,68 +7796,105 @@
     function renderExecutiveSummary(dashboard = {}) {
       const container = document.getElementById("erp-executive-summary");
       if (!container) return;
-      const purchases = dashboard.purchases || {};
       const today = new Date().toISOString().slice(0, 10);
       const upcoming = (erpData.events || [])
         .filter((event) => event.eventDate && event.eventDate >= today && ["confirmed", "production"].includes(event.status))
         .sort(compareEventsByDate)
-        .slice(0, 5);
+        .slice(0, 3);
       const pendingClose = (erpData.events || [])
         .filter((event) => event.logisticsStatus === "pending_admin_close")
         .sort(compareEventsByDate);
       const unpaid = (erpData.purchases || [])
         .filter((purchase) => getPurchasePending(purchase) > 0)
         .sort((a, b) => getPurchasePending(b) - getPurchasePending(a))
-        .slice(0, 5);
-      const recentPurchases = (erpData.purchases || [])
-        .slice()
-        .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))
-        .slice(0, 5);
-      container.innerHTML = `
-        <div class="executive-hero">
+        .slice(0, 3);
+      const priorities = [
+        {
+          label: "Próxima acción",
+          title: "Eventos próximos",
+          value: upcoming.length || dashboard.upcomingEvents || 0,
+          detail: upcoming.length
+            ? "Revisá fechas, responsables y checklist."
+            : "No hay eventos próximos confirmados para revisar.",
+          action: canAccessTab("events") ? `<button class="filter" type="button" onclick="showWorkspaceView('events', { anchor: 'events-control-section' })">Ver eventos</button>` : "",
+          focus: true,
+        },
+        {
+          label: "Comercial",
+          title: "Presupuestos abiertos",
+          value: dashboard.openQuotes || 0,
+          detail: "Oportunidades que todavía pueden convertirse.",
+          action: canAccessTab("commercial") ? `<button class="filter" type="button" onclick="showWorkspaceView('commercial', { anchor: 'commercial-quotes-section' })">Revisar</button>` : "",
+        },
+        {
+          label: "Administración",
+          title: "Compras o pagos pendientes",
+          value: formatCurrency(dashboard.pendingPurchaseAmount || 0),
+          detail: unpaid.length ? "Hay deuda de proveedores para ordenar." : "No hay deuda urgente cargada.",
+          action: canAccessTab("finance") ? `<button class="filter" type="button" onclick="showProviderDebtWindow()">Ver deudas</button>` : "",
+        },
+        {
+          label: "Alertas",
+          title: "Requiere atención",
+          value: (dashboard.alerts || []).length,
+          detail: (dashboard.alerts || []).length ? "Hay puntos para revisar antes de avanzar." : "Todo tranquilo por ahora.",
+          action: `<button class="filter" type="button" onclick="showModuleSection('erp', 'erp-alerts-section')">Ver alertas</button>`,
+        },
+        {
+          label: "Resultado",
+          title: "Margen estimado",
+          value: formatCurrency(dashboard.estimatedMargin || 0),
+          detail: `Rentabilidad proyectada sobre eventos cargados (${formatPercent(dashboard.estimatedMarginPercent || 0)}).`,
+          action: canAccessTab("finance") ? `<button class="filter" type="button" onclick="showWorkspaceView('finance', { anchor: 'finance-summary-section' })">Ver finanzas</button>` : "",
+        },
+      ].slice(0, 5);
+
+      container.innerHTML = `<div class="priority-grid">${priorities.map(renderHomePriorityCard).join("")}</div>`;
+    }
+
+    function renderHomePriorityCard(item) {
+      return `
+        <article class="priority-card ${item.focus ? "priority-focus" : ""}">
+          <span class="priority-eyebrow">${escapeHtml(item.label || "")}</span>
           <div>
-            <span>Lectura ejecutiva</span>
-            <strong>${formatCurrency(dashboard.estimatedRevenue || 0)}</strong>
-            <small>Venta aceptada · margen estimado ${formatCurrency(dashboard.estimatedMargin || 0)} (${formatPercent(dashboard.estimatedMarginPercent || 0)})</small>
+            <strong>${escapeHtml(String(item.value ?? ""))}</strong>
+            <div class="primary">${escapeHtml(item.title || "")}</div>
           </div>
-          <div class="executive-actions">
-            <button class="approve" type="button" onclick="showWorkspaceView('events', { anchor: 'events-control-section' })">Ver eventos</button>
-            <button class="filter" type="button" onclick="showProviderDebtWindow()">Deudas</button>
-            <button class="filter" type="button" onclick="showWorkspaceView('security', { anchor: 'security-admin-control-section' })" data-permission="users:write">Panel admin</button>
+          <p>${escapeHtml(item.detail || "")}</p>
+          ${item.action || ""}
+        </article>
+      `;
+    }
+
+    function renderUpcomingEventsHome() {
+      const container = document.getElementById("erp-upcoming-events");
+      if (!container) return;
+      const today = new Date().toISOString().slice(0, 10);
+      const events = (erpData.events || [])
+        .filter((event) => event.eventDate && event.eventDate >= today && !["lost", "cancelled", "done"].includes(event.status))
+        .sort(compareEventsByDate)
+        .slice(0, 5);
+      if (!events.length) {
+        container.innerHTML = `
+          <div class="empty compact-empty">
+            <strong>No hay eventos próximos cargados.</strong>
+            <div class="secondary">Cuando confirmes un evento, va a aparecer acá.</div>
           </div>
-        </div>
-        <div class="event-finance executive-metrics" style="margin-bottom:12px;">
-          <div class="event-number"><span>Confirmados</span><strong>${escapeHtml(dashboard.confirmedEvents || 0)}</strong></div>
-          <div class="event-number"><span>Proximos</span><strong>${escapeHtml(upcoming.length)}</strong></div>
-          <div class="event-number warn"><span>Compras pendientes</span><strong>${formatCurrency(dashboard.pendingPurchaseAmount || 0)}</strong></div>
-          <div class="event-number"><span>Total compras</span><strong>${formatCurrency(purchases.totalAmount || 0)}</strong></div>
-          <div class="event-number highlight"><span>Cierres por autorizar</span><strong>${escapeHtml(pendingClose.length)}</strong></div>
-        </div>
-        <div class="admin-summary-grid">
-          ${renderAdminSummaryList("Proximos eventos", upcoming, (event) => `
-            <button class="summary-row" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">
-              <strong>${escapeHtml(event.name || "Sin nombre")}</strong>
-              <span>${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} · ${escapeHtml(event.clientName || "Sin cliente")} · ${escapeHtml(event.venue || "Sin lugar")}</span>
-            </button>
-          `)}
-          ${renderAdminSummaryList("Cierres pendientes", pendingClose, (event) => `
-            <button class="summary-row" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">
-              <strong>${escapeHtml(event.name || "Sin nombre")}</strong>
-              <span>${hasCloseWithoutConformityRequest(event) ? "Logistica solicito cierre sin conformidad" : "Logistica solicito cierre"} · requiere autorizacion admin</span>
-            </button>
-          `)}
-          ${renderAdminSummaryList("Mayores deudas", unpaid, (purchase) => `
-            <button class="summary-row" type="button" onclick="showProviderDebt('${escapeAttribute(purchase.provider || "Sin proveedor")}')">
-              <strong>${escapeHtml(purchase.provider || "Sin proveedor")} · ${formatCurrency(getPurchasePending(purchase))}</strong>
-              <span>${escapeHtml(purchase.description || "Compra")} · ${escapeHtml(purchase.eventName || "Sin evento")}</span>
-            </button>
-          `)}
-          ${renderAdminSummaryList("Compras recientes", recentPurchases, (purchase) => `
-            <button class="summary-row" type="button" onclick="editPurchase('${escapeAttribute(purchase.id)}')">
-              <strong>${escapeHtml(purchase.provider || "Sin proveedor")} · ${formatCurrency(getPurchaseTotal(purchase))}</strong>
-              <span>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")} · ${escapeHtml(purchase.description || "")}</span>
-            </button>
-          `)}
+        `;
+        return;
+      }
+      container.innerHTML = `
+        <div class="today-event-list">
+          ${events.map((event) => `
+            <article class="today-event-row">
+              <div>
+                <strong>${escapeHtml(event.name || "Evento sin nombre")}</strong>
+                <div class="secondary">${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} · ${escapeHtml(event.clientName || "Sin cliente")}</div>
+                <span class="badge ${event.status === "confirmed" || event.status === "production" ? "confirmed" : "missing_info"}">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
+              </div>
+              <button class="filter" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">Ver evento</button>
+            </article>
+          `).join("")}
         </div>
       `;
     }
@@ -7765,18 +8015,23 @@
       const container = document.getElementById("erp-alerts");
       if (!container) return;
       if (!alerts.length) {
-        container.innerHTML = `<div class="empty">Sin alertas criticas. El sistema esta ordenado.</div>`;
+        container.innerHTML = `
+          <div class="empty compact-empty">
+            <strong>Todo tranquilo por ahora.</strong>
+            <div class="secondary">No hay puntos críticos para revisar.</div>
+          </div>
+        `;
         return;
       }
 
       container.innerHTML = `<div class="alert-grid">${alerts.map((alert) => `
         <div class="erp-alert ${escapeAttribute(alert.type || "")}" onclick="showErpAlertDetail('${escapeAttribute(alert.title || "")}')">
-          <div class="alert-mark">!</div>
+          <div class="alert-mark">i</div>
           <div>
             <div class="primary">${escapeHtml(alert.title)}</div>
             <div class="secondary">${escapeHtml(alert.detail)}</div>
           </div>
-          <div class="alert-action">...</div>
+          <div class="alert-action">Ver</div>
         </div>
       `).join("")}</div>`;
     }
