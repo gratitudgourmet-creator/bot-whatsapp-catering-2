@@ -21,6 +21,37 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-02] Claude (sesion 6 - estado de articulos de inventario)
+
+**De que se hablo:** implementacion completa del sistema de estado de articulos de inventario operativo. El usuario quiere registrar condicion de hornos, heladeras, contenedores (ok/roto/sucio/desoldado/falta_pieza/otro) con foto opcional, separando el rol de mantenimiento del de stock.
+
+**Decisiones tomadas:**
+- Nuevo rol `mantenimiento` con permiso `maintenance:read` (solo puede ver/reportar estado, no hace toma de inventario ni accede al panel completo).
+- Los campos de condicion son planos sobre el item (no historial) para simplicidad: condition, conditionNotes, conditionImagePath, conditionAt, conditionBy.
+- Imagenes: se suben como base64 desde el celular, se comprimen a JPEG 1200px max en el cliente, se guardan en DATA_DIR/images/condition/ y se sirven en /images/condition/:filename.
+- Dos paginas moviles separadas: /inventario (toma de stock) y /estado-inventario (rol mantenimiento).
+- En el panel hay dos botones separados: "Toma de inventario" (visible a stock:read / purchases:write) y "Estado inventario" (visible a maintenance:read / *), gestionados por applyInventoryButtonVisibility() que se llama al login.
+- En /inventario se agrego boton 🔧 por item para reportar condicion durante la toma (flujo secundario, modal liviano).
+
+**Cambios en el codigo:**
+- Commit ca64468: todo el feature en un solo commit.
+  - whatsapp-catering-bot.js: rol mantenimiento, permiso maintenance:read, campos condicion en normalizeOperationalInventoryItem, funciones getEstadoInventarioView / updateItemCondition / saveConditionImage, 5 rutas nuevas (GET /estado-inventario, GET /images/condition/:filename, GET /api/estado-inventario, POST /api/operational-inventory-condition, POST /api/upload-condition-image).
+  - estado-inventario-movil.html: nueva pagina standalone para rol mantenimiento, lista items con badge de condicion, filtros, modal de edicion con foto + selector de condicion + notas.
+  - inventario-movil.html: boton 🔧 por item, modal liviano de condicion con foto.
+  - approval-panel.html: dos botones de inventario con visibilidad por rol, funcion applyInventoryButtonVisibility.
+- NO deployado aun al VPS. Pendiente confirmacion del usuario.
+
+**Pendiente para la proxima sesion:**
+- Deploy al VPS: git pull en /opt/gratitud-erp + restart del servicio (confirmar con usuario).
+- Crear usuario 'mantenimiento' desde el panel de usuarios (el usuario lo puede hacer desde el panel, no requiere codigo).
+- Hito 3: paginacion/carga on-demand de eventos, compras, clientes, recetas.
+- Hito 4: mediciones de timing en el frontend.
+- Data hygiene: sacar config-bot.json, usuarios-erp.json, JSONs de negocio y catering.db* del tracking de git.
+- Gestion de usuarios: toggle activo/inactivo + filtro por nombre/rol.
+- VPS: agregar swap 1-2GB, backups externos (rclone), cambiar password root.
+
+---
+
 ## [2026-07-02] Claude (sesion 5 - performance Hito 1 y 2 + seguridad de endpoints)
 
 **De que se hablo:** continuacion directa del Hito 1 (cache TTL + skeletons, ya deployado). Se verifico en produccion el impacto real, se implemento Hito 2 y se cerraron endpoints sin autenticacion.

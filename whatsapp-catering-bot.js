@@ -43,6 +43,11 @@ patchWhatsappClientInjection();
 const BOT_CONFIG = loadBotConfig();
 const BOT_MESSAGES = loadBotMessages();
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
+
+// Coordenadas del salón Guaymallén — usadas para geofencing de stock/inventario
+const SALON_LAT = -32.925679;
+const SALON_LNG = -68.802341;
+const SALON_RADIUS_METERS = 300; // radio permitido en metros
 const DATA_DIR = path.resolve(process.env.DATA_DIR || BOT_CONFIG.dataDir || __dirname);
 const CONFIG_FILE = path.resolve(process.env.BOT_CONFIG_FILE || path.join(__dirname, "config-bot.json"));
 const STATE_FILE = dataPath("bot-state.json");
@@ -844,7 +849,7 @@ function startApprovalPanelServer() {
         }
         let user;
         try {
-          user = authenticatePanelUser(body.username, body.password, request);
+          user = authenticatePanelUser(body.username, body.password, request, body.gps || null);
           clearLoginFailures(attemptKey);
         } catch (error) {
           recordLoginFailure(attemptKey);
@@ -1214,6 +1219,22 @@ function startApprovalPanelServer() {
         const saved = savePanelUserRecord(body);
         recordAudit(user, body.id ? "update" : "create", "user", saved.id, saved.displayName || saved.username, null, getPublicUser(saved));
         return sendJson(response, { ok: true, user: getPublicUser(saved), users: getPanelUserList() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/location-required") {
+        const user = requirePanelPermission(request, response, "users:write");
+        if (!user) return;
+        if (user.role !== "admin") return sendJson(response, { ok: false, error: "Solo el admin puede cambiar esta configuración." }, 403);
+        const body = await readJsonBody(request);
+        BOT_CONFIG.locationRequired = body.enabled !== false;
+        saveBotConfig();
+        return sendJson(response, { ok: true, locationRequired: BOT_CONFIG.locationRequired });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/location-required") {
+        const user = requirePanelPermission(request, response, "users:write");
+        if (!user) return;
+        return sendJson(response, { ok: true, locationRequired: isLocationRequired() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/roles") {
@@ -1621,6 +1642,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/start") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
         if (!user) return;
+        if (!requireSalonLocation(user, response, "iniciar toma de inventario")) return;
         const body = await readJsonBody(request);
         const sesion = startInventarioSesion(body.location, user);
         return sendJson(response, { ok: true, sesion });
@@ -1629,6 +1651,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/item") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write"]);
         if (!user) return;
+        if (!requireSalonLocation(user, response, "registrar conteo de inventario")) return;
         const body = await readJsonBody(request);
         const sesion = updateInventarioSesionItem(body.itemId, body.counted, body.qty, user);
         return sendJson(response, { ok: true, sesion });
@@ -1637,6 +1660,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/close") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
         if (!user) return;
+        if (!requireSalonLocation(user, response, "cerrar sesión de inventario")) return;
         const result = closeInventarioSesion(user);
         return sendJson(response, { ok: true, result });
       }
@@ -1657,6 +1681,7 @@ function startApprovalPanelServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-condition") {
         const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:read", "purchases:write"]);
         if (!user) return;
+        if (!requireSalonLocation(user, response, "actualizar estado de artículo")) return;
         const body = await readJsonBody(request);
         if (!body.itemId) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
         const item = updateItemCondition(body.itemId, body.condition, body.notes, body.imagePath !== undefined ? body.imagePath : undefined, user);
@@ -3505,9 +3530,45 @@ function getPublicUser(user) {
     lastLoginUserAgent: user.lastLoginUserAgent || "",
     lastLoginLocation: user.lastLoginLocation || "",
     lastLoginCountryCode: user.lastLoginCountryCode || "",
+    lastLoginLat: user.lastLoginLat || null,
+    lastLoginLng: user.lastLoginLng || null,
+    lastLoginAccuracy: user.lastLoginAccuracy || null,
     permissions: role.permissions,
     tabs: role.tabs || [],
   };
+}
+
+function haversineDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371000; // radio Tierra en metros
+  const toRad = d => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function isLocationRequired() {
+  return BOT_CONFIG.locationRequired !== false;
+}
+
+function isUserAtSalon(user) {
+  if (!user.lastLoginLat || !user.lastLoginLng) return false;
+  const dist = haversineDistance(user.lastLoginLat, user.lastLoginLng, SALON_LAT, SALON_LNG);
+  return dist <= SALON_RADIUS_METERS;
+}
+
+function requireSalonLocation(user, response, actionLabel) {
+  if (!isLocationRequired()) return true;
+  if (user.role === "admin" || (user.permissions || []).includes("sensitive:all")) return true;
+  if (!isUserAtSalon(user)) {
+    sendJson(response, {
+      ok: false,
+      error: `Acción restringida: "${actionLabel}" solo se puede realizar desde el salón (Guaymallén).`,
+      code: "LOCATION_REQUIRED",
+    }, 403);
+    return false;
+  }
+  return true;
 }
 
 function fetchIpLocation(ip) {
@@ -3536,7 +3597,7 @@ function fetchIpLocation(ip) {
   });
 }
 
-function authenticatePanelUser(username, password, request) {
+function authenticatePanelUser(username, password, request, gpsCoords) {
   const cleanUsername = normalizeText(username || "").toLowerCase();
   const user = erpUsers.find((item) => item.username === cleanUsername && item.active);
   if (!user || !verifyPanelPassword(user, password)) {
@@ -3549,6 +3610,11 @@ function authenticatePanelUser(username, password, request) {
   user.lastLoginIp = ip;
   user.lastLoginUserAgent = String(request?.headers?.["user-agent"] || "").slice(0, 300);
   user.lastLoginLocation = "";
+  if (gpsCoords && typeof gpsCoords.lat === "number" && typeof gpsCoords.lng === "number") {
+    user.lastLoginLat = gpsCoords.lat;
+    user.lastLoginLng = gpsCoords.lng;
+    user.lastLoginAccuracy = gpsCoords.accuracy || null;
+  }
   user.updatedAt = now;
   saveErpUsers();
 
@@ -5364,31 +5430,69 @@ function getHrDashboard() {
   };
 }
 
+const SANITATION_CATEGORIES = {
+  temperatura:      "Temperatura equipos",
+  limpieza:         "Limpieza",
+  recepcion:        "Recepción materia prima",
+  control_producto: "Control del producto",
+  produccion:       "Producción",
+  despacho:         "Control de despacho",
+  reuniones:        "Reuniones / Capacitaciones",
+  documentacion:    "Documentación / Decomiso",
+};
+
+function normalizeSanitationCategory(value) {
+  return ["temperatura","limpieza","recepcion","control_producto","produccion","despacho","reuniones","documentacion"].includes(value) ? value : "documentacion";
+}
+
+function getSanitationCategoryLabel(cat) {
+  const labels = { temperatura:"Temperatura equipos", limpieza:"Limpieza", recepcion:"Recepción materia prima", control_producto:"Control del producto", produccion:"Producción", despacho:"Control de despacho", reuniones:"Reuniones / Capacitaciones", documentacion:"Documentación / Decomiso" };
+  return labels[cat] || "Documentación";
+}
+
 function normalizeSanitationRecordList(input = []) {
   return (Array.isArray(input) ? input : [])
     .map(normalizeSanitationRecord)
-    .filter((item) => item.title || item.productName || item.eventName);
+    .filter((item) => item.id);
 }
 
 function normalizeSanitationRecord(input = {}) {
-  const recordType = normalizeSanitationType(input.recordType || input.type || "");
+  const recordType = normalizeSanitationType(input.recordType || input.type || "document");
+  const recordCategory = normalizeSanitationCategory(input.recordCategory || "documentacion");
   const approvalStatus = normalizeSanitationApprovalStatus(input.approvalStatus || input.status || "pending");
   return {
     id: normalizeText(input.id || `broma-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    recordCategory,
+    recordCategoryLabel: getSanitationCategoryLabel(recordCategory),
     recordType,
     recordTypeLabel: getSanitationTypeLabel(recordType),
-    title: normalizeText(input.title || ""),
-    productName: normalizeText(input.productName || input.product || ""),
-    batch: normalizeText(input.batch || input.lote || ""),
-    eventId: normalizeText(input.eventId || ""),
-    eventName: normalizeText(input.eventName || ""),
+    // campos comunes
     date: normalizePanelDate(input.date || "") || getDateOnly(new Date()),
-    expirationDate: normalizePanelDate(input.expirationDate || input.vencimiento || "") || "",
-    quantity: normalizeText(input.quantity || ""),
-    reason: normalizeText(input.reason || input.motivo || ""),
+    hora: normalizeText(input.hora || ""),
+    responsable: normalizeText(input.responsable || input.responsible || ""),
+    observaciones: normalizeText(input.observaciones || input.observations || input.reason || ""),
+    // campos específicos por categoría
+    temperatura: normalizeText(input.temperatura || input.temperature || ""),
+    patente: normalizeText(input.patente || ""),
+    proveedor: normalizeText(input.proveedor || input.provider || ""),
+    alimento: normalizeText(input.alimento || input.productName || input.product || ""),
+    lote: normalizeText(input.lote || input.batch || ""),
+    cantidad: normalizeText(input.cantidad || input.quantity || ""),
+    estadoRecepcion: normalizeText(input.estadoRecepcion || ""),
+    ph: normalizeText(input.ph || ""),
+    peso: normalizeText(input.peso || ""),
+    caracteristicas: normalizeText(input.caracteristicas || ""),
+    destino: normalizeText(input.destino || ""),
+    temas: normalizeText(input.temas || ""),
+    conclusiones: normalizeText(input.conclusiones || ""),
+    asistentes: normalizeText(input.asistentes || ""),
+    // campos de documentación (compatibilidad)
+    title: normalizeText(input.title || ""),
+    expirationDate: normalizePanelDate(input.expirationDate || "") || "",
     actionTaken: normalizeText(input.actionTaken || input.action || ""),
     documentName: normalizeText(input.documentName || input.fileName || ""),
     documentDataUrl: String(input.documentDataUrl || ""),
+    // aprobación
     approvalStatus,
     approvalStatusLabel: getSanitationApprovalStatusLabel(approvalStatus),
     approvedBy: normalizeText(input.approvedBy || ""),
@@ -5409,13 +5513,7 @@ function normalizeSanitationType(value) {
 }
 
 function getSanitationTypeLabel(type) {
-  return {
-    document: "Documentacion",
-    label: "Etiqueta",
-    expiration: "Vencimiento",
-    discard: "Decomiso",
-    approval: "Aprobacion",
-  }[type] || "Documentacion";
+  return { document: "Documentacion", label: "Etiqueta", expiration: "Vencimiento", discard: "Decomiso", approval: "Aprobacion" }[type] || "Documentacion";
 }
 
 function normalizeSanitationApprovalStatus(status) {
@@ -5426,18 +5524,22 @@ function normalizeSanitationApprovalStatus(status) {
 }
 
 function getSanitationApprovalStatusLabel(status) {
-  return {
-    pending: "Pendiente",
-    approved: "Aprobado",
-    rejected: "Rechazado",
-  }[status] || "Pendiente";
+  return { pending: "Pendiente", approved: "Aprobado", rejected: "Rechazado" }[status] || "Pendiente";
 }
 
 function getSanitationDashboard() {
   const records = normalizeSanitationRecordList(erpSanitationRecords)
-    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+    .sort((a, b) => {
+      const da = (a.date || "") + (a.hora || "");
+      const db = (b.date || "") + (b.hora || "");
+      return db.localeCompare(da);
+    });
   const today = getDateOnly(new Date());
   const soon = getDateOnly(addDays(new Date(), 14));
+  const byCategory = {};
+  Object.keys(SANITATION_CATEGORIES).forEach((cat) => {
+    byCategory[cat] = records.filter((r) => r.recordCategory === cat);
+  });
   return {
     summary: {
       total: records.length,
@@ -5446,6 +5548,7 @@ function getSanitationDashboard() {
       expired: records.filter((item) => item.expirationDate && item.expirationDate < today).length,
       discardsPending: records.filter((item) => item.recordType === "discard" && item.approvalStatus === "pending").length,
     },
+    byCategory,
     records,
   };
 }
@@ -5460,8 +5563,8 @@ function saveSanitationRecord(input = {}, user = null) {
     id: id || previous.id || `broma-${Date.now()}`,
     createdAt: previous.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    responsable: input.responsable || user?.displayName || user?.username || "",
   });
-  if (!record.title && !record.productName && !record.eventName) throw new Error("Ingrese titulo, producto o evento.");
   if (index >= 0) erpSanitationRecords[index] = record;
   else erpSanitationRecords.push(record);
   saveErpSanitation();

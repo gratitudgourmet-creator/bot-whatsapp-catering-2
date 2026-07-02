@@ -787,6 +787,92 @@
     .server-detail-body { display: none; margin-top: 10px; }
     .server-detail-body.open { display: block; }
 
+    /* ── BROMATOLOGÍA REDESIGN ─────────────────────────────────── */
+    .sanit-kpi-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-bottom: 0.5px solid var(--line);
+    }
+    .sanit-kpi {
+      padding: 12px 16px; display: flex; flex-direction: column; gap: 3px;
+      border-right: 0.5px solid var(--line);
+    }
+    .sanit-kpi:last-child { border-right: none; }
+    .sanit-kpi-label { font-size: 10px; color: var(--secondary); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+    .sanit-kpi-val { font-size: 20px; font-weight: 600; color: var(--text); line-height: 1.1; }
+    .sanit-kpi-val.ok { color: #16a34a; }
+    .sanit-kpi-val.warn { color: #d97706; }
+    .sanit-kpi-val.danger { color: #dc2626; }
+
+    .sanit-tabs-bar {
+      display: flex; gap: 0; overflow-x: auto; border-bottom: 0.5px solid var(--line);
+      padding: 0 12px; scrollbar-width: none;
+    }
+    .sanit-tabs-bar::-webkit-scrollbar { display: none; }
+    .sanit-tab {
+      display: flex; align-items: center; gap: 5px;
+      padding: 9px 12px; font-size: 12px; font-weight: 500; color: var(--secondary);
+      border: none; background: none; cursor: pointer; white-space: nowrap;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; outline: none;
+      transition: color .12s;
+    }
+    .sanit-tab:hover { color: var(--text); }
+    .sanit-tab.active { color: var(--accent, #2563eb); border-bottom-color: var(--accent, #2563eb); }
+    .sanit-tab i { font-size: 13px; }
+    .sanit-tab-label { display: inline; }
+    .sanit-tab-badge {
+      background: #dbeafe; color: #1d4ed8; font-size: 10px; font-weight: 700;
+      padding: 1px 5px; border-radius: 10px; min-width: 16px; text-align: center;
+    }
+
+    .sanit-form-header {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; margin-bottom: 14px; border-bottom: 0.5px solid var(--line);
+    }
+    .sanit-form-icon {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      background: var(--surface-soft, #f1f5f9); display: flex; align-items: center; justify-content: center;
+    }
+    .sanit-form-icon i { font-size: 18px; color: var(--secondary); }
+    .sanit-form-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .sanit-form-sub { font-size: 11px; color: var(--secondary); margin-top: 2px; }
+
+    .sanit-history-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 12px; margin-bottom: 4px; border-bottom: 0.5px solid var(--line);
+      font-size: 13px; font-weight: 600; color: var(--text);
+    }
+    .sanit-history-head span:last-child { font-size: 11px; font-weight: 400; color: var(--secondary); }
+
+    .sanit-timeline { overflow-y: auto; max-height: 400px; }
+    .sanit-entry {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 9px 4px; border-bottom: 0.5px solid var(--line);
+    }
+    .sanit-entry:last-child { border-bottom: none; }
+    .sanit-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+    }
+    .sanit-dot.ok     { background: #16a34a; }
+    .sanit-dot.warn   { background: #d97706; }
+    .sanit-dot.danger { background: #dc2626; }
+    .sanit-entry-main { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+    .sanit-entry-meta { font-size: 11px; color: var(--secondary); margin-top: 2px; }
+    .sanit-entry-detail { font-size: 11px; color: var(--secondary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sanit-temp-chip {
+      font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 4px;
+    }
+    .sanit-temp-chip.ok     { background: #dcfce7; color: #166534; }
+    .sanit-temp-chip.warn   { background: #fef3c7; color: #92400e; }
+    .sanit-temp-chip.danger { background: #fee2e2; color: #991b1b; }
+    .sanit-status-ok  { font-size: 11px; color: #16a34a; flex-shrink: 0; }
+    .sanit-status-bad { font-size: 11px; color: #dc2626; flex-shrink: 0; }
+
+    @media (max-width: 640px) {
+      .sanit-kpi-strip { grid-template-columns: repeat(2, 1fr); }
+      .sanit-tab-label { display: none; }
+      .sanit-tab { padding: 9px 10px; }
+    }
+
     /* ── IP / DEVICE TAG ───────────────────────────────────────── */
     .login-location-tag {
       display: flex; align-items: center; gap: 5px;
@@ -6780,6 +6866,23 @@
       <section id="security-admin-control-section" class="erp-section sec-panel" data-sec="admin">
         <h3 style="font-size:15px;font-weight:600;margin-bottom:6px">Panel de control admin</h3>
         <p class="subtitle" style="margin-bottom:14px">Mapa de vistas, funciones, permisos y estadísticas del sistema.</p>
+
+        <!-- CONTROL DE GEOFENCING -->
+        <div style="border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:14px;font-weight:600;margin-bottom:3px">📍 Restricción por ubicación</div>
+            <div class="subtitle" style="font-size:12px">Cuando está activada, solo usuarios en el salón de Guaymallén pueden modificar stock e inventario. Admin siempre puede operar desde cualquier lugar.</div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0">
+            <div style="position:relative;width:44px;height:24px">
+              <input type="checkbox" id="toggle-location-required" style="opacity:0;width:0;height:0;position:absolute" onchange="setLocationRequired(this.checked)">
+              <span id="toggle-location-track" style="position:absolute;inset:0;border-radius:12px;background:var(--line);transition:background .2s;cursor:pointer" onclick="document.getElementById('toggle-location-required').click()"></span>
+              <span id="toggle-location-thumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s;cursor:pointer" onclick="document.getElementById('toggle-location-required').click()"></span>
+            </div>
+            <span id="toggle-location-label" style="font-size:13px;font-weight:500">Activada</span>
+          </label>
+        </div>
+
         <div id="admin-control-summary" class="admin-summary-grid"></div>
       </section>
     </section>
@@ -8163,6 +8266,17 @@
         : "Buscar evento, cliente, proveedor, producto o receta";
     }
 
+    function getGpsCoords() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) return resolve(null);
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }),
+          () => resolve(null),
+          { timeout: 6000, maximumAge: 60000 }
+        );
+      });
+    }
+
     async function loginPanel(event) {
       event.preventDefault();
       const form = event.target;
@@ -8171,10 +8285,14 @@
       errorBox.className = "notice error";
 
       try {
+        const formData = Object.fromEntries(new FormData(form).entries());
+        const gps = await getGpsCoords();
+        if (gps) formData.gps = gps;
+
         const response = await fetch("/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(Object.fromEntries(new FormData(form).entries())),
+          body: JSON.stringify(formData),
         });
         const result = await response.json();
         if (!result.ok) throw new Error(result.error || "No se pudo iniciar sesion.");
@@ -9112,6 +9230,44 @@
       // carga lazy según tab
       if (name === "servidor" && !serverStats) loadServerStats();
       if (name === "historial" && !auditLog.length) loadAuditLog();
+      if (name === "admin") loadLocationRequiredSetting();
+    }
+
+    async function loadLocationRequiredSetting() {
+      try {
+        const res = await fetch("/api/location-required");
+        const data = await res.json();
+        if (data.ok) applyLocationToggle(data.locationRequired);
+      } catch {}
+    }
+
+    function applyLocationToggle(enabled) {
+      const chk = document.getElementById("toggle-location-required");
+      const track = document.getElementById("toggle-location-track");
+      const thumb = document.getElementById("toggle-location-thumb");
+      const label = document.getElementById("toggle-location-label");
+      if (!chk) return;
+      chk.checked = enabled;
+      track.style.background = enabled ? "var(--accent)" : "var(--line)";
+      thumb.style.transform = enabled ? "translateX(20px)" : "translateX(0)";
+      label.textContent = enabled ? "Activada" : "Desactivada";
+    }
+
+    async function setLocationRequired(enabled) {
+      applyLocationToggle(enabled);
+      try {
+        const res = await fetch("/api/location-required", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ enabled }),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Error al guardar");
+        showToast(enabled ? "Restricción por ubicación activada" : "Restricción por ubicación desactivada");
+      } catch (err) {
+        showToast("Error: " + err.message, "error");
+        applyLocationToggle(!enabled); // revertir
+      }
     }
 
     function fillPanelRoleSelect() {
@@ -11118,86 +11274,311 @@
       showNotice("Sueldo guardado.", "success");
     }
 
+    const SANIT_TABS = [
+      { id: "temperatura",      label: "Temperatura",    icon: "ti-temperature" },
+      { id: "limpieza",         label: "Limpieza",       icon: "ti-droplet" },
+      { id: "recepcion",        label: "Recepción MP",   icon: "ti-truck" },
+      { id: "control_producto", label: "Control",        icon: "ti-clipboard-check" },
+      { id: "produccion",       label: "Producción",     icon: "ti-package" },
+      { id: "despacho",         label: "Despacho",       icon: "ti-send" },
+      { id: "reuniones",        label: "Reuniones",      icon: "ti-users" },
+      { id: "documentacion",    label: "Docs/Decomiso",  icon: "ti-file" },
+    ];
+    let _sanitTab = "temperatura";
+
     function renderSanitationDashboard() {
       const container = document.getElementById("sanitation-dashboard");
       if (!container) return;
-      const data = erpData.sanitationDashboard || { summary: {}, records: [] };
-      const summary = data.summary || {};
+      const data = erpData.sanitationDashboard || { summary: {}, byCategory: {}, records: [] };
+      const today = toDateValue(new Date());
+
+      // Count today's records per category and overall
+      const todayCounts = {};
+      let todayTotal = 0, tempAlerts = 0, pendingApproval = 0;
+      for (const [cat, recs] of Object.entries(data.byCategory || {})) {
+        const todayRecs = (recs || []).filter(r => r.date === today || (r.createdAt || "").startsWith(today));
+        todayCounts[cat] = todayRecs.length;
+        todayTotal += todayRecs.length;
+      }
+      for (const rec of (data.records || [])) {
+        const t = parseFloat(rec.temperatura);
+        if (!isNaN(t) && t > 5) tempAlerts++;
+        if (rec.approvalStatus === "pending") pendingApproval++;
+      }
+      const weekTotal = (data.records || []).length;
+
       container.innerHTML = `
-        <section class="rank-modal-summary">
-          <div><span>Registros</span><strong>${escapeHtml(summary.total || 0)}</strong></div>
-          <div><span>Aprobaciones pendientes</span><strong>${escapeHtml(summary.pendingApprovals || 0)}</strong></div>
-          <div><span>Vencen pronto</span><strong>${escapeHtml(summary.dueSoon || 0)}</strong></div>
-          <div><span>Vencidos</span><strong>${escapeHtml(summary.expired || 0)}</strong></div>
-          <div><span>Decomisos pendientes</span><strong>${escapeHtml(summary.discardsPending || 0)}</strong></div>
-        </section>
-        <div class="panel-grid">
-          <section id="sanitation-form-section" class="panel-box">
-            <h2 style="margin-top:0;font-size:20px;">Registro bromatológico</h2>
-            <form id="sanitation-form" class="form-grid" onsubmit="saveSanitationRecord(event)">
-              <input type="hidden" name="id">
-              <input type="hidden" name="documentDataUrl">
-              <input type="hidden" name="documentName">
-              <div class="form-field"><label>Tipo</label><select name="recordType"><option value="document">Documentación</option><option value="label">Etiqueta</option><option value="expiration">Vencimiento</option><option value="discard">Decomiso</option><option value="approval">Aprobación</option></select></div>
-              <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${escapeAttribute(toDateValue(new Date()))}"></div>
-              <div class="form-field full"><label>Título</label><input name="title" placeholder="Ej: Decomiso salsa vencida"></div>
-              <div class="form-field"><label>Producto</label><input name="productName"></div>
-              <div class="form-field"><label>Lote</label><input name="batch"></div>
-              <div class="form-field"><label>Vencimiento</label><input name="expirationDate" type="date"></div>
-              <div class="form-field"><label>Cantidad</label><input name="quantity" placeholder="Ej: 2 kg, 5 un."></div>
-              <div class="form-field"><label>Evento</label><select name="eventId">${renderEventOptions(erpData.events || [])}</select></div>
-              <div class="form-field full"><label>Motivo</label><textarea name="reason"></textarea></div>
-              <div class="form-field full"><label>Acción tomada</label><textarea name="actionTaken" placeholder="Decomisado, rotulado, enviado a revisión..."></textarea></div>
-              <div class="form-field full"><label>Foto/comprobante/PDF</label><input type="file" accept="image/*,application/pdf" onchange="handleSanitationFile(this)"><p id="sanitation-file-label" class="secondary"></p></div>
-              <div class="actions full"><button class="approve" type="submit">Guardar registro</button><button class="filter" type="button" onclick="document.getElementById('sanitation-form').reset()">Nuevo</button></div>
-            </form>
-          </section>
-          <section id="sanitation-records-section" class="panel-box">
-            <h2 style="margin-top:0;font-size:20px;">Registros y aprobaciones</h2>
-            <div class="compact-list compact-scroll">${renderSanitationRecordList(data.records || [])}</div>
-          </section>
+        <div class="sanit-kpi-strip">
+          <div class="sanit-kpi">
+            <span class="sanit-kpi-label">Hoy</span>
+            <span class="sanit-kpi-val${todayTotal > 0 ? " ok" : ""}">${todayTotal}</span>
+          </div>
+          <div class="sanit-kpi">
+            <span class="sanit-kpi-label">Esta semana</span>
+            <span class="sanit-kpi-val">${weekTotal}</span>
+          </div>
+          <div class="sanit-kpi">
+            <span class="sanit-kpi-label">Alertas temp.</span>
+            <span class="sanit-kpi-val${tempAlerts > 0 ? " danger" : ""}">${tempAlerts}</span>
+          </div>
+          <div class="sanit-kpi">
+            <span class="sanit-kpi-label">Pend. aprobación</span>
+            <span class="sanit-kpi-val${pendingApproval > 0 ? " warn" : ""}">${pendingApproval}</span>
+          </div>
         </div>
-      `;
+        <div class="sanit-tabs-bar">
+          ${SANIT_TABS.map(t => {
+            const cnt = todayCounts[t.id] || 0;
+            return `<button class="sanit-tab${_sanitTab === t.id ? " active" : ""}" onclick="switchSanitTab('${t.id}')">
+              <i class="ti ${t.icon}" aria-hidden="true"></i>
+              <span class="sanit-tab-label">${t.label}</span>
+              ${cnt > 0 ? `<span class="sanit-tab-badge">${cnt}</span>` : ""}
+            </button>`;
+          }).join("")}
+        </div>
+        <div id="sanit-panel-wrap"></div>`;
+
+      renderSanitPanel(_sanitTab, data);
     }
 
-    function renderSanitationRecordList(records = []) {
-      if (!records.length) return `<div class="empty compact-empty">Sin registros bromatológicos.</div>`;
-      return records.map((item) => `
-        <article class="compact-row">
-          <div>
-            <strong>${escapeHtml(item.title || item.productName || item.eventName || "Registro")}</strong>
-            <div class="secondary">${escapeHtml(item.recordTypeLabel || item.recordType)} · ${escapeHtml(formatShortDate(item.date) || "")}${item.expirationDate ? ` · vence ${escapeHtml(formatShortDate(item.expirationDate))}` : ""}</div>
-            <div class="secondary">${escapeHtml(item.reason || item.actionTaken || "")}</div>
-            ${item.documentDataUrl ? `<a class="filter" href="${escapeAttribute(item.documentDataUrl)}" download="${escapeAttribute(item.documentName || "comprobante")}" onclick="event.stopPropagation()">Descargar archivo</a>` : ""}
-          </div>
-          <div class="actions" onclick="event.stopPropagation()">
-            <span class="badge ${item.approvalStatus === "approved" ? "confirmed" : item.approvalStatus === "rejected" ? "referred" : "missing_info"}">${escapeHtml(item.approvalStatusLabel || item.approvalStatus)}</span>
-            ${can("sanitation:approve") && item.approvalStatus === "pending" ? `<button class="approve" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}', 'approved')">Aprobar</button><button class="reject" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}', 'rejected')">Rechazar</button>` : ""}
-          </div>
-        </article>
-      `).join("");
+    function switchSanitTab(id) {
+      _sanitTab = id;
+      document.querySelectorAll(".sanit-tab").forEach(t => t.classList.remove("active"));
+      const idx = SANIT_TABS.findIndex(x => x.id === id);
+      const tabs = document.querySelectorAll(".sanit-tab");
+      if (tabs[idx]) tabs[idx].classList.add("active");
+      const data = erpData.sanitationDashboard || { byCategory: {} };
+      renderSanitPanel(id, data);
     }
 
-    function showSanitationRecordDetail(id) {
-      const records = erpData.sanitationDashboard?.records || [];
-      const item = records.find((record) => record.id === id);
-      if (!item) return;
-      document.getElementById("detail-title").textContent = item.title || item.productName || "Registro bromatologico";
-      document.getElementById("detail-subtitle").textContent = [item.recordTypeLabel || item.recordType, item.approvalStatusLabel || item.approvalStatus].filter(Boolean).join(" · ");
-      document.getElementById("detail-fields").innerHTML = `
-        ${field("Fecha", formatShortDate(item.date) || "Sin fecha")}
-        ${field("Producto", item.productName || "Sin producto")}
-        ${field("Lote", item.batch || "Sin lote")}
-        ${field("Vencimiento", formatShortDate(item.expirationDate) || "Sin vencimiento")}
-        ${field("Cantidad", item.quantity || "Sin cantidad")}
-        ${field("Evento", item.eventName || "Sin evento")}
-        ${field("Motivo", item.reason || "Sin motivo")}
-        ${field("Accion tomada", item.actionTaken || "Sin accion")}
-        ${field("Estado", item.approvalStatusLabel || item.approvalStatus || "Pendiente")}
-        ${item.documentDataUrl ? `<div class="form-field full"><label>Archivo</label><a class="filter" href="${escapeAttribute(item.documentDataUrl)}" download="${escapeAttribute(item.documentName || "comprobante")}">Descargar archivo</a></div>` : ""}
-        ${can("sanitation:approve") && item.approvalStatus === "pending" ? `<div class="actions full"><button class="approve" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}', 'approved'); hideDetail();">Aprobar</button><button class="reject" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}', 'rejected'); hideDetail();">Rechazar</button></div>` : ""}
-      `;
-      document.getElementById("detail").classList.add("open");
+    function renderSanitPanel(cat, data) {
+      const wrap = document.getElementById("sanit-panel-wrap");
+      if (!wrap) return;
+      const records = (data.byCategory?.[cat] || []).slice(0, 40);
+      const today = toDateValue(new Date());
+      const tabMeta = SANIT_TABS.find(t => t.id === cat) || SANIT_TABS[0];
+      wrap.innerHTML = `
+        <div class="panel-grid" style="margin-top:0;gap:0;border-top:0.5px solid var(--border)">
+          <section class="panel-box" id="sanitation-form-section" style="border-right:0.5px solid var(--border);border-radius:0 0 0 12px">
+            <div class="sanit-form-header">
+              <span class="sanit-form-icon"><i class="ti ${tabMeta.icon}" aria-hidden="true"></i></span>
+              <div>
+                <div class="sanit-form-title">${_sanitFormTitle(cat)}</div>
+                <div class="sanit-form-sub">${_sanitFormSubtitle(cat)}</div>
+              </div>
+            </div>
+            ${_sanitForm(cat, today)}
+          </section>
+          <section class="panel-box" id="sanitation-records-section" style="border-radius:0 0 12px 0">
+            <div class="sanit-history-head">
+              <span>Historial</span>
+              <span>${records.length} registros</span>
+            </div>
+            <div class="sanit-timeline">${_sanitRecordList(records, cat)}</div>
+          </section>
+        </div>`;
+    }
+
+    function _sanitFormTitle(cat) {
+      return { temperatura:"Temperatura de equipos", limpieza:"Registro de limpieza", recepcion:"Recepción de materia prima", control_producto:"Control del producto", produccion:"Registro de producción", despacho:"Control de despacho", reuniones:"Reuniones / Capacitaciones", documentacion:"Documentación / Decomiso" }[cat] || "Registro";
+    }
+    function _sanitFormSubtitle(cat) {
+      return { temperatura:"Control diario obligatorio", limpieza:"Higiene y desinfección", recepcion:"Ingreso de proveedores", control_producto:"Características organolépticas", produccion:"Proceso de elaboración", despacho:"Salida de productos", reuniones:"Actas y capacitaciones", documentacion:"Archivos y decomisos" }[cat] || "";
+    }
+
+    function _sanitForm(cat, today) {
+      const canWrite = can("sanitation:write");
+      const disabled = canWrite ? "" : "disabled";
+      const resp = escapeAttribute(currentUser?.displayName || currentUser?.username || "");
+      const forms = {
+        temperatura: `
+          <form class="form-grid" onsubmit="submitSanitForm(event,'temperatura')">
+            <input type="hidden" name="recordCategory" value="temperatura">
+            <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" required ${disabled}></div>
+            <div class="form-field"><label>Hora</label><input name="hora" type="time" required ${disabled}></div>
+            <div class="form-field full">
+              <label style="display:flex;justify-content:space-between"><span>Temperatura (°C)</span><span style="font-weight:400;font-size:11px;color:var(--secondary)">Ref: frío &lt;5°C · congelado &lt;-18°C</span></label>
+              <input name="temperatura" type="number" step="0.1" placeholder="Ej: 3.5" required ${disabled} oninput="_sanitTempColor(this)">
+            </div>
+            <div class="form-field"><label>Responsable</label><input name="responsable" value="${resp}" required ${disabled}></div>
+            <div class="form-field full"><label>Observaciones</label><textarea name="observaciones" rows="2" ${disabled}></textarea></div>
+            ${canWrite ? `<div class="actions full"><button class="approve" type="submit">Guardar registro</button></div>` : ""}
+          </form>`,
+
+        limpieza: `
+          <form class="form-grid" onsubmit="submitSanitForm(event,'limpieza')">
+            <input type="hidden" name="recordCategory" value="limpieza">
+            <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" required ${disabled}></div>
+            <div class="form-field"><label>Hora</label><input name="hora" type="time" ${disabled}></div>
+            <div class="form-field"><label>Patente / Vehículo</label><input name="patente" placeholder="Ej: ABC123" ${disabled}></div>
+            <div class="form-field"><label>Responsable</label><input name="responsable" value="${resp}" ${disabled}></div>
+            <div class="form-field full"><label>Observaciones</label><textarea name="observaciones" rows="2" ${disabled}></textarea></div>
+            ${canWrite ? `<div class="actions full"><button class="approve" type="submit">Guardar registro</button></div>` : ""}
+          </form>`,
+
+        recepcion: `
+          <form class="form-grid" onsubmit="submitSanitForm(event,'recepcion')">
+            <input type="hidden" name="recordCategory" value="recepcion">
+            <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" required ${disabled}></div>
+            <div class="form-field"><label>Proveedor</label><input name="proveedor" required ${disabled}></div>
+            <div class="form-field"><label>Alimento / Materia prima</label><input name="alimento" required ${disabled}></div>
+            <div class="form-field">
+              <label style="display:flex;justify-content:space-between"><span>Temperatura (°C)</span><span style="font-weight:400;font-size:11px;color:var(--secondary)">&lt;5°C</span></label>
+              <input name="temperatura" type="number" step="0.1" ${disabled} oninput="_sanitTempColor(this)">
+            </div>
+            <div class="form-field"><label>Lote</label><input name="lote" ${disabled}></div>
+            <div class="form-field"><label>Cantidad</label><input name="cantidad" placeholder="Ej: 5 kg" ${disabled}></div>
+            <div class="form-field"><label>Estado</label>
+              <select name="estadoRecepcion" ${disabled}>
+                <option value="conforme">Conforme</option>
+                <option value="no_conforme">No conforme</option>
+                <option value="pendiente">Pendiente revisión</option>
+              </select>
+            </div>
+            <div class="form-field"><label>Responsable</label><input name="responsable" value="${resp}" ${disabled}></div>
+            <div class="form-field full"><label>Observaciones</label><textarea name="observaciones" rows="2" ${disabled}></textarea></div>
+            ${canWrite ? `<div class="actions full"><button class="approve" type="submit">Guardar registro</button></div>` : ""}
+          </form>`,
+
+        control_producto: `
+          <form class="form-grid" onsubmit="submitSanitForm(event,'control_producto')">
+            <input type="hidden" name="recordCategory" value="control_producto">
+            <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" required ${disabled}></div>
+            <div class="form-field"><label>Alimento</label><input name="alimento" required ${disabled}></div>
+            <div class="form-field"><label>Temperatura (°C)</label><input name="temperatura" type="number" step="0.1" ${disabled} oninput="_sanitTempColor(this)"></div>
+            <div class="form-field"><label>Peso (kg)</label><input name="peso" type="number" step="0.01" ${disabled}></div>
+            <div class="form-field full"><label>Características organolépticas <span style="font-weight:400;color:var(--secondary)">(color, olor, textura)</span></label><textarea name="caracteristicas" rows="2" ${disabled}></textarea></div>
+            <div class="form-field"><label>Responsable</label><input name="responsable" value="${resp}" ${disabled}></div>
+            <div class="form-field full"><label>Observaciones</label><textarea name="observaciones" rows="2" ${disabled}></textarea></div>
+            ${canWrite ? `<div class="actions full"><button class="approve" type="submit">Guardar registro</button></div>` : ""}
+          </form>`,
+
+        produccion: `
+          <form class="form-grid" onsubmit="submitSanitForm(event,'produccion')">
+            <input type="hidden" name="recordCategory" value="produccion">
+            <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" required ${disabled}></div>
+            <div class="form-field"><label>Alimento</label><input name="alimento" required ${disabled}></div>
+            <div class="form-field"><label>Temperatura (°C)</label><input name="temperatura" type="number" step="0.1" ${disabled} oninput="_sanitTempColor(this)"></div>
+            <div class="form-field"><label>pH / Otros</label><input name="ph" placeholder="Ej: 6.5 / Brix: 12" ${disabled}></div>
+            <div class="form-field"><label>Responsable</label><input name="responsable" value="${resp}" ${disabled}></div>
+            <div class="form-field full"><label>Observaciones</label><textarea name="observaciones" rows="2" ${disabled}></textarea></div>
+            ${canWrite ? `<div class="actions full"><button class="approve" type="submit">Guardar registro</button></div>` : ""}
+          </form>`,
+
+        despacho: `
+          <form class="form-grid" onsubmit="submitSanitForm(event,'despacho')">
+            <input type="hidden" name="recordCategory" value="despacho">
+            <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" required ${disabled}></div>
+            <div class="form-field"><label>Destino</label><input name="destino" required ${disabled}></div>
+            <div class="form-field"><label>Alimento / Producto</label><input name="alimento" required ${disabled}></div>
+            <div class="form-field"><label>Cantidad</label><input name="cantidad" placeholder="Ej: 10 porciones" ${disabled}></div>
+            <div class="form-field"><label>Temperatura (°C)</label><input name="temperatura" type="number" step="0.1" ${disabled} oninput="_sanitTempColor(this)"></div>
+            <div class="form-field"><label>Responsable</label><input name="responsable" value="${resp}" ${disabled}></div>
+            <div class="form-field full"><label>Observaciones</label><textarea name="observaciones" rows="2" ${disabled}></textarea></div>
+            ${canWrite ? `<div class="actions full"><button class="approve" type="submit">Guardar registro</button></div>` : ""}
+          </form>`,
+
+        reuniones: `
+          <form class="form-grid" onsubmit="submitSanitForm(event,'reuniones')">
+            <input type="hidden" name="recordCategory" value="reuniones">
+            <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" required ${disabled}></div>
+            <div class="form-field full"><label>Temas tratados</label><textarea name="temas" rows="3" required ${disabled}></textarea></div>
+            <div class="form-field full"><label>Conclusiones / Acciones / Metas</label><textarea name="conclusiones" rows="3" ${disabled}></textarea></div>
+            <div class="form-field full"><label>Asistentes <span style="font-weight:400;color:var(--secondary)">(uno por línea)</span></label><textarea name="asistentes" rows="4" ${disabled}></textarea></div>
+            <div class="form-field"><label>Responsable</label><input name="responsable" value="${resp}" ${disabled}></div>
+            ${canWrite ? `<div class="actions full"><button class="approve" type="submit">Guardar registro</button></div>` : ""}
+          </form>`,
+
+        documentacion: `
+          <form class="form-grid" onsubmit="submitSanitForm(event,'documentacion')">
+            <input type="hidden" name="recordCategory" value="documentacion">
+            <input type="hidden" name="documentDataUrl">
+            <input type="hidden" name="documentName">
+            <div class="form-field"><label>Tipo</label>
+              <select name="recordType" ${disabled}>
+                <option value="document">Documentación</option>
+                <option value="label">Etiqueta</option>
+                <option value="expiration">Vencimiento</option>
+                <option value="discard">Decomiso</option>
+              </select>
+            </div>
+            <div class="form-field"><label>Fecha</label><input name="date" type="date" value="${today}" ${disabled}></div>
+            <div class="form-field full"><label>Título</label><input name="title" required ${disabled}></div>
+            <div class="form-field"><label>Producto</label><input name="alimento" ${disabled}></div>
+            <div class="form-field"><label>Lote</label><input name="lote" ${disabled}></div>
+            <div class="form-field"><label>Vencimiento</label><input name="expirationDate" type="date" ${disabled}></div>
+            <div class="form-field"><label>Cantidad</label><input name="cantidad" ${disabled}></div>
+            <div class="form-field full"><label>Motivo / Acción tomada</label><textarea name="observaciones" rows="2" ${disabled}></textarea></div>
+            <div class="form-field full"><label>Foto / comprobante / PDF</label>
+              <input type="file" accept="image/*,application/pdf" onchange="handleSanitationFile(this)" ${disabled}>
+              <p id="sanitation-file-label" class="secondary"></p>
+            </div>
+            ${canWrite ? `<div class="actions full"><button class="approve" type="submit">Guardar registro</button></div>` : ""}
+          </form>`,
+      };
+      return forms[cat] || forms.documentacion;
+    }
+
+    function _sanitTempColor(input) {
+      const v = parseFloat(input.value);
+      if (isNaN(v)) { input.style.borderColor = ""; input.style.color = ""; return; }
+      if (v > 5) { input.style.borderColor = "#dc2626"; input.style.color = "#dc2626"; }
+      else if (v > 3) { input.style.borderColor = "#d97706"; input.style.color = "#d97706"; }
+      else { input.style.borderColor = "#16a34a"; input.style.color = "#16a34a"; }
+    }
+
+    function _sanitRecordList(records, cat) {
+      if (!records.length) return `
+        <div style="padding:32px 20px;text-align:center;color:var(--secondary)">
+          <i class="ti ti-clipboard" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4" aria-hidden="true"></i>
+          Sin registros todavía.<br><span style="font-size:12px">Completá el formulario para agregar el primero.</span>
+        </div>`;
+      return records.map(item => {
+        const main = item.alimento || item.proveedor || item.destino || item.temas || item.title || "Registro";
+        const dateStr = item.date ? new Date(item.date + "T12:00:00").toLocaleDateString("es-AR", {day:"2-digit",month:"2-digit",year:"2-digit"}) : "";
+        const meta = [dateStr, item.hora || ""].filter(Boolean).join(" · ");
+        const detail = [item.lote ? `Lote: ${item.lote}` : "", item.cantidad || "", item.observaciones || "", item.conclusiones || ""].filter(Boolean).join(" · ").slice(0, 80);
+        const tempNum = parseFloat(item.temperatura);
+        const hasTemp = !isNaN(tempNum);
+        const tempAlert = hasTemp && (item.recordCategory === "temperatura" || item.recordCategory === "recepcion" || item.recordCategory === "despacho" || item.recordCategory === "control_producto") && tempNum > 5;
+        const tempWarn = hasTemp && tempNum > 3 && tempNum <= 5;
+        const dotClass = tempAlert ? "sanit-dot danger" : tempWarn ? "sanit-dot warn" : "sanit-dot ok";
+        const tempChip = hasTemp ? `<span class="sanit-temp-chip${tempAlert ? " danger" : tempWarn ? " warn" : " ok"}">${tempNum}°C${tempAlert ? " ⚠" : ""}</span>` : "";
+        const approvalBadge = item.approvalStatus === "pending" && can("sanitation:approve")
+          ? `<div class="actions" onclick="event.stopPropagation()">
+               <button class="approve" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}','approved')">✓</button>
+               <button class="reject" type="button" onclick="approveSanitation('${escapeAttribute(item.id)}','rejected')">✕</button>
+             </div>`
+          : item.approvalStatus === "approved" ? `<span class="sanit-status-ok">✓</span>`
+          : item.approvalStatus === "rejected" ? `<span class="sanit-status-bad">✕</span>` : "";
+        return `
+          <article class="sanit-entry">
+            <span class="${dotClass}"></span>
+            <div style="flex:1;min-width:0">
+              <div class="sanit-entry-main">${escapeHtml(main)}${tempChip}</div>
+              <div class="sanit-entry-meta">${escapeHtml(meta)}${item.responsable ? ` · ${escapeHtml(item.responsable)}` : ""}</div>
+              ${detail ? `<div class="sanit-entry-detail">${escapeHtml(detail)}</div>` : ""}
+            </div>
+            ${approvalBadge}
+          </article>`;
+      }).join("");
+    }
+
+    async function submitSanitForm(event, cat) {
+      event.preventDefault();
+      const form = event.target;
+      const payload = Object.fromEntries(new FormData(form).entries());
+      const result = await postJson("/api/sanitation-record", payload);
+      if (!result.ok) return showToast(result.error || "Error al guardar", "error");
+      erpData.sanitationDashboard = result.sanitationDashboard;
+      form.reset();
+      // restore date and responsable defaults
+      const dateEl = form.elements.date;
+      if (dateEl) dateEl.value = toDateValue(new Date());
+      const respEl = form.elements.responsable;
+      if (respEl) respEl.value = currentUser?.displayName || currentUser?.username || "";
+      renderSanitPanel(cat, erpData.sanitationDashboard);
+      showToast("Registro guardado");
     }
 
     function handleSanitationFile(input) {
@@ -11209,31 +11590,18 @@
         form.elements.documentDataUrl.value = reader.result || "";
         form.elements.documentName.value = file.name || "comprobante";
         const label = document.getElementById("sanitation-file-label");
-        if (label) label.textContent = file.name || "Archivo cargado";
+        if (label) label.textContent = file.name;
       };
       reader.readAsDataURL(file);
-    }
-
-    async function saveSanitationRecord(event) {
-      event.preventDefault();
-      const form = event.target;
-      const payload = Object.fromEntries(new FormData(form).entries());
-      const erpEvent = (erpData.events || []).find((item) => item.id === payload.eventId);
-      payload.eventName = erpEvent?.name || "";
-      const result = await postJson("/api/sanitation-record", payload);
-      if (!result.ok) return showNotice(result.error || "No se pudo guardar bromatología.", "error");
-      erpData.sanitationDashboard = result.sanitationDashboard;
-      renderSanitationDashboard();
-      showNotice("Registro bromatológico guardado.", "success");
     }
 
     async function approveSanitation(id, approvalStatus) {
       const approvalNotes = approvalStatus === "rejected" ? prompt("Motivo del rechazo:") || "" : "";
       const result = await postJson("/api/sanitation-approval", { id, approvalStatus, approvalNotes });
-      if (!result.ok) return showNotice(result.error || "No se pudo actualizar la aprobación.", "error");
+      if (!result.ok) return showToast(result.error || "Error al aprobar", "error");
       erpData.sanitationDashboard = result.sanitationDashboard;
-      renderSanitationDashboard();
-      showNotice("Aprobación actualizada.", "success");
+      renderSanitPanel(_sanitTab, erpData.sanitationDashboard);
+      showToast("Aprobación actualizada");
     }
 
     function renderPaymentOrdersDashboard() {
