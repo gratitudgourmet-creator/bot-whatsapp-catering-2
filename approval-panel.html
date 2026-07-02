@@ -790,82 +790,98 @@
     /* ── BROMATOLOGÍA REDESIGN ─────────────────────────────────── */
     .sanit-kpi-strip {
       display: grid; grid-template-columns: repeat(4, 1fr);
-      border-bottom: 0.5px solid var(--line);
+      border-bottom: 1px solid #e5e7eb;
     }
     .sanit-kpi {
       padding: 12px 16px; display: flex; flex-direction: column; gap: 3px;
-      border-right: 0.5px solid var(--line);
+      border-right: 1px solid #e5e7eb;
     }
     .sanit-kpi:last-child { border-right: none; }
-    .sanit-kpi-label { font-size: 10px; color: var(--secondary); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
-    .sanit-kpi-val { font-size: 20px; font-weight: 600; color: var(--text); line-height: 1.1; }
+    .sanit-kpi-label { font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
+    .sanit-kpi-val { font-size: 22px; font-weight: 600; color: #111827; line-height: 1.1; }
     .sanit-kpi-val.ok { color: #16a34a; }
     .sanit-kpi-val.warn { color: #d97706; }
     .sanit-kpi-val.danger { color: #dc2626; }
 
     .sanit-tabs-bar {
-      display: flex; gap: 0; overflow-x: auto; border-bottom: 0.5px solid var(--line);
-      padding: 0 12px; scrollbar-width: none;
+      display: flex; gap: 0; overflow-x: auto; border-bottom: 1px solid #e5e7eb;
+      padding: 0 12px; scrollbar-width: none; background: #fafafa;
     }
     .sanit-tabs-bar::-webkit-scrollbar { display: none; }
     .sanit-tab {
-      display: flex; align-items: center; gap: 5px;
-      padding: 9px 12px; font-size: 12px; font-weight: 500; color: var(--secondary);
+      display: flex; align-items: center; gap: 6px;
+      padding: 10px 13px; font-size: 12px; font-weight: 500; color: #6b7280;
       border: none; background: none; cursor: pointer; white-space: nowrap;
       border-bottom: 2px solid transparent; margin-bottom: -1px; outline: none;
       transition: color .12s;
     }
-    .sanit-tab:hover { color: var(--text); }
-    .sanit-tab.active { color: var(--accent, #2563eb); border-bottom-color: var(--accent, #2563eb); }
-    .sanit-tab i { font-size: 13px; }
+    .sanit-tab:hover { color: #111827; }
+    .sanit-tab.active { color: #1d6c30; border-bottom-color: #1d6c30; font-weight: 600; }
+    .sanit-tab i { font-size: 14px; }
     .sanit-tab-label { display: inline; }
     .sanit-tab-badge {
-      background: #dbeafe; color: #1d4ed8; font-size: 10px; font-weight: 700;
-      padding: 1px 5px; border-radius: 10px; min-width: 16px; text-align: center;
+      background: #dcfce7; color: #166534; font-size: 10px; font-weight: 700;
+      padding: 1px 6px; border-radius: 10px; min-width: 16px; text-align: center;
     }
 
     .sanit-form-header {
-      display: flex; align-items: center; gap: 11px;
-      padding-bottom: 14px; margin-bottom: 14px; border-bottom: 0.5px solid var(--line);
+      display: flex; align-items: center; gap: 12px;
+      padding-bottom: 14px; margin-bottom: 16px; border-bottom: 1px solid #e5e7eb;
     }
     .sanit-form-icon {
-      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
-      background: var(--surface-soft, #f1f5f9); display: flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
     }
-    .sanit-form-icon i { font-size: 18px; color: var(--secondary); }
-    .sanit-form-title { font-size: 14px; font-weight: 600; color: var(--text); }
-    .sanit-form-sub { font-size: 11px; color: var(--secondary); margin-top: 2px; }
+    .sanit-form-icon i { font-size: 20px; }
+    /* Colores de ícono por categoría */
+    .sanit-icon-temperatura { background: #fef3c7; color: #d97706; }
+    .sanit-icon-limpieza    { background: #dbeafe; color: #2563eb; }
+    .sanit-icon-recepcion   { background: #ede9fe; color: #7c3aed; }
+    .sanit-icon-control_producto { background: #d1fae5; color: #059669; }
+    .sanit-icon-produccion  { background: #fce7f3; color: #db2777; }
+    .sanit-icon-despacho    { background: #cffafe; color: #0891b2; }
+    .sanit-icon-reuniones   { background: #e0e7ff; color: #4338ca; }
+    .sanit-icon-documentacion { background: #f3f4f6; color: #374151; }
+    .sanit-form-title { font-size: 15px; font-weight: 600; color: #111827; }
+    .sanit-form-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+    /* Override form-field label para Bromatología: minúsculas y sin bold */
+    #sanitation-form-section .form-field label {
+      text-transform: none; font-weight: 500; font-size: 12px; color: #374151;
+    }
+    #sanitation-form-section .form-field label,
+    #sanitation-form-section .form-grid label { letter-spacing: 0; }
 
     .sanit-history-head {
       display: flex; justify-content: space-between; align-items: center;
-      padding-bottom: 12px; margin-bottom: 4px; border-bottom: 0.5px solid var(--line);
-      font-size: 13px; font-weight: 600; color: var(--text);
+      padding-bottom: 10px; margin-bottom: 6px; border-bottom: 1px solid #e5e7eb;
+      font-size: 13px; font-weight: 600; color: #111827;
     }
-    .sanit-history-head span:last-child { font-size: 11px; font-weight: 400; color: var(--secondary); }
+    .sanit-history-head span:last-child { font-size: 11px; font-weight: 400; color: #6b7280; }
 
-    .sanit-timeline { overflow-y: auto; max-height: 400px; }
+    .sanit-timeline { overflow-y: auto; max-height: 420px; }
     .sanit-entry {
       display: flex; align-items: flex-start; gap: 10px;
-      padding: 9px 4px; border-bottom: 0.5px solid var(--line);
+      padding: 9px 2px; border-bottom: 1px solid #f3f4f6;
     }
     .sanit-entry:last-child { border-bottom: none; }
     .sanit-dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+      width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
     }
     .sanit-dot.ok     { background: #16a34a; }
     .sanit-dot.warn   { background: #d97706; }
     .sanit-dot.danger { background: #dc2626; }
-    .sanit-entry-main { font-size: 13px; font-weight: 500; color: var(--text); display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
-    .sanit-entry-meta { font-size: 11px; color: var(--secondary); margin-top: 2px; }
-    .sanit-entry-detail { font-size: 11px; color: var(--secondary); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sanit-entry-main { font-size: 13px; font-weight: 500; color: #111827; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .sanit-entry-meta { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    .sanit-entry-detail { font-size: 11px; color: #9ca3af; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sanit-temp-chip {
-      font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 4px;
+      font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 5px;
     }
     .sanit-temp-chip.ok     { background: #dcfce7; color: #166534; }
     .sanit-temp-chip.warn   { background: #fef3c7; color: #92400e; }
     .sanit-temp-chip.danger { background: #fee2e2; color: #991b1b; }
-    .sanit-status-ok  { font-size: 11px; color: #16a34a; flex-shrink: 0; }
-    .sanit-status-bad { font-size: 11px; color: #dc2626; flex-shrink: 0; }
+    .sanit-status-ok  { font-size: 11px; color: #16a34a; flex-shrink: 0; font-weight: 600; }
+    .sanit-status-bad { font-size: 11px; color: #dc2626; flex-shrink: 0; font-weight: 600; }
 
     @media (max-width: 640px) {
       .sanit-kpi-strip { grid-template-columns: repeat(2, 1fr); }
@@ -11361,7 +11377,7 @@
         <div class="panel-grid" style="margin-top:0;gap:0;border-top:0.5px solid var(--border)">
           <section class="panel-box" id="sanitation-form-section" style="border-right:0.5px solid var(--border);border-radius:0 0 0 12px">
             <div class="sanit-form-header">
-              <span class="sanit-form-icon"><i class="ti ${tabMeta.icon}" aria-hidden="true"></i></span>
+              <span class="sanit-form-icon sanit-icon-${cat}"><i class="ti ${tabMeta.icon}" aria-hidden="true"></i></span>
               <div>
                 <div class="sanit-form-title">${_sanitFormTitle(cat)}</div>
                 <div class="sanit-form-sub">${_sanitFormSubtitle(cat)}</div>
