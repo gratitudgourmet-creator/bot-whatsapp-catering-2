@@ -21,6 +21,31 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-02] Claude (sesion 8 - Bromatología UX/UI + fix hoisting + deploy)
+
+**De que se hablo:** Rediseño estético de la sección Bromatología del panel ERP, seguido de prueba local y deploy a producción.
+
+**Decisiones tomadas:**
+- Agregar KPI strip de 4 tarjetas al tope (registros hoy, semana, alertas de temperatura >5°C, pendientes de aprobación).
+- Reemplazar `sec-tabs` por barra propia (`sanit-tabs-bar` / `sanit-tab`) con íconos + badge de count diario + labels ocultos en mobile.
+- Formulario con encabezado de ícono + título/subtítulo por categoría, sin el `h3` anterior.
+- Feedback visual en tiempo real en campos de temperatura: borde y texto verde/ámbar/rojo según valor.
+- Historial tipo timeline: punto de color semántico a la izquierda + chip de temperatura coloreado.
+- Empty state amigable con ícono.
+- Fix crítico de backend: `SANITATION_CATEGORIES` (const) se declaraba en línea ~5433 pero `loadBusinessData()` se llama en línea 477, causando ReferenceError por TDZ. Se inlinearon los valores en `normalizeSanitationCategory` y `getSanitationCategoryLabel` para evitar la dependencia.
+
+**Cambios en el codigo:**
+- `approval-panel.html`: funciones `renderSanitationDashboard`, `switchSanitTab`, `renderSanitPanel`, `_sanitForm`, `_sanitTempColor` (nueva), `_sanitRecordList`, helpers `_sanitFormTitle`/`_sanitFormSubtitle`; CSS: `.sanit-*` (~100 líneas nuevas).
+- `whatsapp-catering-bot.js`: `normalizeSanitationCategory` y `getSanitationCategoryLabel` sin dependencia en const externo.
+- Commit: `c400ae1` | Deployado vía `systemctl restart gratitud-erp` — arrancó limpio.
+
+**Pendiente para la proxima sesion:**
+- Testear interactivamente en producción (el test local con curl quedó bloqueado por auto-mode al pedir password; verificar que los formularios graban y muestran historial correctamente).
+- Plan pendiente en `.claude/plans/curried-exploring-liskov.md`: integración "La Línea" (sistema de comandas) con el ERP.
+- Hito 3 pagination, sacar catering.db del tracking git.
+
+---
+
 ## [2026-07-02] Claude (sesion 6 - estado de articulos de inventario)
 
 **De que se hablo:** implementacion completa del sistema de estado de articulos de inventario operativo. El usuario quiere registrar condicion de hornos, heladeras, contenedores (ok/roto/sucio/desoldado/falta_pieza/otro) con foto opcional, separando el rol de mantenimiento del de stock.
