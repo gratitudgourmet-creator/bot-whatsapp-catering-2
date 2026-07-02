@@ -907,7 +907,38 @@
       padding-bottom: 10px; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb;
       font-size: 13px; font-weight: 600; color: #111827;
     }
-    .sanit-history-head span:last-child { font-size: 11px; font-weight: 400; color: #6b7280; }
+    .sanit-dl-btn {
+      display: flex; align-items: center; gap: 4px; padding: 4px 10px;
+      font-size: 11px; font-weight: 600; color: #374151; background: #f3f4f6;
+      border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer;
+      transition: background .12s;
+    }
+    .sanit-dl-btn:hover { background: #e5e7eb; }
+    .sanit-hist-toolbar {
+      display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;
+    }
+    .sanit-search-input {
+      flex: 1; min-width: 100px; padding: 6px 10px; font-size: 12px;
+      border: 1px solid #d1d5db; border-radius: 6px; background: #fff;
+      outline: none;
+    }
+    .sanit-search-input:focus { border-color: #6b7280; }
+    .sanit-date-range {
+      display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+    }
+    .sanit-date-range input[type="date"] {
+      padding: 5px 6px; font-size: 11px; border: 1px solid #d1d5db;
+      border-radius: 6px; background: #fff; outline: none; color: #374151;
+      width: 110px;
+    }
+    .sanit-date-range input[type="date"]:focus { border-color: #6b7280; }
+    .sanit-date-sep { font-size: 11px; color: #9ca3af; }
+    .sanit-filter-count { font-size: 11px; color: #6b7280; padding: 0 2px; align-self: center; }
+    @media (max-width: 700px) {
+      .sanit-hist-toolbar { flex-direction: column; }
+      .sanit-date-range { flex-wrap: wrap; }
+      .sanit-date-range input[type="date"] { width: 100%; }
+    }
 
     .sanit-timeline { overflow-y: auto; max-height: 440px; }
     .sanit-entry {
@@ -11429,12 +11460,14 @@
       renderSanitPanel(id, data);
     }
 
+    let _sanitAllRecords = [];
+
     function renderSanitPanel(cat, data) {
       const wrap = document.getElementById("sanit-panel-wrap");
       if (!wrap) return;
-      const records = (data.byCategory?.[cat] || []).slice(0, 40);
+      _sanitAllRecords = (data.byCategory?.[cat] || []).slice(0, 200);
       const today = toDateValue(new Date());
-      const tabMeta = SANIT_TABS.find(t => t.id === cat) || SANIT_TABS[0];
+      const catLabel = SANIT_TABS.find(t => t.id === cat)?.label || cat;
       wrap.innerHTML = `
         <div class="sanit-body">
           <div class="sanit-form-col" id="sanitation-form-section">
@@ -11449,10 +11482,21 @@
           </div>
           <div class="sanit-hist-col" id="sanitation-records-section">
             <div class="sanit-history-head">
-              <span>Historial</span>
-              <span>últimos 7 días</span>
+              <span>Historial <span class="sanit-filter-count" id="sanit-record-count">${_sanitAllRecords.length} registros</span></span>
+              <button class="sanit-dl-btn" type="button" onclick="_sanitDownloadCSV('${cat}','${escapeAttribute(catLabel)}')" title="Descargar registros como CSV">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                CSV
+              </button>
             </div>
-            <div class="sanit-timeline">${_sanitRecordList(records, cat)}</div>
+            <div class="sanit-hist-toolbar">
+              <input class="sanit-search-input" type="search" id="sanit-search-input" placeholder="Buscar responsable, observaciones..." oninput="_sanitSearch('${cat}')">
+              <div class="sanit-date-range">
+                <input type="date" id="sanit-date-from" onchange="_sanitSearch('${cat}')" title="Desde">
+                <span class="sanit-date-sep">–</span>
+                <input type="date" id="sanit-date-to" onchange="_sanitSearch('${cat}')" title="Hasta">
+              </div>
+            </div>
+            <div class="sanit-timeline" id="sanit-timeline-list">${_sanitRecordList(_sanitAllRecords, cat)}</div>
           </div>
         </div>`;
     }
@@ -11616,10 +11660,64 @@
       else input.classList.add("ok");
     }
 
+    function _sanitSearch(cat) {
+      const term = (document.getElementById("sanit-search-input")?.value || "").toLowerCase().trim();
+      const from = document.getElementById("sanit-date-from")?.value || "";
+      const to   = document.getElementById("sanit-date-to")?.value   || "";
+      const filtered = _sanitAllRecords.filter(r => {
+        if (from && (r.date || "") < from) return false;
+        if (to   && (r.date || "") > to)   return false;
+        if (term) {
+          const hay = [r.alimento, r.proveedor, r.destino, r.temas, r.title,
+                       r.responsable, r.observaciones, r.conclusiones, r.lote,
+                       r.temperatura && r.temperatura + "°C"].filter(Boolean).join(" ").toLowerCase();
+          if (!hay.includes(term)) return false;
+        }
+        return true;
+      });
+      const list = document.getElementById("sanit-timeline-list");
+      if (list) list.innerHTML = _sanitRecordList(filtered, cat);
+      const count = document.getElementById("sanit-record-count");
+      if (count) count.textContent = (term || from || to)
+        ? `${filtered.length} de ${_sanitAllRecords.length}`
+        : `${_sanitAllRecords.length} registros`;
+    }
+
+    function _sanitDownloadCSV(cat, catLabel) {
+      const term = (document.getElementById("sanit-search-input")?.value || "").toLowerCase().trim();
+      const from = document.getElementById("sanit-date-from")?.value || "";
+      const to   = document.getElementById("sanit-date-to")?.value   || "";
+      const rows = _sanitAllRecords.filter(r => {
+        if (from && (r.date || "") < from) return false;
+        if (to   && (r.date || "") > to)   return false;
+        if (term) {
+          const hay = [r.alimento, r.proveedor, r.destino, r.temas, r.title,
+                       r.responsable, r.observaciones, r.conclusiones, r.lote].filter(Boolean).join(" ").toLowerCase();
+          if (!hay.includes(term)) return false;
+        }
+        return true;
+      });
+      const headers = ["Fecha","Hora","Categoría","Descripción","Temperatura (°C)",
+                       "Responsable","Lote","Cantidad","Observaciones","Estado"];
+      const csvRows = rows.map(r => [
+        r.date || "", r.hora || "", catLabel,
+        r.alimento || r.proveedor || r.destino || r.temas || r.title || "",
+        r.temperatura || "", r.responsable || "", r.lote || "",
+        r.cantidad || "", r.observaciones || r.conclusiones || "",
+        r.approvalStatus || ""
+      ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
+      const csv = [headers.join(","), ...csvRows].join("\n");
+      const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `bromatologia_${cat}_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click(); URL.revokeObjectURL(url);
+    }
+
     function _sanitRecordList(records, cat) {
       if (!records.length) return `
-        <div style="padding:32px 20px;text-align:center;color:var(--secondary)">
-          <i class="ti ti-clipboard" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4" aria-hidden="true"></i>
+        <div style="padding:32px 20px;text-align:center;color:#9ca3af">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 8px;opacity:.4"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
           Sin registros todavía.<br><span style="font-size:12px">Completá el formulario para agregar el primero.</span>
         </div>`;
       return records.map(item => {
