@@ -2,7 +2,10 @@
   "admin": {
     "label": "Administracion general",
     "permissions": [
-      "*"
+      "*",
+      "sensitive:security",
+      "sensitive:delete",
+      "sensitive:payments"
     ],
     "tabs": [
       "erp",

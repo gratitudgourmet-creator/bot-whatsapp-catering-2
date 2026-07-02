@@ -210,7 +210,7 @@ const panelSessions = new Map();
 const DEFAULT_ROLE_DEFINITIONS = {
   admin: {
     label: "Administracion general",
-    permissions: ["*"],
+    permissions: ["*", "sensitive:security", "sensitive:delete", "sensitive:payments"],
     tabs: ["erp", "commercial", "events", "purchases", "buyer_purchases", "finance", "production", "logistics_event", "recipes", "stock", "providers", "customers", "hr", "sanitation", "security", "reports", "payment_orders", "comandas"],
   },
   comercial: {
