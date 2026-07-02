@@ -7912,6 +7912,8 @@
       if (canAccessTab("commercial")) {
         stateRefreshTimer = setInterval(loadState, 5000);
       }
+      const _urlView = new URLSearchParams(location.search).get("view");
+      if (_urlView) showWorkspaceView(_urlView);
     }
 
     function showLoginScreen() {
