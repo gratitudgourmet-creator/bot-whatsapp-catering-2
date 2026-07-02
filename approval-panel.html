@@ -2117,6 +2117,7 @@
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 8px;
+      min-width: 0;
       padding: 18px;
     }
 
@@ -2126,16 +2127,20 @@
       justify-content: space-between;
       gap: 14px;
       margin-bottom: 14px;
+      min-width: 0;
     }
 
     .module-home-head h2 {
       margin: 0;
+      min-width: 0;
+      overflow-wrap: break-word;
     }
 
     .module-home-grid {
       display: grid;
       gap: 10px;
       grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      min-width: 0;
     }
 
     .module-home-action {
@@ -2144,8 +2149,10 @@
       border-radius: 8px;
       color: var(--text);
       cursor: pointer;
+      min-width: 0;
       padding: 14px;
       text-align: left;
+      white-space: normal;
     }
 
     .module-home-action:hover {
@@ -2157,6 +2164,9 @@
       display: block;
       font-size: 14px;
       margin-bottom: 5px;
+      min-width: 0;
+      overflow-wrap: break-word;
+      white-space: normal;
     }
 
     .module-home-action span {
@@ -2164,6 +2174,9 @@
       display: block;
       font-size: 12px;
       line-height: 1.35;
+      min-width: 0;
+      overflow-wrap: break-word;
+      white-space: normal;
     }
 
     .module-backbar {
@@ -2200,6 +2213,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       min-width: 0;
+      overflow-wrap: break-word;
       padding: 16px;
     }
 
@@ -3097,6 +3111,7 @@
       margin-bottom: 16px;
       min-width: 0;
       overflow: hidden;
+      overflow-wrap: break-word;
       padding: 16px;
     }
 
@@ -3108,6 +3123,29 @@
     .erp-section h2 {
       font-size: 18px;
       margin: 0 0 12px;
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+
+    .module-home-card,
+    .module-home-action,
+    .erp-section,
+    .panel-box,
+    .compact-item,
+    .admin-summary-card,
+    .summary-row {
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+
+    .module-home-card *,
+    .module-home-action *,
+    .erp-section *,
+    .panel-box *,
+    .compact-item *,
+    .admin-summary-card *,
+    .summary-row * {
+      max-width: 100%;
     }
 
     .erp-modal-section {
@@ -4007,6 +4045,28 @@
 
       .header-search input {
         min-height: 34px;
+      }
+
+      .module-home-card,
+      .module-home-action,
+      .erp-section,
+      .panel-box,
+      .compact-item,
+      .admin-summary-card,
+      .summary-row {
+        min-width: 0;
+      }
+
+      .module-home-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .summary-row strong,
+      .summary-row span {
+        overflow: visible;
+        overflow-wrap: break-word;
+        text-overflow: clip;
+        white-space: normal;
       }
 
       .header-status {
