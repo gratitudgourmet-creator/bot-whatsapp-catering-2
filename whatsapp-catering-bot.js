@@ -980,7 +980,31 @@ function startApprovalPanelServer() {
         const canSeeReports = canSeeEverything || hasPanelPermission(sessionUser, "reports:read");
         const canSeeCustomers = canSeeEverything || hasPanelPermission(sessionUser, "customers:write");
         const canSeeVenues = canSeeEverything || hasPanelPermission(sessionUser, "venues:read") || hasPanelPermission(sessionUser, "venues:write");
+
+        // ?view= param: only compute fields needed for the requested module
+        const _view = requestUrl.searchParams.get("view") || "full";
+        const _VIEW_FIELDS = {
+          erp:            new Set(["dashboard","pipeline","events","confirmedEvents","quotes"]),
+          commercial:     new Set(["dashboard","pipeline","events","confirmedEvents","quotes","customers","venues"]),
+          events:         new Set(["events","confirmedEvents","quotes","dashboard"]),
+          purchases:      new Set(["purchases","purchaseOrders","purchaseReceipts","inventory","inventoryMovements","operationalInventory","productMaster","providers","productAlerts"]),
+          stock:          new Set(["inventory","inventoryMovements","operationalInventory","productMaster","productAlerts"]),
+          finance:        new Set(["financeDashboard","purchases","paymentOrdersDashboard","providers"]),
+          production:     new Set(["events","confirmedEvents","recipes","productMaster"]),
+          recipes:        new Set(["recipes","productMaster"]),
+          providers:      new Set(["providers"]),
+          customers:      new Set(["customers","venues"]),
+          reports:        new Set(["dashboard","pipeline","events","confirmedEvents","quotes","purchases"]),
+          hr:             new Set(["hrDashboard"]),
+          sanitation:     new Set(["sanitationDashboard"]),
+          payment_orders: new Set(["paymentOrdersDashboard","purchases","providers"]),
+        };
+        const _needFields = _VIEW_FIELDS[_view] || null;
+        const _has = (field) => !_needFields || _needFields.has(field);
+        const _partial = !!_needFields;
+
         if (publicUser?.role === "logistica_evento") {
+          console.log(`[/api/erp] ${publicUser?.username || "?"} role=logistica_evento view=${_view} total=${Date.now() - _t0}ms`);
           return sendJson(response, {
             ok: true,
             me: publicUser,
@@ -1008,6 +1032,7 @@ function startApprovalPanelServer() {
         }
         if (publicUser?.role === "finanzas") {
           const financeDashboard = getFinanceDashboard();
+          console.log(`[/api/erp] ${publicUser?.username || "?"} role=finanzas view=${_view} total=${Date.now() - _t0}ms`);
           return sendJson(response, {
             ok: true,
             me: publicUser,
@@ -1034,33 +1059,36 @@ function startApprovalPanelServer() {
             paymentOrdersDashboard: getPaymentOrdersDashboard(),
           });
         }
-        return sendJson(response, {
+        const _erpPayload = {
           ok: true,
           me: publicUser,
           roles: getPanelRoleList(),
-          dashboard: canSeeEverything || canSeeReports ? getErpDashboard() : {},
-          pipeline: canSeeCommercial ? getPipelineBoard() : { columns: [] },
-          events: canSeeCommercial ? getErpEventList() : canSeeProduction ? getProductionEventList() : [],
-          confirmedEvents: canSeeCommercial ? getConfirmedEventList() : canSeeProduction ? getProductionEventList().filter((event) => ["confirmed", "production", "done"].includes(event.status)) : [],
-          quotes: canSeeCommercial ? getErpQuoteList() : [],
-          purchases: canSeePurchases || canSeeFinance ? getErpPurchaseList() : [],
-          purchaseOrders: canSeePurchases || canSeeStock ? getPurchaseOrderList() : [],
-          purchaseReceipts: canSeePurchases || canSeeStock ? getPurchaseReceiptList() : [],
-          inventory: canSeePurchases || canSeeStock ? getInventoryBalanceList() : [],
-          inventoryMovements: canSeePurchases || canSeeStock ? getInventoryMovementList() : [],
-          operationalInventory: canSeePurchases || canSeeStock || canSeeEverything ? getOperationalInventoryAdminView() : undefined,
-          productMaster: canSeePurchases || canSeeStock || canSeeRecipes || canSeeProduction || canSeeEverything ? getProductMasterListForUser(sessionUser) : [],
-          providers: canSeeProviders ? getProviderList() : [],
-            recipes: canSeeRecipes ? getRecipeListForUser(sessionUser) : [],
-          customers: canSeeCustomers || canSeeCommercial ? getCustomerInsights() : [],
-          venues: canSeeVenues || canSeeCommercial ? getVenueList() : [],
-          productAlerts: canSeePurchases || canSeeStock || canSeeRecipes || canSeeEverything ? getProductPriceAlerts() : [],
-          financeDashboard: canSeeFinance ? getFinanceDashboard() : undefined,
-          hrDashboard: canSeeHr ? getHrDashboard() : undefined,
-          sanitationDashboard: canSeeSanitation ? getSanitationDashboard() : undefined,
-          paymentOrdersDashboard: canSeePaymentOrders ? getPaymentOrdersDashboard() : undefined,
-        });
-        console.log(`[/api/erp] ${publicUser?.username || "?"} role=${publicUser?.role || "?"} total=${Date.now() - _t0}ms`);
+          _view,
+          _partial,
+          dashboard: _has("dashboard") ? (canSeeEverything || canSeeReports ? getErpDashboard() : {}) : undefined,
+          pipeline: _has("pipeline") ? (canSeeCommercial ? getPipelineBoard() : { columns: [] }) : undefined,
+          events: _has("events") ? (canSeeCommercial ? getErpEventList() : canSeeProduction ? getProductionEventList() : []) : undefined,
+          confirmedEvents: _has("confirmedEvents") ? (canSeeCommercial ? getConfirmedEventList() : canSeeProduction ? getProductionEventList().filter((e) => ["confirmed", "production", "done"].includes(e.status)) : []) : undefined,
+          quotes: _has("quotes") ? (canSeeCommercial ? getErpQuoteList() : []) : undefined,
+          purchases: _has("purchases") ? (canSeePurchases || canSeeFinance ? getErpPurchaseList() : []) : undefined,
+          purchaseOrders: _has("purchaseOrders") ? (canSeePurchases || canSeeStock ? getPurchaseOrderList() : []) : undefined,
+          purchaseReceipts: _has("purchaseReceipts") ? (canSeePurchases || canSeeStock ? getPurchaseReceiptList() : []) : undefined,
+          inventory: _has("inventory") ? (canSeePurchases || canSeeStock ? getInventoryBalanceList() : []) : undefined,
+          inventoryMovements: _has("inventoryMovements") ? (canSeePurchases || canSeeStock ? getInventoryMovementList() : []) : undefined,
+          operationalInventory: _has("operationalInventory") ? (canSeePurchases || canSeeStock || canSeeEverything ? getOperationalInventoryAdminView() : undefined) : undefined,
+          productMaster: _has("productMaster") ? (canSeePurchases || canSeeStock || canSeeRecipes || canSeeProduction || canSeeEverything ? getProductMasterListForUser(sessionUser) : []) : undefined,
+          providers: _has("providers") ? (canSeeProviders ? getProviderList() : []) : undefined,
+          recipes: _has("recipes") ? (canSeeRecipes ? getRecipeListForUser(sessionUser) : []) : undefined,
+          customers: _has("customers") ? (canSeeCustomers || canSeeCommercial ? getCustomerInsights() : []) : undefined,
+          venues: _has("venues") ? (canSeeVenues || canSeeCommercial ? getVenueList() : []) : undefined,
+          productAlerts: _has("productAlerts") ? (canSeePurchases || canSeeStock || canSeeRecipes || canSeeEverything ? getProductPriceAlerts() : []) : undefined,
+          financeDashboard: _has("financeDashboard") ? (canSeeFinance ? getFinanceDashboard() : undefined) : undefined,
+          hrDashboard: _has("hrDashboard") ? (canSeeHr ? getHrDashboard() : undefined) : undefined,
+          sanitationDashboard: _has("sanitationDashboard") ? (canSeeSanitation ? getSanitationDashboard() : undefined) : undefined,
+          paymentOrdersDashboard: _has("paymentOrdersDashboard") ? (canSeePaymentOrders ? getPaymentOrdersDashboard() : undefined) : undefined,
+        };
+        console.log(`[/api/erp] ${publicUser?.username || "?"} role=${publicUser?.role || "?"} view=${_view} total=${Date.now() - _t0}ms`);
+        return sendJson(response, _erpPayload);
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/logistics-events") {

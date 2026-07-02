@@ -6889,6 +6889,7 @@
     };
     let erpLoadedAt = 0;
     let erpLoadPromise = null;
+    const _erpLoadedViews = new Set();
     const ERP_BACKGROUND_REFRESH_MS = 60000;
     let currentUser = null;
     let panelRoles = [];
@@ -7324,7 +7325,11 @@
       if (canAccessTab("purchases") || canAccessTab("finance")) tasks.push(loadPurchaseOptions());
       if (canAccessTab("customers")) tasks.push(loadCustomers());
       if (canAccessTab("recipes") || canAccessTab("production")) tasks.push(loadRecipes());
-      if (["erp", "commercial", "events", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].some((view) => canAccessTab(view))) tasks.push(loadErp());
+      if (["erp", "commercial", "events", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].some((v) => canAccessTab(v))) {
+        const _initialView = document.querySelector(".workspace-tab.active:not(.hidden)")?.dataset.view || "erp";
+        const _erpViews = ["erp","commercial","events","purchases","finance","production","stock","reports","hr","sanitation","payment_orders"];
+        tasks.push(loadErp(_erpViews.includes(_initialView) ? { view: _initialView } : {}));
+      }
       if (canAccessTab("logistics_event")) tasks.push(loadLogisticsEvents());
       if (canAccessTab("buyer_purchases")) tasks.push(loadBuyerOrders());
       await Promise.all(tasks);
@@ -7872,8 +7877,8 @@
       if (view === "customers") loadTask = loadCustomers();
       if (view === "providers") loadTask = loadProviders();
       if (view === "recipes") loadTask = loadRecipes();
-      if (["erp", "commercial", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].includes(view)) {
-        loadTask = ensureErpForNavigation();
+      if (["erp", "commercial", "events", "purchases", "finance", "production", "stock", "reports", "hr", "sanitation", "payment_orders"].includes(view)) {
+        loadTask = ensureErpForNavigation(view);
       }
       if (view === "logistics_event") loadTask = loadLogisticsEvents();
       if (view === "comandas") loadTask = loadComandas();
@@ -7906,12 +7911,19 @@
       setTimeout(() => target.classList.remove("section-focus"), 1400);
     }
 
-    function ensureErpForNavigation() {
-      if (!erpLoadedAt) return loadErp();
-      renderErp();
-      if (Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) {
-        loadErp({ silent: true });
+    function ensureErpForNavigation(view = null) {
+      // First load ever: use view-specific request if possible
+      if (!erpLoadedAt) return loadErp(view ? { view } : {});
+      // Already have full data: just render
+      if (_erpLoadedViews.has("full")) {
+        renderErp();
+        if (Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) loadErp({ silent: true });
+        return Promise.resolve();
       }
+      // Have partial data but not this view yet: lazy-load it silently
+      if (view && !_erpLoadedViews.has(view)) return loadErp({ view, silent: true });
+      renderErp();
+      if (Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) loadErp({ silent: true });
       return Promise.resolve();
     }
 
@@ -7965,37 +7977,57 @@
     }
 
     async function loadErp(options = {}) {
-      if (erpLoadPromise) return erpLoadPromise;
+      const view = options.view || null;
+      // View-specific load: skip if already loaded (unless forced full refresh)
+      if (view && _erpLoadedViews.has(view)) { renderErp(); return; }
+      // Full load: deduplicate concurrent calls
+      if (!view && erpLoadPromise) return erpLoadPromise;
+      // Full load: if a full load already completed and all views are covered, skip
+      if (!view && _erpLoadedViews.has("full")) { renderErp(); return; }
+
       if (!options.silent) _showErpLoadingState();
-      erpLoadPromise = (async () => {
-      const response = await fetch("/api/erp");
-      const result = await readJsonResponse(response);
+      const url = view ? `/api/erp?view=${encodeURIComponent(view)}` : "/api/erp";
 
-      if (!result.ok) {
-        if (!options.silent) showNotice(result.error || "No se pudo cargar el ERP.", "error");
-        return;
-      }
+      const _doLoad = async () => {
+        const response = await fetch(url);
+        const result = await readJsonResponse(response);
+        if (!result.ok) {
+          if (!options.silent) showNotice(result.error || "No se pudo cargar el ERP.", "error");
+          return;
+        }
+        if (result._partial) {
+          // Merge only the fields that arrived (skip undefined keys)
+          Object.keys(result).forEach((k) => {
+            if (k !== "ok" && k !== "_view" && k !== "_partial" && result[k] !== undefined) {
+              erpData[k] = result[k];
+            }
+          });
+          _erpLoadedViews.add(result._view);
+        } else {
+          erpData = result;
+          _erpLoadedViews.clear();
+          _erpLoadedViews.add("full");
+        }
+        erpLoadedAt = Date.now();
+        currentUser = result.me || currentUser;
+        panelRoles = result.roles || panelRoles;
+        if (result.recipes !== undefined) allRecipes = result.recipes;
+        if (result.customers !== undefined) allCustomers = result.customers;
+        if (result.providers !== undefined) allProviders = result.providers;
+        if (result.purchaseOrders !== undefined) purchaseOrders = result.purchaseOrders;
+        if (result.purchaseReceipts !== undefined) purchaseReceipts = result.purchaseReceipts;
+        renderCurrentUser();
+        renderErp();
+        document.querySelectorAll("button[onclick='loadErp()']").forEach((btn) => setButtonLoading(btn, false));
+        ["erp-upcoming-events","erp-alerts","purchase-dashboard","finance-dashboard","production-dashboard","stock-dashboard","reports-dashboard","hr-dashboard"]
+          .forEach((id) => { const el = document.getElementById(id); if (el) el.dataset.loaded = "1"; });
+      };
 
-      erpData = result;
-      erpLoadedAt = Date.now();
-      currentUser = result.me || currentUser;
-      panelRoles = result.roles || panelRoles;
-      allRecipes = result.recipes || allRecipes;
-      allCustomers = result.customers || allCustomers;
-      allProviders = result.providers || allProviders;
-      purchaseOrders = result.purchaseOrders || purchaseOrders || [];
-      purchaseReceipts = result.purchaseReceipts || purchaseReceipts || [];
-      renderCurrentUser();
-      renderErp();
-      document.querySelectorAll("button[onclick='loadErp()']").forEach((btn) => setButtonLoading(btn, false));
-      ["erp-upcoming-events","erp-alerts","purchase-dashboard","finance-dashboard","production-dashboard","stock-dashboard","reports-dashboard","hr-dashboard"]
-        .forEach((id) => { const el = document.getElementById(id); if (el) el.dataset.loaded = "1"; });
-      })();
-      try {
-        return await erpLoadPromise;
-      } finally {
-        erpLoadPromise = null;
+      if (!view) {
+        erpLoadPromise = _doLoad();
+        try { return await erpLoadPromise; } finally { erpLoadPromise = null; }
       }
+      return _doLoad();
     }
 
     function renderErp() {
