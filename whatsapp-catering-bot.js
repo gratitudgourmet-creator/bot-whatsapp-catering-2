@@ -17,6 +17,7 @@ const { Client, LocalAuth } = require("whatsapp-web.js");
 const qrcode = require("qrcode-terminal");
 const fs = require("fs");
 const http = require("http");
+const https = require("https");
 const os = require("os");
 const path = require("path");
 const crypto = require("crypto");
@@ -843,7 +844,7 @@ function startApprovalPanelServer() {
         }
         let user;
         try {
-          user = authenticatePanelUser(body.username, body.password);
+          user = authenticatePanelUser(body.username, body.password, request);
           clearLoginFailures(attemptKey);
         } catch (error) {
           recordLoginFailure(attemptKey);
@@ -3500,21 +3501,66 @@ function getPublicUser(user) {
     createdAt: user.createdAt || "",
     updatedAt: user.updatedAt || "",
     lastLoginAt: user.lastLoginAt || "",
+    lastLoginIp: user.lastLoginIp || "",
+    lastLoginUserAgent: user.lastLoginUserAgent || "",
+    lastLoginLocation: user.lastLoginLocation || "",
+    lastLoginCountryCode: user.lastLoginCountryCode || "",
     permissions: role.permissions,
     tabs: role.tabs || [],
   };
 }
 
-function authenticatePanelUser(username, password) {
+function fetchIpLocation(ip) {
+  return new Promise((resolve) => {
+    if (!ip || ip === "127.0.0.1" || ip === "::1" || ip.startsWith("192.168.") || ip.startsWith("10.")) {
+      return resolve(null);
+    }
+    const url = `https://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,city,regionName,country,countryCode`;
+    const req = https.get(url, { timeout: 4000 }, (res) => {
+      let data = "";
+      res.on("data", (chunk) => { data += chunk; });
+      res.on("end", () => {
+        try {
+          const json = JSON.parse(data);
+          if (json.status === "success") {
+            const parts = [json.city, json.regionName, json.country].filter(Boolean);
+            resolve({ text: parts.join(", "), countryCode: json.countryCode || "" });
+          } else {
+            resolve(null);
+          }
+        } catch { resolve(null); }
+      });
+    });
+    req.on("error", () => resolve(null));
+    req.on("timeout", () => { req.destroy(); resolve(null); });
+  });
+}
+
+function authenticatePanelUser(username, password, request) {
   const cleanUsername = normalizeText(username || "").toLowerCase();
   const user = erpUsers.find((item) => item.username === cleanUsername && item.active);
   if (!user || !verifyPanelPassword(user, password)) {
     throw new Error("Usuario o clave incorrectos.");
   }
 
-  user.lastLoginAt = new Date().toISOString();
-  user.updatedAt = user.updatedAt || user.lastLoginAt;
+  const now = new Date().toISOString();
+  const ip = getRequestIp(request);
+  user.lastLoginAt = now;
+  user.lastLoginIp = ip;
+  user.lastLoginUserAgent = String(request?.headers?.["user-agent"] || "").slice(0, 300);
+  user.lastLoginLocation = "";
+  user.updatedAt = now;
   saveErpUsers();
+
+  // geolocalización en background — no bloquea el login
+  fetchIpLocation(ip).then((loc) => {
+    if (loc) {
+      user.lastLoginLocation = loc.text;
+      user.lastLoginCountryCode = loc.countryCode;
+      saveErpUsers();
+    }
+  }).catch(() => {});
+
   return user;
 }
 

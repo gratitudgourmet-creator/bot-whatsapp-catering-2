@@ -650,6 +650,150 @@
       .drawer-row { grid-template-columns: 1fr; }
     }
 
+    /* ── SEGURIDAD: SUB-TABS ────────────────────────────────────── */
+    .sec-tabs {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .sec-tabs::-webkit-scrollbar { display: none; }
+    .sec-tab {
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--secondary);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      transition: color .15s, border-color .15s;
+      outline: none;
+      border-radius: 0;
+    }
+    .sec-tab:hover { color: var(--text); }
+    .sec-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+    .sec-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+    .sec-panel { display: none; }
+    .sec-panel.active { display: block; }
+
+    /* ── HISTORIAL FEED ─────────────────────────────────────────── */
+    .audit-toolbar {
+      display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;
+    }
+    .audit-toolbar-row1 { display: flex; gap: 8px; align-items: center; }
+    .audit-search-wrap {
+      position: relative; flex: 1;
+    }
+    .audit-search-wrap svg {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--secondary); pointer-events: none;
+    }
+    .audit-search-wrap input {
+      width: 100%; padding: 8px 12px 8px 34px;
+      border: 1px solid var(--line); border-radius: 8px;
+      font-size: 14px; background: var(--surface); color: var(--text);
+      box-sizing: border-box;
+    }
+    .audit-search-wrap input:focus { outline: none; border-color: var(--accent); }
+    .audit-date-range { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .audit-date-range input[type=date] {
+      padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px;
+      font-size: 13px; background: var(--surface); color: var(--text);
+    }
+    .audit-date-range input:focus { outline: none; border-color: var(--accent); }
+    .audit-selects { display: flex; gap: 6px; }
+    .audit-selects select {
+      flex: 1; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px;
+      font-size: 13px; background: var(--surface); color: var(--text); min-width: 0;
+    }
+    .audit-selects select:focus { outline: none; border-color: var(--accent); }
+    .audit-feed { display: flex; flex-direction: column; }
+    .audit-entry {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 11px 8px; border-radius: 8px; transition: background .12s;
+    }
+    .audit-entry:hover { background: var(--surface-soft); }
+    .audit-icon {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .audit-icon.ai-login    { background: #dbeafe; }
+    .audit-icon.ai-logout   { background: #f1f5f9; }
+    .audit-icon.ai-create   { background: #dcfce7; }
+    .audit-icon.ai-update   { background: #fef9c3; }
+    .audit-icon.ai-delete   { background: #fee2e2; }
+    .audit-icon.ai-payment  { background: #ede9fe; }
+    .audit-icon.ai-sync     { background: #e0f2fe; }
+    .audit-icon.ai-import   { background: #e0f2fe; }
+    .audit-icon.ai-upload   { background: #fce7f3; }
+    .audit-icon.ai-default  { background: var(--surface-soft); }
+    .audit-entry-body { flex: 1; min-width: 0; line-height: 1.4; }
+    .audit-entry-time { font-size: 11px; color: var(--secondary); margin-top: 3px; }
+    .audit-load-more {
+      margin-top: 10px; padding: 10px; width: 100%; border: 1px dashed var(--line);
+      border-radius: 8px; background: none; font-size: 13px;
+      cursor: pointer; color: var(--secondary); transition: background .12s;
+    }
+    .audit-load-more:hover { background: var(--surface-soft); color: var(--text); }
+
+    /* ── SERVIDOR REDISEÑADO ───────────────────────────────────── */
+    .server-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .server-kpi {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .server-kpi::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--line); border-radius: 12px 12px 0 0;
+    }
+    .server-kpi.alert { border-color: #fca5a5; background: #fff5f5; }
+    .server-kpi.alert::before { background: #ef4444; }
+    .server-kpi.warn  { border-color: #fcd34d; background: #fffbeb; }
+    .server-kpi.warn::before  { background: #f59e0b; }
+    .server-kpi-label {
+      font-size: 10px; color: var(--secondary); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .7px; margin-bottom: 6px;
+    }
+    .server-kpi-value { font-size: 20px; font-weight: 700; line-height: 1.1; }
+    .server-kpi.alert .server-kpi-value { color: #dc2626; }
+    .server-kpi.warn  .server-kpi-value { color: #d97706; }
+    .server-kpi-sub   { font-size: 11px; color: var(--secondary); margin-top: 4px; line-height: 1.3; }
+    .server-mem-bar {
+      height: 5px; border-radius: 3px; background: var(--line); margin-top: 8px; overflow: hidden;
+    }
+    .server-mem-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+    .server-detail-toggle {
+      display: flex; align-items: center; gap: 7px; cursor: pointer;
+      font-size: 13px; color: var(--secondary); padding: 10px 4px; user-select: none;
+      border-top: 1px solid var(--line); margin-top: 4px; border-radius: 0 0 6px 6px;
+      transition: color .12s;
+    }
+    .server-detail-toggle:hover { color: var(--text); }
+    .server-detail-body { display: none; margin-top: 10px; }
+    .server-detail-body.open { display: block; }
+
+    /* ── IP / DEVICE TAG ───────────────────────────────────────── */
+    .login-location-tag {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; color: var(--secondary); margin-top: 4px;
+    }
+    .login-location-tag svg { flex-shrink: 0; }
+
     /* ── ROLES: NUEVA UI ────────────────────────────────────────── */
     .role-layout {
       display: grid;
@@ -6542,17 +6686,27 @@
     </section>
 
     <section id="view-security" class="workspace-view" data-permission="users:write">
-      <section id="security-users-section" class="erp-section">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:16px;">
+      <!-- HEADER -->
+      <div class="erp-section" style="padding-bottom:0">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:14px">
           <div>
             <h2>Seguridad</h2>
-            <p class="subtitle">Usuarios, permisos por rol e historial de movimientos.</p>
+            <p class="subtitle">Usuarios, roles, servidor e historial de acciones.</p>
           </div>
           <button class="filter" type="button" onclick="loadSecurityPanel()">Actualizar</button>
         </div>
+        <!-- SUB-TABS -->
+        <div class="sec-tabs" id="sec-tabs">
+          <button class="sec-tab active" data-sec="usuarios" onclick="switchSecTab('usuarios')">Usuarios</button>
+          <button class="sec-tab" data-sec="roles" onclick="switchSecTab('roles')">Roles</button>
+          <button class="sec-tab" data-sec="servidor" onclick="switchSecTab('servidor')">Servidor</button>
+          <button class="sec-tab" data-sec="historial" onclick="switchSecTab('historial')">Historial</button>
+          <button class="sec-tab" data-sec="admin" onclick="switchSecTab('admin')">Admin</button>
+        </div>
+      </div>
 
-        <!-- USUARIOS -->
-        <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">Usuarios</h3>
+      <!-- USUARIOS -->
+      <section id="security-users-section" class="erp-section sec-panel active" data-sec="usuarios">
         <div class="user-mgr-toolbar">
           <div class="user-search-wrap">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -6570,48 +6724,63 @@
           </button>
         </div>
         <div id="user-cards" class="user-cards"></div>
+      </section>
 
-        <!-- ROLES -->
-        <div id="security-roles-section" style="margin-top:28px">
-          <h3 style="font-size:15px;font-weight:600;margin-bottom:14px">Roles y permisos</h3>
-          <div class="role-layout">
-            <div class="role-selector" id="role-selector"></div>
-            <div class="role-editor" id="role-editor">
-              <div class="re-empty">
-                <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-                <span>Seleccioná un rol para editar sus permisos</span>
-              </div>
+      <!-- ROLES -->
+      <section id="security-roles-section" class="erp-section sec-panel" data-sec="roles">
+        <div class="role-layout">
+          <div class="role-selector" id="role-selector"></div>
+          <div class="role-editor" id="role-editor">
+            <div class="re-empty">
+              <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              <span>Seleccioná un rol para editar sus permisos</span>
             </div>
           </div>
         </div>
-        </div>
       </section>
 
-      <section id="security-admin-control-section" class="erp-section">
-        <h2>Panel de control admin</h2>
-        <p class="subtitle">Mapa de vistas, funciones, permisos y estadisticas disponibles en el sistema.</p>
-        <div id="admin-control-summary" class="admin-summary-grid"></div>
-      </section>
-
-      <section id="security-server-section" class="erp-section">
-        <div class="section-header-row">
+      <!-- SERVIDOR -->
+      <section id="security-server-section" class="erp-section sec-panel" data-sec="servidor">
+        <div class="section-header-row" style="margin-bottom:14px">
           <div>
-            <h2>Servidor y actividad</h2>
-            <p class="subtitle">Estado tecnico del ERP: requests, errores, memoria, rutas usadas y actividad reciente.</p>
+            <h3 style="font-size:15px;font-weight:600">Servidor y actividad</h3>
+            <p class="subtitle">Estado técnico del ERP en producción.</p>
           </div>
           <button class="filter" type="button" onclick="loadServerStats()">Actualizar</button>
         </div>
         <div id="server-stats-dashboard"></div>
       </section>
 
-      <section id="security-audit-section" class="erp-section">
-        <h2>Historial de acciones</h2>
-        <div class="toolbar-actions" style="margin-bottom:10px;">
-          <select id="audit-user-filter" onchange="renderAuditLog()"></select>
-          <select id="audit-action-filter" onchange="renderAuditLog()"></select>
-          <select id="audit-entity-filter" onchange="renderAuditLog()"></select>
+      <!-- HISTORIAL -->
+      <section id="security-audit-section" class="erp-section sec-panel" data-sec="historial">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:14px">Historial de acciones</h3>
+        <div class="audit-toolbar">
+          <div class="audit-toolbar-row1">
+            <div class="audit-search-wrap">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="search" id="audit-search-input" placeholder="Buscar usuario, acción, módulo…" oninput="renderAuditLog()">
+            </div>
+            <div class="audit-date-range">
+              <input type="date" id="audit-date-from" onchange="renderAuditLog()" title="Desde">
+              <span style="font-size:12px;color:var(--secondary)">—</span>
+              <input type="date" id="audit-date-to" onchange="renderAuditLog()" title="Hasta">
+            </div>
+          </div>
+          <div class="audit-selects">
+            <select id="audit-user-filter" onchange="renderAuditLog()"></select>
+            <select id="audit-action-filter" onchange="renderAuditLog()"></select>
+            <select id="audit-entity-filter" onchange="renderAuditLog()"></select>
+          </div>
         </div>
-        <div id="audit-list" class="audit-list"></div>
+        <div class="audit-feed" id="audit-feed"></div>
+        <button class="audit-load-more" id="audit-load-more" onclick="loadMoreAudit()" style="display:none">Cargar más entradas</button>
+      </section>
+
+      <!-- PANEL ADMIN -->
+      <section id="security-admin-control-section" class="erp-section sec-panel" data-sec="admin">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:6px">Panel de control admin</h3>
+        <p class="subtitle" style="margin-bottom:14px">Mapa de vistas, funciones, permisos y estadísticas del sistema.</p>
+        <div id="admin-control-summary" class="admin-summary-grid"></div>
       </section>
     </section>
   </main>
@@ -8936,6 +9105,15 @@
       }
     }
 
+    // ── SUB-TABS SEGURIDAD ────────────────────────────────────────
+    function switchSecTab(name) {
+      document.querySelectorAll(".sec-tab").forEach(t => t.classList.toggle("active", t.dataset.sec === name));
+      document.querySelectorAll(".sec-panel").forEach(p => p.classList.toggle("active", p.dataset.sec === name));
+      // carga lazy según tab
+      if (name === "servidor" && !serverStats) loadServerStats();
+      if (name === "historial" && !auditLog.length) loadAuditLog();
+    }
+
     function fillPanelRoleSelect() {
       const select = document.getElementById("panel-user-role");
       if (!select) return;
@@ -9064,7 +9242,7 @@
       const container = document.getElementById("server-stats-dashboard");
       if (!container) return;
       if (!serverStats) {
-        container.innerHTML = `<div class="empty">Sin estadisticas del servidor para mostrar.</div>`;
+        container.innerHTML = `<div class="empty">Sin estadísticas del servidor.</div>`;
         return;
       }
 
@@ -9072,43 +9250,78 @@
       const memory = serverStats.memory || {};
       const cpu = serverStats.cpu || {};
       const statusEntries = Object.entries(requests.byStatus || {}).sort((a, b) => Number(a[0]) - Number(b[0]));
-      const errorCount = statusEntries.reduce((sum, [status, count]) => sum + (Number(status) >= 400 ? Number(count || 0) : 0), 0);
+      const errorCount = statusEntries.reduce((sum, [s, c]) => sum + (Number(s) >= 400 ? Number(c || 0) : 0), 0);
       const systemUsed = Math.max(0, Number(memory.systemTotal || 0) - Number(memory.systemFree || 0));
-      const loadAverage = Array.isArray(cpu.loadAverage) ? cpu.loadAverage[0] : 0;
+      const memPct = memory.systemTotal ? Math.round(systemUsed / memory.systemTotal * 100) : 0;
+      const heapPct = memory.heapTotal ? Math.round((memory.heapUsed || 0) / memory.heapTotal * 100) : 0;
+      const loadAvg = Array.isArray(cpu.loadAverage) ? cpu.loadAverage[0] : 0;
+      const memClass = memPct > 85 ? "alert" : memPct > 70 ? "warn" : "";
+      const errClass = errorCount > 0 ? "alert" : "";
+      const memFillColor = memPct > 85 ? "#dc2626" : memPct > 70 ? "#d97706" : "var(--accent)";
 
       container.innerHTML = `
-        <section class="purchase-kpis">
-          <div class="kpi-card"><span>Activo hace</span><strong>${escapeHtml(formatServerDuration(serverStats.uptimeSeconds || 0))}</strong></div>
-          <div class="kpi-card"><span>Requests</span><strong>${escapeHtml(formatNumber(requests.total || 0))}</strong></div>
-          <div class="kpi-card ${errorCount ? "warn" : ""}"><span>Errores HTTP</span><strong>${escapeHtml(formatNumber(errorCount))}</strong></div>
-          <div class="kpi-card"><span>Memoria ERP</span><strong>${escapeHtml(formatServerBytes(memory.heapUsed || 0))}</strong></div>
-          <div class="kpi-card"><span>Memoria VPS</span><strong>${escapeHtml(formatServerBytes(systemUsed))} / ${escapeHtml(formatServerBytes(memory.systemTotal || 0))}</strong></div>
-          <div class="kpi-card"><span>CPU</span><strong>${escapeHtml((Number(loadAverage || 0)).toFixed(2))}</strong></div>
-        </section>
-        <div class="admin-summary-grid" style="margin-top:12px;">
-          ${renderAdminSummaryList("Estados HTTP", statusEntries, ([status, count]) => `
-            <div class="summary-row"><strong>${escapeHtml(status)}</strong><span>${escapeHtml(formatNumber(count || 0))} request(s)</span></div>
-          `)}
-          <section class="admin-summary-card">
-            <h3>Servidor</h3>
-            <div class="summary-row"><strong>Ambiente</strong><span>${escapeHtml(serverStats.environment || "development")}</span></div>
-            <div class="summary-row"><strong>Node</strong><span>${escapeHtml(serverStats.nodeVersion || "-")}</span></div>
-            <div class="summary-row"><strong>Plataforma</strong><span>${escapeHtml(serverStats.platform || "-")}</span></div>
-            <div class="summary-row"><strong>Datos</strong><span>${escapeHtml(serverStats.dataDir || "-")}</span></div>
-            <div class="summary-row"><strong>Proceso</strong><span>PID ${escapeHtml(serverStats.process?.pid || "-")}</span></div>
-          </section>
+        <div class="server-kpi-grid">
+          <div class="server-kpi">
+            <div class="server-kpi-label">Activo hace</div>
+            <div class="server-kpi-value">${escapeHtml(formatServerDuration(serverStats.uptimeSeconds || 0))}</div>
+            <div class="server-kpi-sub">${escapeHtml(serverStats.environment || "production")} · Node ${escapeHtml(serverStats.nodeVersion || "-")}</div>
+          </div>
+          <div class="server-kpi">
+            <div class="server-kpi-label">Requests</div>
+            <div class="server-kpi-value">${escapeHtml(formatNumber(requests.total || 0))}</div>
+            <div class="server-kpi-sub">desde el último reinicio</div>
+          </div>
+          <div class="server-kpi ${errClass}">
+            <div class="server-kpi-label">Errores HTTP</div>
+            <div class="server-kpi-value">${escapeHtml(formatNumber(errorCount))}</div>
+            <div class="server-kpi-sub">${errorCount ? "Revisar detalle abajo" : "Sin errores registrados"}</div>
+          </div>
+          <div class="server-kpi">
+            <div class="server-kpi-label">Proceso ERP</div>
+            <div class="server-kpi-value">${escapeHtml(formatServerBytes(memory.heapUsed || 0))}</div>
+            <div class="server-mem-bar"><div class="server-mem-fill" style="width:${heapPct}%;background:var(--accent)"></div></div>
+            <div class="server-kpi-sub">${heapPct}% del heap · PID ${escapeHtml(String(serverStats.process?.pid || "-"))}</div>
+          </div>
+          <div class="server-kpi ${memClass}">
+            <div class="server-kpi-label">Memoria VPS</div>
+            <div class="server-kpi-value">${memPct}%</div>
+            <div class="server-mem-bar"><div class="server-mem-fill" style="width:${memPct}%;background:${memFillColor}"></div></div>
+            <div class="server-kpi-sub">${escapeHtml(formatServerBytes(systemUsed))} / ${escapeHtml(formatServerBytes(memory.systemTotal || 0))}</div>
+          </div>
+          <div class="server-kpi">
+            <div class="server-kpi-label">Carga CPU</div>
+            <div class="server-kpi-value">${Number(loadAvg).toFixed(2)}</div>
+            <div class="server-kpi-sub">${escapeHtml(serverStats.platform || "-")}</div>
+          </div>
         </div>
-        <div class="purchase-table-wrap compact-table-wrap" style="margin-top:12px;">
-          <table class="purchase-table">
-            <thead><tr><th>Ruta</th><th>Requests</th><th>Promedio</th><th>Maximo</th><th>Errores</th><th>Ultimo</th></tr></thead>
-            <tbody>${renderServerRouteRows(requests.routes || [])}</tbody>
-          </table>
+
+        <div class="server-detail-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.pgh-chevron').style.transform=this.nextElementSibling.classList.contains('open')?'rotate(90deg)':''">
+          <svg class="pgh-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform .2s"><path d="m9 18 6-6-6-6"/></svg>
+          Ver detalle técnico (rutas y actividad reciente)
         </div>
-        <div class="purchase-table-wrap compact-table-wrap" style="margin-top:12px;">
-          <table class="purchase-table">
-            <thead><tr><th>Hora</th><th>Metodo</th><th>Ruta</th><th>Estado</th><th>Duracion</th></tr></thead>
-            <tbody>${renderServerRecentRows(requests.recent || [])}</tbody>
-          </table>
+        <div class="server-detail-body">
+          <div class="admin-summary-grid" style="margin-bottom:10px">
+            ${renderAdminSummaryList("Estados HTTP", statusEntries, ([status, count]) => `
+              <div class="summary-row"><strong>${escapeHtml(status)}</strong><span>${escapeHtml(formatNumber(count || 0))} req</span></div>
+            `)}
+            <section class="admin-summary-card">
+              <h3>Info</h3>
+              <div class="summary-row"><strong>Datos</strong><span>${escapeHtml(serverStats.dataDir || "-")}</span></div>
+              <div class="summary-row"><strong>Plataforma</strong><span>${escapeHtml(serverStats.platform || "-")}</span></div>
+            </section>
+          </div>
+          <div class="purchase-table-wrap compact-table-wrap">
+            <table class="purchase-table">
+              <thead><tr><th>Ruta</th><th>Req</th><th>Prom.</th><th>Máx.</th><th>Errores</th><th>Último</th></tr></thead>
+              <tbody>${renderServerRouteRows(requests.routes || [])}</tbody>
+            </table>
+          </div>
+          <div class="purchase-table-wrap compact-table-wrap" style="margin-top:10px">
+            <table class="purchase-table">
+              <thead><tr><th>Hora</th><th>Método</th><th>Ruta</th><th>Estado</th><th>Duración</th></tr></thead>
+              <tbody>${renderServerRecentRows(requests.recent || [])}</tbody>
+            </table>
+          </div>
         </div>
       `;
     }
@@ -9261,6 +9474,11 @@
             <span class="user-card-last-login">Último ingreso: ${escapeHtml(lastLogin)}</span>
             ${user.mustChangePassword ? `<span style="font-size:11px;color:#a67c00">⚠ Clave pendiente</span>` : ""}
           </div>
+          ${user.lastLoginIp ? `<div class="login-location-tag">
+            ${user.lastLoginCountryCode ? `<span title="${escapeAttribute(user.lastLoginLocation || user.lastLoginIp)}" style="font-size:14px;line-height:1">${_countryFlag(user.lastLoginCountryCode)}</span>` : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`}
+            <span>${escapeHtml(user.lastLoginLocation || user.lastLoginIp)}</span>
+            ${user.lastLoginUserAgent ? `<span style="opacity:.6">· ${escapeHtml(_parseUserAgent(user.lastLoginUserAgent))}</span>` : ""}
+          </div>` : ""}
           <div class="user-card-actions" onclick="event.stopPropagation()">
             <button class="btn-user-action" onclick="filterAuditByUser('${escapeAttribute(user.displayName || user.username)}')">Ver historial</button>
             <button class="btn-user-action ${isSuspended ? 'success' : 'danger'}"
@@ -9556,46 +9774,133 @@
       }
     }
 
+    let _auditPage = 30;
+    const AUDIT_PAGE_SIZE = 30;
+
+    function _auditIcon(action) {
+      return {
+        login:   { emoji: "🔑", cls: "ai-login"   },
+        logout:  { emoji: "👋", cls: "ai-logout"  },
+        create:  { emoji: "✦",  cls: "ai-create"  },
+        update:  { emoji: "✎",  cls: "ai-update"  },
+        delete:  { emoji: "✕",  cls: "ai-delete"  },
+        payment: { emoji: "💳", cls: "ai-payment" },
+        import:  { emoji: "↓",  cls: "ai-import"  },
+        sync:    { emoji: "↻",  cls: "ai-sync"    },
+        upsert:  { emoji: "✎",  cls: "ai-update"  },
+        upload:  { emoji: "↑",  cls: "ai-upload"  },
+      }[action] || { emoji: "·", cls: "ai-default" };
+    }
+
+    function _countryFlag(code) {
+      if (!code || code.length !== 2) return "🌐";
+      const chars = [...code.toUpperCase()].map(c => String.fromCodePoint(0x1F1E6 - 65 + c.charCodeAt(0)));
+      return chars.join("");
+    }
+
+    function _parseUserAgent(ua) {
+      if (!ua) return "";
+      const mobile = /mobile|android|iphone|ipad/i.test(ua);
+      const browser = /chrome/i.test(ua) && !/edge/i.test(ua) ? "Chrome"
+        : /firefox/i.test(ua) ? "Firefox"
+        : /safari/i.test(ua) && !/chrome/i.test(ua) ? "Safari"
+        : /edge/i.test(ua) ? "Edge"
+        : "Navegador";
+      const os = /windows/i.test(ua) ? "Windows"
+        : /mac os x/i.test(ua) && !mobile ? "Mac"
+        : /android/i.test(ua) ? "Android"
+        : /iphone|ipad/i.test(ua) ? "iOS"
+        : /linux/i.test(ua) ? "Linux"
+        : "";
+      return [browser, os, mobile ? "📱" : "🖥️"].filter(Boolean).join(" · ");
+    }
+
     function renderAuditLog() {
-      const list = document.getElementById("audit-list");
-      if (!list) return;
-      const filter = document.getElementById("audit-user-filter");
-      const actionFilter = document.getElementById("audit-action-filter");
-      const entityFilter = document.getElementById("audit-entity-filter");
-      if (filter && !filter.dataset.ready) {
-        const users = Array.from(new Set(auditLog.map((item) => item.userName || "Sistema").filter(Boolean))).sort();
-        filter.innerHTML = `<option value="">Todos los usuarios</option>${users.map((user) => `<option value="${escapeAttribute(user)}">${escapeHtml(user)}</option>`).join("")}`;
-        filter.dataset.ready = "true";
-      }
-      if (actionFilter && !actionFilter.dataset.ready) {
-        const actions = Array.from(new Set(auditLog.map((item) => item.action || "").filter(Boolean))).sort();
-        actionFilter.innerHTML = `<option value="">Todas las acciones</option>${actions.map((action) => `<option value="${escapeAttribute(action)}">${escapeHtml(getAuditActionLabel(action))}</option>`).join("")}`;
-        actionFilter.dataset.ready = "true";
-      }
-      if (entityFilter && !entityFilter.dataset.ready) {
-        const entities = Array.from(new Set(auditLog.map((item) => item.entityType || "").filter(Boolean))).sort();
-        entityFilter.innerHTML = `<option value="">Todos los modulos</option>${entities.map((entity) => `<option value="${escapeAttribute(entity)}">${escapeHtml(getAuditEntityLabel(entity))}</option>`).join("")}`;
-        entityFilter.dataset.ready = "true";
-      }
-      const selectedUser = filter?.value || "";
-      const selectedAction = actionFilter?.value || "";
-      const selectedEntity = entityFilter?.value || "";
-      const visibleAudit = auditLog.filter((item) =>
-        (!selectedUser || (item.userName || "Sistema") === selectedUser) &&
-        (!selectedAction || item.action === selectedAction) &&
-        (!selectedEntity || item.entityType === selectedEntity)
-      );
-      if (!visibleAudit.length) {
-        list.innerHTML = `<div class="empty">Todavia no hay movimientos registrados.</div>`;
+      const feed = document.getElementById("audit-feed");
+      const loadMoreBtn = document.getElementById("audit-load-more");
+      if (!feed) return;
+
+      // populate filter dropdowns once
+      ["audit-user-filter","audit-action-filter","audit-entity-filter"].forEach((id, idx) => {
+        const el = document.getElementById(id);
+        if (!el || el.dataset.ready) return;
+        const vals = Array.from(new Set(auditLog.map(item =>
+          idx === 0 ? (item.userName || "Sistema") :
+          idx === 1 ? (item.action || "") :
+          (item.entityType || "")
+        ).filter(Boolean))).sort();
+        const labels = idx === 0 ? (v => v) : idx === 1 ? getAuditActionLabel : getAuditEntityLabel;
+        const placeholder = ["Todos los usuarios","Todas las acciones","Todos los módulos"][idx];
+        el.innerHTML = `<option value="">${placeholder}</option>` +
+          vals.map(v => `<option value="${escapeAttribute(v)}">${escapeHtml(labels(v))}</option>`).join("");
+        el.dataset.ready = "true";
+      });
+
+      const search = (document.getElementById("audit-search-input")?.value || "").toLowerCase();
+      const dateFrom = document.getElementById("audit-date-from")?.value || "";
+      const dateTo = document.getElementById("audit-date-to")?.value || "";
+      const selUser = document.getElementById("audit-user-filter")?.value || "";
+      const selAction = document.getElementById("audit-action-filter")?.value || "";
+      const selEntity = document.getElementById("audit-entity-filter")?.value || "";
+
+      const filtered = auditLog.filter(item => {
+        if (selUser && (item.userName || "Sistema") !== selUser) return false;
+        if (selAction && item.action !== selAction) return false;
+        if (selEntity && item.entityType !== selEntity) return false;
+        if (dateFrom && item.at < dateFrom) return false;
+        if (dateTo && item.at > dateTo + "T23:59:59") return false;
+        if (search) {
+          const hay = [item.userName, item.label, item.entityType, item.action, item.entityId].join(" ").toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      });
+
+      if (!filtered.length) {
+        feed.innerHTML = `<div class="empty">Sin movimientos con ese filtro.</div>`;
+        if (loadMoreBtn) loadMoreBtn.style.display = "none";
         return;
       }
-      list.innerHTML = visibleAudit.map((item) => `
-        <div class="audit-row">
-          <strong>${escapeHtml(getAuditActionLabel(item.action))} | ${escapeHtml(item.label || item.entityType || "")}</strong>
-          <div class="secondary">${escapeHtml(item.userName || "Sistema")} | ${escapeHtml(item.userRole || "")} | ${escapeHtml(formatDate(item.at) || item.at || "")}</div>
-          <div class="secondary">${escapeHtml(getAuditEntityLabel(item.entityType))}${item.entityId ? ` | ${escapeHtml(item.entityId)}` : ""}</div>
-        </div>
-      `).join("");
+
+      const page = filtered.slice(0, _auditPage);
+      feed.innerHTML = page.map(item => {
+        const icon = _auditIcon(item.action);
+        const label = getAuditActionLabel(item.action);
+        const entity = getAuditEntityLabel(item.entityType);
+        const who = item.userName || "Sistema";
+        const time = item.at ? new Date(item.at).toLocaleString("es-AR", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}) : "";
+        const detail = [item.label, item.entityId ? `#${item.entityId}` : ""].filter(Boolean).join(" ");
+        return `
+          <div class="audit-entry">
+            <div class="audit-icon ${icon.cls}">${icon.emoji}</div>
+            <div class="audit-entry-body">
+              <div style="font-size:14px"><strong>${escapeHtml(label)}</strong> <span style="color:var(--secondary);font-weight:400">— ${escapeHtml(entity)}</span>${detail ? ` <span style="color:var(--secondary);font-size:12px">· ${escapeHtml(detail)}</span>` : ""}</div>
+              <div class="audit-entry-time">${escapeHtml(who)}${item.userRole ? ` · <em style="font-style:normal;opacity:.75">${escapeHtml(item.userRole)}</em>` : ""} · ${escapeHtml(time)}</div>
+            </div>
+          </div>`;
+      }).join("");
+
+      if (loadMoreBtn) {
+        loadMoreBtn.style.display = filtered.length > _auditPage ? "" : "none";
+      }
+    }
+
+    function loadMoreAudit() {
+      _auditPage += AUDIT_PAGE_SIZE;
+      renderAuditLog();
+    }
+
+    function resetAuditFilters() {
+      _auditPage = AUDIT_PAGE_SIZE;
+      ["audit-search-input","audit-date-from","audit-date-to"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      ["audit-user-filter","audit-action-filter","audit-entity-filter"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ""; delete el.dataset.ready; }
+      });
+      renderAuditLog();
     }
 
     function getAuditActionLabel(action) {
