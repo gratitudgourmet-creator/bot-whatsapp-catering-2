@@ -304,6 +304,7 @@ const TAB_DEFINITIONS = [
   { id: "security", label: "Seguridad", requiredAny: ["users:write"] },
   { id: "reports", label: "Reportes", requiredAny: ["reports:read"] },
   { id: "comandas", label: "Comandas", requiredAny: ["reports:read"] },
+  { id: "menu_costs", label: "Costos de menu", requiredAny: ["view"] },
 ];
 const PERMISSION_DEFINITIONS = [
   { id: "users:write", label: "Usuarios, roles e historial", group: "Seguridad" },

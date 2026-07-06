@@ -25,7 +25,8 @@
       "security",
       "reports",
       "payment_orders",
-      "comandas"
+      "comandas",
+      "menu_costs"
     ]
   },
   "comercial": {
@@ -80,7 +81,8 @@
     ],
     "tabs": [
       "production",
-      "recipes"
+      "recipes",
+      "menu_costs"
     ]
   },
   "operacion": {
@@ -123,7 +125,8 @@
       "finance",
       "reports",
       "payment_orders",
-      "comandas"
+      "comandas",
+      "menu_costs"
     ]
   },
   "rrhh": {
