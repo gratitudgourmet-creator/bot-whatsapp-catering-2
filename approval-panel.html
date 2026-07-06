@@ -811,6 +811,70 @@
     .sanit-kpi-val.warn   { color: #d97706; }
     .sanit-kpi-val.danger { color: #dc2626; }
 
+    /* ── COSTOS DE MENÚ ─────────────────────────────────────────────── */
+    .mc-filter-bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:16px; }
+    .mc-filter-bar .search { flex:1; min-width:200px; }
+    .mc-cat-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .mc-chip {
+      background: var(--surface2, #f3f4f6); border: 1.5px solid var(--line); border-radius: 20px;
+      color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 600;
+      padding: 4px 12px; transition: background .15s, color .15s, border-color .15s; white-space: nowrap;
+    }
+    .mc-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .mc-cards-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .mc-card {
+      background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      display: flex; flex-direction: column; gap: 10px; padding: 16px;
+    }
+    .mc-card-head { align-items: flex-start; display: flex; gap: 10px; }
+    .mc-card-emoji { font-size: 28px; line-height: 1; flex-shrink: 0; }
+    .mc-card-info { flex: 1; min-width: 0; }
+    .mc-card-name { font-size: 15px; font-weight: 700; color: var(--text); margin: 0 0 2px; }
+    .mc-card-cat  { font-size: 12px; color: var(--muted); }
+    .mc-card-edit-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; padding: 2px 6px; }
+    .mc-card-edit-btn:hover { color: var(--accent); }
+    .mc-ings-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+    .mc-ing-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+    .mc-ing-row strong { color: var(--text); font-weight: 500; }
+    .mc-card-footer {
+      background: var(--surface2, #f9fafb); border-radius: 8px;
+      display: grid; gap: 6px 12px; grid-template-columns: 1fr 1fr; padding: 10px 12px;
+    }
+    .mc-footer-item { display: flex; flex-direction: column; gap: 1px; }
+    .mc-footer-label { font-size: 11px; color: var(--muted); }
+    .mc-footer-val { font-size: 14px; font-weight: 700; color: var(--text); }
+    .mc-footer-val.ok { color: #16a34a; }
+    .mc-footer-val.warn { color: #d97706; }
+    .mc-footer-val.danger { color: #dc2626; }
+    .mc-edit-layout { grid-template-columns: 280px 1fr; }
+    .mc-edit-list-item {
+      align-items: center; background: none; border: none; border-radius: 8px;
+      cursor: pointer; display: flex; gap: 10px; padding: 8px 10px;
+      text-align: left; width: 100%;
+    }
+    .mc-edit-list-item:hover { background: var(--surface2, #f3f4f6); }
+    .mc-edit-list-item.active { background: var(--accent-light, #eff6ff); color: var(--accent); }
+    .mc-edit-list-emoji { font-size: 20px; flex-shrink: 0; }
+    .mc-edit-list-name { font-size: 13px; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mc-edit-list-cat { font-size: 11px; color: var(--muted); }
+    .mc-form-cost-live { background: var(--surface2, #f3f4f6); border-radius: 8px; display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; padding: 10px 14px; }
+    .mc-form-cost-item { display: flex; flex-direction: column; gap: 1px; }
+    .mc-form-cost-label { font-size: 11px; color: var(--muted); }
+    .mc-form-cost-val { font-size: 16px; font-weight: 800; color: var(--text); }
+    .mc-form-cost-val.ok { color: #16a34a; }
+    .mc-form-cost-val.warn { color: #d97706; }
+    .mc-form-cost-val.danger { color: #dc2626; }
+    .mc-ing-editor { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+    .mc-ing-editor-row { display: flex; gap: 6px; align-items: center; }
+    .mc-ing-editor-row input:first-child { flex: 1; }
+    .mc-ing-editor-row input:nth-child(2) { width: 100px; flex-shrink: 0; }
+    .mc-ing-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 2px 6px; }
+    .mc-ing-del:hover { color: #dc2626; }
+    @media (max-width: 700px) {
+      .mc-edit-layout { grid-template-columns: 1fr; }
+      .mc-cards-grid { grid-template-columns: 1fr; }
+    }
+
     .sanit-tabs-bar {
       display: flex; overflow-x: auto; border-bottom: 1px solid #e5e7eb;
       padding: 0 14px; scrollbar-width: none; background: #fafafa;
@@ -1691,6 +1755,668 @@
       background: #f3cccc;
     }
 
+    /* Sistema visual base ERP */
+    .section-header,
+    .modal-header,
+    .table-toolbar {
+      align-items: start;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      margin-bottom: 14px;
+      min-width: 0;
+    }
+
+    .section-title,
+    .modal-title,
+    .form-section-title {
+      color: var(--text);
+      font-size: 20px;
+      font-weight: 850;
+      line-height: 1.15;
+      margin: 0;
+      overflow-wrap: break-word;
+    }
+
+    .section-subtitle,
+    .modal-subtitle,
+    .form-helper,
+    .empty-copy {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 5px 0 0;
+      overflow-wrap: break-word;
+    }
+
+    .section-actions,
+    .modal-actions,
+    .table-actions,
+    .form-actions,
+    .action-bar,
+    .action-group {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      min-width: 0;
+    }
+
+    .action-bar {
+      justify-content: space-between;
+    }
+
+    .action-primary,
+    .approve,
+    .new-request {
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #fff;
+    }
+
+    .action-secondary,
+    .filter {
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .action-danger,
+    .reject {
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .action-ghost {
+      background: transparent;
+      border: 1px solid rgba(102, 117, 138, .32);
+      color: var(--muted);
+    }
+
+    .action-primary:hover,
+    .approve:hover,
+    .new-request:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    .action-secondary:hover,
+    .filter:hover,
+    .action-ghost:hover {
+      background: var(--surface-soft);
+      border-color: #b8c6d3;
+      color: var(--text);
+    }
+
+    .metric-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      min-width: 0;
+    }
+
+    .metric-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      padding: 12px;
+    }
+
+    .metric-label,
+    .metric-card span,
+    .metric-status {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .metric-value,
+    .metric-card strong {
+      color: var(--text);
+      display: block;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .metric-helper {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      margin: 7px 0 0;
+    }
+
+    .status-chip {
+      align-items: center;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1.2;
+      max-width: 100%;
+      padding: 5px 8px;
+      white-space: normal;
+      width: fit-content;
+    }
+
+    .status-success { background: var(--success-soft); color: var(--success); }
+    .status-warning { background: var(--warning-soft); color: var(--warning); }
+    .status-danger { background: var(--danger-soft); color: var(--danger); }
+    .status-info { background: var(--blue-soft); color: var(--blue); }
+    .status-muted { background: var(--neutral-soft); color: var(--muted); }
+
+    .empty-state {
+      align-items: start;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 6px;
+      justify-items: start;
+      padding: 14px;
+      text-align: left;
+    }
+
+    .empty-title {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.25;
+      margin: 0;
+    }
+
+    .empty-action {
+      margin-top: 4px;
+    }
+
+    .data-table-shell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-width: 0;
+      overflow: auto;
+    }
+
+    .data-table {
+      border-collapse: collapse;
+      min-width: 100%;
+      width: 100%;
+    }
+
+    .data-table th,
+    .data-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .data-table th {
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .table-filters {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .mobile-card-list,
+    .mobile-data-card {
+      min-width: 0;
+    }
+
+    .mobile-card-list {
+      display: none;
+      gap: 10px;
+    }
+
+    .mobile-data-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .modal-body,
+    .drawer-panel {
+      min-width: 0;
+    }
+
+    .drawer-panel,
+    .detail-panel {
+      border: 1px solid rgba(214, 222, 230, .9);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid var(--line);
+      margin: -2px 0 16px;
+      padding-bottom: 12px;
+    }
+
+    .form-section {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .guided-form {
+      --guided-progress: 20%;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 168px minmax(0, 1fr);
+      min-width: 0;
+    }
+
+    .guided-form-header {
+      align-items: start;
+      display: grid;
+      gap: 14px;
+      grid-column: 1 / -1;
+      grid-template-columns: minmax(0, 1fr) auto;
+      min-width: 0;
+      padding: 4px 42px 2px 0;
+    }
+
+    .guided-form-title {
+      color: var(--text);
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.15;
+      margin: 0;
+    }
+
+    .guided-form-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 5px 0 0;
+      overflow-wrap: break-word;
+    }
+
+    .guided-form-steps {
+      align-self: start;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      display: grid;
+      gap: 5px;
+      grid-column: 1;
+      grid-template-columns: 1fr;
+      padding: 7px 0 0;
+      position: sticky;
+      top: 14px;
+    }
+
+    .guided-form-step {
+      align-items: center;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--muted);
+      display: inline-flex;
+      gap: 7px;
+      justify-content: flex-start;
+      min-height: 34px;
+      min-width: 0;
+      padding: 0 8px;
+      text-align: left;
+      white-space: normal;
+    }
+
+    .guided-form-step span {
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      display: inline-flex;
+      flex: 0 0 22px;
+      font-size: 11px;
+      height: 22px;
+      justify-content: center;
+      width: 22px;
+    }
+
+    .guided-form-step.active {
+      background: rgba(15, 77, 64, .06);
+      border-color: transparent;
+      box-shadow: none;
+      color: var(--text);
+    }
+
+    .guided-form-step.active span {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .guided-form-body,
+    .guided-form form.guided-form-body {
+      align-items: start;
+      display: grid;
+      grid-column: 2;
+      gap: 14px;
+      grid-template-columns: minmax(0, 1fr) minmax(230px, 300px);
+    }
+
+    .guided-form-main,
+    .guided-form-section,
+    .guided-form-panel {
+      min-width: 0;
+    }
+
+    .guided-form-main {
+      background: #fff;
+      border: 1px solid rgba(214, 222, 230, .82);
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, .06);
+      display: grid;
+      gap: 0;
+      padding: 22px;
+    }
+
+    .guided-form-section {
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      display: grid;
+      gap: 16px;
+      padding: 0;
+    }
+
+    .guided-form-section[hidden] {
+      display: none;
+    }
+
+    .guided-form-section-head h3 {
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 900;
+      margin: 0;
+    }
+
+    .guided-form-section-head p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 4px 0 0;
+    }
+
+    .guided-form-panel {
+      display: grid;
+      gap: 15px 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .guided-form-panel > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .guided-form-section + .guided-form-section {
+      border-top: 1px solid rgba(214, 222, 230, .68);
+      margin-top: 18px;
+      padding-top: 18px;
+    }
+
+    .guided-form-panel > .full,
+    .guided-form-review.full {
+      grid-column: 1 / -1;
+    }
+
+    .guided-form-summary {
+      background: rgba(250, 252, 251, .92);
+      border: 1px solid rgba(214, 222, 230, .76);
+      border-radius: 14px;
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+      position: sticky;
+      top: 12px;
+    }
+
+    .guided-form-summary summary {
+      color: var(--text);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 900;
+      list-style: none;
+    }
+
+    .guided-form-summary summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .guided-form-summary dl {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .guided-form-summary dl div {
+      border-bottom: 0;
+      display: grid;
+      gap: 3px;
+      padding-bottom: 0;
+    }
+
+    .guided-form-summary dt,
+    .guided-form-pending span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: none;
+    }
+
+    .guided-form-summary dd {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 760;
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .guided-form-pending {
+      display: grid;
+      gap: 6px;
+    }
+
+    .guided-form-pending ul,
+    .guided-form-review ul {
+      color: var(--muted);
+      display: grid;
+      font-size: 12px;
+      gap: 5px;
+      margin: 0;
+      padding-left: 17px;
+    }
+
+    .guided-form-review {
+      background: rgba(246, 248, 247, .72);
+      border: 1px solid rgba(214, 222, 230, .68);
+      border-radius: 12px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(0, 1fr) minmax(180px, .55fr);
+      padding: 14px;
+    }
+
+    .guided-form-review strong {
+      color: var(--text);
+      display: block;
+      font-size: 17px;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .guided-form-review p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin: 6px 0 0;
+    }
+
+    .guided-form-footer {
+      background: linear-gradient(180deg, rgba(255,255,255,.72), #fff 38%);
+      border-top: 1px solid rgba(214, 222, 230, .76);
+      bottom: -24px;
+      grid-column: 1 / -1;
+      margin: 8px -24px -24px;
+      padding: 12px 24px 18px;
+      justify-content: space-between;
+      position: sticky;
+      z-index: 12;
+    }
+
+    .guided-form-footer [data-guided-reset] {
+      display: none;
+    }
+
+    .guided-form .form-field {
+      gap: 7px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .guided-form .form-field label {
+      color: #657386;
+      font-size: 12px;
+      font-weight: 740;
+      text-transform: none;
+    }
+
+    .guided-form .form-field input,
+    .guided-form .form-field select,
+    .guided-form .form-field textarea {
+      background: #fff;
+      border-color: rgba(190, 202, 215, .86);
+      border-radius: 8px;
+      min-height: 42px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .guided-form .form-field textarea {
+      min-height: 96px;
+    }
+
+    #erp-event-card.erp-section {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    #erp-form-modal.guided-event-modal .modal-header {
+      border-bottom: 0;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    #erp-form-modal.guided-event-modal .modal-header > div {
+      display: none;
+    }
+
+    #erp-form-modal.guided-event-modal .modal-close-button {
+      align-items: center;
+      border-radius: 999px;
+      display: inline-flex;
+      height: 34px;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 34px;
+    }
+
+    .guided-form .inline-action-field {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .guided-form .inline-action-field > input,
+    .guided-form .inline-action-field > select {
+      flex: 1 1 220px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .guided-form .inline-action-field > button,
+    .guided-form button {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .guided-form .inline-action-field > button {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    #event-menu-items .menu-line {
+      align-items: start;
+      background: rgba(246, 248, 247, .62);
+      border: 1px solid rgba(214, 222, 230, .72);
+      border-radius: 10px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(72px, .5fr) minmax(120px, 1fr) minmax(120px, 1fr) 38px;
+      min-width: 0;
+      padding: 10px;
+    }
+
+    #event-menu-items .menu-line > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    #event-menu-items .event-menu-subitems {
+      grid-column: 1 / -2;
+      min-height: 72px;
+    }
+
+    #event-menu-items .event-menu-category,
+    #event-menu-items .event-menu-suggestion {
+      grid-column: span 2;
+    }
+
+    #event-menu-items .menu-line .reject {
+      align-self: start;
+      min-width: 38px;
+      padding: 0;
+    }
+
+    .inline-field-action {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      min-width: 0;
+    }
+
     .empty {
       color: var(--muted);
       padding: 36px;
@@ -1974,6 +2700,17 @@
       display: grid;
       gap: 8px;
       grid-template-columns: minmax(0, 1.6fr) 90px 120px 110px 38px;
+    }
+    .purchase-item-unit-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .purchase-item-total-hint {
+      color: var(--text-secondary, #888);
+      font-size: 0.78em;
+      min-height: 14px;
+      padding-left: 2px;
     }
 
     .purchase-item input {
@@ -3958,6 +4695,13 @@
       margin-bottom: 18px;
     }
 
+    .detail-head.modal-header {
+      align-items: flex-start;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      margin: -2px 0 16px;
+    }
+
     .close {
       background: var(--neutral-soft);
       color: var(--text);
@@ -5408,6 +6152,89 @@
         grid-template-columns: 1fr;
       }
 
+      .guided-form-header {
+        grid-template-columns: minmax(0, 1fr);
+        padding-right: 42px;
+      }
+
+      .guided-form-steps {
+        background: transparent;
+        border: 0;
+        display: grid;
+        gap: 8px;
+        grid-column: 1;
+        grid-template-columns: 1fr;
+        overflow: hidden;
+        padding: 0 0 10px;
+        position: relative;
+      }
+
+      .guided-form-steps::before {
+        color: var(--muted);
+        content: attr(data-progress-label);
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .guided-form-steps::after {
+        background: linear-gradient(90deg, var(--accent) var(--guided-progress), rgba(214, 222, 230, .82) var(--guided-progress));
+        border-radius: 999px;
+        content: "";
+        height: 4px;
+        width: 100%;
+      }
+
+      .guided-form-step {
+        display: none;
+      }
+
+      .guided-form-step.active {
+        background: transparent;
+        border: 0;
+        display: inline-flex;
+        font-size: 14px;
+        justify-content: flex-start;
+        min-height: 26px;
+        padding: 0;
+      }
+
+      .guided-form-body,
+      .guided-form form.guided-form-body {
+        grid-column: 1;
+        grid-template-columns: 1fr;
+      }
+
+      .guided-form {
+        grid-template-columns: 1fr;
+      }
+
+      .guided-form-main {
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      .guided-form-summary {
+        order: -1;
+        position: static;
+      }
+
+      .guided-form-panel,
+      .guided-form-review {
+        grid-template-columns: 1fr;
+      }
+
+      .guided-form-footer {
+        align-items: stretch;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin: 8px -14px -14px;
+        padding: 10px 14px 14px;
+      }
+
+      .guided-form-footer [data-guided-submit] {
+        grid-column: 1 / -1;
+      }
+
       .purchase-item {
         grid-template-columns: 1fr;
       }
@@ -5548,6 +6375,10 @@
       }
 
       .erp-kpis,
+      .section-header,
+      .modal-header,
+      .table-toolbar,
+      .metric-grid,
       .erp-home-head,
       .erp-home-grid,
       .events-cockpit-head,
@@ -5591,6 +6422,33 @@
 
       .erp-home-actions {
         justify-content: flex-start;
+      }
+
+      .section-actions,
+      .modal-actions,
+      .table-actions,
+      .form-actions,
+      .action-bar,
+      .action-group {
+        justify-content: flex-start;
+      }
+
+      .section-actions .filter,
+      .section-actions .approve,
+      .section-actions .reject,
+      .section-actions .action-primary,
+      .section-actions .action-secondary,
+      .section-actions .action-danger,
+      .section-actions .action-ghost {
+        max-width: 100%;
+      }
+
+      .data-table-shell.mobile-stacked .data-table {
+        display: none;
+      }
+
+      .mobile-card-list {
+        display: grid;
       }
 
       .events-cockpit-head h2 {
@@ -5638,6 +6496,355 @@
       .purchase-period-summary {
         justify-self: stretch;
         text-align: left;
+      }
+    }
+
+    @media (min-width: 721px) and (max-width: 980px) {
+      .guided-form {
+        grid-template-columns: 168px minmax(0, 1fr);
+      }
+
+      .guided-form-header {
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+
+      .guided-form-steps {
+        display: grid;
+        grid-column: 1;
+        grid-template-columns: 1fr;
+        overflow: visible;
+        padding: 7px 0 0;
+        position: sticky;
+      }
+
+      .guided-form-steps::before,
+      .guided-form-steps::after {
+        display: none;
+      }
+
+      .guided-form-step {
+        display: inline-flex;
+        justify-content: flex-start;
+      }
+
+      .guided-form-body,
+      .guided-form form.guided-form-body {
+        grid-column: 2;
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .guided-form-summary {
+        order: -1;
+        position: static;
+      }
+
+      .guided-form-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .guided-form-footer {
+        display: flex;
+        margin: 8px -24px -24px;
+        padding: 12px 24px 18px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .guided-form {
+        grid-template-columns: 1fr;
+      }
+
+      .guided-form-body,
+      .guided-form form.guided-form-body {
+        grid-column: 1;
+        grid-template-columns: 1fr;
+      }
+
+      .guided-form-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .guided-form .inline-action-field {
+        align-items: stretch;
+      }
+
+      .guided-form .inline-action-field > input,
+      .guided-form .inline-action-field > select,
+      .guided-form .inline-action-field > button {
+        flex: 1 1 100%;
+        width: 100%;
+      }
+
+      #event-menu-items .menu-line,
+      .stock-line {
+        grid-template-columns: 1fr;
+      }
+
+      #event-menu-items .event-menu-subitems,
+      #event-menu-items .event-menu-category,
+      #event-menu-items .event-menu-suggestion,
+      #event-menu-items .menu-line .reject {
+        grid-column: 1;
+      }
+
+      #event-menu-items .menu-line .reject {
+        justify-self: stretch;
+        width: 100%;
+      }
+
+      .checklist,
+      .option-checks {
+        grid-template-columns: 1fr;
+      }
+
+      .guided-form-footer {
+        gap: 8px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+
+      .guided-form-footer button {
+        min-width: 0;
+        padding: 0 8px;
+      }
+    }
+
+    #erp-event-form #event-menu-items .menu-line {
+      align-items: start;
+      background: rgba(246, 248, 247, .62);
+      border: 1px solid rgba(214, 222, 230, .72);
+      border-radius: 10px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(72px, .5fr) minmax(120px, 1fr) minmax(120px, 1fr) 38px;
+      min-width: 0;
+      padding: 10px;
+    }
+
+    #erp-event-form #event-menu-items .menu-line > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    #erp-event-form #event-menu-items .event-menu-category,
+    #erp-event-form #event-menu-items .event-menu-suggestion {
+      grid-column: span 2;
+    }
+
+    #erp-event-form #event-menu-items .event-menu-subitems {
+      grid-column: 1 / -2;
+      min-height: 72px;
+    }
+
+    #erp-event-form #event-menu-items .menu-line .reject {
+      align-self: start;
+      min-width: 38px;
+      padding: 0;
+    }
+
+    @media (max-width: 720px) {
+      #erp-event-form #event-menu-items .menu-line {
+        grid-template-columns: 1fr;
+      }
+
+      #erp-event-form #event-menu-items .event-menu-category,
+      #erp-event-form #event-menu-items .event-menu-suggestion,
+      #erp-event-form #event-menu-items .event-menu-subitems,
+      #erp-event-form #event-menu-items .menu-line .reject {
+        grid-column: 1;
+      }
+
+      #erp-event-form #event-menu-items .menu-line .reject {
+        justify-self: stretch;
+        width: 100%;
+      }
+    }
+
+    .operation-picker,
+    .operation-builder {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .operation-picker-shell,
+    .operation-builder {
+      display: grid;
+      gap: 10px;
+    }
+
+    .operation-picker-trigger {
+      align-items: center;
+      background: #fff;
+      border: 1px solid rgba(190, 202, 215, .86);
+      border-radius: 8px;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      min-height: 42px;
+      padding: 0 11px;
+      width: 100%;
+    }
+
+    .operation-chip-list,
+    .operation-quick-list,
+    .operation-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .operation-chip {
+      align-items: center;
+      background: rgba(15, 77, 64, .08);
+      border: 1px solid rgba(15, 77, 64, .16);
+      border-radius: 999px;
+      color: var(--text);
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 760;
+      gap: 6px;
+      max-width: 100%;
+      min-height: 30px;
+      padding: 0 9px;
+    }
+
+    .operation-chip button,
+    .operation-list-card button {
+      background: transparent;
+      border: 0;
+      min-height: 24px;
+      padding: 0 4px;
+    }
+
+    .operation-picker-panel {
+      background: #fff;
+      border: 1px solid rgba(214, 222, 230, .86);
+      border-radius: 10px;
+      box-shadow: 0 14px 28px rgba(15, 23, 42, .08);
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .operation-picker-panel[hidden] {
+      display: none;
+    }
+
+    .operation-picker-options {
+      display: grid;
+      gap: 4px;
+      max-height: 190px;
+      overflow: auto;
+    }
+
+    .operation-picker-option {
+      align-items: center;
+      border-radius: 7px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 18px minmax(0, 1fr);
+      padding: 7px;
+    }
+
+    .operation-picker-option:hover {
+      background: var(--surface-soft);
+    }
+
+    .event-hidden-checks,
+    .event-legacy-field,
+    .event-legacy-input {
+      display: none !important;
+    }
+
+    .operation-compact-row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(72px, .45fr) minmax(150px, 1fr) auto;
+      min-width: 0;
+    }
+
+    .operation-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .operation-list-card,
+    #erp-event-form #event-menu-items .menu-line {
+      background: rgba(246, 248, 247, .62);
+      border: 1px solid rgba(214, 222, 230, .72);
+      border-radius: 10px;
+      min-width: 0;
+      padding: 10px;
+    }
+
+    .operation-list-card {
+      display: grid;
+      gap: 8px;
+    }
+
+    .operation-list-main {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      min-width: 0;
+    }
+
+    .operation-list-title {
+      font-weight: 850;
+      overflow-wrap: anywhere;
+    }
+
+    .operation-list-card details {
+      border-top: 1px solid rgba(214, 222, 230, .7);
+      padding-top: 8px;
+    }
+
+    #erp-event-form #event-menu-items .menu-line {
+      grid-template-columns: 1fr;
+    }
+
+    #erp-event-form #event-menu-items .menu-line.compact-menu-line > .menu-quick-row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(72px, .45fr) minmax(150px, 1fr) auto;
+    }
+
+    #erp-event-form #event-menu-items .menu-line.compact-menu-line .menu-extra-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 8px;
+    }
+
+    #erp-event-form #event-menu-items .menu-line.compact-menu-line .event-menu-subitems {
+      grid-column: 1 / -1;
+    }
+
+    .event-advanced-block {
+      background: rgba(246, 248, 247, .62);
+      border: 1px solid rgba(214, 222, 230, .72);
+      border-radius: 10px;
+      padding: 11px;
+    }
+
+    .event-advanced-block summary {
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    .event-advanced-block p {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 6px 0 10px;
+    }
+
+    @media (max-width: 720px) {
+      .operation-compact-row,
+      #erp-event-form #event-menu-items .menu-line.compact-menu-line > .menu-quick-row,
+      #erp-event-form #event-menu-items .menu-line.compact-menu-line .menu-extra-grid,
+      .operation-list-main {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -5808,6 +7015,13 @@
           <button class="workspace-subitem" data-view="recipes" data-action="showCostSettingsForm">Costos generales</button>
         </div>
       </div>
+      <div class="workspace-menu" data-menu-view="menu_costs">
+        <button class="workspace-tab" data-view="menu_costs">Costos de menú</button>
+        <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="menu_costs" data-anchor="menu-costs-view-section">Ver menú</button>
+          <button class="workspace-subitem" data-view="menu_costs" data-anchor="menu-costs-edit-section">Editar productos</button>
+        </div>
+      </div>
         </div>
       </div>
       <div class="workspace-group" data-nav-group="finance">
@@ -5880,14 +7094,14 @@
     <section id="view-erp" class="workspace-view open">
       <div class="erp-home-shell">
         <section class="erp-section">
-          <div class="erp-home-head">
+          <div class="erp-home-head section-header">
             <div>
-              <h2>Hoy en Gratitud</h2>
-              <p class="subtitle">Prioridades, eventos y movimientos que necesitan atención.</p>
+              <h2 class="section-title">Hoy en Gratitud</h2>
+              <p class="subtitle section-subtitle">Prioridades, eventos y movimientos que necesitan atención.</p>
             </div>
-            <div class="erp-home-actions">
-              <button class="filter" type="button" onclick="refreshWorkspaceView('erp')">Actualizar</button>
-              <button class="filter erp-home-export" type="button" onclick="downloadErpXlsx()" data-permission="users:write">Descargar Excel</button>
+            <div class="erp-home-actions section-actions">
+              <button class="filter action-secondary" type="button" onclick="refreshWorkspaceView('erp')">Actualizar</button>
+              <button class="filter action-ghost erp-home-export" type="button" onclick="downloadErpXlsx()" data-permission="users:write">Descargar Excel</button>
             </div>
           </div>
         </section>
@@ -5918,12 +7132,12 @@
             <section id="erp-secondary-kpis-section" class="erp-section">
               <h2>Indicadores secundarios</h2>
               <p class="subtitle">Lectura compacta del estado general.</p>
-              <div class="today-kpi-grid">
-                <div class="home-kpi"><span>Venta aceptada</span><strong id="erp-kpi-revenue">$0</strong></div>
-                <div class="home-kpi"><span>Margen estimado</span><strong id="erp-kpi-margin">$0</strong></div>
-                <div class="home-kpi"><span>Eventos realizados</span><strong id="erp-kpi-done">0</strong></div>
-                <div class="home-kpi"><span>Presupuestos abiertos</span><strong id="erp-kpi-open-quotes">0</strong></div>
-                <div class="home-kpi hidden"><span>Eventos proximos</span><strong id="erp-kpi-upcoming">0</strong></div>
+              <div class="today-kpi-grid metric-grid">
+                <div class="home-kpi metric-card"><span class="metric-label">Venta aceptada</span><strong class="metric-value" id="erp-kpi-revenue">$0</strong></div>
+                <div class="home-kpi metric-card"><span class="metric-label">Margen estimado</span><strong class="metric-value" id="erp-kpi-margin">$0</strong></div>
+                <div class="home-kpi metric-card"><span class="metric-label">Eventos realizados</span><strong class="metric-value" id="erp-kpi-done">0</strong></div>
+                <div class="home-kpi metric-card"><span class="metric-label">Presupuestos abiertos</span><strong class="metric-value" id="erp-kpi-open-quotes">0</strong></div>
+                <div class="home-kpi metric-card hidden"><span class="metric-label">Eventos proximos</span><strong class="metric-value" id="erp-kpi-upcoming">0</strong></div>
               </div>
             </section>
           </div>
@@ -5932,23 +7146,44 @@
       </div>
 
         <div id="erp-form-modal" class="detail" onclick="closeErpForms(event)">
-          <aside class="detail-panel extra-wide" onclick="event.stopPropagation()">
-            <div class="detail-head">
+          <aside class="detail-panel extra-wide drawer-panel" onclick="event.stopPropagation()">
+            <div class="detail-head modal-header">
               <div>
-                <h2 id="erp-form-modal-title" style="margin:0;font-size:22px;">Formulario</h2>
-                <p class="subtitle">Carga operativa del ERP</p>
+                <h2 id="erp-form-modal-title" class="modal-title">Formulario</h2>
+                <p class="subtitle modal-subtitle">Carga operativa del ERP</p>
               </div>
-              <button class="close" onclick="hideErpForms()">X</button>
+              <button class="close action-ghost modal-close-button" type="button" aria-label="Cerrar formulario" onclick="hideErpForms()">×</button>
             </div>
           <section id="erp-event-card" class="erp-section erp-modal-section">
-            <h2>Crear evento</h2>
-            <form id="erp-event-form" class="form-grid">
+            <div class="guided-form" id="event-guided-form-shell">
+              <div class="guided-form-header">
+                <div>
+                  <h2 class="guided-form-title" id="event-guided-title">Nuevo evento</h2>
+                  <p class="guided-form-subtitle">Carga guiada para ordenar identificación, logística, operación y datos comerciales.</p>
+                </div>
+                <span class="status-chip status-muted" id="event-guided-status">Borrador</span>
+              </div>
+              <div class="guided-form-steps" aria-label="Pasos del evento">
+                <button class="guided-form-step active" type="button" data-guided-step="0" onclick="setGuidedFormStep('erp-event-form', 0)"><span>1</span> Identificación</button>
+                <button class="guided-form-step" type="button" data-guided-step="1" onclick="setGuidedFormStep('erp-event-form', 1)"><span>2</span> Lugar y logística</button>
+                <button class="guided-form-step" type="button" data-guided-step="2" onclick="setGuidedFormStep('erp-event-form', 2)"><span>3</span> Menú y operación</button>
+                <button class="guided-form-step" type="button" data-guided-step="3" onclick="setGuidedFormStep('erp-event-form', 3)"><span>4</span> Comercial</button>
+                <button class="guided-form-step" type="button" data-guided-step="4" onclick="setGuidedFormStep('erp-event-form', 4)"><span>5</span> Revisión</button>
+              </div>
+            <form id="erp-event-form" class="form-grid guided-form-body" novalidate>
               <input type="hidden" name="id">
+              <div class="guided-form-main">
+              <section class="guided-form-section active" data-guided-step-panel="0" aria-labelledby="event-step-identification-title">
+                <div class="guided-form-section-head">
+                  <h3 id="event-step-identification-title">Identificación</h3>
+                  <p>Datos mínimos para reconocer el evento y quién lo gestiona.</p>
+                </div>
+                <div class="guided-form-panel">
               <div class="form-field full">
                 <label>Evento</label>
                 <input name="name" required placeholder="Ej: Casamiento Gomez 12/09">
               </div>
-              <div class="form-field">
+              <div class="form-field full">
                 <label>Cliente</label>
                 <div class="inline-action-field">
                   <select name="clientName" id="erp-event-customer"></select>
@@ -5959,14 +7194,30 @@
                 <label>Fecha</label>
                 <input name="eventDate" type="date">
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="1" hidden>
+                <div class="guided-form-panel">
               <div class="form-field">
                 <label>Horario</label>
                 <input name="eventTime" type="time">
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section event-legacy-field" data-guided-step-panel="0" hidden>
+                <div class="guided-form-panel">
               <div class="form-field">
                 <label>Invitados</label>
                 <input name="guestCount" inputmode="decimal">
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="3" aria-labelledby="event-step-commercial-title" hidden>
+                <div class="guided-form-section-head">
+                  <h3 id="event-step-commercial-title">Comercial y facturación</h3>
+                  <p>Valor del servicio, condiciones de factura y datos administrativos.</p>
+                </div>
+                <div class="guided-form-panel">
               <div class="form-field">
                 <label>Precio</label>
                 <select name="priceMode">
@@ -5982,6 +7233,10 @@
                 <label>Total servicio</label>
                 <input name="servicePriceTotal" inputmode="decimal" placeholder="Si aplica">
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="0" hidden>
+                <div class="guided-form-panel">
               <div class="form-field">
                 <label>Estado</label>
                 <select name="status">
@@ -5994,6 +7249,10 @@
                   <option value="cancelled">Cancelado</option>
                 </select>
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="3" hidden>
+                <div class="guided-form-panel">
               <div class="form-field">
                 <label>Condicion de facturacion</label>
                 <select name="invoiceRequirement" onchange="toggleEventInvoiceFields(this.form)">
@@ -6012,6 +7271,10 @@
                 <label>Nro factura</label>
                 <input name="invoiceNumber" placeholder="Opcional">
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="0" hidden>
+                <div class="guided-form-panel">
               <div class="form-field">
                 <label>Responsable</label>
                 <input name="owner">
@@ -6026,21 +7289,37 @@
                   <option>Administracion</option>
                 </select>
               </div>
-              <div class="form-field">
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="1" hidden>
+                <div class="guided-form-panel">
+              <div class="form-field full">
                 <label>Lugar</label>
                 <div class="inline-action-field">
                   <select name="venue" id="erp-event-venue"></select>
-                  <button class="filter" type="button" onclick="showQuickVenueForm()">Nuevo</button>
+                  <button class="filter action-secondary" type="button" onclick="showQuickVenueForm()">Nuevo</button>
                 </div>
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="0" hidden>
+                <div class="guided-form-panel">
               <div class="form-field full">
                 <label>Servicio</label>
                 <div id="service-options" class="option-checks"></div>
                 <div class="inline-action-field" style="margin-top:8px;">
                   <input id="new-service-option" placeholder="Agregar servicio" onkeydown="handleOperationalOptionKey(event, 'service', 'new-service-option')">
-                  <button class="filter" type="button" onclick="addOperationalOptionFromPanel('service', 'new-service-option')">Agregar</button>
+                  <button class="filter action-secondary" type="button" onclick="addOperationalOptionFromPanel('service', 'new-service-option')">Agregar</button>
                 </div>
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="1" aria-labelledby="event-step-logistics-title" hidden>
+                <div class="guided-form-section-head">
+                  <h3 id="event-step-logistics-title">Lugar y logística</h3>
+                  <p>Ubicación, horarios, personal y elementos de traslado.</p>
+                </div>
+                <div class="guided-form-panel">
               <div class="form-field">
                 <label>Modalidad de asistencia</label>
                 <select name="assistanceMode">
@@ -6054,20 +7333,28 @@
                 <label>Cantidad de mozos</label>
                 <input name="waiterCount" inputmode="decimal" placeholder="0">
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="2" aria-labelledby="event-step-operation-title" hidden>
+                <div class="guided-form-section-head">
+                  <h3 id="event-step-operation-title">Menú y operación</h3>
+                  <p>Menú, bebidas, vajilla, stock ficticio y checklist operativo.</p>
+                </div>
+                <div class="guided-form-panel">
+              <div class="form-field full">
+                <label>Servicio</label>
+                <div id="service-options" class="operation-picker"></div>
+              </div>
               <div class="form-field full">
                 <label>Momentos del evento</label>
-                <div id="moment-options" class="option-checks"></div>
-                <div class="inline-action-field" style="margin-top:8px;">
-                  <input id="new-moment-option" placeholder="Agregar momento">
-                  <button class="filter" type="button" onclick="addOperationalOptionFromPanel('moment', 'new-moment-option')">Agregar</button>
-                </div>
+                <div id="moment-options" class="operation-picker"></div>
               </div>
               <div class="form-field full">
                 <label>Menu por items</label>
                 <div id="event-menu-items" class="menu-lines"></div>
-                <button class="filter" type="button" onclick="addEventMenuLine()">Agregar item</button>
+                <button class="filter action-secondary" type="button" onclick="addEventMenuLine()">Agregar item</button>
               </div>
-              <div class="form-field">
+              <div class="form-field event-legacy-field">
                 <label>Restricciones alimentarias</label>
                 <select name="dietaryRestrictionMode">
                   <option value="">Sin definir</option>
@@ -6075,12 +7362,10 @@
                   <option value="yes">Si</option>
                 </select>
               </div>
-              <div class="form-field">
-                <label>Detalle restricciones</label>
-                <div class="inline-action-field">
-                  <input name="dietaryRestrictions" placeholder="Celiaco, vegetariano, sin lactosa">
-                  <button class="filter" type="button" onclick="suggestDietaryRestrictionItems()">Sugerir</button>
-                </div>
+              <div class="form-field full">
+                <label>Restricciones alimentarias</label>
+                <input class="event-legacy-input" name="dietaryRestrictions" placeholder="Celiaco, vegetariano, sin lactosa">
+                <div id="dietary-restriction-builder" class="operation-builder"></div>
               </div>
               <div class="form-field">
                 <label>Incluye bebidas</label>
@@ -6090,31 +7375,29 @@
                   <option>Sin bebidas</option>
                 </select>
               </div>
-              <div class="form-field">
+              <div class="form-field full">
                 <label>Detalle bebidas</label>
                 <div id="drink-options" class="chips-field"></div>
-                <div class="inline-action-field" style="margin-top:8px;">
-                  <input id="new-drink-option" list="drink-option-suggestions" placeholder="Agregar bebida">
-                  <button class="filter" type="button" onclick="addOperationalOptionFromPanel('drink', 'new-drink-option')">Agregar</button>
-                </div>
                 <datalist id="drink-option-suggestions"></datalist>
               </div>
-              <div class="form-field">
+              <div class="form-field event-legacy-field">
                 <label>Vajilla</label>
                 <input name="tableware" placeholder="Cristaleria, manteleria, descartables">
               </div>
-              <div class="form-field">
+              <div class="form-field event-legacy-field">
                 <label>Cantidades de vajilla</label>
                 <input name="tablewareQuantities" placeholder="Platos x 30, copas x 60">
               </div>
               <div class="form-field full">
                 <label>Detalle de vajilla / descartables</label>
-                <div class="inline-action-field">
-                  <input name="tablewareDetail" list="tableware-product-options" placeholder="Ej: copas, platos, servilletas, conservadoras">
-                  <button class="filter" type="button" onclick="addTablewareProductOption()">Agregar producto</button>
-                </div>
+                <input class="event-legacy-input" name="tablewareDetail" list="tableware-product-options" placeholder="Ej: copas, platos, servilletas, conservadoras">
+                <div id="tableware-builder" class="operation-builder"></div>
                 <datalist id="tableware-product-options"></datalist>
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="1" hidden>
+                <div class="guided-form-panel">
               <div class="form-field">
                 <label>Contenedores grandes</label>
                 <input name="largeContainers" inputmode="decimal" placeholder="0">
@@ -6131,46 +7414,97 @@
                 <label>Horarios / cronograma</label>
                 <input name="schedule" placeholder="Armado, servicio, desmontaje">
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="2" hidden>
+                <div class="guided-form-panel">
               <div class="form-field full">
                 <label>Mercaderia de stock / costo ficticio</label>
                 <div id="event-stock-items" class="stock-lines"></div>
-                <button class="filter" type="button" onclick="addEventStockLine()">Agregar costo ficticio</button>
+                <button class="filter action-secondary" type="button" onclick="addEventStockLine()">Agregar costo ficticio</button>
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="4" aria-labelledby="event-step-review-title" hidden>
+                <div class="guided-form-section-head">
+                  <h3 id="event-step-review-title">Revisión</h3>
+                  <p>Chequeo final antes de guardar. Las advertencias orientan, no bloquean.</p>
+                </div>
+                <div class="guided-form-panel">
+                  <div class="guided-form-review full">
+                    <div>
+                      <span class="metric-label">Resumen</span>
+                      <strong id="event-guided-review-title">Evento sin nombre</strong>
+                      <p id="event-guided-review-copy">Completá los datos principales para dejarlo listo para operar.</p>
+                    </div>
+                    <div>
+                      <span class="metric-label">Pendientes sugeridos</span>
+                      <ul id="event-guided-review-list"></ul>
+                    </div>
+                  </div>
               <div class="form-field full">
                 <label>Proxima accion</label>
                 <input name="nextAction">
               </div>
-              <div class="form-field full">
-                <label>Checklist operativo</label>
-                <div class="checklist">
-                  <label class="check-item"><input type="checkbox" name="checklistPurchases"> Compras</label>
-                  <label class="check-item"><input type="checkbox" name="checklistProduction"> Produccion</label>
-                  <label class="check-item"><input type="checkbox" name="checklistStaff"> Personal</label>
-                  <label class="check-item"><input type="checkbox" name="checklistLogistics"> Logistica</label>
-                  <label class="check-item"><input type="checkbox" name="checklistMenu"> Menu</label>
-                  <label class="check-item"><input type="checkbox" name="checklistPayments"> Pagos</label>
                 </div>
-              </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="2" hidden>
+                <div class="guided-form-panel">
               <div class="form-field full">
-                <label>Detalle checklist</label>
-                <textarea name="checklistDetails" placeholder="Compras: ...&#10;Produccion: ...&#10;Personal: ...&#10;Logistica: ...&#10;Menu: ...&#10;Pagos: ..."></textarea>
-              </div>
-              <div class="form-field full">
-                <label>Checklist detallado para logística</label>
-                <details class="event-operational-details">
-                  <summary>Preparar checklist por rubros</summary>
-                  <div id="event-operational-checklist" class="logistics-mini-list"></div>
+                <details class="event-advanced-block">
+                  <summary>Checklist operativo avanzado</summary>
+                  <p>Usar solo si querés dejar tareas internas para operación.</p>
+                  <div class="checklist">
+                    <label class="check-item"><input type="checkbox" name="checklistPurchases"> Compras</label>
+                    <label class="check-item"><input type="checkbox" name="checklistProduction"> Produccion</label>
+                    <label class="check-item"><input type="checkbox" name="checklistStaff"> Personal</label>
+                    <label class="check-item"><input type="checkbox" name="checklistLogistics"> Logistica</label>
+                    <label class="check-item"><input type="checkbox" name="checklistMenu"> Menu</label>
+                    <label class="check-item"><input type="checkbox" name="checklistPayments"> Pagos</label>
+                  </div>
+                  <div class="form-field full">
+                    <label>Detalle checklist</label>
+                    <textarea name="checklistDetails" placeholder="Compras: ...&#10;Produccion: ...&#10;Personal: ...&#10;Logistica: ...&#10;Menu: ...&#10;Pagos: ..."></textarea>
+                  </div>
+                  <details class="event-operational-details">
+                    <summary>Preparar checklist por rubros</summary>
+                    <div id="event-operational-checklist" class="logistics-mini-list"></div>
+                  </details>
                 </details>
               </div>
+                </div>
+              </section>
+              <section class="guided-form-section" data-guided-step-panel="4" hidden>
+                <div class="guided-form-panel">
               <div class="form-field full">
                 <label>Notas</label>
                 <textarea name="notes"></textarea>
               </div>
-              <div class="actions full">
-                <button class="approve" type="submit">Guardar evento</button>
-                <button class="filter" type="button" onclick="resetErpEventForm()">Nuevo</button>
+                </div>
+              </section>
+              </div>
+              <details class="guided-form-summary" id="event-guided-summary" open>
+                <summary>Brief del evento</summary>
+                <dl>
+                  <div><dt>Cliente</dt><dd id="event-summary-client">Sin definir</dd></div>
+                  <div><dt>Fecha</dt><dd id="event-summary-date">Sin fecha</dd></div>
+                  <div><dt>Invitados</dt><dd id="event-summary-guests">Sin definir</dd></div>
+                  <div><dt>Lugar</dt><dd id="event-summary-venue">Sin definir</dd></div>
+                  <div><dt>Venta estimada</dt><dd id="event-summary-sale">Sin valor</dd></div>
+                </dl>
+                <div class="guided-form-pending">
+                  <span>Pendientes críticos</span>
+                  <ul id="event-summary-pending"></ul>
+                </div>
+              </details>
+              <div class="guided-form-footer actions full">
+                <button class="filter action-ghost" type="button" data-guided-prev onclick="prevGuidedFormStep('erp-event-form')">Volver</button>
+                <button class="filter action-secondary" type="button" data-guided-next onclick="nextGuidedFormStep('erp-event-form')">Continuar</button>
+                <button class="approve action-primary" type="submit" data-guided-submit>Guardar evento</button>
+                <button class="filter action-ghost" type="button" data-guided-reset onclick="resetErpEventForm(); initEventGuidedForm();">Nuevo</button>
               </div>
             </form>
+            </div>
           </section>
 
           <section id="erp-quote-card" class="erp-section erp-modal-section">
@@ -6347,18 +7681,18 @@
 
     <section id="view-events" class="workspace-view">
       <section id="events-control-section" class="erp-section events-command-center">
-        <div class="events-cockpit-head">
+        <div class="events-cockpit-head section-header">
           <div>
-            <h2>Eventos</h2>
-            <p class="subtitle">Planificación, operación y cierre de cada servicio.</p>
+            <h2 class="section-title">Eventos</h2>
+            <p class="subtitle section-subtitle">Planificación, operación y cierre de cada servicio.</p>
           </div>
-          <div class="events-cockpit-actions">
-            <button class="approve" type="button" onclick="showBlankErpEventForm()" data-permission="events:write">Crear evento</button>
-            <button class="filter" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Presupuesto</button>
-            <button class="filter events-refresh" type="button" onclick="refreshWorkspaceView('events')">Actualizar</button>
+          <div class="events-cockpit-actions section-actions">
+            <button class="approve action-primary" type="button" onclick="showBlankErpEventForm()" data-permission="events:write">Crear evento</button>
+            <button class="filter action-secondary" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Presupuesto</button>
+            <button class="filter action-ghost events-refresh" type="button" onclick="refreshWorkspaceView('events')">Actualizar</button>
           </div>
         </div>
-        <div id="events-operational-summary" class="events-operational-summary"></div>
+        <div id="events-operational-summary" class="events-operational-summary metric-grid"></div>
         <div id="erp-event-list"></div>
       </section>
 
@@ -6382,15 +7716,15 @@
 
     <section id="view-purchases" class="workspace-view" data-permission="purchases:write">
       <section id="purchase-sheet-section" class="erp-section">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+        <div class="section-header">
           <div>
-            <h2>Compras</h2>
-            <p class="subtitle">Planilla de compras y deudas guardada en la base del ERP. Sheets queda como importacion/exportacion manual.</p>
+            <h2 class="section-title">Compras</h2>
+            <p class="subtitle section-subtitle">Planilla de compras y deudas guardada en la base del ERP. Sheets queda como importacion/exportacion manual.</p>
           </div>
-          <div class="actions">
-            <button class="filter" onclick="importPurchasesFromSheets()">Importar Sheets</button>
-            <button class="filter" onclick="showPurchaseOrderForm()">Orden de compra</button>
-            <button class="approve" onclick="showPurchaseForm()">Cargar compra</button>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" onclick="importPurchasesFromSheets()">Importar Sheets</button>
+            <button class="filter action-secondary" onclick="showPurchaseOrderForm()">Orden de compra</button>
+            <button class="approve action-primary" onclick="showPurchaseForm()">Cargar compra</button>
           </div>
         </div>
         <div id="purchase-dashboard" class="purchase-dashboard"></div>
@@ -6422,17 +7756,17 @@
 
     <section id="view-finance" class="workspace-view" data-permission="finance:read">
       <section id="finance-summary-section" class="erp-section">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+        <div class="section-header">
           <div>
-            <h2>Finanzas</h2>
-            <p class="subtitle">Cuenta corriente de proveedores, pagos pendientes y pagos realizados.</p>
+            <h2 class="section-title">Finanzas</h2>
+            <p class="subtitle section-subtitle">Cuenta corriente de proveedores, pagos pendientes y pagos realizados.</p>
           </div>
-          <div class="actions">
-            <button class="filter" onclick="refreshWorkspaceView('finance')">Actualizar</button>
-            <button class="filter" onclick="showProviderDebtWindow()">Deudas proveedores</button>
-            <button class="filter" onclick="showReimbursementWindow()">Reintegros</button>
-            <button class="filter" onclick="syncAccountantDebts()" data-permission="finance:write">Actualizar planilla contador</button>
-            <button class="filter" onclick="importAccountantPayments()" data-permission="finance:write">Importar pagos contador</button>
+          <div class="actions section-actions">
+            <button class="filter action-ghost" onclick="refreshWorkspaceView('finance')">Actualizar</button>
+            <button class="filter action-secondary" onclick="showProviderDebtWindow()">Deudas proveedores</button>
+            <button class="filter action-secondary" onclick="showReimbursementWindow()">Reintegros</button>
+            <button class="filter action-secondary" onclick="syncAccountantDebts()" data-permission="finance:write">Actualizar planilla contador</button>
+            <button class="filter action-secondary" onclick="importAccountantPayments()" data-permission="finance:write">Importar pagos contador</button>
           </div>
         </div>
         <div id="finance-dashboard"></div>
@@ -6521,14 +7855,14 @@
 
     <section id="view-reports" class="workspace-view" data-permission="reports:read">
       <section id="reports-home-section" class="erp-section">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+        <div class="section-header">
           <div>
-            <h2>Reportes</h2>
-            <p class="subtitle">Ventas, compras, margen, stock, proveedores, clientes, eventos y exportaciones.</p>
+            <h2 class="section-title">Reportes</h2>
+            <p class="subtitle section-subtitle">Ventas, compras, margen, stock, proveedores, clientes, eventos y exportaciones.</p>
           </div>
-          <div class="actions">
-            <button class="filter" type="button" onclick="refreshWorkspaceView('reports')">Actualizar</button>
-            <button class="approve" type="button" onclick="downloadErpXlsx()">Exportar Excel</button>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="refreshWorkspaceView('reports')">Actualizar</button>
+            <button class="approve action-primary" type="button" onclick="downloadErpXlsx()">Exportar Excel</button>
           </div>
         </div>
         <div id="reports-dashboard"></div>
@@ -6547,12 +7881,15 @@
 
     <section id="view-hr" class="workspace-view" data-permission="hr:read">
       <section id="hr-main-section" class="erp-section">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+        <div class="section-header">
           <div>
-            <h2>Personal/RRHH</h2>
-            <p class="subtitle">Legajos, disponibilidad, asistencia, horas, sueldos y pagos pendientes.</p>
+            <h2 class="section-title">Personal / RRHH</h2>
+            <p class="subtitle section-subtitle">Legajos, disponibilidad, asistencia, horas, sueldos y pagos pendientes.</p>
           </div>
-          <button class="filter" type="button" onclick="refreshWorkspaceView('hr')">Actualizar</button>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="refreshWorkspaceView('hr')">Actualizar</button>
+            <button class="approve action-primary" type="button" onclick="resetHrStaffForm(); document.getElementById('hr-staff-form')?.scrollIntoView({behavior:'smooth'})">Nuevo legajo</button>
+          </div>
         </div>
         <div id="hr-dashboard"></div>
       </section>
@@ -6598,11 +7935,22 @@
     </section>
 
     <section id="view-customers" class="workspace-view">
+      <div class="erp-section" style="padding-bottom:0">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Clientes</h2>
+            <p class="subtitle section-subtitle">Base de clientes, historial de eventos y seguimiento comercial.</p>
+          </div>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="loadCustomers()">Actualizar</button>
+            <button class="approve action-primary" type="button" onclick="document.getElementById('customer-form').reset(); document.getElementById('customer-form').scrollIntoView({behavior:'smooth'})">Nuevo cliente</button>
+          </div>
+        </div>
+      </div>
       <div class="panel-grid">
         <section id="customer-list-section" class="panel-box">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
             <input id="customer-search" class="search" placeholder="Buscar cliente o telefono">
-            <button class="filter" onclick="loadCustomers()">Actualizar</button>
           </div>
           <div id="customer-list" class="compact-list"></div>
         </section>
@@ -6644,11 +7992,22 @@
     </section>
 
     <section id="view-providers" class="workspace-view">
+      <div class="erp-section" style="padding-bottom:0">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Proveedores</h2>
+            <p class="subtitle section-subtitle">Fichas fiscales, datos bancarios, condiciones de pago y deuda por proveedor.</p>
+          </div>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="loadProviders()">Actualizar</button>
+            <button class="approve action-primary" type="button" onclick="resetModalProviderForm(); document.getElementById('provider-form')?.scrollIntoView({behavior:'smooth'})">Nuevo proveedor</button>
+          </div>
+        </div>
+      </div>
       <div class="panel-grid">
         <section id="provider-list-section" class="panel-box">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
             <input id="provider-search" class="search" placeholder="Buscar proveedor, CUIT, banco o alias">
-            <button class="filter" onclick="loadProviders()">Actualizar</button>
           </div>
           <div id="provider-list" class="compact-list provider-list"></div>
         </section>
@@ -6874,15 +8233,63 @@
       </div>
     </section>
 
+    <!-- ══════════════════════════════════════════════════════════ COSTOS DE MENÚ -->
+    <section id="view-menu_costs" class="workspace-view">
+      <section id="menu-costs-view-section" class="erp-section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Costos de menú</h2>
+            <p class="subtitle section-subtitle">Margen real por producto, ingredientes y precios de venta.</p>
+          </div>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="mcSwitchTab('editar')">Editar productos</button>
+            <button class="approve action-primary" type="button" onclick="mcNewProduct()">Nuevo producto</button>
+          </div>
+        </div>
+        <div id="mc-filter-bar" class="mc-filter-bar">
+          <input id="mc-search" class="search" placeholder="Buscar por nombre o ingrediente" oninput="mcRenderCards()">
+          <div id="mc-cat-chips" class="mc-cat-chips"></div>
+        </div>
+        <div id="mc-cards-grid" class="mc-cards-grid"></div>
+      </section>
+
+      <section id="menu-costs-edit-section" class="erp-section" style="display:none">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Editar productos</h2>
+            <p class="subtitle section-subtitle">Gestioná ingredientes, precios y márgenes de cada ítem del menú.</p>
+          </div>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="mcSwitchTab('ver')">Ver menú</button>
+            <button class="approve action-primary" type="button" onclick="mcNewProduct()">Nuevo producto</button>
+          </div>
+        </div>
+        <div class="panel-grid mc-edit-layout">
+          <section class="panel-box">
+            <input class="search" style="margin-bottom:10px;width:100%;box-sizing:border-box" placeholder="Filtrar lista…" oninput="mcRenderEditList(this.value)">
+            <div id="mc-edit-list" class="compact-list compact-scroll"></div>
+          </section>
+          <section class="panel-box">
+            <div id="mc-form-area">
+              <div class="empty" style="padding:32px 0;text-align:center">Seleccioná un producto de la lista o creá uno nuevo.</div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </section>
+
     <section id="view-security" class="workspace-view" data-permission="users:write">
       <!-- HEADER -->
       <div class="erp-section" style="padding-bottom:0">
-        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:14px">
+        <div class="section-header">
           <div>
-            <h2>Seguridad</h2>
-            <p class="subtitle">Usuarios, roles, servidor e historial de acciones.</p>
+            <h2 class="section-title">Seguridad</h2>
+            <p class="subtitle section-subtitle">Usuarios, roles, servidor e historial de acciones.</p>
           </div>
-          <button class="filter" type="button" onclick="loadSecurityPanel()">Actualizar</button>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="loadSecurityPanel()">Actualizar</button>
+            <button class="approve action-primary" type="button" onclick="openUserDrawer()">Nuevo usuario</button>
+          </div>
         </div>
         <!-- SUB-TABS -->
         <div class="sec-tabs" id="sec-tabs">
@@ -7840,6 +9247,7 @@
     let activeLogisticsEvent = null;
     let logisticsSaveTimer = null;
     let pendingQuoteImport = null;
+    const guidedFormState = {};
     const operationalCategoryDefaults = [
       ["personal", "Personal"],
       ["transporte", "Transporte"],
@@ -8196,7 +9604,10 @@
     document.getElementById("recipe-form").addEventListener("input", updateRecipeTotals);
     document.getElementById("recipe-form").elements.yieldUnit.addEventListener("change", updateRecipeTotals);
     document.getElementById("cost-settings-form").addEventListener("submit", saveCostSettings);
+    document.getElementById("erp-event-form").addEventListener("submit", handleGuidedFormSubmit, true);
     document.getElementById("erp-event-form").addEventListener("submit", saveErpEvent);
+    document.getElementById("erp-event-form").addEventListener("input", updateEventGuidedSummary);
+    document.getElementById("erp-event-form").addEventListener("change", updateEventGuidedSummary);
     document.getElementById("erp-quote-form").addEventListener("submit", saveErpQuote);
     document.getElementById("erp-quote-form").addEventListener("input", updateErpQuotePreview);
     document.getElementById("erp-quote-form").addEventListener("change", updateErpQuotePreview);
@@ -8548,6 +9959,7 @@
       if (view === "logistics_event") return loadLogisticsEvents();
       if (view === "buyer_purchases") return loadBuyerOrders();
       if (view === "security") return loadSecurityPanel();
+      if (view === "menu_costs") { mcRenderCards(); mcRenderEditList(); return Promise.resolve(); }
       if (ERP_DATA_VIEWS.has(view)) return refreshErpContext(view);
       return Promise.resolve();
     }
@@ -8913,6 +10325,7 @@
       if (view === "comandas") loadTask = loadComandas();
       if (view === "buyer_purchases") loadTask = loadBuyerOrders();
       if (view === "security") loadTask = loadSecurityPanel();
+      if (view === "menu_costs") setTimeout(() => { mcLoad(); mcRenderCards(); mcRenderEditList(); }, 50);
       Promise.resolve(loadTask).finally(() => {
         setTimeout(() => runWorkspaceSubNavigation(view, navigationOptions), 80);
       });
@@ -9260,10 +10673,10 @@
         ["Presupuestos abiertos", openQuotes, "Oportunidades vinculadas a eventos."],
       ];
       container.innerHTML = tiles.map(([label, value, detail]) => `
-        <article class="events-summary-tile">
-          <span>${escapeHtml(label)}</span>
-          <strong>${escapeHtml(value)}</strong>
-          <p>${escapeHtml(detail)}</p>
+        <article class="events-summary-tile metric-card">
+          <span class="metric-label">${escapeHtml(label)}</span>
+          <strong class="metric-value">${escapeHtml(value)}</strong>
+          <p class="metric-helper">${escapeHtml(detail)}</p>
         </article>
       `).join("");
     }
@@ -10312,14 +11725,168 @@
       window.location.href = "/api/export.xlsx";
     }
 
+    function getGuidedFormStep(formId) {
+      return Number(guidedFormState[formId] || 0);
+    }
+
+    function getGuidedFormSections(form) {
+      return Array.from(form?.querySelectorAll(".guided-form-section") || []);
+    }
+
+    function setGuidedFormStep(formId, stepIndex) {
+      const form = document.getElementById(formId);
+      if (!form) return;
+      const shell = form.closest(".guided-form");
+      const sections = getGuidedFormSections(form);
+      const maxStep = Math.max(0, ...sections.map((section) => Number(section.dataset.guidedStepPanel || 0)));
+      const nextStep = Math.max(0, Math.min(Number(stepIndex) || 0, maxStep));
+      guidedFormState[formId] = nextStep;
+
+      sections.forEach((section) => {
+        const isActive = Number(section.dataset.guidedStepPanel || 0) === nextStep;
+        section.hidden = !isActive;
+        section.classList.toggle("active", isActive);
+      });
+
+      shell?.querySelectorAll(".guided-form-step").forEach((button) => {
+        const isActive = Number(button.dataset.guidedStep || 0) === nextStep;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-current", isActive ? "step" : "false");
+      });
+
+      const stepsContainer = shell?.querySelector(".guided-form-steps");
+      if (shell) shell.style.setProperty("--guided-progress", `${Math.round(((nextStep + 1) / (maxStep + 1)) * 100)}%`);
+      if (stepsContainer) stepsContainer.dataset.progressLabel = `Paso ${nextStep + 1} de ${maxStep + 1}`;
+
+      const prevButton = form.querySelector("[data-guided-prev]");
+      const nextButton = form.querySelector("[data-guided-next]");
+      const submitButton = form.querySelector("[data-guided-submit]");
+      if (prevButton) prevButton.disabled = nextStep === 0;
+      if (nextButton) nextButton.hidden = nextStep >= maxStep;
+      if (submitButton) submitButton.classList.toggle("action-secondary", nextStep < maxStep);
+      if (submitButton) submitButton.classList.toggle("action-primary", nextStep >= maxStep);
+      updateEventGuidedSummary();
+    }
+
+    function nextGuidedFormStep(formId) {
+      setGuidedFormStep(formId, getGuidedFormStep(formId) + 1);
+    }
+
+    function prevGuidedFormStep(formId) {
+      setGuidedFormStep(formId, getGuidedFormStep(formId) - 1);
+    }
+
+    function getGuidedStepForElement(element) {
+      return Number(element?.closest(".guided-form-section")?.dataset.guidedStepPanel || 0);
+    }
+
+    function handleGuidedFormSubmit(event) {
+      if (event.target?.getAttribute("id") !== "erp-event-form") return;
+      const form = event.target;
+      const invalidField = Array.from(form.elements).find((field) => field.willValidate && !field.checkValidity());
+      if (!invalidField) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      setGuidedFormStep(form.getAttribute("id"), getGuidedStepForElement(invalidField));
+      window.setTimeout(() => {
+        invalidField.focus({ preventScroll: false });
+        invalidField.reportValidity();
+      }, 50);
+    }
+
+    function getSelectedText(field) {
+      if (!field) return "";
+      if (field.tagName === "SELECT") {
+        return field.options[field.selectedIndex]?.textContent?.trim() || field.value || "";
+      }
+      return field.value || "";
+    }
+
+    function setTextContentById(id, value) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = value;
+    }
+
+    function getEventGuidedPending(form) {
+      const pending = [];
+      if (!form.elements.name?.value?.trim()) pending.push("Nombre del evento");
+      if (!form.elements.clientName?.value?.trim()) pending.push("Cliente");
+      if (!form.elements.eventDate?.value?.trim()) pending.push("Fecha");
+      if (!form.elements.guestCount?.value?.trim()) pending.push("Cantidad de invitados");
+      if (!form.elements.venue?.value?.trim()) pending.push("Lugar");
+      if (!getCheckedOptionText("serviceType")) pending.push("Servicio");
+      return pending;
+    }
+
+    function renderPendingList(elementId, items) {
+      const list = document.getElementById(elementId);
+      if (!list) return;
+      const values = items.length ? items.slice(0, 5) : ["Sin pendientes críticos."];
+      list.innerHTML = values.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    }
+
+    function getEventGuidedSale(form) {
+      const total = parseDecimal(form.elements.servicePriceTotal?.value);
+      const perPerson = parseDecimal(form.elements.pricePerPerson?.value);
+      const guests = parseDecimal(form.elements.guestCount?.value);
+      if (total) return formatCurrency(total);
+      if (perPerson && guests) return formatCurrency(perPerson * guests);
+      if (perPerson) return `${formatCurrency(perPerson)} por persona`;
+      return "Sin valor";
+    }
+
+    function updateEventGuidedSummary() {
+      const form = document.getElementById("erp-event-form");
+      if (!form) return;
+      const name = form.elements.name?.value?.trim() || "Evento sin nombre";
+      const client = getSelectedText(form.elements.clientName) || "Sin definir";
+      const date = formatShortDate(form.elements.eventDate?.value) || "Sin fecha";
+      const guests = form.elements.guestCount?.value?.trim() || "Sin definir";
+      const venue = getSelectedText(form.elements.venue) || "Sin definir";
+      const status = getErpEventStatusLabel(form.elements.status?.value) || "Consulta";
+      const sale = getEventGuidedSale(form);
+      const pending = getEventGuidedPending(form);
+      const isEditing = Boolean(form.elements.id?.value);
+      const isReady = pending.length === 0;
+
+      setTextContentById("event-summary-client", client);
+      setTextContentById("event-summary-date", date);
+      setTextContentById("event-summary-guests", guests);
+      setTextContentById("event-summary-venue", venue);
+      setTextContentById("event-summary-status", status);
+      setTextContentById("event-summary-sale", sale);
+      setTextContentById("event-guided-review-title", name);
+      setTextContentById("event-guided-review-copy", `${client} · ${date} · ${guests} invitado(s) · ${sale}`);
+      setTextContentById("event-guided-title", isEditing ? "Editar evento" : "Nuevo evento");
+      setTextContentById("event-guided-status", isReady ? "Listo para guardar" : (isEditing ? "En edición" : "Borrador"));
+
+      const statusChip = document.getElementById("event-guided-status");
+      if (statusChip) {
+        statusChip.classList.toggle("status-success", isReady);
+        statusChip.classList.toggle("status-info", isEditing && !isReady);
+        statusChip.classList.toggle("status-muted", !isReady && !isEditing);
+      }
+      renderPendingList("event-summary-pending", pending);
+      renderPendingList("event-guided-review-list", pending);
+    }
+
+    function initEventGuidedForm(stepIndex = 0) {
+      setGuidedFormStep("erp-event-form", stepIndex);
+      const summary = document.getElementById("event-guided-summary");
+      if (summary && window.matchMedia("(max-width: 700px)").matches) summary.open = false;
+      updateEventGuidedSummary();
+    }
+
     function showErpEventForm() {
       ensureGlobalErpFormModal();
+      document.getElementById("erp-form-modal").classList.add("guided-event-modal");
       document.getElementById("erp-form-modal-title").textContent = "Crear evento";
       document.getElementById("erp-event-card").classList.remove("hidden");
       document.getElementById("erp-quote-card").classList.add("hidden");
       if (!document.querySelector("#event-menu-items .menu-line")) renderEventMenuLines();
       if (!document.querySelector("#event-stock-items .stock-line")) renderEventStockLines();
       if (!document.querySelector("#event-operational-checklist .event-operational-category")) renderEventOperationalChecklist();
+      initEventGuidedForm();
       document.getElementById("erp-form-modal").classList.add("open");
     }
 
@@ -10330,6 +11897,7 @@
 
     function showErpQuoteForm() {
       ensureGlobalErpFormModal();
+      document.getElementById("erp-form-modal").classList.remove("guided-event-modal");
       document.getElementById("erp-form-modal-title").textContent = "Presupuesto rentable";
       document.getElementById("erp-event-card").classList.add("hidden");
       document.getElementById("erp-quote-card").classList.remove("hidden");
@@ -10583,12 +12151,12 @@
           </div>
           <div class="purchase-period-summary">${escapeHtml(period.label)} · ${visiblePurchases.length} de ${allPurchases.length} compra(s)</div>
         </section>
-        <section class="purchase-kpis">
-          <div class="purchase-kpi"><span>Total compras</span><strong>${formatCurrency(summary.totalAmount || 0)}</strong></div>
-          <div class="purchase-kpi"><span>Pagado</span><strong>${formatCurrency(summary.paidAmount || 0)}</strong></div>
-          <div class="purchase-kpi"><span>Pendiente</span><strong>${formatCurrency(summary.pendingAmount || 0)}</strong></div>
-          <div class="purchase-kpi"><span>Ticket promedio</span><strong>${formatCurrency(summary.averageTicket || 0)}</strong></div>
-          <div class="purchase-kpi"><span>Proveedores</span><strong>${escapeHtml(summary.providersCount || 0)}</strong></div>
+        <section class="purchase-kpis metric-grid">
+          <div class="purchase-kpi metric-card"><span class="metric-label">Total compras</span><strong class="metric-value">${formatCurrency(summary.totalAmount || 0)}</strong></div>
+          <div class="purchase-kpi metric-card"><span class="metric-label">Pagado</span><strong class="metric-value">${formatCurrency(summary.paidAmount || 0)}</strong></div>
+          <div class="purchase-kpi metric-card"><span class="metric-label">Pendiente</span><strong class="metric-value">${formatCurrency(summary.pendingAmount || 0)}</strong></div>
+          <div class="purchase-kpi metric-card"><span class="metric-label">Ticket promedio</span><strong class="metric-value">${formatCurrency(summary.averageTicket || 0)}</strong></div>
+          <div class="purchase-kpi metric-card"><span class="metric-label">Proveedores</span><strong class="metric-value">${escapeHtml(summary.providersCount || 0)}</strong></div>
         </section>
         <section class="purchase-panels">
           ${renderPurchaseRank("Por proveedor", "byProvider", summary.byProvider || [])}
@@ -10909,7 +12477,7 @@
       const finance = erpData.financeDashboard || buildClientFinanceDashboard();
       const summary = finance.summary || {};
       container.innerHTML = `
-        <section id="finance-summary-cards" class="rank-modal-summary" style="margin-bottom:14px;">
+        <section id="finance-summary-cards" class="rank-modal-summary metric-grid" style="margin-bottom:14px;">
           <div><span>Ventas/eventos</span><strong>${formatCurrency(summary.salesTotal || 0)}</strong></div>
           <div><span>Cobrado</span><strong>${formatCurrency(summary.collectedTotal || 0)}</strong></div>
           <div><span>Por cobrar</span><strong>${formatCurrency(summary.pendingCollectionTotal || 0)}</strong></div>
@@ -11017,7 +12585,7 @@
       document.getElementById("purchase-rank-title").textContent = `Cobro - ${event.name || "Evento"}`;
       document.getElementById("purchase-rank-subtitle").textContent = `${event.clientName || "Sin cliente"} · ${formatShortDate(event.eventDate) || "Sin fecha"}`;
       document.getElementById("purchase-rank-body").innerHTML = `
-        <section class="rank-modal-summary">
+        <section class="rank-modal-summary metric-grid">
           <div><span>Venta</span><strong>${formatCurrency(event.saleTotal || 0)}</strong></div>
           <div><span>Cobrado</span><strong>${formatCurrency(event.collectedAmount || 0)}</strong></div>
           <div><span>Pendiente</span><strong>${formatCurrency(event.pendingCollectionAmount || 0)}</strong></div>
@@ -11122,7 +12690,7 @@
       const hr = erpData.hrDashboard || { summary: {}, staff: [], shifts: [], payroll: [] };
       const summary = hr.summary || {};
       container.innerHTML = `
-        <section class="rank-modal-summary">
+        <section class="rank-modal-summary metric-grid">
           <div><span>Personal activo</span><strong>${escapeHtml(summary.activeStaff || 0)}</strong></div>
           <div><span>Asistencias</span><strong>${escapeHtml(summary.shiftsCount || 0)}</strong></div>
           <div><span>Sueldos pendientes</span><strong>${formatCurrency(summary.pendingPayrollAmount || 0)}</strong></div>
@@ -11954,7 +13522,7 @@
       const data = erpData.paymentOrdersDashboard || { summary: {}, orders: [] };
       const summary = data.summary || {};
       container.innerHTML = `
-        <section class="rank-modal-summary">
+        <section class="rank-modal-summary metric-grid">
           <div><span>Pendiente</span><strong>${formatCurrency(summary.pendingAmount || 0)}</strong></div>
           <div><span>Aprobado</span><strong>${formatCurrency(summary.approvedAmount || 0)}</strong></div>
           <div><span>Pagado</span><strong>${formatCurrency(summary.paidAmount || 0)}</strong></div>
@@ -12139,7 +13707,7 @@
       document.getElementById("purchase-rank-title").textContent = `Deuda - ${provider}`;
       document.getElementById("purchase-rank-subtitle").textContent = `${debt.purchaseCount} compra(s) pendientes · saldo ${formatCurrency(totalPending)}`;
       document.getElementById("purchase-rank-body").innerHTML = `
-        <section class="rank-modal-summary">
+        <section class="rank-modal-summary metric-grid">
           <div><span>Compras pendientes</span><strong>${escapeHtml(debt.purchaseCount)}</strong></div>
           <div><span>Pagado parcial</span><strong>${formatCurrency(totalPaid)}</strong></div>
           <div><span>Saldo deuda</span><strong>${formatCurrency(totalPending)}</strong></div>
@@ -12334,7 +13902,7 @@
       document.getElementById("purchase-rank-title").textContent = `Reintegro - ${payer}`;
       document.getElementById("purchase-rank-subtitle").textContent = `${group.purchaseCount} compra(s) pagadas con plata personal · pendiente ${formatCurrency(totalPending)}`;
       document.getElementById("purchase-rank-body").innerHTML = `
-        <section class="rank-modal-summary">
+        <section class="rank-modal-summary metric-grid">
           <div><span>Pagado por ${escapeHtml(payer)}</span><strong>${formatCurrency(totalPaid)}</strong></div>
           <div><span>Ya reintegrado</span><strong>${formatCurrency(totalReimbursed)}</strong></div>
           <div><span>Pendiente de reintegro</span><strong>${formatCurrency(totalPending)}</strong></div>
@@ -12655,7 +14223,7 @@
       document.getElementById("purchase-rank-title").textContent = title;
       document.getElementById("purchase-rank-subtitle").textContent = `${period.label} · ranking de compras`;
       document.getElementById("purchase-rank-body").innerHTML = `
-        <section class="rank-modal-summary">
+        <section class="rank-modal-summary metric-grid">
           <div><span>Total</span><strong>${formatCurrency(total)}</strong></div>
           <div><span>Compras</span><strong>${escapeHtml(count)}</strong></div>
           <div><span>Grupos</span><strong>${escapeHtml(rows.length)}</strong></div>
@@ -15851,9 +17419,9 @@
           <div class="events-stage-list">
             ${items.length
               ? items.map((event) => renderEventOperationalRow(event, context)).join("")
-              : `<div class="empty compact-empty">
-                  <strong>${escapeHtml(emptyTitle)}</strong>
-                  <div class="secondary">${escapeHtml(emptyDetail)}</div>
+              : `<div class="empty-state">
+                  <strong class="empty-title">${escapeHtml(emptyTitle)}</strong>
+                  <div class="empty-copy">${escapeHtml(emptyDetail)}</div>
                 </div>`}
           </div>
         </section>
@@ -17092,6 +18660,8 @@
       renderCheckGroup("service-options", "serviceType", options.services || [], eventData.serviceType || "");
       renderCheckGroup("moment-options", "eventMoments", options.moments || [], eventData.eventMoments || "");
       renderDrinkChips(eventData.drinkType || "");
+      renderDietaryRestrictionBuilder(eventData.dietaryRestrictions || document.getElementById("erp-event-form")?.elements.dietaryRestrictions?.value || "");
+      renderTablewareBuilder();
       document.getElementById("drink-option-suggestions").innerHTML = (options.drinks || [])
         .map((item) => `<option value="${escapeAttribute(item)}"></option>`)
         .join("");
@@ -17099,10 +18669,80 @@
 
     function renderCheckGroup(containerId, fieldName, options, selectedText) {
       const selected = new Set(String(selectedText || "").split(",").map((item) => normalizeSearch(item)).filter(Boolean));
-      document.getElementById(containerId).innerHTML = (options || []).map((option) => {
+      const selectedValues = (options || []).filter((option) => selected.has(normalizeSearch(option)));
+      const type = fieldName === "serviceType" ? "service" : "moment";
+      const addInputId = fieldName === "serviceType" ? "new-service-option" : "new-moment-option";
+      document.getElementById(containerId).innerHTML = `
+        <div class="operation-picker-shell" data-operation-picker="${escapeAttribute(fieldName)}">
+          <button class="operation-picker-trigger" type="button" onclick="toggleOperationPicker('${escapeAttribute(containerId)}')">
+            <span>${selectedValues.length ? `${selectedValues.length} seleccionado(s)` : (fieldName === "serviceType" ? "Seleccionar servicios" : "Seleccionar momentos")}</span>
+            <span>+</span>
+          </button>
+          <div class="operation-chip-list">
+            ${selectedValues.map((item) => `<span class="operation-chip">${escapeHtml(item)} <button type="button" onclick="setOperationPickerValue('${escapeAttribute(fieldName)}', '${escapeAttribute(item)}', false)">x</button></span>`).join("")}
+          </div>
+          <div class="operation-picker-panel" hidden>
+            <input type="search" placeholder="Buscar" oninput="filterOperationPickerOptions(this)">
+            <div class="operation-picker-options">
+              ${(options || []).map((option) => {
+                const checked = selected.has(normalizeSearch(option));
+                return `<label class="operation-picker-option"><input type="checkbox" data-visible-field="${escapeAttribute(fieldName)}" value="${escapeAttribute(option)}" ${checked ? "checked" : ""} onchange="setOperationPickerValue('${escapeAttribute(fieldName)}', this.value, this.checked)"> <span>${escapeHtml(option)}</span></label>`;
+              }).join("")}
+            </div>
+            <div class="inline-action-field">
+              <input id="${escapeAttribute(addInputId)}" placeholder="${fieldName === "serviceType" ? "Agregar servicio" : "Agregar momento"}" onkeydown="handleOperationPickerAddKey(event, '${escapeAttribute(type)}', '${escapeAttribute(addInputId)}')">
+              <button class="filter action-secondary" type="button" onclick="addOperationPickerOption('${escapeAttribute(type)}', '${escapeAttribute(addInputId)}')">Agregar</button>
+            </div>
+          </div>
+        </div>
+        <div class="event-hidden-checks">
+          ${(options || []).map((option) => {
         const checked = selected.has(normalizeSearch(option));
         return `<label class="check-item"><input type="checkbox" data-field="${escapeAttribute(fieldName)}" value="${escapeAttribute(option)}" ${checked ? "checked" : ""}> ${escapeHtml(option)}</label>`;
-      }).join("");
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function toggleOperationPicker(containerId) {
+      const panel = document.querySelector(`#${containerId} .operation-picker-panel`);
+      if (panel) panel.hidden = !panel.hidden;
+    }
+
+    function filterOperationPickerOptions(input) {
+      const query = normalizeSearch(input.value || "");
+      input.closest(".operation-picker-panel")?.querySelectorAll(".operation-picker-option").forEach((option) => {
+        option.hidden = query && !normalizeSearch(option.textContent || "").includes(query);
+      });
+    }
+
+    function setOperationPickerValue(fieldName, value, checked) {
+      document.querySelectorAll(`input[data-field="${fieldName}"]`).forEach((input) => {
+        if (input.value !== value) return;
+        input.checked = checked;
+      });
+      const options = getOperationalOptions();
+      renderCheckGroup(fieldName === "serviceType" ? "service-options" : "moment-options", fieldName, fieldName === "serviceType" ? options.services || [] : options.moments || [], getCheckedOptionText(fieldName));
+      updateEventGuidedSummary();
+    }
+
+    function handleOperationPickerAddKey(event, type, inputId) {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      addOperationPickerOption(type, inputId);
+    }
+
+    function addOperationPickerOption(type, inputId) {
+      const input = document.getElementById(inputId);
+      const value = input?.value?.trim() || "";
+      if (!value) return;
+      const fieldName = type === "service" ? "serviceType" : "eventMoments";
+      if (!costSettings.operationalOptions) costSettings.operationalOptions = getOperationalOptions();
+      const options = costSettings.operationalOptions;
+      const key = type === "service" ? "services" : "moments";
+      options[key] = Array.from(new Set([...(options[key] || []), value]));
+      const selected = [getCheckedOptionText(fieldName), value].filter(Boolean).join(", ");
+      renderCheckGroup(fieldName === "serviceType" ? "service-options" : "moment-options", fieldName, options[key], selected);
     }
 
     function getCheckedOptionText(fieldName) {
@@ -17115,11 +18755,18 @@
     function renderDrinkChips(selectedText = "") {
       const values = String(selectedText || "").split(",").map((item) => item.trim()).filter(Boolean);
       const container = document.getElementById("drink-options");
+      const quick = ["Agua", "Gaseosa", "Vino", "Cerveza", "Hielo", "Barra"];
       container.innerHTML = `
-        <div id="drink-chip-list" style="display:contents;">
+        <div id="drink-chip-list" class="operation-chip-list">
           ${values.map((item) => renderDrinkChip(item)).join("")}
         </div>
-        <input id="drink-chip-input" class="chip-input" list="drink-option-suggestions" placeholder="Escribir bebida y Enter">
+        <div class="operation-quick-list">
+          ${quick.map((item) => `<button class="filter action-secondary" type="button" onclick="addDrinkChip('${escapeAttribute(item)}')">${escapeHtml(item)}</button>`).join("")}
+        </div>
+        <div class="inline-action-field">
+          <input id="drink-chip-input" list="drink-option-suggestions" placeholder="Agregar bebida personalizada">
+          <button class="filter action-secondary" type="button" onclick="addDrinkChip(document.getElementById('drink-chip-input')?.value); document.getElementById('drink-chip-input').value = '';">Agregar</button>
+        </div>
       `;
       const input = document.getElementById("drink-chip-input");
       input.addEventListener("keydown", (event) => {
@@ -17131,12 +18778,14 @@
     }
 
     function renderDrinkChip(value) {
-      return `<span class="chip" data-drink="${escapeAttribute(value)}">${escapeHtml(value)} <button type="button" onclick="removeDrinkChip(this)">x</button></span>`;
+      return `<span class="operation-chip" data-drink="${escapeAttribute(value)}">${escapeHtml(value)} <button type="button" onclick="removeDrinkChip(this)">x</button></span>`;
     }
 
     function addDrinkChip(value) {
       const clean = String(value || "").trim();
       if (!clean) return;
+      const form = document.getElementById("erp-event-form");
+      if (form?.elements.includesDrinks) form.elements.includesDrinks.value = "Con bebidas";
       const current = getDrinkChips().map((item) => normalizeSearch(item));
       if (current.includes(normalizeSearch(clean))) return;
       document.getElementById("drink-chip-list").insertAdjacentHTML("beforeend", renderDrinkChip(clean));
@@ -17147,9 +18796,68 @@
     }
 
     function getDrinkChips() {
-      return Array.from(document.querySelectorAll("#drink-chip-list .chip"))
+      return Array.from(document.querySelectorAll("#drink-chip-list .operation-chip"))
         .map((chip) => chip.dataset.drink || chip.textContent.replace("x", "").trim())
         .filter(Boolean);
+    }
+
+    function renderDietaryRestrictionBuilder(selectedText = "") {
+      const form = document.getElementById("erp-event-form");
+      const input = form?.elements.dietaryRestrictions;
+      if (!input) return;
+      if (!selectedText && input.value) selectedText = input.value;
+      input.value = selectedText || "";
+      const quick = ["Celíaco", "Vegetariano", "Vegano", "Sin lactosa", "Sin TACC", "Alergia frutos secos"];
+      const values = String(selectedText || "").split(",").map((item) => item.trim()).filter(Boolean);
+      const container = document.getElementById("dietary-restriction-builder");
+      if (!container) return;
+      container.innerHTML = `
+        <div id="dietary-chip-list" class="operation-chip-list">
+          ${values.map((item) => `<span class="operation-chip" data-restriction="${escapeAttribute(item)}">${escapeHtml(item)} <button type="button" onclick="removeDietaryRestriction(this)">x</button></span>`).join("")}
+        </div>
+        <div class="operation-quick-list">
+          ${quick.map((item) => `<button class="filter action-secondary" type="button" onclick="addDietaryRestriction('${escapeAttribute(item)}')">${escapeHtml(item)}</button>`).join("")}
+        </div>
+        <div class="inline-action-field">
+          <input id="dietary-restriction-input" placeholder="Agregar restricción">
+          <button class="filter action-secondary" type="button" onclick="addDietaryRestriction(document.getElementById('dietary-restriction-input')?.value); document.getElementById('dietary-restriction-input').value = '';">Agregar</button>
+        </div>
+        <textarea id="dietary-restriction-note" placeholder="Nota opcional: 2 invitados, uno también sin frutos secos">${escapeHtml(input.dataset.restrictionNote || "")}</textarea>
+      `;
+      document.getElementById("dietary-restriction-input")?.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        addDietaryRestriction(event.target.value);
+        event.target.value = "";
+      });
+      document.getElementById("dietary-restriction-note")?.addEventListener("input", syncDietaryRestrictionsToField);
+    }
+
+    function addDietaryRestriction(value) {
+      const clean = String(value || "").trim();
+      if (!clean) return;
+      const current = getDietaryRestrictions().map((item) => normalizeSearch(item));
+      if (current.includes(normalizeSearch(clean))) return;
+      document.getElementById("dietary-chip-list")?.insertAdjacentHTML("beforeend", `<span class="operation-chip" data-restriction="${escapeAttribute(clean)}">${escapeHtml(clean)} <button type="button" onclick="removeDietaryRestriction(this)">x</button></span>`);
+      syncDietaryRestrictionsToField();
+    }
+
+    function removeDietaryRestriction(button) {
+      button.closest(".operation-chip")?.remove();
+      syncDietaryRestrictionsToField();
+    }
+
+    function getDietaryRestrictions() {
+      return Array.from(document.querySelectorAll("#dietary-chip-list .operation-chip")).map((chip) => chip.dataset.restriction || "").filter(Boolean);
+    }
+
+    function syncDietaryRestrictionsToField() {
+      const form = document.getElementById("erp-event-form");
+      if (!form?.elements.dietaryRestrictions) return;
+      const note = document.getElementById("dietary-restriction-note")?.value?.trim() || "";
+      form.elements.dietaryRestrictions.dataset.restrictionNote = note;
+      form.elements.dietaryRestrictions.value = [getDietaryRestrictions().join(", "), note].filter(Boolean).join(" - ");
+      if (form.elements.dietaryRestrictionMode) form.elements.dietaryRestrictionMode.value = form.elements.dietaryRestrictions.value ? "yes" : "no";
     }
 
     function getDrinkChipsText() {
@@ -17159,6 +18867,97 @@
         input.value = "";
       }
       return getDrinkChips().join(", ");
+    }
+
+    function renderTablewareBuilder() {
+      const form = document.getElementById("erp-event-form");
+      const container = document.getElementById("tableware-builder");
+      if (!form || !container) return;
+      const initial = [form.elements.tablewareQuantities?.value, form.elements.tableware?.value, form.elements.tablewareDetail?.value]
+        .filter(Boolean)
+        .join("\n");
+      const rows = initial
+        ? initial.split(/\n|,/).map((item) => item.trim()).filter(Boolean).map((item) => ({ item }))
+        : [];
+      container.innerHTML = `
+        <div class="operation-compact-row">
+          <input id="tableware-builder-qty" placeholder="Cantidad">
+          <input id="tableware-builder-item" list="tableware-product-options" placeholder="Agregar item de vajilla">
+          <button class="filter action-secondary" type="button" onclick="addTablewareBuilderItem()">Agregar</button>
+        </div>
+        <input id="tableware-builder-note" placeholder="Observación opcional">
+        <div id="tableware-builder-list" class="operation-list">
+          ${rows.map((row) => renderTablewareBuilderCard(row)).join("")}
+        </div>
+      `;
+      ["tableware-builder-qty", "tableware-builder-item", "tableware-builder-note"].forEach((id) => {
+        document.getElementById(id)?.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter") return;
+          event.preventDefault();
+          addTablewareBuilderItem();
+        });
+      });
+      syncTablewareBuilderToFields();
+    }
+
+    function renderTablewareBuilderCard(row = {}) {
+      const label = [row.qty, row.item].filter(Boolean).join(" ") || row.item || "";
+      return `
+        <div class="operation-list-card" data-qty="${escapeAttribute(row.qty || "")}" data-item="${escapeAttribute(row.item || "")}" data-note="${escapeAttribute(row.note || "")}">
+          <div class="operation-list-main">
+            <span class="operation-list-title">${escapeHtml(label || "Item de vajilla")}</span>
+            ${row.note ? `<span class="secondary">${escapeHtml(row.note)}</span>` : ""}
+            <button class="filter action-secondary" type="button" onclick="editTablewareBuilderItem(this)">Editar</button>
+            <button class="reject action-danger" type="button" onclick="this.closest('.operation-list-card').remove(); syncTablewareBuilderToFields();">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function addTablewareBuilderItem() {
+      const qty = document.getElementById("tableware-builder-qty")?.value?.trim() || "";
+      const item = document.getElementById("tableware-builder-item")?.value?.trim() || "";
+      const note = document.getElementById("tableware-builder-note")?.value?.trim() || "";
+      if (!qty && !item && !note) return;
+      document.getElementById("tableware-builder-list")?.insertAdjacentHTML("beforeend", renderTablewareBuilderCard({ qty, item, note }));
+      ["tableware-builder-qty", "tableware-builder-item", "tableware-builder-note"].forEach((id) => {
+        const input = document.getElementById(id);
+        if (input) input.value = "";
+      });
+      syncTablewareBuilderToFields();
+    }
+
+    function editTablewareBuilderItem(button) {
+      const card = button.closest(".operation-list-card");
+      if (!card) return;
+      document.getElementById("tableware-builder-qty").value = card.dataset.qty || "";
+      document.getElementById("tableware-builder-item").value = card.dataset.item || "";
+      document.getElementById("tableware-builder-note").value = card.dataset.note || "";
+      card.remove();
+      syncTablewareBuilderToFields();
+    }
+
+    function getTablewareBuilderItems() {
+      return Array.from(document.querySelectorAll("#tableware-builder-list .operation-list-card")).map((card) => ({
+        qty: card.dataset.qty || "",
+        item: card.dataset.item || "",
+        note: card.dataset.note || "",
+      }));
+    }
+
+    function syncTablewareBuilderToFields() {
+      const form = document.getElementById("erp-event-form");
+      if (!form) return;
+      const items = getTablewareBuilderItems();
+      if (form.elements.tableware) form.elements.tableware.value = items.map((item) => item.item).filter(Boolean).join(", ");
+      if (form.elements.tablewareQuantities) form.elements.tablewareQuantities.value = items.map((item) => [item.qty, item.item].filter(Boolean).join(" ")).filter(Boolean).join(", ");
+      if (form.elements.tablewareDetail) form.elements.tablewareDetail.value = items.map((item) => [item.qty, item.item, item.note].filter(Boolean).join(" - ")).filter(Boolean).join("\n");
+    }
+
+    function syncOperationBuildersToFields() {
+      syncDietaryRestrictionsToField();
+      syncTablewareBuilderToFields();
+      getDrinkChipsText();
     }
 
     function renderEventMenuLines(items = []) {
@@ -17172,14 +18971,21 @@
         ? item.subItems.map((subItem) => [subItem.name, subItem.detail].filter(Boolean).join(": ")).join("\n")
         : "";
       return `
-        <div class="menu-line">
-          <input class="event-menu-quantity" placeholder="Cantidad" value="${escapeAttribute(item.quantity || "")}">
-          <input class="event-menu-name" placeholder="Item del menu" value="${escapeAttribute(item.name || "")}">
-          <input class="event-menu-detail" placeholder="Detalle opcional" value="${escapeAttribute(item.detail || "")}">
-          <input class="event-menu-category" placeholder="Categoria" value="${escapeAttribute(item.category || "")}">
-          <input class="event-menu-suggestion" placeholder="Sugerencia" value="${escapeAttribute(item.suggestedQuantity || "")}">
-          <textarea class="event-menu-subitems" placeholder="Subitems / variedades">${escapeHtml(subItemsText)}</textarea>
-          <button class="reject" type="button" onclick="this.closest('.menu-line').remove()">x</button>
+        <div class="menu-line compact-menu-line">
+          <div class="menu-quick-row">
+            <input class="event-menu-quantity" placeholder="Cantidad" value="${escapeAttribute(item.quantity || "")}">
+            <input class="event-menu-name" placeholder="Item del menú" value="${escapeAttribute(item.name || "")}">
+            <button class="reject action-danger" type="button" onclick="this.closest('.menu-line').remove()">Eliminar</button>
+          </div>
+          <details>
+            <summary>Más detalles</summary>
+            <div class="menu-extra-grid">
+              <input class="event-menu-detail" placeholder="Detalle opcional" value="${escapeAttribute(item.detail || "")}">
+              <input class="event-menu-category" placeholder="Categoría" value="${escapeAttribute(item.category || "")}">
+              <input class="event-menu-suggestion" placeholder="Sugerencia" value="${escapeAttribute(item.suggestedQuantity || "")}">
+              <textarea class="event-menu-subitems" placeholder="Subitems / variedades">${escapeHtml(subItemsText)}</textarea>
+            </div>
+          </details>
         </div>
       `;
     }
@@ -17429,6 +19235,7 @@
 
     async function saveErpEvent(event) {
       event.preventDefault();
+      syncOperationBuildersToFields();
       const payload = Object.fromEntries(new FormData(event.target).entries());
       const previousEvent = payload.id ? (erpData.events || []).find((item) => item.id === payload.id) : null;
       if (
@@ -17572,6 +19379,7 @@
       form.elements.checklistLogistics.checked = Boolean(event.checklist?.logistics);
       form.elements.checklistMenu.checked = Boolean(event.checklist?.menu);
       form.elements.checklistPayments.checked = Boolean(event.checklist?.payments);
+      initEventGuidedForm();
     }
 
     function resetErpEventForm() {
@@ -17584,6 +19392,7 @@
       renderEventMenuLines();
       renderEventStockLines();
       renderEventOperationalChecklist();
+      updateEventGuidedSummary();
     }
 
     async function deleteErpEvent(id) {
@@ -20434,7 +22243,10 @@
           <div id="${id}-suggestions" class="autocomplete-list"></div>
         </div>
         <input class="purchase-item-quantity" type="number" min="0.01" step="0.01" placeholder="Cant." value="${escapeAttribute(item.quantity || 1)}" required>
-        <input class="purchase-item-unit" type="number" min="0.01" step="0.01" placeholder="Unitario s/IVA" value="${escapeAttribute(item.unitAmount || "")}" required>
+        <div class="purchase-item-unit-wrap">
+          <input class="purchase-item-unit" type="number" min="0.01" step="0.01" placeholder="Unitario s/IVA" value="${escapeAttribute(item.unitAmount || "")}" required>
+          <div class="purchase-item-total-hint">${item.unitAmount ? "= " + formatCurrency(Number(item.quantity || 1) * Number(item.unitAmount)) : ""}</div>
+        </div>
         <select class="purchase-item-iva">
           <option value="0" ${Number(itemIvaRate || 0) === 0 ? "selected" : ""}>IVA 0%</option>
           <option value="0.105" ${Number(itemIvaRate || 0) === 0.105 ? "selected" : ""}>IVA 10.5%</option>
@@ -20452,6 +22264,20 @@
       );
 
       row.querySelector(".purchase-item-iva").addEventListener("change", syncPurchaseDefaultIvaFromFirstItem);
+
+      function updateRowTotal() {
+        const qty = parseFloat(row.querySelector(".purchase-item-quantity").value) || 0;
+        const unit = parseFloat(row.querySelector(".purchase-item-unit").value) || 0;
+        const hint = row.querySelector(".purchase-item-total-hint");
+        if (qty > 0 && unit > 0) {
+          hint.textContent = "= " + formatCurrency(qty * unit);
+        } else {
+          hint.textContent = "";
+        }
+      }
+      row.querySelector(".purchase-item-quantity").addEventListener("input", updateRowTotal);
+      row.querySelector(".purchase-item-unit").addEventListener("input", updateRowTotal);
+
       savePurchaseDraft();
     }
 
@@ -20997,6 +22823,299 @@
     });
 
     bootstrapPanel();
+
+    // ══════════════════════════════════════════ MÓDULO: COSTOS DE MENÚ ══
+
+    const MC_STORAGE_KEY = "erp-menu-costs-v1";
+    const MC_DEFAULT_PRODUCTS = [
+      { id:1,  nombre:"Papas fritas",                                    cat:"Fritura",          emoji:"🍟", precioVenta:3000,  margen:65, ings:[{txt:"Cono descartable",costo:45},{txt:"Papas fritas simplot (150g)",costo:600},{txt:"Aceite de girasol (25ml)",costo:80},{txt:"Sal fina",costo:10}] },
+      { id:2,  nombre:"Pancho",                                           cat:"Sándwiches",       emoji:"🌭", precioVenta:3000,  margen:60, ings:[{txt:"Base para pancho",costo:27},{txt:"Salchicha tipo pancho",costo:430},{txt:"Mostaza sobrecito x2",costo:150},{txt:"Pan pancho",costo:342},{txt:"ketchup sobre x2",costo:150},{txt:"mayo sobre x2",costo:150}] },
+      { id:3,  nombre:"Sándwich carne braseada",                          cat:"Sándwiches",       emoji:"🥩", precioVenta:12500, margen:55, ings:[{txt:"Bandeja barquito telgopor",costo:104},{txt:"Carne vacuna braseada (200g)",costo:6898},{txt:"Servilleta/papel",costo:15},{txt:"Pan chori",costo:450}] },
+      { id:4,  nombre:"Media Doc Pasteles de carne",                      cat:"Fritura",          emoji:"🥟", precioVenta:10000, margen:60, ings:[{txt:"Bandeja carton",costo:40},{txt:"Tapas de pastelito (6)",costo:600},{txt:"Aceite para freír",costo:60},{txt:"Picadillo 360g",costo:3630},{txt:"Papel para envolver",costo:0}] },
+      { id:5,  nombre:"media doc Empanadas de carne",                     cat:"Horneados",        emoji:"🥟", precioVenta:10000, margen:60, ings:[{txt:"Tapa de empanada x6",costo:600},{txt:"Carne picada (360g)",costo:3628},{txt:"bandeja carton",costo:40}] },
+      { id:6,  nombre:"Cazuela de ternera",                               cat:"Platos calientes", emoji:"🍲", precioVenta:4500,  margen:55, ings:[{txt:"Cazuela descartable",costo:173},{txt:"Cazuela de ternera (200g)",costo:1200},{txt:"Cubiertos descartables + servilleta",costo:100}] },
+      { id:7,  nombre:"Lentejas",                                         cat:"Platos calientes", emoji:"🍲", precioVenta:3200,  margen:65, ings:[{txt:"Cazuela descartable",costo:120},{txt:"Cubiertos descartables + servilleta",costo:100},{txt:"Cazuela de lentejas 150g",costo:1000}] },
+      { id:8,  nombre:"Donas",                                            cat:"Repostería",       emoji:"🍩", precioVenta:1200,  margen:70, ings:[{txt:"Bandeja descartable o bolsita",costo:30},{txt:"Harina, azúcar, sal (porción)",costo:80},{txt:"Levadura seca/fresca",costo:40},{txt:"Huevos, leche, manteca",costo:120},{txt:"Aceite para freír",costo:60},{txt:"Cobertura glasé o chocolate",costo:80}] },
+      { id:9,  nombre:"Churros",                                          cat:"Repostería",       emoji:"🥐", precioVenta:1000,  margen:72, ings:[{txt:"Cono descartable o bolsita",costo:30},{txt:"Harina, sal, azúcar (porción)",costo:60},{txt:"Aceite de girasol (masa + fritura)",costo:80},{txt:"Azúcar + canela para rebozar",costo:20}] },
+      { id:10, nombre:"Alfajorcitos (Maizena, miel, chocolate, glaseado)",cat:"Repostería",       emoji:"🍪", precioVenta:800,   margen:68, ings:[{txt:"unidad de alfajor (Maizena, miel, chocolate, glaseado)",costo:400}] },
+      { id:11, nombre:"media doc Pastelitos de membrillo",                cat:"Horneados",        emoji:"🍬", precioVenta:8000,  margen:65, ings:[{txt:"Bandeja descartable",costo:40},{txt:"pasteles x6",costo:4500}] },
+      { id:12, nombre:"Licuado",                                          cat:"Bebidas",          emoji:"🥤", precioVenta:2000,  margen:60, ings:[{txt:"Vaso descartable con tapa y sorbete",costo:80},{txt:"Fruta fresca (150g)",costo:250},{txt:"Leche entera (200ml)",costo:150},{txt:"Azúcar",costo:15}] },
+      { id:13, nombre:"Submarino",                                        cat:"Bebidas",          emoji:"☕", precioVenta:3000,  margen:65, ings:[{txt:"Vaso descartable telgopor",costo:120},{txt:"Leche entera caliente (150 ml)",costo:200},{txt:"Barra de chocolate semiamargo",costo:1020},{txt:"Azúcar (sobrecito) x2",costo:260},{txt:"Palito mezclador descartable",costo:10}] },
+      { id:14, nombre:"Agua caliente LT",                                 cat:"Bebidas",          emoji:"♨️", precioVenta:2000,  margen:75, ings:[{txt:"AGUA HERVIDA",costo:0},{txt:"OLLA",costo:0}] },
+      { id:15, nombre:"DOC pasteles de carne",                            cat:"Fritura",          emoji:"🥟", precioVenta:18000, margen:60, ings:[{txt:"masa",costo:1200},{txt:"picadillo",costo:7260},{txt:"bandeja",costo:104},{txt:"papel",costo:0}] },
+    ];
+
+    let _mcProducts = null;
+    let _mcActiveCat = "";
+    let _mcEditingId = null;
+
+    function mcLoad() {
+      if (_mcProducts) return _mcProducts;
+      try {
+        const saved = localStorage.getItem(MC_STORAGE_KEY);
+        _mcProducts = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(MC_DEFAULT_PRODUCTS));
+      } catch { _mcProducts = JSON.parse(JSON.stringify(MC_DEFAULT_PRODUCTS)); }
+      return _mcProducts;
+    }
+
+    function mcSave() {
+      try { localStorage.setItem(MC_STORAGE_KEY, JSON.stringify(_mcProducts)); } catch {}
+    }
+
+    function mcCostoTotal(p) {
+      return (p.ings || []).reduce((s, i) => s + Number(i.costo || 0), 0);
+    }
+
+    function mcMargenReal(p) {
+      const costo = mcCostoTotal(p);
+      const venta = Number(p.precioVenta || 0);
+      if (!venta) return 0;
+      return ((venta - costo) / venta) * 100;
+    }
+
+    function mcMargenClass(real, objetivo) {
+      if (real >= objetivo) return "ok";
+      if (real >= objetivo * 0.85) return "warn";
+      return "danger";
+    }
+
+    function mcCategories() {
+      const cats = [...new Set(mcLoad().map(p => p.cat).filter(Boolean))].sort();
+      return cats;
+    }
+
+    function mcSwitchTab(tab) {
+      const verEl  = document.getElementById("menu-costs-view-section");
+      const editEl = document.getElementById("menu-costs-edit-section");
+      if (!verEl || !editEl) return;
+      if (tab === "editar") {
+        verEl.style.display  = "none";
+        editEl.style.display = "";
+        mcRenderEditList();
+      } else {
+        verEl.style.display  = "";
+        editEl.style.display = "none";
+        mcRenderCards();
+      }
+    }
+
+    function mcRenderCatChips() {
+      const el = document.getElementById("mc-cat-chips");
+      if (!el) return;
+      const cats = mcCategories();
+      el.innerHTML = [
+        `<button class="mc-chip${_mcActiveCat === "" ? " active" : ""}" onclick="mcSetCat('')">Todos</button>`,
+        ...cats.map(c => `<button class="mc-chip${_mcActiveCat === c ? " active" : ""}" onclick="mcSetCat('${escapeAttribute(c)}')">${escapeHtml(c)}</button>`),
+      ].join("");
+    }
+
+    function mcSetCat(cat) {
+      _mcActiveCat = cat;
+      mcRenderCards();
+    }
+
+    function mcRenderCards() {
+      mcRenderCatChips();
+      const grid = document.getElementById("mc-cards-grid");
+      if (!grid) return;
+      const term = (document.getElementById("mc-search")?.value || "").toLowerCase().trim();
+      let prods = mcLoad();
+      if (_mcActiveCat) prods = prods.filter(p => p.cat === _mcActiveCat);
+      if (term) prods = prods.filter(p => {
+        const haystack = [p.nombre, p.cat, ...(p.ings || []).map(i => i.txt)].join(" ").toLowerCase();
+        return haystack.includes(term);
+      });
+      if (!prods.length) {
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1">No hay productos que coincidan.</div>`;
+        return;
+      }
+      grid.innerHTML = prods.map(p => {
+        const costo = mcCostoTotal(p);
+        const margenR = mcMargenReal(p);
+        const cls = mcMargenClass(margenR, p.margen);
+        const ingsHtml = (p.ings || []).map(i =>
+          `<li class="mc-ing-row"><span>${escapeHtml(i.txt)}</span><strong>${formatCurrency(i.costo)}</strong></li>`
+        ).join("");
+        return `
+          <div class="mc-card">
+            <div class="mc-card-head">
+              <span class="mc-card-emoji">${escapeHtml(p.emoji || "🍽")}</span>
+              <div class="mc-card-info">
+                <div class="mc-card-name">${escapeHtml(p.nombre)}</div>
+                <div class="mc-card-cat">${escapeHtml(p.cat || "")}</div>
+              </div>
+              <button class="mc-card-edit-btn" title="Editar" onclick="mcEditProduct(${p.id})">✎</button>
+            </div>
+            <ul class="mc-ings-list">${ingsHtml}</ul>
+            <div class="mc-card-footer">
+              <div class="mc-footer-item"><span class="mc-footer-label">Costo total</span><span class="mc-footer-val">${formatCurrency(costo)}</span></div>
+              <div class="mc-footer-item"><span class="mc-footer-label">Precio venta</span><span class="mc-footer-val">${formatCurrency(p.precioVenta)}</span></div>
+              <div class="mc-footer-item"><span class="mc-footer-label">Margen objetivo</span><span class="mc-footer-val">${p.margen}%</span></div>
+              <div class="mc-footer-item"><span class="mc-footer-label">Margen real</span><span class="mc-footer-val ${cls}">${margenR.toFixed(1)}%</span></div>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    function mcRenderEditList(filter = "") {
+      const el = document.getElementById("mc-edit-list");
+      if (!el) return;
+      const term = filter.toLowerCase().trim();
+      let prods = mcLoad();
+      if (term) prods = prods.filter(p => (p.nombre + " " + p.cat).toLowerCase().includes(term));
+      if (!prods.length) {
+        el.innerHTML = `<div class="empty">Sin resultados.</div>`;
+        return;
+      }
+      el.innerHTML = prods.map(p => {
+        const margenR = mcMargenReal(p);
+        const cls = mcMargenClass(margenR, p.margen);
+        return `<button class="mc-edit-list-item${_mcEditingId === p.id ? " active" : ""}" onclick="mcEditProduct(${p.id})">
+          <span class="mc-edit-list-emoji">${escapeHtml(p.emoji || "🍽")}</span>
+          <span class="mc-edit-list-name">${escapeHtml(p.nombre)}</span>
+          <span class="mc-edit-list-cat ${cls}" style="font-size:11px;font-weight:700">${margenR.toFixed(0)}%</span>
+        </button>`;
+      }).join("");
+    }
+
+    function mcNewProduct() {
+      mcSwitchTab("editar");
+      _mcEditingId = null;
+      mcRenderEditList();
+      mcRenderFormFor(null);
+    }
+
+    function mcEditProduct(id) {
+      _mcEditingId = id;
+      mcSwitchTab("editar");
+      mcRenderEditList();
+      const p = mcLoad().find(x => x.id === id);
+      mcRenderFormFor(p);
+    }
+
+    function mcRenderFormFor(p) {
+      const area = document.getElementById("mc-form-area");
+      if (!area) return;
+      const isNew = !p;
+      const prod = p || { id: null, nombre: "", emoji: "🍽", cat: "", precioVenta: 0, margen: 60, ings: [] };
+      const ingsRows = prod.ings.map((ing, idx) => mcIngRowHtml(idx, ing.txt, ing.costo)).join("");
+      area.innerHTML = `
+        <h3 style="margin:0 0 12px;font-size:16px;font-weight:700">${isNew ? "Nuevo producto" : escapeHtml(prod.nombre)}</h3>
+        <div id="mc-live-costs" class="mc-form-cost-live"></div>
+        <form id="mc-product-form" class="form-grid" onsubmit="mcSaveForm(event)">
+          <input type="hidden" id="mc-form-id" value="${prod.id || ""}">
+          <div class="form-field"><label>Nombre</label><input name="nombre" required value="${escapeAttribute(prod.nombre)}" oninput="mcUpdateLive()"></div>
+          <div class="form-field"><label>Emoji</label><input name="emoji" value="${escapeAttribute(prod.emoji || "🍽")}" style="width:70px"></div>
+          <div class="form-field"><label>Categoría</label><input name="cat" value="${escapeAttribute(prod.cat)}" list="mc-cat-datalist"></div>
+          <datalist id="mc-cat-datalist">${mcCategories().map(c => `<option value="${escapeAttribute(c)}">`).join("")}</datalist>
+          <div class="form-field"><label>Precio venta ($)</label><input name="precioVenta" type="number" min="0" step="1" required value="${prod.precioVenta}" oninput="mcUpdateLive()"></div>
+          <div class="form-field"><label>Margen objetivo (%)</label><input name="margen" type="number" min="0" max="100" step="0.1" required value="${prod.margen}" oninput="mcUpdateLive()"></div>
+          <div class="form-field full">
+            <label>Ingredientes</label>
+            <div id="mc-ing-editor" class="mc-ing-editor">${ingsRows}</div>
+            <button type="button" class="filter" style="margin-top:4px" onclick="mcAddIngRow()">+ Agregar ingrediente</button>
+          </div>
+          <div class="actions full" style="margin-top:4px">
+            <button class="approve" type="submit">Guardar cambios</button>
+            ${!isNew ? `<button class="reject" type="button" onclick="mcDeleteProduct(${prod.id})">Eliminar</button>` : ""}
+            <button class="filter" type="button" onclick="mcCancelForm()">Cancelar</button>
+          </div>
+        </form>`;
+      mcUpdateLive();
+    }
+
+    function mcIngRowHtml(idx, txt = "", costo = 0) {
+      return `<div class="mc-ing-editor-row" id="mc-ing-row-${idx}">
+        <input type="text" placeholder="Ingrediente" value="${escapeAttribute(txt)}" oninput="mcUpdateLive()">
+        <input type="number" placeholder="Costo $" min="0" step="1" value="${costo}" oninput="mcUpdateLive()">
+        <button type="button" class="mc-ing-del" onclick="mcRemoveIngRow(this)">✕</button>
+      </div>`;
+    }
+
+    function mcAddIngRow() {
+      const editor = document.getElementById("mc-ing-editor");
+      if (!editor) return;
+      const idx = editor.children.length;
+      const div = document.createElement("div");
+      div.className = "mc-ing-editor-row";
+      div.id = `mc-ing-row-${idx}`;
+      div.innerHTML = mcIngRowHtml(idx, "", 0).replace(/^<div[^>]*>/, "").replace(/<\/div>$/, "");
+      editor.appendChild(div);
+    }
+
+    function mcRemoveIngRow(btn) {
+      btn.closest(".mc-ing-editor-row")?.remove();
+      mcUpdateLive();
+    }
+
+    function mcReadFormIngs() {
+      const rows = document.querySelectorAll("#mc-ing-editor .mc-ing-editor-row");
+      return Array.from(rows).map(row => {
+        const inputs = row.querySelectorAll("input");
+        return { txt: inputs[0]?.value.trim() || "", costo: Number(inputs[1]?.value || 0) };
+      }).filter(i => i.txt);
+    }
+
+    function mcUpdateLive() {
+      const liveEl = document.getElementById("mc-live-costs");
+      if (!liveEl) return;
+      const venta = Number(document.querySelector("#mc-product-form [name=precioVenta]")?.value || 0);
+      const margenObj = Number(document.querySelector("#mc-product-form [name=margen]")?.value || 0);
+      const ings = mcReadFormIngs();
+      const costo = ings.reduce((s, i) => s + i.costo, 0);
+      const margenR = venta ? ((venta - costo) / venta) * 100 : 0;
+      const cls = mcMargenClass(margenR, margenObj);
+      liveEl.innerHTML = `
+        <div class="mc-form-cost-item"><span class="mc-form-cost-label">Costo total</span><span class="mc-form-cost-val">${formatCurrency(costo)}</span></div>
+        <div class="mc-form-cost-item"><span class="mc-form-cost-label">Precio venta</span><span class="mc-form-cost-val">${formatCurrency(venta)}</span></div>
+        <div class="mc-form-cost-item"><span class="mc-form-cost-label">Margen real</span><span class="mc-form-cost-val ${cls}">${margenR.toFixed(1)}%</span></div>
+        <div class="mc-form-cost-item"><span class="mc-form-cost-label">Objetivo</span><span class="mc-form-cost-val">${margenObj}%</span></div>`;
+    }
+
+    function mcSaveForm(event) {
+      event.preventDefault();
+      const form = event.target;
+      const idVal = document.getElementById("mc-form-id")?.value;
+      const nombre = form.nombre.value.trim();
+      const emoji = form.emoji.value.trim() || "🍽";
+      const cat = form.cat.value.trim();
+      const precioVenta = Number(form.precioVenta.value);
+      const margen = Number(form.margen.value);
+      const ings = mcReadFormIngs();
+      const prods = mcLoad();
+      if (idVal) {
+        const idx = prods.findIndex(p => String(p.id) === String(idVal));
+        if (idx !== -1) prods[idx] = { ...prods[idx], nombre, emoji, cat, precioVenta, margen, ings };
+      } else {
+        const newId = (Math.max(0, ...prods.map(p => p.id)) + 1);
+        prods.push({ id: newId, nombre, emoji, cat, precioVenta, margen, ings });
+        _mcEditingId = newId;
+      }
+      mcSave();
+      mcRenderEditList();
+      mcRenderCards();
+      showToast("Producto guardado");
+    }
+
+    function mcDeleteProduct(id) {
+      if (!confirm("¿Eliminar este producto del menú?")) return;
+      _mcProducts = mcLoad().filter(p => p.id !== id);
+      _mcEditingId = null;
+      mcSave();
+      mcRenderEditList();
+      mcRenderCards();
+      const area = document.getElementById("mc-form-area");
+      if (area) area.innerHTML = `<div class="empty" style="padding:32px 0;text-align:center">Producto eliminado. Seleccioná otro o creá uno nuevo.</div>`;
+      showToast("Producto eliminado");
+    }
+
+    function mcCancelForm() {
+      _mcEditingId = null;
+      mcRenderEditList();
+      const area = document.getElementById("mc-form-area");
+      if (area) area.innerHTML = `<div class="empty" style="padding:32px 0;text-align:center">Seleccioná un producto de la lista o creá uno nuevo.</div>`;
+    }
+
   </script>
 </body>
 </html>
