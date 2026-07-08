@@ -1026,7 +1026,7 @@ function startApprovalPanelServer() {
         const _VIEW_FIELDS = {
           erp:            new Set(["dashboard","pipeline","events","confirmedEvents","quotes"]),
           commercial:     new Set(["dashboard","pipeline","events","confirmedEvents","quotes","customers","venues"]),
-          events:         new Set(["events","confirmedEvents","quotes","dashboard"]),
+          events:         new Set(["events","confirmedEvents","quotes","dashboard","venues","customers"]),
           purchases:      new Set(["purchases","purchaseOrders","purchaseReceipts","inventory","inventoryMovements","operationalInventory","productMaster","providers","productAlerts"]),
           stock:          new Set(["inventory","inventoryMovements","operationalInventory","productMaster","productAlerts"]),
           finance:        new Set(["financeDashboard","purchases","paymentOrdersDashboard","providers"]),
