@@ -875,6 +875,46 @@
       .mc-cards-grid { grid-template-columns: 1fr; }
     }
 
+    .vp-section { margin-top: 16px; border: 0.5px solid var(--border); border-radius: 12px; padding: 1.25rem; background: var(--surface-2); }
+    .vp-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+    .vp-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+    .vp-sub { font-size: 12px; color: var(--text-secondary); }
+    .vp-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1rem; }
+    .vp-kpi { background: var(--surface-1); border-radius: var(--radius); padding: 0.75rem 1rem; }
+    .vp-kpi-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 3px; }
+    .vp-kpi-value { font-size: 18px; font-weight: 500; }
+    .vp-kpi-value.green { color: var(--text-success); }
+    .vp-kpi-value.amber { color: var(--text-warning); }
+    .vp-params { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+    .vp-field label { font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+    .vp-field input, .vp-field select { width: 100%; height: 34px; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 0 10px; font-size: 13px; background: var(--surface-2); color: var(--text-primary); }
+    .vp-table-wrap { overflow-x: auto; }
+    .vp-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
+    .vp-table th { font-size: 11px; font-weight: 500; color: var(--text-secondary); text-align: left; padding: 5px 8px; border-bottom: 0.5px solid var(--border); white-space: nowrap; }
+    .vp-table th.r, .vp-table td.r { text-align: right; }
+    .vp-table td { padding: 7px 8px; border-bottom: 0.5px solid var(--border); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vp-table tr:last-child td { border-bottom: none; }
+    .vp-table tr.vp-total td { font-weight: 500; background: var(--surface-1); }
+    .vp-prod-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+    .vp-prod-cat { font-size: 11px; color: var(--text-secondary); }
+    .vp-conv-wrap { display: flex; align-items: center; gap: 3px; justify-content: flex-end; }
+    .vp-conv-wrap input { width: 46px; height: 24px; border: 0.5px solid var(--border); border-radius: var(--radius); padding: 0 5px; font-size: 12px; text-align: right; background: var(--surface-2); color: var(--text-primary); }
+    .vp-chip { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 20px; font-weight: 500; }
+    .vp-chip.g { background: var(--bg-success); color: var(--text-success); }
+    .vp-chip.a { background: var(--bg-warning); color: var(--text-warning); }
+    .vp-chip.r { background: var(--bg-danger); color: var(--text-danger); }
+    .vp-divider { border: none; border-top: 0.5px solid var(--border); margin: 1rem 0; }
+    .vp-compras-title { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
+    .vp-compras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .vp-compras-item { background: var(--surface-1); border-radius: var(--radius); padding: 6px 10px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .vp-compras-item span:last-child { font-weight: 500; white-space: nowrap; }
+    .vp-actions { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+    @media (max-width: 700px) {
+      .vp-kpis { grid-template-columns: repeat(2, 1fr); }
+      .vp-params { grid-template-columns: 1fr 1fr; }
+      .vp-compras-grid { grid-template-columns: 1fr; }
+    }
+
     .sanit-tabs-bar {
       display: flex; overflow-x: auto; border-bottom: 1px solid #e5e7eb;
       padding: 0 14px; scrollbar-width: none; background: #fafafa;
@@ -7194,6 +7234,17 @@
                 <label>Fecha</label>
                 <input name="eventDate" type="date">
               </div>
+              <div class="form-field">
+                <label>Tipo de evento</label>
+                <select name="eventType">
+                  <option value="catering">Catering</option>
+                  <option value="venta">A la venta</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Cantidad de invitados</label>
+                <input name="guestCount" type="number" min="0" placeholder="0">
+              </div>
                 </div>
               </section>
               <section class="guided-form-section" data-guided-step-panel="1" hidden>
@@ -7208,7 +7259,7 @@
                 <div class="guided-form-panel">
               <div class="form-field">
                 <label>Invitados</label>
-                <input name="guestCount" inputmode="decimal">
+                <input inputmode="decimal">
               </div>
                 </div>
               </section>
@@ -8731,7 +8782,10 @@
 
         <div class="form-field">
           <label>Tipo de evento</label>
-          <input name="eventType">
+          <select>
+            <option value="catering">Catering</option>
+            <option value="venta">A la venta</option>
+          </select>
         </div>
 
         <div class="form-field">
@@ -8741,7 +8795,7 @@
 
         <div class="form-field">
           <label>Invitados</label>
-          <input name="guestCount" type="number" min="1">
+          <input type="number" min="1">
         </div>
 
         <div class="form-field">
@@ -9063,7 +9117,10 @@
 
         <div class="form-field">
           <label>Tipo de evento</label>
-          <input name="eventType">
+          <select>
+            <option value="catering">Catering</option>
+            <option value="venta">A la venta</option>
+          </select>
         </div>
 
         <div class="form-field">
@@ -9073,7 +9130,7 @@
 
         <div class="form-field">
           <label>Invitados</label>
-          <input name="guestCount" type="number" min="0">
+          <input type="number" min="0">
         </div>
 
         <div class="form-field">
@@ -17652,6 +17709,7 @@
           ${renderEventCheck("Menu", event.checklist?.menu)}
           ${renderEventCheck("Pagos", event.checklist?.payments)}
         </div>
+        ${event.eventType === "venta" ? renderVentaPlanner(event) : ""}
         ${event.notes ? `<div class="event-detail-item" style="margin-top:12px;"><span>Notas</span>${escapeHtml(event.notes)}</div>` : ""}
         <div class="actions" style="margin-top:12px;">
           <button class="filter" onclick="editErpEvent('${escapeAttribute(event.id)}'); hideDetail();">Editar</button>
@@ -19365,7 +19423,7 @@
       if (!event) return;
       showErpEventForm();
       const form = document.getElementById("erp-event-form");
-      ["id", "name", "clientName", "eventDate", "eventTime", "guestCount", "priceMode", "pricePerPerson", "servicePriceTotal", "status", "invoiceRequirement", "invoiceStatus", "invoiceNumber", "owner", "role", "venue", "assistanceMode", "waiterCount", "dietaryRestrictionMode", "dietaryRestrictions", "includesDrinks", "tableware", "tablewareQuantities", "tablewareDetail", "largeContainers", "smallContainers", "staff", "schedule", "nextAction", "notes", "checklistDetails"]
+      ["id", "name", "clientName", "eventDate", "eventTime", "guestCount", "eventType", "priceMode", "pricePerPerson", "servicePriceTotal", "status", "invoiceRequirement", "invoiceStatus", "invoiceNumber", "owner", "role", "venue", "assistanceMode", "waiterCount", "dietaryRestrictionMode", "dietaryRestrictions", "includesDrinks", "tableware", "tablewareQuantities", "tablewareDetail", "largeContainers", "smallContainers", "staff", "schedule", "nextAction", "notes", "checklistDetails"]
         .forEach((field) => setFormValue(form, field, event[field] || ""));
       if (!form.elements.invoiceRequirement.value) form.elements.invoiceRequirement.value = "invoice_required";
       toggleEventInvoiceFields(form);
@@ -23114,6 +23172,249 @@
       mcRenderEditList();
       const area = document.getElementById("mc-form-area");
       if (area) area.innerHTML = `<div class="empty" style="padding:32px 0;text-align:center">Seleccioná un producto de la lista o creá uno nuevo.</div>`;
+    }
+
+    // ── PLANIFICADOR DE VENTA ──────────────────────────────────────────────
+
+    function vpGetState(event) {
+      const planner = event.ventaPlanner || {};
+      const allProds = mcLoad();
+      const guestCount = Number(planner.guestCount || event.guestCount || 100);
+      const baseConv = Number(planner.baseConv || 30);
+      const products = allProds.map((p) => {
+        const saved = (planner.products || []).find((x) => x.id === p.id) || {};
+        return {
+          ...p,
+          enabled: saved.enabled !== undefined ? saved.enabled : true,
+          convRate: saved.convRate !== undefined ? Number(saved.convRate) : baseConv,
+        };
+      });
+      return { guestCount, baseConv, products };
+    }
+
+    function vpCalcProduct(p, guestCount) {
+      const units = Math.round(guestCount * p.convRate / 100);
+      const costoUnit = mcCostoTotal(p);
+      const ingreso = units * (p.precioVenta || 0);
+      const costoTotal = units * costoUnit;
+      const margen = ingreso > 0 ? ((ingreso - costoTotal) / ingreso) * 100 : 0;
+      return { units, costoUnit, ingreso, costoTotal, margen };
+    }
+
+    function vpMargenChip(margen) {
+      const cls = margen >= 60 ? "g" : margen >= 40 ? "a" : "r";
+      return `<span class="vp-chip ${cls}">${Math.round(margen)}%</span>`;
+    }
+
+    function renderVentaPlanner(event) {
+      const { guestCount, baseConv, products } = vpGetState(event);
+      const active = products.filter((p) => p.enabled);
+      let totalIngreso = 0, totalCosto = 0, totalUnits = 0;
+      active.forEach((p) => {
+        const c = vpCalcProduct(p, guestCount);
+        totalIngreso += c.ingreso;
+        totalCosto += c.costoTotal;
+        totalUnits += c.units;
+      });
+      const totalMargen = totalIngreso > 0 ? ((totalIngreso - totalCosto) / totalIngreso) * 100 : 0;
+
+      const rows = products.map((p) => {
+        const c = vpCalcProduct(p, guestCount);
+        const dis = !p.enabled;
+        const st = dis ? `style="opacity:0.4"` : "";
+        return `
+          <tr ${st}>
+            <td style="width:28px"><input type="checkbox" ${p.enabled ? "checked" : ""} onchange="vpToggle('${escapeAttribute(event.id)}', ${p.id}, this.checked)"></td>
+            <td style="width:30%"><div class="vp-prod-name">${escapeHtml(p.nombre)}</div><div class="vp-prod-cat">${escapeHtml(p.cat || "")}</div></td>
+            <td class="r" style="width:80px"><div class="vp-conv-wrap"><input type="number" min="0" max="100" value="${p.convRate}" onchange="vpSetConv('${escapeAttribute(event.id)}', ${p.id}, this.value)" ${dis ? "disabled" : ""}>%</div></td>
+            <td class="r" style="width:55px">${dis ? "—" : escapeHtml(String(c.units))}</td>
+            <td class="r" style="width:80px">${dis ? "—" : formatCurrency(p.precioVenta || 0)}</td>
+            <td class="r" style="width:90px">${dis ? "—" : formatCurrency(c.ingreso)}</td>
+            <td class="r" style="width:80px">${dis ? "—" : formatCurrency(c.costoUnit)}</td>
+            <td class="r" style="width:90px">${dis ? "—" : formatCurrency(c.costoTotal)}</td>
+            <td class="r" style="width:65px">${dis ? "—" : vpMargenChip(c.margen)}</td>
+          </tr>`;
+      }).join("");
+
+      const shopList = vpShoppingList(event);
+      const shopHtml = shopList.length
+        ? shopList.map((item) => `
+            <div class="vp-compras-item">
+              <span>${escapeHtml(item.txt)}</span>
+              <span>${formatCurrency(item.costo)}</span>
+            </div>`).join("")
+        : `<div class="empty">Sin ingredientes calculados.</div>`;
+
+      return `
+        <div class="vp-section" id="vp-section-${escapeAttribute(event.id)}">
+          <div class="vp-header">
+            <div>
+              <div class="vp-title">Planificador de venta</div>
+              <div class="vp-sub">Ajustá asistentes y conversión por producto para proyectar costos e ingresos</div>
+            </div>
+          </div>
+          <div class="vp-kpis">
+            <div class="vp-kpi">
+              <div class="vp-kpi-label">Asistentes estimados</div>
+              <div class="vp-kpi-value">${guestCount}</div>
+            </div>
+            <div class="vp-kpi">
+              <div class="vp-kpi-label">Ingresos proyectados</div>
+              <div class="vp-kpi-value green">${formatCurrency(totalIngreso)}</div>
+            </div>
+            <div class="vp-kpi">
+              <div class="vp-kpi-label">Costo total</div>
+              <div class="vp-kpi-value amber">${formatCurrency(totalCosto)}</div>
+            </div>
+            <div class="vp-kpi">
+              <div class="vp-kpi-label">Margen estimado</div>
+              <div class="vp-kpi-value ${totalMargen >= 50 ? "green" : "amber"}">${Math.round(totalMargen)}%</div>
+            </div>
+          </div>
+          <div class="vp-params">
+            <div class="vp-field">
+              <label>Asistentes estimados</label>
+              <input type="number" min="1" value="${guestCount}" onchange="vpSetGuests('${escapeAttribute(event.id)}', this.value)">
+            </div>
+            <div class="vp-field">
+              <label>Tasa de compra base (%)</label>
+              <input type="number" min="1" max="100" value="${baseConv}" onchange="vpSetBaseConv('${escapeAttribute(event.id)}', this.value)">
+            </div>
+          </div>
+          <div class="vp-table-wrap">
+            <table class="vp-table">
+              <thead>
+                <tr>
+                  <th style="width:28px"></th>
+                  <th>Producto</th>
+                  <th class="r" style="width:80px">Conv. %</th>
+                  <th class="r" style="width:55px">Unid.</th>
+                  <th class="r" style="width:80px">P. venta</th>
+                  <th class="r" style="width:90px">Ingreso</th>
+                  <th class="r" style="width:80px">Costo u.</th>
+                  <th class="r" style="width:90px">Costo total</th>
+                  <th class="r" style="width:65px">Margen</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+              <tfoot>
+                <tr class="vp-total">
+                  <td></td>
+                  <td>Total</td>
+                  <td></td>
+                  <td class="r">${totalUnits}</td>
+                  <td></td>
+                  <td class="r">${formatCurrency(totalIngreso)}</td>
+                  <td></td>
+                  <td class="r">${formatCurrency(totalCosto)}</td>
+                  <td class="r">${vpMargenChip(totalMargen)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <hr class="vp-divider">
+          <div class="vp-compras-title"><i class="ti ti-shopping-cart" aria-hidden="true"></i> Lista de compras estimada (ingredientes)</div>
+          <div class="vp-compras-grid">${shopHtml}</div>
+          <div class="vp-actions">
+            <button class="filter" type="button" onclick="vpCreatePurchaseOrder('${escapeAttribute(event.id)}')">
+              <i class="ti ti-file-invoice" aria-hidden="true"></i> Pre-cargar orden de compra
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function vpShoppingList(event) {
+      const { guestCount, products } = vpGetState(event);
+      const map = {};
+      products.filter((p) => p.enabled).forEach((p) => {
+        const { units } = vpCalcProduct(p, guestCount);
+        (p.ings || []).forEach((ing) => {
+          const key = ing.txt.toLowerCase().trim();
+          if (!map[key]) map[key] = { txt: ing.txt, costo: 0 };
+          map[key].costo += Number(ing.costo || 0) * units;
+        });
+      });
+      return Object.values(map).filter((i) => i.costo > 0).sort((a, b) => b.costo - a.costo);
+    }
+
+    async function vpSavePlanner(eventId, patch) {
+      const event = (erpData.events || []).find((e) => e.id === eventId);
+      if (!event) return;
+      const current = event.ventaPlanner || {};
+      const updated = { ...event, ventaPlanner: { ...current, ...patch } };
+      const response = await fetch("/api/erp-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+      const result = await readJsonResponse(response);
+      if (!result.ok) { showNotice(result.error || "No se pudo guardar.", "error"); return; }
+      await refreshAfterMutation("event", "events");
+      const freshEvent = (erpData.events || []).find((e) => e.id === eventId);
+      if (freshEvent) {
+        const section = document.getElementById(`vp-section-${eventId}`);
+        if (section) section.outerHTML = renderVentaPlanner(freshEvent);
+      }
+    }
+
+    function vpSetGuests(eventId, value) {
+      vpSavePlanner(eventId, { guestCount: Number(value) });
+    }
+
+    function vpSetBaseConv(eventId, value) {
+      const event = (erpData.events || []).find((e) => e.id === eventId);
+      const { products } = vpGetState(event || {});
+      const updatedProds = products.map((p) => ({ id: p.id, enabled: p.enabled, convRate: Number(value) }));
+      vpSavePlanner(eventId, { baseConv: Number(value), products: updatedProds });
+    }
+
+    function vpToggle(eventId, productId, enabled) {
+      const event = (erpData.events || []).find((e) => e.id === eventId);
+      const { products } = vpGetState(event || {});
+      const updated = products.map((p) => ({
+        id: p.id, enabled: p.id === productId ? enabled : p.enabled, convRate: p.convRate,
+      }));
+      vpSavePlanner(eventId, { products: updated });
+    }
+
+    function vpSetConv(eventId, productId, value) {
+      const event = (erpData.events || []).find((e) => e.id === eventId);
+      const { products } = vpGetState(event || {});
+      const updated = products.map((p) => ({
+        id: p.id, enabled: p.enabled, convRate: p.id === productId ? Number(value) : p.convRate,
+      }));
+      vpSavePlanner(eventId, { products: updated });
+    }
+
+    function vpCreatePurchaseOrder(eventId) {
+      const event = (erpData.events || []).find((e) => e.id === eventId);
+      if (!event) return;
+      const list = vpShoppingList(event);
+      if (!list.length) { showNotice("No hay ingredientes para generar la orden.", "error"); return; }
+      showWorkspaceView("purchases");
+      setTimeout(() => {
+        const btn = document.querySelector('[onclick*="openPurchaseForm"]') || document.querySelector('[onclick*="newPurchase"]');
+        if (btn) btn.click();
+        setTimeout(() => {
+          const notesEl = document.querySelector('[name="notes"], [name="description"]');
+          if (notesEl) notesEl.value = `Compras para evento a la venta: ${event.name || ""}`;
+          const eventSel = document.querySelector('[name="eventId"]');
+          if (eventSel) eventSel.value = eventId;
+          list.forEach((item, i) => {
+            if (i > 0) {
+              const addBtn = document.querySelector('[onclick="addPurchaseItemRow()"]');
+              if (addBtn) addBtn.click();
+            }
+            const rows = document.querySelectorAll("#purchase-items .purchase-item");
+            const row = rows[i];
+            if (row) {
+              const desc = row.querySelector(".purchase-item-description");
+              if (desc) { desc.value = item.txt; desc.dispatchEvent(new Event("input")); }
+            }
+          });
+          showNotice("Orden pre-cargada con los ingredientes del planificador.", "success");
+        }, 400);
+      }, 300);
     }
 
   </script>
