@@ -1315,24 +1315,28 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/status") {
+        requirePanelPermission(request, response, "purchases:write");
         const body = await readJsonBody(request);
         updateChatManualStatus(body.phone, body.status);
         return sendJson(response, { ok: true });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/manual-budget") {
+        requirePanelPermission(request, response, "purchases:write");
         const body = await readJsonBody(request);
         const record = createManualBudgetRecord(body);
         return sendJson(response, { ok: true, record });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/update-budget") {
+        requirePanelPermission(request, response, "purchases:write");
         const body = await readJsonBody(request);
         const record = updateBudgetRecord(body.phone, body);
         return sendJson(response, { ok: true, record });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-budget") {
+        requirePanelPermission(request, response, "purchases:write");
         const body = await readJsonBody(request);
         deleteBudgetRecord(body.phone);
         return sendJson(response, { ok: true });
@@ -8226,6 +8230,8 @@ function normalizeErpEvent(event = {}) {
       paymentStatus: purchase.paymentStatus,
       totalAmount: purchase.totalAmount,
     })),
+    eventType: normalizeText(event.eventType || "catering"),
+    ventaPlanner: event.ventaPlanner || undefined,
     createdAt: event.createdAt || "",
     updatedAt: event.updatedAt || "",
   };
