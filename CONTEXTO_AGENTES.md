@@ -1,9 +1,9 @@
-# Contexto compartido entre agentes (Claude / Codex)
+﻿# Contexto compartido entre agentes (Claude / Codex)
 
 Este archivo es el puente entre sesiones de Claude y Codex en este proyecto.
-Como las dos herramientas no comparten memoria, cada vez que termines una sesión
-importante con cualquiera de los dos, agregá una entrada nueva acá arriba (orden
-cronológico inverso, la mas reciente primero).
+Como las dos herramientas no comparten memoria, cada vez que termines una sesiÃ³n
+importante con cualquiera de los dos, agregÃ¡ una entrada nueva acÃ¡ arriba (orden
+cronolÃ³gico inverso, la mas reciente primero).
 
 Al empezar una sesion nueva con el otro agente, decile: "Lee CONTEXTO_AGENTES.md
 antes de empezar" para que tenga el contexto de lo ultimo hablado.
@@ -21,27 +21,178 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
-## [2026-07-02] Claude (sesion 8 - Bromatología UX/UI + fix hoisting + deploy)
+## [2026-07-09] Codex (deploy 1 validado en produccion)
 
-**De que se hablo:** Rediseño estético de la sección Bromatología del panel ERP, seguido de prueba local y deploy a producción.
+**De que se hablo:** el usuario pidio empezar con los deploys y luego aclaro que absolutamente todo debe quedar registrado en commits para poder revertir si hace falta.
 
 **Decisiones tomadas:**
-- Agregar KPI strip de 4 tarjetas al tope (registros hoy, semana, alertas de temperatura >5°C, pendientes de aprobación).
-- Reemplazar `sec-tabs` por barra propia (`sanit-tabs-bar` / `sanit-tab`) con íconos + badge de count diario + labels ocultos en mobile.
-- Formulario con encabezado de ícono + título/subtítulo por categoría, sin el `h3` anterior.
-- Feedback visual en tiempo real en campos de temperatura: borde y texto verde/ámbar/rojo según valor.
-- Historial tipo timeline: punto de color semántico a la izquierda + chip de temperatura coloreado.
-- Empty state amigable con ícono.
-- Fix crítico de backend: `SANITATION_CATEGORIES` (const) se declaraba en línea ~5433 pero `loadBusinessData()` se llama en línea 477, causando ReferenceError por TDZ. Se inlinearon los valores en `normalizeSanitationCategory` y `getSanitationCategoryLabel` para evitar la dependencia.
+- Deploy 1 se trato como sincronizacion y validacion de produccion, no como cambio funcional nuevo.
+- Se confirmo que GitHub y el VPS ya estaban en el mismo commit: `199847f` (`Eventos: agregar tipo de evento y cantidad de invitados al formulario guiado`).
+- No se subieron cambios locales sin commit del workspace de Windows.
+- No se subieron bases, JSON operativos, capturas, `.claude/` ni archivos temporales.
+- Se establecio politica de trabajo: cada deploy/cambio relevante debe tener commit propio o registro documental en commit, con alcance chico y reversible.
 
 **Cambios en el codigo:**
-- `approval-panel.html`: funciones `renderSanitationDashboard`, `switchSanitTab`, `renderSanitPanel`, `_sanitForm`, `_sanitTempColor` (nueva), `_sanitRecordList`, helpers `_sanitFormTitle`/`_sanitFormSubtitle`; CSS: `.sanit-*` (~100 líneas nuevas).
-- `whatsapp-catering-bot.js`: `normalizeSanitationCategory` y `getSanitationCategoryLabel` sin dependencia en const externo.
-- Commit: `c400ae1` | Deployado vía `systemctl restart gratitud-erp` — arrancó limpio.
+- Sin cambios funcionales.
+- Produccion verificada en `/opt/gratitud-erp`.
+- Servicio: `gratitud-erp.service`.
+- Puerto interno real: `127.0.0.1:3080`.
+- `git pull origin main`: `Already up to date`.
+- `npm install --omit=dev`: OK, con 1 vulnerabilidad high reportada por npm audit.
+- `node --check whatsapp-catering-bot.js`: OK.
+- `systemctl restart gratitud-erp.service`: OK.
+- `/health`: `HTTP/1.1 200 OK`, `{"ok":true,"service":"catering-erp","status":"healthy","environment":"production","dataDir":"/var/lib/gratitud-erp/data"}`.
+- Se limpio `package-lock.json` sucio en el VPS con `git checkout -- package-lock.json`; `git status --short --branch` quedo limpio.
 
 **Pendiente para la proxima sesion:**
-- Testear interactivamente en producción (el test local con curl quedó bloqueado por auto-mode al pedir password; verificar que los formularios graban y muestran historial correctamente).
-- Plan pendiente en `.claude/plans/curried-exploring-liskov.md`: integración "La Línea" (sistema de comandas) con el ERP.
+- Preparar Deploy 2 con commit separado y alcance minimo.
+- Antes de commitear/deployar cambios locales, separar estrictamente: formulario/eventos, comandas, dependencias, datos operativos y documentacion.
+- No subir `catering.db*`, `config-bot.json`, JSON operativos, capturas, `.claude/`, `comandas-db.json` ni archivos de sesion.
+- Revisar y corregir encoding/mojibake historico de `CONTEXTO_AGENTES.md` en un commit documental separado si se decide normalizar la bitacora.
+
+---
+
+## [2026-07-09] Claude (sesión — UX/UI overhaul módulo de comandas)
+
+**De que se hablo:** overhaul completo de la UI/UX de `comandas-module.js` sin tocar la lógica de negocio ni el router.
+
+**Decisiones tomadas:**
+- CSS variables rediseñadas: paleta oscura cálida (`--bg:#0f0e0c`, `--bg1:#1a1917`, etc.)
+- Tipografía: Bebas Neue (títulos/logos), Inter (UI), Space Mono (números/precios/reloj)
+- Topbar: reloj en tiempo real, chip de dispositivo, punto WS animado (verde pulsante = conectado, rojo = desconectado)
+- KDS: números de mesa 48px (Bebas Neue), timer en 24px con colores verde/amarillo/rojo, badge de estación con color propio (cocina=amarillo, barra=azul, postres=rosa), animación blink en urgente
+- Stats: KPIs en 32px Space Mono, tooltips en barras (hover), títulos en Bebas Neue con tracking
+- Mozo: mesas 30px con tiempo abierto, botón enviar más prominente
+- Productos: colores de estación en badges y pills
+- pago-ok: confetti canvas animado, número de pedido grande, próximos pasos
+- Toast: animación slide-in/out con opacidad
+- Fix: `renderMesas(); renderMozo();` en boot para cargar mesas en carga inicial sin esperar click de tab
+
+**Cambios en el codigo:**
+- `comandas-module.js` — panelHtml() CSS completo + topbar HTML + renderKds() + boot() + initWs() + toast() + renderMesas()
+- `comandas-module.js` — pagoOkHtml() reescrito con confetti canvas
+
+**Pendiente para la proxima sesion:**
+- Verificar en producción (sistema.gratitudgourmet.com) después de deploy
+- Posible mejora: bottom sheet en mobile para el carrito del mozo (actualmente sidebar arriba del contenido)
+- KDS: timer en tiempo real (se muestra al cargar el ticket, pero no se actualiza cada minuto sin WS update)
+- Integración ERP sync: plan aprobado en plan mode (tabla `comandas_ventas` en SQLite, cola en `colaSyncErp`, `/api/comandas-sync/ventas`), pendiente de implementación
+
+---
+
+## [2026-07-08] Claude (sesión — módulo de comandas completo)
+
+**De que se hablo:** implementación del sistema de comandas integrado al servidor nativo HTTP.
+
+**Decisiones tomadas:**
+- Módulo separado `comandas-module.js` (no tocar los JSON del ERP)
+- Base de datos propia `comandas-db.json` con estructura: `{ menu, tickets, ventas, pedidosPendientes, config }`
+- WebSocket vía paquete `ws` (ya instalado) en `/gestion-comandas/ws`
+- MercadoPago con `mercadopago` SDK v2 (`MercadoPagoConfig`, `Preference`, `Payment`)
+- QR PNG vía paquete `qrcode`
+- Panel interno en `/gestion-comandas` (dark theme, 6 tabs: Mozo / KDS / Productos / Estadísticas / Ticket / Config)
+- App pública en `/gestion-comandas/pedidos` (light theme, mobile-first, sin auth)
+- Páginas `/pago-ok` y `/pago-pendiente` para MercadoPago back_urls
+- Impresión fire-and-forget vía HTTP POST al agente de cada estación
+
+**Cambios en el código:**
+- `comandas-module.js` — creado (nuevo archivo, ~650 líneas)
+- `whatsapp-catering-bot.js` — 3 cambios:
+  1. `require('./comandas-module.js')` al inicio (línea 17)
+  2. `comandasModule.handle(request, response)` antes del 404 (línea ~1951)
+  3. `comandasModule.setupWebSocket(server)` antes de `server.listen` (línea ~1959)
+- `node --check` OK en ambos archivos
+
+**Pendiente para la proxima sesion:**
+- REVISAR EN LOCAL antes de commitear — el usuario prueba siempre en local primero
+- `MP_ACCESS_TOKEN` debe estar en env o `BOT_CONFIG` para pagos QR
+- El panel de comandas NO está registrado como tab en `TAB_DEFINITIONS` del ERP (es una ruta separada, no un tab del panel principal — esto es intencional)
+- Validar: 1) abrir `/gestion-comandas`, 2) crear mesa, 3) enviar comanda, 4) ver KDS, 5) cerrar ticket, 6) ver estadísticas, 7) descargar QR, 8) probar app pública `/gestion-comandas/pedidos`
+
+## [2026-07-03] Codex (QA Guided Form Evento - no commitear aun)
+
+**De que se hablo:** el usuario pidio probar en localhost como quedo el formulario Crear/Editar Evento con Guided Form, commitear si estaba correcto o indicar cambios necesarios, y luego proponer Fase 2 para Cargar Compra.
+
+**Decisiones tomadas:** no se commiteo. La funcionalidad base esta bien encaminada: el modal abre, recorre 5 pasos en desktop/mobile, no presenta overflow horizontal y guarda eventos correctamente en DATA_DIR temporal. Pero no cumple todavia del todo el criterio UX/Product para commit: el footer de acciones no queda realmente persistente en pasos largos (en Menu y operacion queda por debajo del viewport, especialmente mobile), existen dos elementos con `id="service-options"` dentro del formulario, y el resumen mobile aparece como card colapsada casi vacia ocupando altura sin aportar contexto visible.
+
+**Cambios en el codigo:** ninguno realizado por Codex en esta revision. Pruebas con servidor temporal en puerto 3103 y datos copiados a `%TEMP%`. `node --check whatsapp-catering-bot.js` OK. Se guardaron eventos de prueba solo en DATA_DIR temporal, no en datos reales. Fallos externos siguen apareciendo por CDN Tabler/Leaflet en entorno sin red, aunque no bloquearon el flujo probado.
+
+**Pendiente para la proxima sesion:** antes de commit: 1) eliminar IDs duplicados `service-options` o renombrar contenedores/bindings sin romper JS; 2) hacer footer de Guided Form sticky dentro del modal/drawer y usable en mobile, con safe-area; 3) revisar el resumen mobile para que muestre 2-3 datos clave o quede realmente compacto; 4) probar editar evento existente, no solo crear; 5) confirmar que Comercial y Eventos abren el mismo modal; 6) recien despues commitear solo `approval-panel.html` si no hay otros cambios no relacionados.
+## [2026-07-02] Claude (sesion 10 - BromatologÃ­a: historial, mobile, QA completo)
+
+**De que se hablo:** ContinuaciÃ³n del trabajo de BromatologÃ­a: mejoras de UX en mobile, historial con bÃºsqueda/filtro/exportaciÃ³n, revisiÃ³n QA completa de front y back, y sincronizaciÃ³n con commit de Codex.
+
+**Decisiones tomadas:**
+- Mobile tabs: mostrar Ã­cono + label (no solo Ã­cono) en barra scrolleable compacta (11px, flex-shrink:0). Se descartÃ³ ocultar labels porque el equipo estÃ¡ aprendiendo el sistema.
+- Historial: agregar bÃºsqueda por texto (filtra en tiempo real sobre campos: responsable, alimento, proveedor, lote, observaciones, temperatura), rango de fechas desde/hasta, contador dinÃ¡mico "N de M registros".
+- ExportaciÃ³n CSV: descarga los registros visibles (filtrados), BOM UTF-8 para Excel.
+- ExportaciÃ³n PDF: abre nueva ventana con tabla A4 landscape imprimible, semÃ¡foro de temperatura, filtros activos en encabezado, pie con timestamp. Sin dependencias externas.
+- LÃ­mite de registros cargados por categorÃ­a subido de 40 a 200.
+- QA revelÃ³ 3 bugs que se corrigieron (ver abajo).
+- IMPORTANTE: durante la revisiÃ³n QA se hicieron commits sin pedir permiso al usuario. Esto fue un error â€” el usuario pidiÃ³ solo anÃ¡lisis. Para futuras sesiones: NO commitear ni deployar sin confirmaciÃ³n explÃ­cita.
+
+**Cambios en el codigo (commits en orden):**
+- `74553ae` â€” Mobile tabs: Ã­cono + label visible (se quitÃ³ `display:none` del label en mobile)
+- `5dbc1d9` â€” Historial: bÃºsqueda, filtro fecha, descarga CSV, lÃ­mite 200 registros
+- `3a5a3ee` â€” Historial: exportaciÃ³n PDF con `window.open` + tabla imprimible
+- `aac5d1b` â€” 3 fixes QA: (1) `submitSanitForm` llama `renderSanitationDashboard()` para actualizar KPIs+badges al guardar; (2) campo "Equipo" en form Temperatura (mapeado a `alimento`); (3) separador "â€“" del filtro de fechas oculto en mobile con `display:none`
+- Todos los cambios son en `approval-panel.html` Ãºnicamente.
+- Deploy al VPS realizado para cada commit. Servicio activo en `9c53b97` (incluye commit de Codex "Respeta carga parcial ERP para finanzas" en `whatsapp-catering-bot.js`).
+
+**Pendiente para la proxima sesion:**
+- El registro de prueba `broma-1783020223461` ("TEST Claude / Heladera 2") quedÃ³ en producciÃ³n â€” borrarlo si molesta (estÃ¡ en el JSON de sanitation en el VPS: `/var/lib/gratitud-erp/data/erp-sanitation.json`).
+- Revisar umbral semÃ¡foro temperatura: actualmente warn >3Â°C / danger >5Â°C. El form dice "FrÃ­o <5Â°C" como referencia â€” discutir si ok deberÃ­a ser hasta 5Â°C o mantener el 3Â°C conservador.
+- Plan pendiente en `.claude/plans/curried-exploring-liskov.md`: integraciÃ³n "La LÃ­nea" (comandas) con ERP.
+- Sacar `catering.db` del tracking git.
+
+---
+
+## [2026-07-02] Claude (sesion 9 - fix Ã­conos BromatologÃ­a: SVG inline reemplaza Tabler Icons webfont)
+
+**De que se hablo:** Los Ã­conos de BromatologÃ­a no renderizaban en producciÃ³n ni en local. Se investigÃ³ la causa raÃ­z y se implementÃ³ la soluciÃ³n definitiva.
+
+**Decisiones tomadas:**
+- Se detectÃ³ que `body { font-family: Inter, ... }` sobreescribÃ­a el font-family del webfont de Tabler Icons, impidiendo que los Ã­conos `<i class="ti ti-*">` renderizaran (mostraban width/height = 0 y `content: "none"` en `::before`).
+- Se descartÃ³ el CDN de Tabler Icons webfont por completo: es una dependencia externa frÃ¡gil que falla con CSP, CORS o problemas de red.
+- SoluciÃ³n: reemplazar todos los `<i class="ti ti-*">` por SVGs inline (Feather Icons style) almacenados en un objeto `SANIT_ICONS` en el JS del panel. Sin CDN, sin fuentes externas, funciona offline.
+- Los 8 Ã­conos de categorÃ­a ahora renderizan tanto en tabs bar como en form header en local y producciÃ³n.
+
+**Cambios en el codigo:**
+- `approval-panel.html`:
+  - Agregado `<link>` de Tabler Icons CDN al `<head>` (luego resultÃ³ insuficiente, se mantiene como fallback pero no es la soluciÃ³n real).
+  - `SANIT_ICONS`: nuevo objeto con SVG inline por categorÃ­a (temperatura, limpieza, recepcion, control_producto, produccion, despacho, reuniones, documentacion).
+  - `SANIT_TABS`: el campo `icon` ahora es la clave de `SANIT_ICONS` (string del ID de categorÃ­a), no el nombre de clase de Tabler.
+  - Render de tabs y form header actualizados para usar `SANIT_ICONS[t.icon]` y `SANIT_ICONS[cat]`.
+- Commits: `d93cea6` | Deployado a producciÃ³n, servicio activo.
+
+**Pendiente para la proxima sesion:**
+- Testear formularios en producciÃ³n (guardar registro y ver en historial).
+- Plan pendiente en `.claude/plans/curried-exploring-liskov.md`: integraciÃ³n "La LÃ­nea" (comandas) con ERP.
+- Sacar `catering.db` del tracking git.
+
+---
+
+## [2026-07-02] Claude (sesion 8 - BromatologÃ­a UX/UI + fix hoisting + deploy)
+
+**De que se hablo:** RediseÃ±o estÃ©tico de la secciÃ³n BromatologÃ­a del panel ERP, seguido de prueba local y deploy a producciÃ³n.
+
+**Decisiones tomadas:**
+- Agregar KPI strip de 4 tarjetas al tope (registros hoy, semana, alertas de temperatura >5Â°C, pendientes de aprobaciÃ³n).
+- Reemplazar `sec-tabs` por barra propia (`sanit-tabs-bar` / `sanit-tab`) con Ã­conos + badge de count diario + labels ocultos en mobile.
+- Formulario con encabezado de Ã­cono + tÃ­tulo/subtÃ­tulo por categorÃ­a, sin el `h3` anterior.
+- Feedback visual en tiempo real en campos de temperatura: borde y texto verde/Ã¡mbar/rojo segÃºn valor.
+- Historial tipo timeline: punto de color semÃ¡ntico a la izquierda + chip de temperatura coloreado.
+- Empty state amigable con Ã­cono.
+- Fix crÃ­tico de backend: `SANITATION_CATEGORIES` (const) se declaraba en lÃ­nea ~5433 pero `loadBusinessData()` se llama en lÃ­nea 477, causando ReferenceError por TDZ. Se inlinearon los valores en `normalizeSanitationCategory` y `getSanitationCategoryLabel` para evitar la dependencia.
+
+**Cambios en el codigo:**
+- `approval-panel.html`: funciones `renderSanitationDashboard`, `switchSanitTab`, `renderSanitPanel`, `_sanitForm`, `_sanitTempColor` (nueva), `_sanitRecordList`, helpers `_sanitFormTitle`/`_sanitFormSubtitle`; CSS: `.sanit-*` (~100 lÃ­neas nuevas).
+- `whatsapp-catering-bot.js`: `normalizeSanitationCategory` y `getSanitationCategoryLabel` sin dependencia en const externo.
+- Commit: `c400ae1` | Deployado vÃ­a `systemctl restart gratitud-erp` â€” arrancÃ³ limpio.
+
+**Pendiente para la proxima sesion:**
+- Testear interactivamente en producciÃ³n (el test local con curl quedÃ³ bloqueado por auto-mode al pedir password; verificar que los formularios graban y muestran historial correctamente).
+- Plan pendiente en `.claude/plans/curried-exploring-liskov.md`: integraciÃ³n "La LÃ­nea" (sistema de comandas) con el ERP.
 - Hito 3 pagination, sacar catering.db del tracking git.
 
 ---
@@ -56,13 +207,13 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 - Imagenes: se suben como base64 desde el celular, se comprimen a JPEG 1200px max en el cliente, se guardan en DATA_DIR/images/condition/ y se sirven en /images/condition/:filename.
 - Dos paginas moviles separadas: /inventario (toma de stock) y /estado-inventario (rol mantenimiento).
 - En el panel hay dos botones separados: "Toma de inventario" (visible a stock:read / purchases:write) y "Estado inventario" (visible a maintenance:read / *), gestionados por applyInventoryButtonVisibility() que se llama al login.
-- En /inventario se agrego boton 🔧 por item para reportar condicion durante la toma (flujo secundario, modal liviano).
+- En /inventario se agrego boton ðŸ”§ por item para reportar condicion durante la toma (flujo secundario, modal liviano).
 
 **Cambios en el codigo:**
 - Commit ca64468: todo el feature en un solo commit.
   - whatsapp-catering-bot.js: rol mantenimiento, permiso maintenance:read, campos condicion en normalizeOperationalInventoryItem, funciones getEstadoInventarioView / updateItemCondition / saveConditionImage, 5 rutas nuevas (GET /estado-inventario, GET /images/condition/:filename, GET /api/estado-inventario, POST /api/operational-inventory-condition, POST /api/upload-condition-image).
   - estado-inventario-movil.html: nueva pagina standalone para rol mantenimiento, lista items con badge de condicion, filtros, modal de edicion con foto + selector de condicion + notas.
-  - inventario-movil.html: boton 🔧 por item, modal liviano de condicion con foto.
+  - inventario-movil.html: boton ðŸ”§ por item, modal liviano de condicion con foto.
   - approval-panel.html: dos botones de inventario con visibilidad por rol, funcion applyInventoryButtonVisibility.
 - NO deployado aun al VPS. Pendiente confirmacion del usuario.
 
@@ -99,6 +250,18 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 - Data hygiene: sacar config-bot.json, usuarios-erp.json, JSON de negocio y catering.db* del tracking de git.
 - Gestion de usuarios: toggle activo/inactivo + filtro por nombre/rol.
 - VPS: agregar swap 1-2GB, backups externos (rclone), cambiar password root.
+
+---
+
+## [2026-07-02] Codex (revision funcional performance desktop/mobile)
+
+**De que se hablo:** el usuario pidio revisar el funcionamiento actual tras cambios de performance, probando desktop y especialmente mobile. Se levanto una copia temporal de datos con servidor aislado y usuarios de prueba (`reviewadmin`, `reviewfinance`) para no tocar datos reales del repo.
+
+**Decisiones tomadas:** la direccion de performance mejoro: entrada directa con `?view=sanitation`, `?view=events` y `?view=finance` como admin abre la vista correcta y dispara solo `/api/erp?view=...`, sin pedir `/api/erp` completo. Mobile no mostro overflow horizontal en las vistas probadas. Sin embargo, la optimizacion no esta cerrada: Eventos y Compras siguen pesadas; el rol Finanzas todavia tiene branch especial que ignora carga parcial y devuelve ~655 KB para cualquier `view`; con rol Finanzas, entrar a `?view=finance` disparo `/api/erp?view=reports` y luego `/api/erp?view=finance`, reintroduciendo carga duplicada.
+
+**Cambios en el codigo:** no hubo cambios funcionales. Verificaciones: `node --check whatsapp-catering-bot.js` OK. Mediciones admin: `view=sanitation` ~0.01s/4.6 KB, `view=finance` ~0.08s/650 KB, `view=events` ~6.06s/194 KB, `view=purchases` ~4.57s/969 KB, `/api/erp` completo ~7.56s/1.34 MB. Rol finanzas: `view=finance`, `view=sanitation`, `view=events` y completo devolvieron todos ~655 KB, confirmando que el branch especial no respeta `_has()`/`_partial`. Fallos de red visuales detectados por browser: CDN Tabler Icons y Leaflet externos bloqueados por entorno/red.
+
+**Pendiente para la proxima sesion:** corregir antes de seguir con UX visual: 1) adaptar branch `publicUser.role === "finanzas"` a `_VIEW_FIELDS`, `_has()` y `_partial`; 2) revisar `resolveInitialWorkspaceView`/orden de tabs para roles con acceso parcial porque Finanzas entro primero por `reports`; 3) reducir payload/tiempo de `events` y `purchases`; 4) reemplazar dependencias externas CDN o decidir explicitamente si se aceptan en produccion; 5) mantener mobile sin overflow y priorizar que Finanzas mobile no cargue reportes antes de finanzas.
 
 ---
 
@@ -168,7 +331,7 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 - Items NO contados no se tocan. Items nuevos se pueden agregar desde el celular.
 
 **Pendiente para la proxima sesion:**
-- El usuario va a trabajar con Codex en cambios locales — verificar que no haya
+- El usuario va a trabajar con Codex en cambios locales â€” verificar que no haya
   conflictos con los archivos tocados hoy (whatsapp-catering-bot.js, approval-panel.html,
   inventario-movil.html nuevo).
 - Mejoras de gestion de usuarios (propuesto en sesion anterior, no implementado aun):
@@ -184,7 +347,7 @@ por primera vez con Claude operando el VPS por SSH directo (se armo una
 llave SSH dedicada, ver `~/.ssh/id_ed25519_gratitud_vps`, alias `ssh
 gratitud-vps`). Se confirmo que la data real de produccion vive en
 `/var/lib/gratitud-erp/data`, SEPARADA del repo git en `/opt/gratitud-erp`
-— un `git pull` ahi NO toca la base de datos real. Se revisaron mejoras
+â€” un `git pull` ahi NO toca la base de datos real. Se revisaron mejoras
 de base de datos pedidas por el usuario ("que sea mucho mas solida,
 el sistema va a crecer mucho").
 
@@ -217,7 +380,7 @@ el sistema va a crecer mucho").
   mayor escritura (`eventos-erp.json`, `ordenes-compra-erp.json`).
   Estas son de menor riesgo/urgencia que el historial, asi que se
   dejaron para una segunda pasada.
-- Agregar swap (1-2GB) al VPS — no se toco infraestructura del
+- Agregar swap (1-2GB) al VPS â€” no se toco infraestructura del
   sistema operativo en esta sesion, solo la app.
 - Sincronizar la carpeta `backups/` del VPS a almacenamiento externo
   (ej. rclone) para no depender de un unico disco.
@@ -247,7 +410,7 @@ manuales en PDF/DOCX para el personal.
 - Decidir si consolidar la persistencia de datos (hoy convive JSON suelto +
   SQLite `catering.db` + Sheets desactivado) hacia SQLite como unica fuente
   de verdad, manteniendo las mismas rutas API.
-- Revisar `historial-erp.json` (decenas de miles de lineas) — evaluar si rotar
+- Revisar `historial-erp.json` (decenas de miles de lineas) â€” evaluar si rotar
   o archivar en vez de mantenerlo como un solo archivo creciente.
 - Revisar en detalle el modulo de seguridad de invitaciones por email
   (commit `60ddca4`) por ser superficie sensible (tokens, expiracion, permisos).
