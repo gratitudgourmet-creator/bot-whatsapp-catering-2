@@ -9,6 +9,7 @@ const http = require('http');
 // ── Base de datos ────────────────────────────────────────────────────────────
 const DATA_DIR = path.resolve(process.env.COMANDAS_DATA_DIR || process.env.DATA_DIR || __dirname);
 const DB_FILE = path.resolve(process.env.COMANDAS_DB_FILE || path.join(DATA_DIR, 'comandas-db.json'));
+const PRINT_TOKEN = process.env.COMANDAS_PRINT_TOKEN || '';
 
 const DB_DEFAULT = {
   menu:             { categorias: [], productos: [] },
@@ -106,6 +107,10 @@ function readBody(req) {
     req.on('end', () => { try { resolve(JSON.parse(Buffer.concat(chunks).toString() || '{}')); } catch { resolve({}); } });
     req.on('error', reject);
   });
+}
+
+function isPrintRequestAuthorized(req) {
+  return Boolean(PRINT_TOKEN && req.headers['x-comandas-print-token'] === PRINT_TOKEN);
 }
 
 // ── Impresión — encola trabajos para que el agente local los reclame ─────────
@@ -1536,6 +1541,8 @@ async function handle(request, response, options = {}) {
     !(method === 'GET' && p === '/gestion-comandas/api/menu-publico') &&
     !(method === 'POST' && p === '/gestion-comandas/api/checkout') &&
     !(method === 'POST' && p === '/gestion-comandas/api/mp-webhook') &&
+    !(isPrintRequestAuthorized(request) && method === 'GET' && p === '/gestion-comandas/api/impresion/pendientes') &&
+    !(isPrintRequestAuthorized(request) && method === 'POST' && p === '/gestion-comandas/api/impresion/error') &&
     method !== 'OPTIONS'
   ) return false;
 
