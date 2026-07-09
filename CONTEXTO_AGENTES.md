@@ -27,20 +27,21 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 **Decisiones tomadas:**
 - Se conserva el trabajo de Comandas en Git mediante los commits previos y una rama local de backup: `local/comandas-backup` apuntando a `d8362d3`.
-- En `main` se prepara rollback para quitar Comandas del codigo desplegable.
+- En `main` se aplico rollback para quitar Comandas del codigo desplegable.
 - No se eliminan datos operativos del VPS desde esta sesion; si existe `/var/lib/gratitud-erp/data/comandas-db.json`, puede archivarse o borrarse manualmente luego de confirmar que no se necesita.
-- Produccion debe volver a quedar sin rutas `/gestion-comandas` ni dependencias nuevas (`mercadopago`, `qrcode`, `ws`) en el arbol principal.
+- Produccion quedo sin el modulo Comandas activo ni dependencias nuevas (`mercadopago`, `qrcode`, `ws`) en el arbol principal.
 
 **Cambios en el codigo:**
 - Se quita la integracion de `comandas-module.js` desde `whatsapp-catering-bot.js`.
 - Se eliminan `comandas-module.js` y `agente-impresion.js` de `main`.
 - Se revierte `.gitignore`, `package.json` y `package-lock.json` al estado previo a Comandas.
+- Commit de rollback: `1f4245d` (`Comandas: dar de baja modulo en produccion`).
+- Deploy del rollback aplicado en VPS: `git pull origin main`, `npm install --omit=dev`, `node --check whatsapp-catering-bot.js`, `systemctl restart gratitud-erp.service`.
+- Validacion final de produccion: `/health` devuelve `HTTP/1.1 200 OK`; `git status --short --branch` en VPS queda limpio; `/gestion-comandas` devuelve `401` por auth general y ya no sirve el HTML/panel de Comandas.
 
 **Pendiente para la proxima sesion:**
-- Pushear el commit de rollback a GitHub.
-- En VPS: `git pull origin main`, `npm install --omit=dev`, `node --check whatsapp-catering-bot.js`, `systemctl restart gratitud-erp.service`, validar `/health`.
-- Verificar que `/gestion-comandas` devuelva 404 o no quede disponible.
 - Opcional: archivar/borrar `/var/lib/gratitud-erp/data/comandas-db.json` si se confirma que no hay datos que preservar.
+- Recordatorio de seguridad: se expusieron credenciales en consola/chat durante las pruebas; rotar la clave `admin123` y la clave root del VPS cuando sea posible.
 
 ---
 
