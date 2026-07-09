@@ -21,6 +21,36 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-09] Claude (sesion — seguridad, paneo general, estado local/produccion)
+
+**De que se hablo:** paneo general de salud de la app, balance local vs produccion, y fixes de seguridad puntuales.
+
+**Decisiones tomadas:**
+- Comandas quedo dado de baja en main (trabajo de Codex, commit 1f4245d). El trabajo de UX/UI de comandas de esta sesion (modal productos, tarjetas, agente ESC/POS con impresora POS-80C) nunca se commiteo — queda perdido, no se recupera (el evento se cancelo).
+- Se descarto el cambio de eventType/ventaPlanner en whatsapp-catering-bot.js (guided form de eventos) por no ser necesario por ahora.
+- Se espero a que Codex terminara con /inventario antes de tocar approval-panel.html.
+- Se hizo paneo de seguridad completo: hallazgos documentados abajo.
+- Se commiteo fix de seguridad y gitignore.
+
+**Cambios en el codigo:**
+- Commit 5a9cbc9: agrega requirePanelPermission('purchases:write') a /api/status, /api/manual-budget, /api/update-budget y /api/delete-budget. Actualiza .gitignore para excluir catering.db*, config-bot.json, *-erp.json, datos operativos, capturas y .claude/.
+
+**Hallazgos del paneo de seguridad (pendientes de resolver):**
+- /inventario y /estado-inventario sirven HTML sin autenticacion (solo el JS interno valida).
+- MAX_JSON_BODY_BYTES = 60MB por defecto — riesgo DoS, deberia ser 10MB.
+- sessions{} y chatRecords{} crecen en memoria sin TTL ni limite.
+- 23 archivos JSON aun no migrados a SQLite (solo purchases y audit estan en DB).
+- catering.db*, config-bot.json, *-erp.json siguen trackeados en git — hay que correr git rm --cached sobre ellos en una sesion futura para dejar de rastrearlos (hacerlo cuando no haya trabajo paralelo de Codex en esos archivos).
+- Password por defecto "admin" si no hay env var — rotar en produccion.
+
+**Pendiente para la proxima sesion:**
+- Codex tiene cambios sin commitear en approval-panel.html, inventario-movil.html, estado-inventario-movil.html, whatsapp-catering-bot.js — esperar a que commitee antes de tocar esos archivos.
+- Una vez que Codex commitee: mejorar el guided form de eventos en approval-panel.html (fix ID duplicado service-options, footer sticky, validacion visual por paso, mobile full-screen).
+- Correr git rm --cached sobre los archivos de datos ya trackeados para que .gitignore los proteja completamente.
+- Fixes de seguridad pendientes: autenticacion en /inventario y /estado-inventario, reducir MAX_JSON_BODY_BYTES a 10MB.
+
+---
+
 ## [2026-07-09] Codex (baja de Comandas en produccion)
 
 **De que se hablo:** el usuario pidio dar de baja todo lo de Comandas porque se cancelo el evento y no quiere ocupar espacio/operacion en produccion.
