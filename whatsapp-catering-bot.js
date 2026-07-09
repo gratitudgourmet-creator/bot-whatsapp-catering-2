@@ -14,7 +14,6 @@
  */
 
 const { Client, LocalAuth } = require("whatsapp-web.js");
-const comandasModule = require("./comandas-module.js");
 const qrcode = require("qrcode-terminal");
 const fs = require("fs");
 const http = require("http");
@@ -912,20 +911,8 @@ function startApprovalPanelServer() {
         }
       }
 
-      // Módulo de comandas: solo rutas públicas antes del check de auth del ERP
-      {
-        const handled = await comandasModule.handle(request, response, { publicOnly: true });
-        if (handled) return;
-      }
-
       if (!isAuthorizedPanelRequest(request)) {
         return requestPanelAuth(response);
-      }
-
-      if (requestUrl.pathname.startsWith("/gestion-comandas")) {
-        if (!requireAnyPanelPermission(request, response, ["reports:read"])) return;
-        const handled = await comandasModule.handle(request, response);
-        if (handled) return;
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/comandas-stats") {
@@ -1968,8 +1955,6 @@ function startApprovalPanelServer() {
       sendJson(response, { ok: false, error: error.message }, 500);
     }
   });
-
-  comandasModule.setupWebSocket(server, { authorize: isAuthorizedPanelRequest });
 
   server.listen(panelPort, panelHost, () => {
     const displayHost = panelHost === "0.0.0.0" ? "localhost" : panelHost;

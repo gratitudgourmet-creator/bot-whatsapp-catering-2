@@ -21,6 +21,29 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-09] Codex (baja de Comandas en produccion)
+
+**De que se hablo:** el usuario pidio dar de baja todo lo de Comandas porque se cancelo el evento y no quiere ocupar espacio/operacion en produccion.
+
+**Decisiones tomadas:**
+- Se conserva el trabajo de Comandas en Git mediante los commits previos y una rama local de backup: `local/comandas-backup` apuntando a `d8362d3`.
+- En `main` se prepara rollback para quitar Comandas del codigo desplegable.
+- No se eliminan datos operativos del VPS desde esta sesion; si existe `/var/lib/gratitud-erp/data/comandas-db.json`, puede archivarse o borrarse manualmente luego de confirmar que no se necesita.
+- Produccion debe volver a quedar sin rutas `/gestion-comandas` ni dependencias nuevas (`mercadopago`, `qrcode`, `ws`) en el arbol principal.
+
+**Cambios en el codigo:**
+- Se quita la integracion de `comandas-module.js` desde `whatsapp-catering-bot.js`.
+- Se eliminan `comandas-module.js` y `agente-impresion.js` de `main`.
+- Se revierte `.gitignore`, `package.json` y `package-lock.json` al estado previo a Comandas.
+
+**Pendiente para la proxima sesion:**
+- Pushear el commit de rollback a GitHub.
+- En VPS: `git pull origin main`, `npm install --omit=dev`, `node --check whatsapp-catering-bot.js`, `systemctl restart gratitud-erp.service`, validar `/health`.
+- Verificar que `/gestion-comandas` devuelva 404 o no quede disponible.
+- Opcional: archivar/borrar `/var/lib/gratitud-erp/data/comandas-db.json` si se confirma que no hay datos que preservar.
+
+---
+
 ## [2026-07-09] Codex (deploy 1 validado en produccion)
 
 **De que se hablo:** el usuario pidio empezar con los deploys y luego aclaro que absolutamente todo debe quedar registrado en commits para poder revertir si hace falta.
