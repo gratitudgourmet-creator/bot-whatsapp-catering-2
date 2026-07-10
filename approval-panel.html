@@ -3655,6 +3655,7 @@
     .workspace-menu[data-menu-view="hr"] { order: 12; }
     .workspace-menu[data-menu-view="sanitation"] { order: 13; }
     .workspace-menu[data-menu-view="security"] { order: 14; }
+    .workspace-menu[data-menu-view="equipo"] { order: 15; }
     .workspace-menu[data-menu-view="reports"] { order: 15; }
 
     .workspace-menu-panel {
@@ -7127,6 +7128,9 @@
           <button class="workspace-subitem" data-view="security" data-anchor="security-audit-section">Historial</button>
         </div>
       </div>
+      <div class="workspace-menu" data-menu-view="equipo" data-permission="users:write">
+        <button class="workspace-tab" data-view="equipo">Equipo</button>
+      </div>
         </div>
       </div>
     </div>
@@ -9271,6 +9275,28 @@
     </aside>
   </section>
 
+    <section id="view-equipo" class="workspace-view" data-permission="users:write">
+      <div class="erp-section" style="padding-bottom:0">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Equipo en tiempo real</h2>
+            <p class="subtitle section-subtitle">Ubicación de los empleados conectados. Se actualiza cada 15 segundos.</p>
+          </div>
+          <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="loadEquipo()">Actualizar</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:0;height:calc(100vh - 160px);overflow:hidden">
+        <!-- Lista de usuarios -->
+        <div id="equipo-lista" style="width:260px;min-width:200px;overflow-y:auto;border-right:1px solid var(--border);padding:12px;display:flex;flex-direction:column;gap:8px">
+          <p style="font-size:12px;color:var(--text-muted);margin:0">Cargando...</p>
+        </div>
+        <!-- Mapa Leaflet -->
+        <div id="equipo-map" style="flex:1;background:#e8e8e8"></div>
+      </div>
+    </section>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     let allChats = [];
@@ -9696,6 +9722,7 @@
       hideLoginScreen();
       renderCurrentUser();
       applyInventoryButtonVisibility();
+      iniciarRastreoUbicacion();
       const initialView = resolveInitialWorkspaceView();
       activateWorkspaceViewShell(initialView);
       await loadInitialData(initialView);
@@ -10380,6 +10407,7 @@
       }
       if (view === "logistics_event") loadTask = loadLogisticsEvents();
       if (view === "comandas") loadTask = loadComandas();
+      if (view === "equipo") loadTask = loadEquipo();
       if (view === "buyer_purchases") loadTask = loadBuyerOrders();
       if (view === "security") loadTask = loadSecurityPanel();
       if (view === "menu_costs") setTimeout(() => { mcLoad(); mcRenderCards(); mcRenderEditList(); }, 50);
@@ -10424,6 +10452,129 @@
       renderErp();
       if (view && Date.now() - erpLoadedAt > ERP_BACKGROUND_REFRESH_MS && !erpLoadPromise) refreshErpContext(view, { silent: true });
       return Promise.resolve();
+    }
+
+    // ── Equipo: rastreo de ubicación y mapa ──────────────────────────────────
+    let _equipoMap = null;
+    let _equipoMarkers = {};   // uid → L.marker
+    let _equipoChecked = {};   // uid → bool
+    let _equipoPollTimer = null;
+
+    function iniciarRastreoUbicacion() {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.watchPosition(
+        (pos) => {
+          fetch("/api/ubicacion", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude, precision: pos.coords.accuracy }),
+          }).catch(() => {});
+        },
+        () => {},
+        { enableHighAccuracy: true, maximumAge: 30000, timeout: 20000 }
+      );
+    }
+
+    async function loadEquipo() {
+      const lista = document.getElementById("equipo-lista");
+      const mapEl = document.getElementById("equipo-map");
+      if (!lista || !mapEl) return;
+
+      // Init map once
+      if (!_equipoMap) {
+        _equipoMap = L.map("equipo-map").setView([-34.6, -58.4], 12);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap",
+        }).addTo(_equipoMap);
+      }
+
+      await _equipoActualizar();
+      clearInterval(_equipoPollTimer);
+      _equipoPollTimer = setInterval(_equipoActualizar, 15000);
+    }
+
+    async function _equipoActualizar() {
+      const lista = document.getElementById("equipo-lista");
+      if (!lista) { clearInterval(_equipoPollTimer); return; }
+
+      let data;
+      try {
+        const r = await fetch("/api/ubicaciones");
+        data = await r.json();
+      } catch { return; }
+
+      if (!data.ok) return;
+      const ubicaciones = data.ubicaciones || [];
+
+      // Init checked state for new users (default: visible)
+      ubicaciones.forEach(u => {
+        if (_equipoChecked[u.uid] === undefined) _equipoChecked[u.uid] = true;
+      });
+
+      // Render list
+      if (ubicaciones.length === 0) {
+        lista.innerHTML = '<p style="font-size:12px;color:var(--text-muted);margin:0">Ningún empleado ha compartido ubicación todavía.</p>';
+      } else {
+        lista.innerHTML = ubicaciones.map(u => {
+          const checked = _equipoChecked[u.uid] ? "checked" : "";
+          const inactivo = u.inactivo ? ' style="opacity:.5"' : "";
+          const hace = _tiempoRelativo(u.updatedAt);
+          return `<label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 4px;border-radius:6px"${inactivo}>
+            <input type="checkbox" ${checked} onchange="equipoToggleUser('${u.uid}', this.checked)" style="cursor:pointer">
+            <span style="flex:1;min-width:0">
+              <strong style="display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name}</strong>
+              <span style="font-size:11px;color:var(--text-muted)">${u.inactivo ? "Inactivo · " : ""}${hace}</span>
+            </span>
+          </label>`;
+        }).join("");
+      }
+
+      // Update markers
+      const uids = new Set(ubicaciones.map(u => u.uid));
+
+      // Remove stale markers
+      Object.keys(_equipoMarkers).forEach(uid => {
+        if (!uids.has(uid)) { _equipoMap.removeLayer(_equipoMarkers[uid]); delete _equipoMarkers[uid]; }
+      });
+
+      // Add / update markers
+      ubicaciones.forEach(u => {
+        const visible = _equipoChecked[u.uid] !== false;
+        if (!visible) {
+          if (_equipoMarkers[u.uid]) { _equipoMap.removeLayer(_equipoMarkers[u.uid]); delete _equipoMarkers[u.uid]; }
+          return;
+        }
+        const popup = `<b>${u.name}</b><br>${_tiempoRelativo(u.updatedAt)}${u.precision ? `<br>±${Math.round(u.precision)}m` : ""}`;
+        if (_equipoMarkers[u.uid]) {
+          _equipoMarkers[u.uid].setLatLng([u.lat, u.lng]).setPopupContent(popup);
+        } else {
+          _equipoMarkers[u.uid] = L.marker([u.lat, u.lng]).bindPopup(popup).addTo(_equipoMap);
+        }
+      });
+
+      // Fit map to visible markers
+      const visible = Object.values(_equipoMarkers);
+      if (visible.length === 1) {
+        _equipoMap.setView(visible[0].getLatLng(), 15);
+      } else if (visible.length > 1) {
+        _equipoMap.fitBounds(L.featureGroup(visible).getBounds().pad(0.2));
+      }
+    }
+
+    function equipoToggleUser(uid, visible) {
+      _equipoChecked[uid] = visible;
+      if (!visible && _equipoMarkers[uid]) {
+        _equipoMap.removeLayer(_equipoMarkers[uid]);
+        delete _equipoMarkers[uid];
+      }
+      _equipoActualizar();
+    }
+
+    function _tiempoRelativo(ts) {
+      const diff = Math.floor((Date.now() - ts) / 1000);
+      if (diff < 60)  return "hace " + diff + "s";
+      if (diff < 3600) return "hace " + Math.floor(diff / 60) + "m";
+      return "hace " + Math.floor(diff / 3600) + "h";
     }
 
     async function loadComandas() {

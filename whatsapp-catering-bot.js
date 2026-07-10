@@ -302,6 +302,7 @@ const TAB_DEFINITIONS = [
   { id: "sanitation", label: "Bromatologia", requiredAny: ["sanitation:read", "sanitation:write", "sanitation:approve"] },
   { id: "payment_orders", label: "Ordenes de pago", requiredAny: ["payment_orders:read", "payment_orders:write", "payment_orders:approve"] },
   { id: "security", label: "Seguridad", requiredAny: ["users:write"] },
+  { id: "equipo", label: "Equipo", requiredAny: ["users:write"] },
   { id: "reports", label: "Reportes", requiredAny: ["reports:read"] },
   { id: "comandas", label: "Comandas", requiredAny: ["reports:read"] },
   { id: "menu_costs", label: "Costos de menu", requiredAny: ["view"] },
@@ -797,6 +798,11 @@ function addPurchaseOption(type, value) {
   };
 }
 
+// ── Rastreo de ubicación de empleados (en memoria, sin persistencia) ──────────
+const _locationStore = new Map();
+// { userId → { name, lat, lng, precision, updatedAt } }
+const LOCATION_TTL_MS = 15 * 60 * 1000; // 15 min sin actualizar = inactivo
+
 function startApprovalPanelServer() {
   validateRuntimeConfig();
   const panelPort = Number(process.env.PORT || process.env.PANEL_PORT || BOT_CONFIG.panelPort || 3080);
@@ -840,6 +846,43 @@ function startApprovalPanelServer() {
           user: getPublicUser(user),
           roles: getPanelRoleList(),
         });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/ubicacion") {
+        const user = getPanelSessionUser(request);
+        if (!user) return sendJson(response, { ok: false }, 401);
+        const body = await readJsonBody(request);
+        if (body.lat && body.lng) {
+          _locationStore.set(String(user.id || user.username), {
+            name:      user.name || user.username,
+            username:  user.username,
+            lat:       Number(body.lat),
+            lng:       Number(body.lng),
+            precision: Number(body.precision || 0),
+            updatedAt: Date.now(),
+          });
+        }
+        return sendJson(response, { ok: true });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/ubicaciones") {
+        const user = requirePanelPermission(request, response, "users:write");
+        if (!user) return;
+        const now = Date.now();
+        const activos = [];
+        _locationStore.forEach((loc, uid) => {
+          activos.push({
+            uid,
+            name:      loc.name,
+            username:  loc.username,
+            lat:       loc.lat,
+            lng:       loc.lng,
+            precision: loc.precision,
+            updatedAt: loc.updatedAt,
+            inactivo:  (now - loc.updatedAt) > LOCATION_TTL_MS,
+          });
+        });
+        return sendJson(response, { ok: true, ubicaciones: activos });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/login") {
@@ -3493,6 +3536,9 @@ function sanitizeRoleTabs(tabs, permissions = [], roleId = "") {
   const selected = Array.from(new Set(list.map(String).filter((tab) => allowed.has(tab))));
   if (roleId === "admin" && !selected.includes("security")) {
     selected.push("security");
+  }
+  if (roleId === "admin" && !selected.includes("equipo")) {
+    selected.push("equipo");
   }
   return selected.length ? selected : ["erp"].filter((tab) => allowed.has(tab));
 }
