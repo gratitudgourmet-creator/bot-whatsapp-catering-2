@@ -2309,6 +2309,7 @@ function savePanelUserRecord(input = {}) {
     notes: normalizeText(input.notes || previous.notes || ""),
     status: normalizeUserStatus(input.status || previous.status || (input.active === false || input.active === "false" ? "suspended" : "active")),
     mustChangePassword: input.mustChangePassword === true || ["true", "on", "1"].includes(String(input.mustChangePassword || "").toLowerCase()),
+    allowOutsideSalon: parseBooleanLike(input.allowOutsideSalon),
     createdAt: previous.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
@@ -3575,6 +3576,7 @@ function normalizePanelUser(user = {}) {
     status,
     active: status === "active" || status === "invited",
     mustChangePassword: user.mustChangePassword === true || user.mustChangePassword === "true",
+    allowOutsideSalon: parseBooleanLike(user.allowOutsideSalon),
     passwordHash: normalizeText(user.passwordHash || ""),
     passwordSalt: normalizeText(user.passwordSalt || ""),
     createdAt: user.createdAt || new Date().toISOString(),
@@ -3637,6 +3639,7 @@ function getPublicUser(user) {
     active: user.active !== false,
     status: user.status || (user.active === false ? "suspended" : "active"),
     mustChangePassword: Boolean(user.mustChangePassword),
+    allowOutsideSalon: Boolean(user.allowOutsideSalon),
     createdAt: user.createdAt || "",
     updatedAt: user.updatedAt || "",
     lastLoginAt: user.lastLoginAt || "",
@@ -3673,7 +3676,7 @@ function isUserAtSalon(user) {
 
 function requireSalonLocation(user, response, actionLabel) {
   if (!isLocationRequired()) return true;
-  if (user.role === "admin" || (user.permissions || []).includes("sensitive:all")) return true;
+  if (user.role === "admin" || (user.permissions || []).includes("sensitive:all") || user.allowOutsideSalon === true) return true;
   if (!isUserAtSalon(user)) {
     sendJson(response, {
       ok: false,

@@ -8519,6 +8519,10 @@
             <input name="mustChangePassword" type="checkbox">
             <span>Debe cambiar contraseña al ingresar</span>
           </label>
+          <label class="drawer-checkline">
+            <input name="allowOutsideSalon" type="checkbox">
+            <span>Puede operar inventario fuera del radio del salón</span>
+          </label>
           <hr class="drawer-divider">
           <div class="drawer-section-label">Notas internas</div>
           <div class="drawer-field">
@@ -11395,6 +11399,7 @@
         if (perms.has("sensitive:security"))risks.push("Seguridad");
         if (perms.has("sensitive:payments"))risks.push("Pagos");
         if (perms.has("sensitive:delete"))  risks.push("Eliminaciones");
+        if (user.allowOutsideSalon)          risks.push("Fuera del salón");
         const lastLogin = user.lastLoginAt ? formatDateTime(user.lastLoginAt) : "Sin ingresos";
         const isSuspended = user.status === "suspended" || user.status === "offboarded";
 
@@ -11892,6 +11897,7 @@
         setFormValue(form, "phone", user.phone || "");
         setFormValue(form, "notes", user.notes || "");
         setFormValue(form, "mustChangePassword", Boolean(user.mustChangePassword));
+        setFormValue(form, "allowOutsideSalon", Boolean(user.allowOutsideSalon));
         setFormValue(form, "password", "");
       } else {
         title.textContent = "Nuevo usuario";
@@ -11912,6 +11918,7 @@
     async function savePanelUser(event) {
       event.preventDefault();
       const payload = Object.fromEntries(new FormData(event.target).entries());
+      payload.allowOutsideSalon = event.target.elements.allowOutsideSalon?.checked === true;
       const response = await fetch("/api/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
