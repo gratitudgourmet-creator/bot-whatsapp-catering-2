@@ -6,7 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Toma de inventario</title>
+<title>Inventario general</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -70,14 +70,32 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .filter-chips::-webkit-scrollbar{display:none}
 .chip{padding:6px 14px;border-radius:20px;font-size:13px;border:1px solid var(--border);cursor:pointer;white-space:nowrap;background:var(--surface);color:var(--muted);transition:all .15s}
 .chip.active{background:var(--accent-bg);border-color:var(--accent-text);color:var(--accent-text);font-weight:600}
+.category-filter-wrap{margin-top:8px;display:flex;gap:8px;align-items:center}
+.category-filter-wrap label{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+.category-filter-wrap select{min-width:0;flex:1;padding:9px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text)}
 
 /* ITEM LIST */
 .item-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px}
-.item{display:flex;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid var(--border);background:var(--surface);transition:background .15s}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid var(--border);background:var(--surface);transition:background .15s;min-width:0}
 .item.counted{background:#f0fbf6}
 .item-info{flex:1;min-width:0}
 .item-name{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item-cat{font-size:12px;color:var(--muted);margin-top:2px}
+.item-stock-line{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:7px;font-size:11px;color:var(--muted)}
+.item-stock-line span{min-width:0;white-space:nowrap}
+.diff-pill{display:inline-flex;align-items:center;justify-content:center;width:max-content;margin-top:8px;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--bg);color:var(--muted)}
+.diff-pill.ok{background:var(--accent-bg);color:var(--accent-text)}
+.diff-pill.missing{background:var(--danger-bg);color:var(--danger)}
+.diff-pill.extra{background:#fff7e0;color:#9a5a00}
+.new-pill{display:inline-flex;margin-left:6px;padding:2px 7px;border-radius:999px;background:#edf5ff;color:#1d4f91;font-size:10px;font-weight:700;vertical-align:middle}
+.expiry-pill{display:inline-flex;width:max-content;margin-top:6px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.expiry-pill.warning{background:#fff7e0;color:#8a5200}
+.expiry-pill.danger{background:var(--danger-bg);color:var(--danger)}
+.precise-location{font-size:11px;color:var(--accent-text);margin-top:5px;overflow-wrap:anywhere}
+.item-actions{grid-column:1 / -1;display:flex;gap:6px;overflow-x:auto;padding-top:2px;scrollbar-width:none}
+.item-actions::-webkit-scrollbar{display:none}
+.item-action{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
+.item-action.danger{background:var(--danger-bg);border-color:#f5c4b3;color:var(--danger)}
 .qty-ctrl{display:flex;align-items:center;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface)}
 .qty-btn{width:40px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;color:var(--muted);font-weight:300;user-select:none;flex-shrink:0}
 .qty-btn:active{background:var(--bg)}
@@ -90,7 +108,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .check-btn svg{stroke:var(--muted)}
 
 /* CONDITION MINI BUTTON */
-.cond-mini-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;transition:all .15s}
+.cond-mini-btn{width:44px;min-width:44px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:11px;font-weight:700;color:var(--muted);transition:all .15s}
 .cond-mini-btn:active{background:var(--bg)}
 .cond-mini-btn.has-issue{border-color:#f5a623;background:#fff7e0}
 
@@ -102,7 +120,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 #cond-modal .cond-item-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
 .cond-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .cond-opt{padding:10px 4px;border:2px solid var(--border);border-radius:10px;background:var(--surface);font-size:12px;font-weight:500;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
-.cond-opt .ci{font-size:18px}
+.cond-opt .ci{font-size:11px;font-weight:800;letter-spacing:.2px}
 .cond-opt.sel-ok{border-color:var(--accent);background:var(--accent-bg);color:var(--accent-text)}
 .cond-opt.sel-roto{border-color:var(--danger);background:var(--danger-bg);color:var(--danger)}
 .cond-opt.sel-sucio{border-color:#c47c00;background:#fff7e0;color:#c47c00}
@@ -137,6 +155,9 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .modal-form{display:flex;flex-direction:column;gap:12px}
 .modal-form label{font-size:13px;font-weight:500;color:var(--muted)}
 .modal-form input,.modal-form select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg)}
+.modal-form details{border:1px solid var(--border);border-radius:12px;padding:12px;background:var(--bg)}
+.modal-form summary{font-size:14px;font-weight:700;cursor:pointer}
+.computed-total{border-radius:12px;background:var(--accent-bg);color:var(--accent-text);padding:12px;font-weight:800;text-align:center}
 .modal-form input:focus,.modal-form select:focus{outline:none;border-color:var(--accent)}
 .modal-btns{display:flex;gap:10px;margin-top:4px}
 
@@ -146,6 +167,11 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .confirm-card{background:var(--surface);border-radius:16px;padding:24px;width:100%;max-width:360px}
 .confirm-card h3{font-size:17px;font-weight:600;margin-bottom:8px}
 .confirm-card p{font-size:14px;color:var(--muted);margin-bottom:20px}
+.confirm-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.confirm-stat{border:1px solid var(--border);border-radius:12px;padding:10px;background:var(--bg)}
+.confirm-stat strong{display:block;font-size:18px;line-height:1.1}
+.confirm-stat span{display:block;margin-top:3px;font-size:11px;color:var(--muted)}
+.confirm-warning{display:none;margin:0 0 14px;padding:10px 12px;border-radius:12px;background:#fff7e0;color:#7a4a00;font-size:13px;font-weight:600}
 .confirm-btns{display:flex;gap:10px}
 
 /* TOAST */
@@ -159,7 +185,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 <div id="login-screen">
   <div>
     <h1>Gratitud Gourmet</h1>
-    <p style="margin-top:4px">Toma de inventario</p>
+    <p style="margin-top:4px">Inventario general</p>
   </div>
   <div class="login-form">
     <input type="text" id="login-user" placeholder="Usuario" autocomplete="username" autocapitalize="none">
@@ -171,24 +197,25 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
 <!-- SETUP -->
 <div id="setup-screen">
-  <h2>Toma de inventario</h2>
-  <p>Antes de empezar, confirma el lugar donde están llegando los artículos.</p>
+  <h2>Inventario general</h2>
+  <p>Antes de empezar, confirma la ubicación donde quedarán guardados los artículos.</p>
 
   <div id="active-session-info" style="display:none">
     <div class="session-info">
-      <div class="si-label">Sesion en curso</div>
+      <div class="si-label">Sesión en curso</div>
       <div class="si-value" id="asi-location"></div>
+      <div class="si-value" id="asi-message"></div>
       <div class="si-sub" id="asi-started"></div>
     </div>
     <div class="btn-row" style="margin-top:12px">
-      <button class="btn-secondary" onclick="goToMain()">Continuar contando</button>
-      <button class="btn-danger" onclick="cancelSession()">Cancelar sesion</button>
+      <button class="btn-secondary" onclick="goToMain()">Continuar</button>
+      <button class="btn-danger" onclick="cancelSession()">Cancelar e iniciar nueva</button>
     </div>
   </div>
 
   <div id="new-session-form">
     <div class="setup-form">
-      <label>Ubicacion de llegada</label>
+      <label>Ubicación donde queda guardado</label>
       <input type="text" id="session-location" value="Salon Guaymallan, San Ignacio de Loyola 2457" placeholder="Nombre del salon o deposito">
     </div>
     <button class="btn-primary" onclick="startSession()" style="margin-top:4px">Comenzar conteo</button>
@@ -201,7 +228,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
     <div class="header-top">
       <button class="back-btn" onclick="goToSetup()" aria-label="Volver">&#8592;</button>
       <div class="header-title">
-        <h1>Inventario</h1>
+        <h1>Inventario general</h1>
         <p id="header-location">Salon Guaymallan</p>
       </div>
     </div>
@@ -209,6 +236,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
       <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
       <div class="progress-label"><span id="prog-label">0 contados</span><span id="prog-pct">0%</span></div>
     </div>
+    <button class="item-action" id="btn-change-location" style="display:none;margin-top:10px" onclick="openLocationModal()">Cambiar ubicación</button>
   </div>
 
   <div class="search-area">
@@ -217,7 +245,13 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
       <input type="search" id="search-input" placeholder="Buscar..." oninput="renderItems()">
     </div>
     <div class="filter-chips" id="filter-chips">
-      <div class="chip active" data-filter="" onclick="setFilter(this)">Todos</div>
+      <div class="chip active" data-filter="pending" onclick="setFilter(this)">Pendientes</div>
+    </div>
+    <div class="category-filter-wrap">
+      <label for="category-filter">Rubro</label>
+      <select id="category-filter" onchange="setCategoryFilter(this.value)">
+        <option value="">Todos los rubros</option>
+      </select>
     </div>
   </div>
 
@@ -228,7 +262,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
       Nuevo
     </button>
-    <button class="btn-close" id="btn-close" onclick="openConfirm()">Cerrar inventario</button>
+    <button class="btn-close" id="btn-close" onclick="openConfirm()">Finalizar y actualizar stock</button>
   </div>
 </div>
 
@@ -246,8 +280,32 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
         <select id="ni-category"></select>
       </div>
       <div>
-        <label>Cantidad contada</label>
+        <label>Modo de conteo</label>
+        <select id="ni-count-mode" onchange="toggleNewItemCountMode()">
+          <option value="units">Unidades</option>
+          <option value="packages">Cajas / bultos</option>
+        </select>
+      </div>
+      <div id="ni-units-wrap">
+        <label>Cantidad total</label>
         <input type="number" id="ni-qty" value="1" min="0" step="1">
+      </div>
+      <div id="ni-packages-wrap" style="display:none">
+        <div class="modal-form">
+          <div>
+            <label>Bultos</label>
+            <input type="number" id="ni-pkg-boxes" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+          </div>
+          <div>
+            <label>Unidades por bulto</label>
+            <input type="number" id="ni-pkg-units" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+          </div>
+          <div>
+            <label>Sueltas</label>
+            <input type="number" id="ni-pkg-loose" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+          </div>
+          <div class="computed-total">Total contado: <span id="ni-pkg-total">0</span></div>
+        </div>
       </div>
     </div>
     <div class="modal-btns" style="margin-top:16px">
@@ -260,11 +318,128 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 <!-- CONFIRM CERRAR -->
 <div id="confirm-overlay" onclick="closeConfirm(event)">
   <div class="confirm-card" onclick="event.stopPropagation()">
-    <h3>Cerrar inventario</h3>
-    <p id="confirm-msg">Los items contados actualizaran sus cantidades y quedaran en el salon nuevo.</p>
+    <h3>Finalizar y actualizar stock</h3>
+    <p id="confirm-msg">Revisa el resumen antes de actualizar las cantidades.</p>
+    <div class="confirm-summary" id="confirm-summary"></div>
+    <div class="confirm-warning" id="confirm-warning">Los artículos no contados no se actualizarán.</div>
     <div class="confirm-btns">
       <button class="btn-secondary" onclick="closeConfirm()">Volver</button>
       <button class="btn-primary" onclick="closeSession()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL UBICACION SESION -->
+<div class="modal-overlay" id="location-overlay" onclick="closeLocationModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Cambiar ubicación</h3>
+    <div class="modal-form">
+      <div>
+        <label>Ubicación donde queda guardado</label>
+        <input type="text" id="session-location-edit" placeholder="Depósito, salón o sector">
+      </div>
+      <p style="font-size:13px;color:var(--muted)">No se reinicia el conteo. Solo cambia la ubicación general de esta sesión.</p>
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-secondary" onclick="closeLocationModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveSessionLocation()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAJAS / BULTOS -->
+<div class="modal-overlay" id="package-overlay" onclick="closePackageModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Cajas / bultos</h3>
+    <p id="package-item-name" style="font-size:13px;color:var(--muted);margin-bottom:12px"></p>
+    <div class="modal-form">
+      <div>
+        <label>Bultos</label>
+        <input type="number" id="pkg-boxes" min="0" step="1" value="0" oninput="updatePackageTotal()">
+      </div>
+      <div>
+        <label>Unidades por bulto</label>
+        <input type="number" id="pkg-units" min="0" step="1" value="0" oninput="updatePackageTotal()">
+      </div>
+      <div>
+        <label>Sueltas</label>
+        <input type="number" id="pkg-loose" min="0" step="1" value="0" oninput="updatePackageTotal()">
+      </div>
+      <div class="computed-total">Total contado: <span id="pkg-total">0</span></div>
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-secondary" onclick="closePackageModal()">Cancelar</button>
+      <button class="btn-primary" onclick="usePackageTotal()">Usar este total</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VENCIMIENTO / UBICACION PRECISA -->
+<div class="modal-overlay" id="meta-overlay" onclick="closeMetaModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Datos del artículo</h3>
+    <p id="meta-item-name" style="font-size:13px;color:var(--muted);margin-bottom:12px"></p>
+    <div class="modal-form">
+      <div>
+        <label>Vencimiento</label>
+        <select id="meta-expiry-status">
+          <option value="">No cargar vencimiento</option>
+          <option value="vence_el">Vence el</option>
+          <option value="vencido">Vencido</option>
+        </select>
+      </div>
+      <div>
+        <label>Fecha de vencimiento</label>
+        <input type="date" id="meta-expiry-date">
+      </div>
+      <details>
+        <summary>Ubicación precisa</summary>
+        <div class="modal-form" style="margin-top:12px">
+          <div>
+            <label>Depósito / sector</label>
+            <input id="meta-loc-deposit" type="text" placeholder="Ej: Depósito A">
+          </div>
+          <div>
+            <label>Estantería</label>
+            <input id="meta-loc-shelf" type="text" placeholder="Ej: 3">
+          </div>
+          <div>
+            <label>Estante</label>
+            <input id="meta-loc-level" type="text" placeholder="Ej: B">
+          </div>
+          <div>
+            <label>Posición</label>
+            <input id="meta-loc-position" type="text" placeholder="Opcional">
+          </div>
+        </div>
+      </details>
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-secondary" onclick="closeMetaModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveItemMeta()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ARCHIVAR -->
+<div class="modal-overlay" id="archive-overlay" onclick="closeArchiveModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Dar de baja</h3>
+    <p id="archive-item-name" style="font-size:13px;color:var(--muted);margin-bottom:12px"></p>
+    <div class="modal-form">
+      <div>
+        <label>Motivo</label>
+        <select id="archive-reason">
+          <option value="Duplicado">Duplicado</option>
+          <option value="Ya no existe">Ya no existe</option>
+          <option value="Error de carga">Error de carga</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn-secondary" onclick="closeArchiveModal()">Cancelar</button>
+      <button class="btn-danger" onclick="archiveItem()">Dar de baja</button>
     </div>
   </div>
 </div>
@@ -275,18 +450,18 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
     <h3 id="cond-item-name">-</h3>
     <div class="cond-item-sub" id="cond-item-sub"></div>
     <div class="cond-grid">
-      <div class="cond-opt" data-cond="ok" onclick="selectCond('ok')"><span class="ci">✅</span>Ok</div>
-      <div class="cond-opt" data-cond="sucio" onclick="selectCond('sucio')"><span class="ci">🟡</span>Sucio</div>
-      <div class="cond-opt" data-cond="roto" onclick="selectCond('roto')"><span class="ci">🔴</span>Roto</div>
-      <div class="cond-opt" data-cond="desoldado" onclick="selectCond('desoldado')"><span class="ci">🔧</span>Desoldado</div>
-      <div class="cond-opt" data-cond="falta_pieza" onclick="selectCond('falta_pieza')"><span class="ci">🔩</span>Falta pieza</div>
-      <div class="cond-opt" data-cond="otro" onclick="selectCond('otro')"><span class="ci">📝</span>Otro</div>
+      <div class="cond-opt" data-cond="ok" onclick="selectCond('ok')"><span class="ci">OK</span>OK</div>
+      <div class="cond-opt" data-cond="sucio" onclick="selectCond('sucio')"><span class="ci">SUC</span>Sucio</div>
+      <div class="cond-opt" data-cond="roto" onclick="selectCond('roto')"><span class="ci">ROT</span>Roto</div>
+      <div class="cond-opt" data-cond="desoldado" onclick="selectCond('desoldado')"><span class="ci">DES</span>Desoldado</div>
+      <div class="cond-opt" data-cond="falta_pieza" onclick="selectCond('falta_pieza')"><span class="ci">PZA</span>Falta pieza</div>
+      <div class="cond-opt" data-cond="otro" onclick="selectCond('otro')"><span class="ci">OTR</span>Otro</div>
     </div>
     <textarea class="cond-notes" id="cond-notes" placeholder="Notas (opcional)..."></textarea>
     <img id="cond-photo-preview" class="cond-photo-preview" alt="foto">
     <div class="cond-photo-row">
-      <button class="cond-photo-btn" onclick="document.getElementById('cond-file-input').click()">📷 Foto</button>
-      <button class="cond-photo-btn" id="cond-remove-photo-btn" onclick="removeCondPhoto()" style="display:none;color:var(--danger)">🗑 Quitar</button>
+      <button class="cond-photo-btn" onclick="document.getElementById('cond-file-input').click()">Foto</button>
+      <button class="cond-photo-btn" id="cond-remove-photo-btn" onclick="removeCondPhoto()" style="display:none;color:var(--danger)">Quitar</button>
     </div>
     <div class="btn-row">
       <button class="btn-secondary" onclick="closeCondModal()">Cancelar</button>
@@ -303,7 +478,12 @@ let currentUser = null;
 let sesion = null;
 let items = [];
 let categories = [];
-let activeFilter = '';
+let activeFilter = 'pending';
+let activeCategoryFilter = '';
+const newItemIds = new Set();
+let packageItemId = null;
+let metaItemId = null;
+let archiveItemId = null;
 let syncTimer = null;
 
 // --- AUTH ---
@@ -331,6 +511,104 @@ async function checkAuth() {
   return false;
 }
 
+function num(val) {
+  if (val === null || val === undefined || val === '') return 0;
+  return Number(String(val).replace(',', '.')) || 0;
+}
+
+function fmtQty(val) {
+  const n = num(val);
+  return Number.isInteger(n) ? String(n) : n.toFixed(2).replace(/\.?0+$/, '');
+}
+
+function itemCount(item) {
+  return sesion?.counts?.[item.id] || {};
+}
+
+function isItemCounted(item) {
+  return Boolean(itemCount(item).counted);
+}
+
+function registeredQty(item) {
+  return num(item.quantity);
+}
+
+function countedQty(item) {
+  const count = itemCount(item);
+  return num(count.qty ?? item.quantity);
+}
+
+function itemDiff(item) {
+  return countedQty(item) - registeredQty(item);
+}
+
+function itemHasProblem(item) {
+  return Boolean(item.condition && item.condition !== 'ok');
+}
+
+function itemHasExpiryAlert(item) {
+  return item.expiryStatus === 'vence_el' || item.expiryStatus === 'vencido';
+}
+
+function isNewItem(item) {
+  if (newItemIds.has(item.id) || item.isNew) return true;
+  if (!sesion?.startedAt || !item.createdAt) return false;
+  return new Date(item.createdAt).getTime() >= new Date(sesion.startedAt).getTime();
+}
+
+function diffStatus(item) {
+  if (!isItemCounted(item)) return { label: 'Pendiente', cls: '' };
+  const diff = itemDiff(item);
+  if (Math.abs(diff) < 0.0001) return { label: 'OK', cls: 'ok' };
+  if (diff < 0) return { label: 'Faltan ' + fmtQty(Math.abs(diff)), cls: 'missing' };
+  return { label: 'Sobran ' + fmtQty(diff), cls: 'extra' };
+}
+
+function expiryBadge(item) {
+  const date = item.expiryDate ? fmtDateOnly(item.expiryDate) : '';
+  if (item.expiryStatus === 'vencido') return { label: date ? 'Vencido ' + date : 'Vencido', cls: 'danger' };
+  if (item.expiryStatus === 'vence_el') return { label: date ? 'Vence el ' + date : 'Vence el', cls: 'warning' };
+  return null;
+}
+
+function preciseLocationLabel(item) {
+  const loc = item.preciseLocation || {};
+  const parts = [
+    loc.deposit,
+    loc.shelf ? 'Est. ' + loc.shelf : '',
+    loc.level ? 'Nivel ' + loc.level : '',
+    loc.position ? 'Pos. ' + loc.position : '',
+  ].filter(Boolean);
+  return parts.join(' - ');
+}
+
+function fmtDateOnly(value) {
+  if (!value) return '';
+  const [y, m, d] = String(value).split('-');
+  return y && m && d ? d + '/' + m + '/' + y : String(value);
+}
+
+function inventorySummary() {
+  const total = items.length;
+  let counted = 0;
+  let differences = 0;
+  let problems = 0;
+  let added = 0;
+  items.forEach(item => {
+    if (isItemCounted(item)) {
+      counted++;
+      if (Math.abs(itemDiff(item)) >= 0.0001) differences++;
+    }
+    if (itemHasProblem(item)) problems++;
+    if (isNewItem(item)) added++;
+  });
+  return { total, counted, pending: Math.max(0, total - counted), differences, problems, added };
+}
+
+function canChangeSessionLocation() {
+  return currentUser?.role === 'admin';
+}
+
 // --- SETUP ---
 async function goToSetup() {
   show('setup-screen');
@@ -344,8 +622,17 @@ async function goToSetup() {
     const activeEl = document.getElementById('active-session-info');
     const newEl = document.getElementById('new-session-form');
     if (sesion.active) {
+      const summary = inventorySummary();
+      const startedText = fmtDate(sesion.startedAt) || 'sin fecha';
+      const byText = sesion.startedBy || 'un usuario';
+      const startedDay = sesion.startedAt ? new Date(sesion.startedAt).toDateString() : '';
+      const today = new Date().toDateString();
+      const isOldOrEmpty = startedDay !== today || summary.counted === 0;
       document.getElementById('asi-location').textContent = sesion.location;
       document.getElementById('asi-started').textContent = 'Iniciada: ' + fmtDate(sesion.startedAt) + (sesion.startedBy ? ' por ' + sesion.startedBy : '');
+      document.getElementById('asi-message').textContent = isOldOrEmpty
+        ? `Hay una sesión anterior iniciada el ${startedText} por ${byText}.`
+        : `${summary.counted} artículos contados hasta ahora.`;
       activeEl.style.display = 'block';
       newEl.style.display = 'none';
     } else {
@@ -357,7 +644,7 @@ async function goToSetup() {
 
 async function startSession() {
   const location = document.getElementById('session-location').value.trim();
-  if (!location) { toast('Ingresa la ubicacion de llegada.'); return; }
+  if (!location) { toast('Ingresa la ubicación donde queda guardado.'); return; }
   try {
     const res = await fetch('/api/inventario-sesion/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({location}) });
     const data = await res.json();
@@ -379,6 +666,7 @@ async function goToMain() {
   await loadSesion();
   show('main-screen');
   buildFilterChips();
+  buildCategoryFilter();
   renderItems();
   startSync();
 }
@@ -392,6 +680,8 @@ async function loadSesion() {
     items = data.items || [];
     categories = data.categories || [];
     updateProgress();
+    const btnLocation = document.getElementById('btn-change-location');
+    if (btnLocation) btnLocation.style.display = canChangeSessionLocation() ? '' : 'none';
   } catch {}
 }
 
@@ -402,17 +692,33 @@ function startSync() {
 
 function buildFilterChips() {
   const el = document.getElementById('filter-chips');
-  const cats = [...new Set(items.map(i => i.categoryId))].sort();
+  const filters = [
+    ['pending', 'Pendientes'],
+    ['counted', 'Contados'],
+    ['diff', 'Con diferencias'],
+    ['problems', 'Con problemas'],
+    ['expiry', 'Con vencimiento / vencidos'],
+    ['new', 'Nuevos'],
+    ['all', 'Todos']
+  ];
+  el.innerHTML = filters.map(([id, label]) =>
+    `<div class="chip ${activeFilter === id ? 'active' : ''}" data-filter="${id}" onclick="setFilter(this)">${label}</div>`
+  ).join('');
+}
+
+function buildCategoryFilter() {
+  const sel = document.getElementById('category-filter');
+  if (!sel) return;
   const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
-  el.innerHTML = '<div class="chip active" data-filter="" onclick="setFilter(this)">Todos</div>';
-  cats.forEach(catId => {
-    const div = document.createElement('div');
-    div.className = 'chip';
-    div.dataset.filter = catId;
-    div.textContent = catMap[catId] || catId;
-    div.onclick = () => setFilter(div);
-    el.appendChild(div);
-  });
+  const used = [...new Set(items.map(i => i.categoryId).filter(Boolean))].sort((a, b) => (catMap[a] || a).localeCompare(catMap[b] || b));
+  sel.innerHTML = '<option value="">Todos los rubros</option>' + used.map(id => `<option value="${esc(id)}">${esc(catMap[id] || id)}</option>`).join('');
+  sel.value = used.includes(activeCategoryFilter) ? activeCategoryFilter : '';
+  activeCategoryFilter = sel.value;
+}
+
+function setCategoryFilter(value) {
+  activeCategoryFilter = value || '';
+  renderItems();
 }
 
 function setFilter(el) {
@@ -427,15 +733,21 @@ function renderItems() {
   const term = (document.getElementById('search-input').value || '').toLowerCase();
   const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
   const visible = items.filter(item => {
-    if (activeFilter && item.categoryId !== activeFilter) return false;
+    if (activeFilter === 'pending' && isItemCounted(item)) return false;
+    if (activeFilter === 'counted' && !isItemCounted(item)) return false;
+    if (activeFilter === 'diff' && (!isItemCounted(item) || Math.abs(itemDiff(item)) < 0.0001)) return false;
+    if (activeFilter === 'problems' && !itemHasProblem(item)) return false;
+    if (activeFilter === 'expiry' && !itemHasExpiryAlert(item)) return false;
+    if (activeFilter === 'new' && !isNewItem(item)) return false;
+    if (activeCategoryFilter && item.categoryId !== activeCategoryFilter) return false;
     if (term && !item.name.toLowerCase().includes(term) && !(catMap[item.categoryId]||'').toLowerCase().includes(term)) return false;
     return true;
   });
 
   // ordenar: no contados primero
   visible.sort((a, b) => {
-    const ca = sesion?.counts?.[a.id]?.counted ? 1 : 0;
-    const cb = sesion?.counts?.[b.id]?.counted ? 1 : 0;
+    const ca = isItemCounted(a) ? 1 : 0;
+    const cb = isItemCounted(b) ? 1 : 0;
     return ca - cb || a.name.localeCompare(b.name);
   });
 
@@ -447,16 +759,28 @@ function renderItems() {
   list.innerHTML = '';
   visible.forEach(item => {
     const count = sesion?.counts?.[item.id];
-    const isCounted = count?.counted || false;
+    const isCounted = isItemCounted(item);
     const qty = count?.qty ?? item.quantity ?? 0;
     const catLabel = catMap[item.categoryId] || item.categoryId || '';
+    const status = diffStatus(item);
+    const isNew = isNewItem(item);
+    const expiry = expiryBadge(item);
+    const preciseLocation = preciseLocationLabel(item);
 
     const div = document.createElement('div');
     div.className = 'item' + (isCounted ? ' counted' : '');
     div.innerHTML = `
       <div class="item-info">
-        <div class="item-name">${esc(item.name)}</div>
+        <div class="item-name">${esc(item.name)}${isNew ? '<span class="new-pill">Nuevo</span>' : ''}</div>
         <div class="item-cat">${esc(catLabel)}${item.subcategory ? ' · ' + esc(item.subcategory) : ''}</div>
+        <div class="item-stock-line">
+          <span>Registrada: ${fmtQty(registeredQty(item))}</span>
+          <span>Contada: ${isCounted ? fmtQty(countedQty(item)) : '-'}</span>
+          <span>Diferencia: ${isCounted ? fmtQty(itemDiff(item)) : '-'}</span>
+        </div>
+        <div class="diff-pill ${status.cls}">${esc(status.label)}</div>
+        ${expiry ? `<div class="expiry-pill ${expiry.cls}">${esc(expiry.label)}</div>` : ''}
+        ${preciseLocation ? `<div class="precise-location">${esc(preciseLocation)}</div>` : ''}
       </div>
       <div class="qty-ctrl">
         <div class="qty-btn" ontouchstart="" onclick="changeQty('${item.id}', ${qty}, -1)">&#8722;</div>
@@ -468,7 +792,12 @@ function renderItems() {
       <div class="check-btn ${isCounted ? 'on' : ''}" ontouchstart="" onclick="toggleCount('${item.id}')">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
       </div>
-      <div class="cond-mini-btn ${item.condition && item.condition !== 'ok' ? 'has-issue' : ''}" ontouchstart="" onclick="openCondModal('${item.id}')" title="Estado del artículo">🔧</div>`;
+      <div class="cond-mini-btn ${itemHasProblem(item) ? 'has-issue' : ''}" ontouchstart="" onclick="openCondModal('${item.id}')" title="Estado del artículo">Estado</div>
+      <div class="item-actions">
+        <button class="item-action" type="button" onclick="openPackageModal('${item.id}')">Cajas / bultos</button>
+        <button class="item-action" type="button" onclick="openMetaModal('${item.id}')">Vencimiento / ubicación</button>
+        <button class="item-action danger" type="button" onclick="openArchiveModal('${item.id}')">Dar de baja</button>
+      </div>`;
     list.appendChild(div);
   });
 
@@ -477,8 +806,9 @@ function renderItems() {
 }
 
 function updateProgress() {
-  const total = items.length;
-  const counted = Object.values(sesion?.counts || {}).filter(c => c.counted).length;
+  const summary = inventorySummary();
+  const total = summary.total;
+  const counted = summary.counted;
   const pct = total ? Math.round(counted / total * 100) : 0;
   document.getElementById('prog-fill').style.width = pct + '%';
   document.getElementById('prog-label').textContent = counted + ' de ' + total + ' contados';
@@ -491,7 +821,8 @@ async function changeQty(itemId, currentQty, delta) {
   const newQty = Math.max(0, Number(currentQty) + delta);
   const input = document.getElementById('qty-' + itemId);
   if (input) input.value = newQty;
-  await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false);
+  await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false, null);
+  renderItems();
   if (input) {
     // update onclick delta reference
     input.previousElementSibling.onclick = () => changeQty(itemId, newQty, -1);
@@ -501,7 +832,8 @@ async function changeQty(itemId, currentQty, delta) {
 
 async function setQtyDirect(itemId, val) {
   const newQty = Math.max(0, Number(val) || 0);
-  await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false);
+  await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false, null);
+  renderItems();
 }
 
 async function toggleCount(itemId) {
@@ -512,9 +844,11 @@ async function toggleCount(itemId) {
   renderItems();
 }
 
-async function patchItem(itemId, qty, counted) {
+async function patchItem(itemId, qty, counted, packageCount) {
   try {
-    const res = await fetch('/api/inventario-sesion/item', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({itemId, qty, counted}) });
+    const body = { itemId, qty, counted };
+    if (packageCount !== undefined) body.packageCount = packageCount;
+    const res = await fetch('/api/inventario-sesion/item', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
     const data = await res.json();
     if (data.ok) {
       sesion = data.sesion;
@@ -523,12 +857,174 @@ async function patchItem(itemId, qty, counted) {
   } catch {}
 }
 
+// --- SESSION LOCATION ---
+function openLocationModal() {
+  if (!canChangeSessionLocation()) { toast('Solo admin puede cambiar la ubicación.'); return; }
+  document.getElementById('session-location-edit').value = sesion?.location || '';
+  document.getElementById('location-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('session-location-edit').focus(), 100);
+}
+
+function closeLocationModal(e) {
+  if (!e || e.target === document.getElementById('location-overlay'))
+    document.getElementById('location-overlay').classList.remove('open');
+}
+
+async function saveSessionLocation() {
+  const location = document.getElementById('session-location-edit').value.trim();
+  if (!location) { toast('Ingresa la ubicación.'); return; }
+  if (!confirm('Cambiar la ubicación de esta sesión activa?')) return;
+  try {
+    const res = await fetch('/api/inventario-sesion/location', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ location }) });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'No se pudo cambiar la ubicación.'); return; }
+    sesion = data.sesion;
+    closeLocationModal();
+    renderItems();
+    toast('Ubicación actualizada');
+  } catch { toast('Error al cambiar la ubicación.'); }
+}
+
+// --- PACKAGE COUNT ---
+function openPackageModal(itemId) {
+  const item = items.find(i => i.id === itemId);
+  if (!item) return;
+  const saved = itemCount(item).packageCount || {};
+  packageItemId = itemId;
+  document.getElementById('package-item-name').textContent = item.name;
+  document.getElementById('pkg-boxes').value = saved.bundles ?? '0';
+  document.getElementById('pkg-units').value = saved.unitsPerBundle ?? '';
+  document.getElementById('pkg-loose').value = saved.looseUnits ?? (countedQty(item) || '0');
+  updatePackageTotal();
+  document.getElementById('package-overlay').classList.add('open');
+}
+
+function closePackageModal(e) {
+  if (!e || e.target === document.getElementById('package-overlay'))
+    document.getElementById('package-overlay').classList.remove('open');
+}
+
+function packageTotal() {
+  const boxes = Math.max(0, Number(document.getElementById('pkg-boxes').value) || 0);
+  const units = Math.max(0, Number(document.getElementById('pkg-units').value) || 0);
+  const loose = Math.max(0, Number(document.getElementById('pkg-loose').value) || 0);
+  return boxes * units + loose;
+}
+
+function updatePackageTotal() {
+  document.getElementById('pkg-total').textContent = fmtQty(packageTotal());
+}
+
+async function usePackageTotal() {
+  if (!packageItemId) return;
+  const packageCount = currentPackageCount();
+  await patchItem(packageItemId, packageCount.totalUnits, true, packageCount);
+  closePackageModal();
+  renderItems();
+  toast('Total contado aplicado');
+}
+
+function currentPackageCount() {
+  const bundles = Math.max(0, Number(document.getElementById('pkg-boxes').value) || 0);
+  const unitsPerBundle = Math.max(0, Number(document.getElementById('pkg-units').value) || 0);
+  const looseUnits = Math.max(0, Number(document.getElementById('pkg-loose').value) || 0);
+  return { bundles, unitsPerBundle, looseUnits, totalUnits: bundles * unitsPerBundle + looseUnits };
+}
+
+// --- ITEM META ---
+function openMetaModal(itemId) {
+  const item = items.find(i => i.id === itemId);
+  if (!item) return;
+  metaItemId = itemId;
+  const loc = item.preciseLocation || {};
+  document.getElementById('meta-item-name').textContent = item.name;
+  document.getElementById('meta-expiry-status').value = item.expiryStatus || '';
+  document.getElementById('meta-expiry-date').value = item.expiryDate || '';
+  document.getElementById('meta-loc-deposit').value = loc.deposit || '';
+  document.getElementById('meta-loc-shelf').value = loc.shelf || '';
+  document.getElementById('meta-loc-level').value = loc.level || '';
+  document.getElementById('meta-loc-position').value = loc.position || '';
+  document.getElementById('meta-overlay').classList.add('open');
+}
+
+function closeMetaModal(e) {
+  if (!e || e.target === document.getElementById('meta-overlay'))
+    document.getElementById('meta-overlay').classList.remove('open');
+}
+
+async function saveItemMeta() {
+  if (!metaItemId) return;
+  const expiryStatus = document.getElementById('meta-expiry-status').value;
+  const expiryDate = document.getElementById('meta-expiry-date').value;
+  if (expiryStatus && !expiryDate) { toast('Carga la fecha de vencimiento.'); return; }
+  const body = {
+    itemId: metaItemId,
+    expiryStatus,
+    expiryDate,
+    preciseLocation: {
+      deposit: document.getElementById('meta-loc-deposit').value.trim(),
+      shelf: document.getElementById('meta-loc-shelf').value.trim(),
+      level: document.getElementById('meta-loc-level').value.trim(),
+      position: document.getElementById('meta-loc-position').value.trim(),
+    },
+  };
+  try {
+    const res = await fetch('/api/operational-inventory-meta', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'No se pudo guardar.'); return; }
+    const idx = items.findIndex(i => i.id === metaItemId);
+    if (idx >= 0) items[idx] = { ...items[idx], ...data.item };
+    closeMetaModal();
+    renderItems();
+    toast('Datos guardados');
+  } catch { toast('Error al guardar.'); }
+}
+
+// --- ARCHIVE ---
+function openArchiveModal(itemId) {
+  const item = items.find(i => i.id === itemId);
+  if (!item) return;
+  archiveItemId = itemId;
+  document.getElementById('archive-item-name').textContent = item.name;
+  document.getElementById('archive-reason').value = 'Duplicado';
+  document.getElementById('archive-overlay').classList.add('open');
+}
+
+function closeArchiveModal(e) {
+  if (!e || e.target === document.getElementById('archive-overlay'))
+    document.getElementById('archive-overlay').classList.remove('open');
+}
+
+async function archiveItem() {
+  if (!archiveItemId) return;
+  const reason = document.getElementById('archive-reason').value;
+  if (!confirm('Dar de baja este artículo? No se borra el historial.')) return;
+  try {
+    const res = await fetch('/api/operational-inventory-archive', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ itemId: archiveItemId, reason }) });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'No se pudo dar de baja.'); return; }
+    sesion = data.sesion || sesion;
+    items = data.items || items.filter(i => i.id !== archiveItemId);
+    categories = data.categories || categories;
+    closeArchiveModal();
+    buildCategoryFilter();
+    renderItems();
+    toast('Artículo dado de baja');
+  } catch { toast('Error al dar de baja.'); }
+}
+
 // --- NEW ITEM ---
 function openNewItemModal() {
   const sel = document.getElementById('ni-category');
   sel.innerHTML = categories.map(c => `<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
   document.getElementById('ni-name').value = '';
   document.getElementById('ni-qty').value = '1';
+  document.getElementById('ni-count-mode').value = 'units';
+  document.getElementById('ni-pkg-boxes').value = '0';
+  document.getElementById('ni-pkg-units').value = '0';
+  document.getElementById('ni-pkg-loose').value = '0';
+  toggleNewItemCountMode();
+  updateNewItemPackageTotal();
   document.getElementById('new-item-overlay').classList.add('open');
   setTimeout(() => document.getElementById('ni-name').focus(), 100);
 }
@@ -541,8 +1037,11 @@ function closeNewItemModal(e) {
 async function saveNewItem() {
   const name = document.getElementById('ni-name').value.trim();
   const categoryId = document.getElementById('ni-category').value;
-  const qty = Math.max(0, Number(document.getElementById('ni-qty').value) || 0);
+  const mode = document.getElementById('ni-count-mode').value;
+  const packageCount = mode === 'packages' ? newItemPackageCount() : null;
+  const qty = mode === 'packages' ? packageCount.totalUnits : Math.max(0, Number(document.getElementById('ni-qty').value) || 0);
   if (!name) { toast('Ingresa el nombre del item.'); return; }
+  if (qty <= 0) { toast('Ingresa una cantidad mayor a cero.'); return; }
   try {
     const res = await fetch('/api/operational-inventory', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ item: { name, categoryId, quantity: qty, location: sesion?.location || '', status: 'available' } }) });
     const data = await res.json();
@@ -551,18 +1050,50 @@ async function saveNewItem() {
     toast('Item agregado');
     await loadSesion();
     buildFilterChips();
+    buildCategoryFilter();
     renderItems();
     // marcar como contado automaticamente
     const newItem = (data.operationalInventory?.items || []).find(i => i.name.toLowerCase() === name.toLowerCase());
-    if (newItem) await patchItem(newItem.id, qty, true);
+    if (newItem) {
+      newItemIds.add(newItem.id);
+      await patchItem(newItem.id, qty, true, mode === 'packages' ? packageCount : undefined);
+      activeFilter = 'new';
+      buildFilterChips();
+    }
     renderItems();
   } catch { toast('Error al guardar el item.'); }
 }
 
+function toggleNewItemCountMode() {
+  const mode = document.getElementById('ni-count-mode').value;
+  document.getElementById('ni-units-wrap').style.display = mode === 'packages' ? 'none' : '';
+  document.getElementById('ni-packages-wrap').style.display = mode === 'packages' ? '' : 'none';
+}
+
+function newItemPackageCount() {
+  const bundles = Math.max(0, Number(document.getElementById('ni-pkg-boxes').value) || 0);
+  const unitsPerBundle = Math.max(0, Number(document.getElementById('ni-pkg-units').value) || 0);
+  const looseUnits = Math.max(0, Number(document.getElementById('ni-pkg-loose').value) || 0);
+  return { bundles, unitsPerBundle, looseUnits, totalUnits: bundles * unitsPerBundle + looseUnits };
+}
+
+function updateNewItemPackageTotal() {
+  document.getElementById('ni-pkg-total').textContent = fmtQty(newItemPackageCount().totalUnits);
+}
+
 // --- CLOSE SESSION ---
 function openConfirm() {
-  const counted = Object.values(sesion?.counts || {}).filter(c => c.counted).length;
-  document.getElementById('confirm-msg').textContent = `Se van a actualizar ${counted} items. Sus cantidades quedan registradas en "${sesion?.location || 'el nuevo salon'}".`;
+  const summary = inventorySummary();
+  document.getElementById('confirm-msg').textContent = `Se van a actualizar ${summary.counted} artículos contados en "${sesion?.location || 'la ubicación seleccionada'}".`;
+  document.getElementById('confirm-summary').innerHTML = [
+    ['Total de items', summary.total],
+    ['Contados', summary.counted],
+    ['Pendientes', summary.pending],
+    ['Con diferencias', summary.differences],
+    ['Con problemas', summary.problems],
+    ['Nuevos agregados', summary.added]
+  ].map(([label, value]) => `<div class="confirm-stat"><strong>${value}</strong><span>${label}</span></div>`).join('');
+  document.getElementById('confirm-warning').style.display = summary.pending ? 'block' : 'none';
   document.getElementById('confirm-overlay').classList.add('open');
 }
 

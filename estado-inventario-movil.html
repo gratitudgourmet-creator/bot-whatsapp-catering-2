@@ -95,7 +95,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .condition-label{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px}
 .condition-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .cond-btn{padding:10px 6px;border:2px solid var(--border);border-radius:10px;background:var(--surface);font-size:13px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px}
-.cond-btn .cond-icon{font-size:18px}
+.cond-btn .cond-icon{font-size:11px;font-weight:800;letter-spacing:.2px}
 .cond-btn.selected-ok{border-color:var(--c-ok);background:var(--accent-bg);color:var(--c-ok)}
 .cond-btn.selected-roto{border-color:var(--c-roto);background:var(--danger-bg);color:var(--c-roto)}
 .cond-btn.selected-sucio{border-color:var(--c-sucio);background:var(--warn-bg);color:var(--c-sucio)}
@@ -192,12 +192,12 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
       <div>
         <div class="condition-label">Condición</div>
         <div class="condition-grid">
-          <button class="cond-btn" data-cond="ok" onclick="selectCondition('ok')"><span class="cond-icon">✅</span>Ok</button>
-          <button class="cond-btn" data-cond="sucio" onclick="selectCondition('sucio')"><span class="cond-icon">🟡</span>Sucio</button>
-          <button class="cond-btn" data-cond="roto" onclick="selectCondition('roto')"><span class="cond-icon">🔴</span>Roto</button>
-          <button class="cond-btn" data-cond="desoldado" onclick="selectCondition('desoldado')"><span class="cond-icon">🔧</span>Desoldado</button>
-          <button class="cond-btn" data-cond="falta_pieza" onclick="selectCondition('falta_pieza')"><span class="cond-icon">🔩</span>Falta pieza</button>
-          <button class="cond-btn" data-cond="otro" onclick="selectCondition('otro')"><span class="cond-icon">📝</span>Otro</button>
+          <button class="cond-btn" data-cond="ok" onclick="selectCondition('ok')"><span class="cond-icon">OK</span>OK</button>
+          <button class="cond-btn" data-cond="sucio" onclick="selectCondition('sucio')"><span class="cond-icon">SUC</span>Sucio</button>
+          <button class="cond-btn" data-cond="roto" onclick="selectCondition('roto')"><span class="cond-icon">ROT</span>Roto</button>
+          <button class="cond-btn" data-cond="desoldado" onclick="selectCondition('desoldado')"><span class="cond-icon">DES</span>Desoldado</button>
+          <button class="cond-btn" data-cond="falta_pieza" onclick="selectCondition('falta_pieza')"><span class="cond-icon">PZA</span>Falta pieza</button>
+          <button class="cond-btn" data-cond="otro" onclick="selectCondition('otro')"><span class="cond-icon">OTR</span>Otro</button>
         </div>
       </div>
       <!-- NOTAS -->

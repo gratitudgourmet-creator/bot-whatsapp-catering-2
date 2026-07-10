@@ -241,7 +241,7 @@ const DEFAULT_ROLE_DEFINITIONS = {
   },
   compras: {
     label: "Compras",
-    permissions: ["view", "purchases:write", "stock:read", "providers:write", "venues:read", "events:read"],
+    permissions: ["view", "purchases:write", "stock:read", "stock:write", "providers:write", "venues:read", "events:read"],
     tabs: ["purchases", "stock", "providers"],
   },
   compras_calle: {
@@ -314,6 +314,8 @@ const PERMISSION_DEFINITIONS = [
   { id: "reports:read", label: "Ver reportes", group: "Reportes" },
   { id: "finance:read", label: "Ver pagos y deudas", group: "Finanzas" },
   { id: "finance:write", label: "Registrar pagos de proveedores", group: "Finanzas" },
+  { id: "stock:read", label: "Ver stock e inventario", group: "Stock" },
+  { id: "stock:write", label: "Modificar stock e inventario", group: "Stock" },
   { id: "payment_orders:read", label: "Ver ordenes de pago", group: "Finanzas" },
   { id: "payment_orders:write", label: "Crear ordenes de pago", group: "Finanzas" },
   { id: "payment_orders:approve", label: "Aprobar ordenes de pago", group: "Finanzas" },
@@ -1618,7 +1620,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "events:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "events:write"]);
         if (!user) return;
         const body = await readJsonBody(request);
         const operationalInventory = saveOperationalInventoryRecord(body, user);
@@ -1642,6 +1644,37 @@ function startApprovalPanelServer() {
         return sendJson(response, { ok: true, operationalInventory });
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-archive") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
+        if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "dar de baja inventario operativo")) return;
+        if (!requireSalonLocation(user, response, "archivar articulo de inventario")) return;
+        const body = await readJsonBody(request);
+        const itemId = normalizeText(body.itemId || body.id || "");
+        const reason = normalizeText(body.reason || "");
+        if (!itemId) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
+        if (!reason) return sendJson(response, { ok: false, error: "Motivo requerido." }, 400);
+        if (!findOperationalInventoryItem(itemId)) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        const item = archiveOperationalInventoryItem(itemId, reason, user);
+        return sendJson(response, { ok: true, item, ...getInventarioSesionView() });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-meta") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
+        if (!user) return;
+        if (!requireSalonLocation(user, response, "actualizar datos de inventario")) return;
+        const body = await readJsonBody(request);
+        const itemId = normalizeText(body.itemId || body.id || "");
+        if (!itemId) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
+        if (!findOperationalInventoryItem(itemId)) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        const expiryStatus = normalizeOperationalExpiryStatus(body.expiryStatus || "");
+        const expiryDate = normalizeText(body.expiryDate || "");
+        if (expiryStatus && !expiryDate) return sendJson(response, { ok: false, error: "Fecha de vencimiento requerida." }, 400);
+        if (expiryStatus && !/^\d{4}-\d{2}-\d{2}$/.test(expiryDate)) return sendJson(response, { ok: false, error: "La fecha de vencimiento debe tener formato YYYY-MM-DD." }, 400);
+        const item = updateOperationalInventoryMeta(body, user);
+        return sendJson(response, { ok: true, item });
+      }
+
       if (request.method === "GET" && requestUrl.pathname === "/api/inventario-sesion") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write"]);
         if (!user) return;
@@ -1649,7 +1682,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/start") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "iniciar toma de inventario")) return;
         const body = await readJsonBody(request);
@@ -1658,11 +1691,27 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/item") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "registrar conteo de inventario")) return;
         const body = await readJsonBody(request);
-        const sesion = updateInventarioSesionItem(body.itemId, body.counted, body.qty, user);
+        if (!loadInventarioSesion().active) return sendJson(response, { ok: false, error: "No hay una sesion de inventario activa." }, 400);
+        if (!normalizeText(body.itemId || "")) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
+        if (!findOperationalInventoryItem(body.itemId)) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        const packageValidation = validatePackageCountInput(body.packageCount, body.qty);
+        if (!packageValidation.ok) return sendJson(response, { ok: false, error: packageValidation.error }, 400);
+        const sesion = updateInventarioSesionItem(body.itemId, body.counted, body.qty, user, packageValidation.packageCount);
+        return sendJson(response, { ok: true, sesion });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/location") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
+        if (!user) return;
+        if (user.role !== "admin") return sendJson(response, { ok: false, error: "Solo admin puede cambiar la ubicacion de la sesion." }, 403);
+        const body = await readJsonBody(request);
+        if (!loadInventarioSesion().active) return sendJson(response, { ok: false, error: "No hay una sesion de inventario activa." }, 400);
+        if (!normalizeText(body.location || "")) return sendJson(response, { ok: false, error: "Ubicacion requerida." }, 400);
+        const sesion = updateInventarioSesionLocation(body.location, user);
         return sendJson(response, { ok: true, sesion });
       }
 
@@ -6483,7 +6532,53 @@ function normalizeOperationalInventoryItem(input = {}) {
     conditionImagePath: normalizeText(input.conditionImagePath || ""),
     conditionAt: input.conditionAt || null,
     conditionBy: normalizeText(input.conditionBy || ""),
+    expiryStatus: normalizeOperationalExpiryStatus(input.expiryStatus || ""),
+    expiryDate: normalizeText(input.expiryDate || ""),
+    preciseLocation: normalizePreciseInventoryLocation(input.preciseLocation || {}),
+    archivedAt: input.archivedAt || null,
+    archivedBy: normalizeText(input.archivedBy || ""),
+    archivedReason: normalizeText(input.archivedReason || ""),
     updatedAt: input.updatedAt || new Date().toISOString(),
+  };
+}
+
+function normalizeOperationalExpiryStatus(status) {
+  const key = normalizeSearchKey(status || "");
+  if (["vence_el", "vence el", "por_vencer", "por vencer", "proximo", "proxima"].includes(key)) return "vence_el";
+  if (["vencido", "vencida"].includes(key)) return "vencido";
+  return "";
+}
+
+function normalizeInventoryPackageCount(input = {}) {
+  const bundles = Math.max(0, parseDecimalNumber(input.bundles || input.packageBundles || 0));
+  const unitsPerBundle = Math.max(0, parseDecimalNumber(input.unitsPerBundle || input.units_per_bundle || 0));
+  const looseUnits = Math.max(0, parseDecimalNumber(input.looseUnits || input.loose || 0));
+  const totalUnits = bundles * unitsPerBundle + looseUnits;
+  return { bundles, unitsPerBundle, looseUnits, totalUnits };
+}
+
+function validatePackageCountInput(input, qty) {
+  if (input === undefined) return { ok: true, packageCount: undefined };
+  if (input === null) return { ok: true, packageCount: null };
+  const packageCount = normalizeInventoryPackageCount(input);
+  const expectedQty = Math.max(0, parseDecimalNumber(qty || 0));
+  if (packageCount.totalUnits <= 0) return { ok: false, error: "El total por bultos debe ser mayor a cero." };
+  if (Math.abs(packageCount.totalUnits - expectedQty) > 0.0001) return { ok: false, error: "El total por bultos no coincide con la cantidad contada." };
+  return { ok: true, packageCount };
+}
+
+function findOperationalInventoryItem(id) {
+  const cleanId = normalizeText(id || "");
+  if (!cleanId) return null;
+  return normalizeOperationalInventoryData(erpOperationalInventory).items.find((item) => item.id === cleanId) || null;
+}
+
+function normalizePreciseInventoryLocation(input = {}) {
+  return {
+    deposit: normalizeText(input.deposit || input.deposito || ""),
+    shelf: normalizeText(input.shelf || input.estanteria || ""),
+    level: normalizeText(input.level || input.estante || input.nivel || ""),
+    position: normalizeText(input.position || input.posicion || ""),
   };
 }
 
@@ -6679,6 +6774,50 @@ function deleteOperationalInventoryItem(id, user = null) {
   return getOperationalInventoryAdminView();
 }
 
+function archiveOperationalInventoryItem(id, reason, user = null) {
+  const cleanId = normalizeText(id || "");
+  const cleanReason = normalizeText(reason || "");
+  if (!cleanId) throw new Error("itemId requerido.");
+  if (!cleanReason) throw new Error("Motivo requerido.");
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const idx = data.items.findIndex((item) => item.id === cleanId);
+  if (idx < 0) throw new Error("Articulo no encontrado.");
+  const before = data.items[idx];
+  const now = new Date().toISOString();
+  data.items[idx] = {
+    ...before,
+    status: "inactive",
+    archivedAt: now,
+    archivedBy: normalizeText(user?.username || ""),
+    archivedReason: cleanReason,
+    updatedAt: now,
+  };
+  erpOperationalInventory = { ...data, updatedAt: now };
+  saveErpOperationalInventory();
+  recordAudit(user, "update", "operational_inventory_archive", cleanId, before.name, before, data.items[idx]);
+  return data.items[idx];
+}
+
+function updateOperationalInventoryMeta(input = {}, user = null) {
+  const cleanId = normalizeText(input.itemId || input.id || "");
+  if (!cleanId) throw new Error("itemId requerido.");
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const idx = data.items.findIndex((item) => item.id === cleanId);
+  if (idx < 0) throw new Error("Articulo no encontrado.");
+  const before = data.items[idx];
+  const now = new Date().toISOString();
+  const next = { ...before, updatedAt: now };
+  if (Object.prototype.hasOwnProperty.call(input, "expiryStatus")) next.expiryStatus = normalizeOperationalExpiryStatus(input.expiryStatus);
+  if (Object.prototype.hasOwnProperty.call(input, "expiryDate")) next.expiryDate = normalizeText(input.expiryDate || "");
+  if (!next.expiryStatus) next.expiryDate = "";
+  if (Object.prototype.hasOwnProperty.call(input, "preciseLocation")) next.preciseLocation = normalizePreciseInventoryLocation(input.preciseLocation || {});
+  data.items[idx] = next;
+  erpOperationalInventory = { ...data, updatedAt: now };
+  saveErpOperationalInventory();
+  recordAudit(user, "update", "operational_inventory_meta", cleanId, before.name, before, next);
+  return next;
+}
+
 /* ===================== SESION DE TOMA DE INVENTARIO ===================== */
 
 function loadInventarioSesion() {
@@ -6697,15 +6836,30 @@ function saveInventarioSesion(data) {
 function startInventarioSesion(location, user) {
   const sesion = { active: true, location: normalizeText(location || ""), startedAt: new Date().toISOString(), startedBy: user?.username || null, counts: {} };
   saveInventarioSesion(sesion);
-  recordAudit(user, "create", "inventario_sesion", "sesion", "Toma de inventario iniciada", null, { location: sesion.location });
+  recordAudit(user, "create", "inventario_sesion", "sesion", "Inventario general iniciado", null, { location: sesion.location });
   return sesion;
 }
 
-function updateInventarioSesionItem(itemId, counted, qty, user) {
+function updateInventarioSesionItem(itemId, counted, qty, user, packageCount = undefined) {
   const sesion = loadInventarioSesion();
   if (!sesion.active) throw new Error("No hay una sesion de inventario activa.");
-  sesion.counts[itemId] = { counted: Boolean(counted), qty: Math.max(0, Number(qty) || 0) };
+  const previous = sesion.counts[itemId] || {};
+  const next = { ...previous, counted: Boolean(counted), qty: Math.max(0, Number(qty) || 0) };
+  if (packageCount === null) delete next.packageCount;
+  else if (packageCount !== undefined) next.packageCount = packageCount;
+  sesion.counts[itemId] = next;
   saveInventarioSesion(sesion);
+  return sesion;
+}
+
+function updateInventarioSesionLocation(location, user) {
+  const sesion = loadInventarioSesion();
+  if (!sesion.active) throw new Error("No hay una sesion de inventario activa.");
+  const before = sesion.location || "";
+  sesion.location = normalizeText(location || "");
+  if (!sesion.location) throw new Error("Ubicacion requerida.");
+  saveInventarioSesion(sesion);
+  recordAudit(user, "update", "inventario_sesion", "location", "Ubicacion de inventario", { location: before }, { location: sesion.location });
   return sesion;
 }
 
@@ -6724,22 +6878,24 @@ function closeInventarioSesion(user) {
   erpOperationalInventory = { ...data, updatedAt: now };
   saveErpOperationalInventory();
   saveInventarioSesion({ active: false, location: sesion.location, closedAt: now, closedBy: user?.username || null, counts: sesion.counts });
-  recordAudit(user, "update", "inventario_sesion", "sesion", "Toma de inventario cerrada", null, { location: sesion.location, itemsUpdated: updated });
+  recordAudit(user, "update", "inventario_sesion", "sesion", "Inventario general cerrado", null, { location: sesion.location, itemsUpdated: updated });
   return { updated, location: sesion.location };
 }
 
 function cancelInventarioSesion(user) {
   const sesion = loadInventarioSesion();
   saveInventarioSesion({ ...sesion, active: false, cancelledAt: new Date().toISOString() });
-  recordAudit(user, "delete", "inventario_sesion", "sesion", "Toma de inventario cancelada");
+  recordAudit(user, "delete", "inventario_sesion", "sesion", "Inventario general cancelado");
 }
 
 function getInventarioSesionView() {
   const sesion = loadInventarioSesion();
   const data = normalizeOperationalInventoryData(erpOperationalInventory);
-  const total = data.items.length;
-  const counted = Object.values(sesion.counts || {}).filter((c) => c.counted).length;
-  return { sesion, items: data.items, categories: data.categories, total, counted };
+  const activeItems = data.items.filter((item) => normalizeOperationalInventoryStatus(item.status) !== "inactive");
+  const total = activeItems.length;
+  const activeIds = new Set(activeItems.map((item) => item.id));
+  const counted = Object.entries(sesion.counts || {}).filter(([itemId, count]) => activeIds.has(itemId) && count.counted).length;
+  return { sesion, items: activeItems, categories: data.categories, total, counted };
 }
 
 function getEstadoInventarioView() {
