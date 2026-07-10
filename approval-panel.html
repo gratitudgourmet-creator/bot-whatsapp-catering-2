@@ -10463,6 +10463,14 @@
     let _equipoMarkers = {};   // uid → L.marker
     let _equipoChecked = {};   // uid → bool
     let _equipoPollTimer = null;
+    let _equipoFocusedUid = null;
+    const _equipoIcon = L.divIcon({
+      className: "equipo-marker",
+      html: '<span style="display:block;width:18px;height:18px;border-radius:999px;background:#0f4d40;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.28)"></span>',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+      popupAnchor: [0, -12],
+    });
 
     function iniciarRastreoUbicacion() {
       if (!navigator.geolocation) return;
@@ -10523,13 +10531,13 @@
           const checked = _equipoChecked[u.uid] ? "checked" : "";
           const inactivo = u.inactivo ? ' style="opacity:.5"' : "";
           const hace = _tiempoRelativo(u.updatedAt);
-          return `<label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 4px;border-radius:6px"${inactivo}>
-            <input type="checkbox" ${checked} onchange="equipoToggleUser('${u.uid}', this.checked)" style="cursor:pointer">
+          return `<div role="button" tabindex="0" onclick="equipoFocusUser('${u.uid}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();equipoFocusUser('${u.uid}')}" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 4px;border-radius:6px"${inactivo}>
+            <input type="checkbox" ${checked} onclick="event.stopPropagation()" onchange="equipoToggleUser('${u.uid}', this.checked)" style="cursor:pointer">
             <span style="flex:1;min-width:0">
               <strong style="display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name}</strong>
               <span style="font-size:11px;color:var(--text-muted)">${u.inactivo ? "Inactivo · " : ""}${hace}</span>
             </span>
-          </label>`;
+          </div>`;
         }).join("");
       }
 
@@ -10552,17 +10560,27 @@
         if (_equipoMarkers[u.uid]) {
           _equipoMarkers[u.uid].setLatLng([u.lat, u.lng]).setPopupContent(popup);
         } else {
-          _equipoMarkers[u.uid] = L.marker([u.lat, u.lng]).bindPopup(popup).addTo(_equipoMap);
+          _equipoMarkers[u.uid] = L.marker([u.lat, u.lng], { icon: _equipoIcon }).bindPopup(popup).addTo(_equipoMap);
         }
       });
 
       // Fit map to visible markers
       const visible = Object.values(_equipoMarkers);
-      if (visible.length === 1) {
+      if (_equipoFocusedUid && _equipoMarkers[_equipoFocusedUid]) {
+        _equipoMarkers[_equipoFocusedUid].openPopup();
+      } else if (visible.length === 1) {
         _equipoMap.setView(visible[0].getLatLng(), 15);
       } else if (visible.length > 1) {
         _equipoMap.fitBounds(L.featureGroup(visible).getBounds().pad(0.2));
       }
+    }
+
+    function equipoFocusUser(uid) {
+      _equipoFocusedUid = uid;
+      const marker = _equipoMarkers[uid];
+      if (!marker || !_equipoMap) return;
+      _equipoMap.setView(marker.getLatLng(), 16, { animate: true });
+      marker.openPopup();
     }
 
     function equipoToggleUser(uid, visible) {
@@ -10570,6 +10588,7 @@
       if (!visible && _equipoMarkers[uid]) {
         _equipoMap.removeLayer(_equipoMarkers[uid]);
         delete _equipoMarkers[uid];
+        if (_equipoFocusedUid === uid) _equipoFocusedUid = null;
       }
       _equipoActualizar();
     }
