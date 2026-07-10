@@ -875,6 +875,239 @@
       .mc-cards-grid { grid-template-columns: 1fr; }
     }
 
+    /* ═══ GUIDED EVENT MODAL — COMPACT PREMIUM REDESIGN ═══ */
+
+    /* 1. Modal size — override extra-wide, constrain to 840px */
+    #erp-form-modal.guided-event-modal .detail-panel {
+      max-width: min(840px, calc(100vw - 24px));
+      width: min(840px, calc(100vw - 24px));
+      padding: 20px;
+    }
+
+    /* 2. Outer modal-header: collapse to zero, keep only close btn via absolute */
+    #erp-form-modal.guided-event-modal .modal-header {
+      border: none;
+      margin: 0;
+      padding: 0;
+      height: 0;
+      overflow: visible;
+      position: relative;
+      z-index: 14;
+    }
+    #erp-form-modal.guided-event-modal .modal-header > div { display: none; }
+    /* Close button floats over the guided header */
+    #erp-form-modal.guided-event-modal .modal-close-button {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      border-radius: 999px;
+      width: 32px;
+      height: 32px;
+      min-height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 16;
+      background: transparent;
+    }
+
+    /* 3. Guided header — single visible header, sticky */
+    #erp-form-modal.guided-event-modal .guided-form-header {
+      align-items: center;
+      background: #fff;
+      border-bottom: 1px solid var(--line, #e5e7eb);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1px;
+      margin: -20px -20px 0;
+      padding: 14px 52px 14px 20px;
+      position: sticky;
+      top: -20px;
+      z-index: 12;
+    }
+    #erp-form-modal.guided-event-modal .guided-form-title { font-size: 17px; font-weight: 700; margin: 0; }
+    #erp-form-modal.guided-event-modal .guided-form-subtitle { font-size: 12px; color: var(--muted); margin: 1px 0 0; }
+    #erp-form-modal.guided-event-modal #event-guided-status { display: none; }
+
+    /* 4. guided-form: collapse sidebar column, single column */
+    #erp-form-modal.guided-event-modal .guided-form {
+      display: block;
+    }
+
+    /* 5. Steps → horizontal tab bar below header */
+    #erp-form-modal.guided-event-modal .guided-form-steps {
+      display: flex !important;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 0;
+      padding: 0 8px;
+      background: var(--surface-1, #fafafa);
+      border-bottom: 1px solid var(--line, #e5e7eb);
+      margin: 0 -20px 0;
+      position: static;
+      scrollbar-width: none;
+      align-items: stretch;
+    }
+    #erp-form-modal.guided-event-modal .guided-form-steps::-webkit-scrollbar { display: none; }
+    #erp-form-modal.guided-event-modal .guided-form-step {
+      display: inline-flex !important;
+      flex-shrink: 0;
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 10px 14px;
+      font-size: 13px;
+      min-height: 40px;
+      color: var(--muted, #6b7280);
+      background: transparent;
+      box-shadow: none;
+    }
+    #erp-form-modal.guided-event-modal .guided-form-step span { display: none; }
+    #erp-form-modal.guided-event-modal .guided-form-step.active {
+      border-bottom: 2px solid var(--accent, #0f4d40);
+      color: var(--accent, #0f4d40);
+      font-weight: 600;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    /* 6. Form body — single column, no sidebar grid */
+    #erp-form-modal.guided-event-modal .guided-form-body,
+    #erp-form-modal.guided-event-modal .guided-form form.guided-form-body {
+      display: block;
+      padding: 20px 0 0;
+    }
+
+    /* 7. Hide summary sidebar entirely */
+    #erp-form-modal.guided-event-modal .guided-form-summary { display: none !important; }
+
+    /* 8. Flatten main area — no border, no shadow */
+    #erp-form-modal.guided-event-modal .guided-form-main {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    /* 9. Keep 2-column panel grid for field pairs */
+    #erp-form-modal.guided-event-modal .guided-form-panel {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 16px;
+    }
+    #erp-form-modal.guided-event-modal .guided-form-panel > .full { grid-column: 1 / -1; }
+
+    /* 10. Section separators — lighter */
+    #erp-form-modal.guided-event-modal .guided-form-section + .guided-form-section {
+      border-top: 1px solid rgba(214,222,230,.45);
+      margin-top: 18px;
+      padding-top: 18px;
+    }
+
+    /* 11. Section head — compact */
+    #erp-form-modal.guided-event-modal .guided-form-section-head { margin-bottom: 14px; }
+    #erp-form-modal.guided-event-modal .guided-form-section-head h3 { font-size: 14px; font-weight: 700; margin: 0; color: var(--text, #0f1b2a); }
+    #erp-form-modal.guided-event-modal .guided-form-section-head p { font-size: 12px; margin: 3px 0 0; color: var(--muted, #6b7280); }
+
+    /* 12. Footer — sticky at bottom, clean */
+    #erp-form-modal.guided-event-modal .guided-form-footer {
+      display: flex !important;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      margin: 20px -20px -20px;
+      padding: 12px 20px 16px;
+      border-top: 1px solid var(--line, #e5e7eb);
+      background: #fff;
+      position: sticky;
+      bottom: -20px;
+      z-index: 12;
+    }
+    #erp-form-modal.guided-event-modal .guided-form-footer [data-guided-reset] { display: none !important; }
+    #erp-form-modal.guided-event-modal .guided-form-footer [data-guided-next] { margin-left: auto; }
+    #erp-form-modal.guided-event-modal .guided-form-footer [data-guided-submit] { margin-left: auto; }
+
+    /* 13. Consistent input heights */
+    #erp-form-modal.guided-event-modal .guided-form .form-field input:not([type=checkbox]),
+    #erp-form-modal.guided-event-modal .guided-form .form-field select {
+      min-height: 40px;
+      border-radius: 8px;
+    }
+
+    /* 14. Remove extra chrome from erp-section */
+    #erp-form-modal.guided-event-modal #erp-event-card { padding: 0; overflow: visible; }
+
+    /* 15. Mobile ≤600px: progress bar instead of horizontal tabs */
+    @media (max-width: 600px) {
+      #erp-form-modal.guided-event-modal .detail-panel {
+        border-radius: 16px 16px 0 0;
+        max-width: none;
+        max-height: 94dvh;
+        max-height: 94vh;
+        padding: 14px;
+        width: 100%;
+      }
+      #erp-form-modal.guided-event-modal .guided-form-header {
+        margin: -14px -14px 0;
+        padding: 12px 48px 12px 14px;
+        top: -14px;
+      }
+      #erp-form-modal.guided-event-modal .modal-close-button { top: 11px; right: 14px; }
+      #erp-form-modal.guided-event-modal .guided-form-steps {
+        display: block !important;
+        background: transparent;
+        border: none;
+        margin: 8px 0 0;
+        padding: 0;
+        position: relative;
+      }
+      #erp-form-modal.guided-event-modal .guided-form-steps::before {
+        content: attr(data-progress-label);
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        font-weight: 600;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      #erp-form-modal.guided-event-modal .guided-form-steps::after {
+        content: "";
+        display: block;
+        height: 3px;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--accent, #0f4d40) var(--guided-progress, 20%), #dde3ea var(--guided-progress, 20%));
+        margin-bottom: 4px;
+      }
+      #erp-form-modal.guided-event-modal .guided-form-step { display: none !important; }
+      #erp-form-modal.guided-event-modal .guided-form-step.active {
+        display: inline-flex !important;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--accent, #0f4d40);
+        padding: 2px 0 0;
+        min-height: 22px;
+        border: none;
+        border-bottom: none;
+        background: none;
+      }
+      #erp-form-modal.guided-event-modal .guided-form-panel {
+        grid-template-columns: 1fr;
+      }
+      #erp-form-modal.guided-event-modal .guided-form-footer {
+        margin: 16px -14px -14px;
+        padding: 10px 14px 16px;
+        bottom: -14px;
+      }
+      #erp-form-modal.guided-event-modal .guided-form-body,
+      #erp-form-modal.guided-event-modal .guided-form form.guided-form-body {
+        padding: 16px 0 0;
+      }
+    }
+
     .vp-section { margin-top: 16px; border: 0.5px solid var(--border); border-radius: 12px; padding: 1.25rem; background: var(--surface-2); }
     .vp-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
     .vp-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
@@ -7201,18 +7434,16 @@
           <section id="erp-event-card" class="erp-section erp-modal-section">
             <div class="guided-form" id="event-guided-form-shell">
               <div class="guided-form-header">
-                <div>
-                  <h2 class="guided-form-title" id="event-guided-title">Nuevo evento</h2>
-                  <p class="guided-form-subtitle">Carga guiada para ordenar identificación, logística, operación y datos comerciales.</p>
-                </div>
-                <span class="status-chip status-muted" id="event-guided-status">Borrador</span>
+                <h2 class="guided-form-title" id="event-guided-title">Nuevo evento</h2>
+                <p class="guided-form-subtitle" id="event-guided-subtitle">Identificación, logística, menú y comercial.</p>
+                <span class="status-chip status-muted" id="event-guided-status" style="display:none">Borrador</span>
               </div>
-              <div class="guided-form-steps" aria-label="Pasos del evento">
-                <button class="guided-form-step active" type="button" data-guided-step="0" onclick="setGuidedFormStep('erp-event-form', 0)"><span>1</span> Identificación</button>
-                <button class="guided-form-step" type="button" data-guided-step="1" onclick="setGuidedFormStep('erp-event-form', 1)"><span>2</span> Lugar y logística</button>
-                <button class="guided-form-step" type="button" data-guided-step="2" onclick="setGuidedFormStep('erp-event-form', 2)"><span>3</span> Menú y operación</button>
-                <button class="guided-form-step" type="button" data-guided-step="3" onclick="setGuidedFormStep('erp-event-form', 3)"><span>4</span> Comercial</button>
-                <button class="guided-form-step" type="button" data-guided-step="4" onclick="setGuidedFormStep('erp-event-form', 4)"><span>5</span> Revisión</button>
+              <div class="guided-form-steps" aria-label="Pasos del evento" data-progress-label="Paso 1 de 5">
+                <button class="guided-form-step active" type="button" data-guided-step="0" onclick="setGuidedFormStep('erp-event-form', 0)">Identificación</button>
+                <button class="guided-form-step" type="button" data-guided-step="1" onclick="setGuidedFormStep('erp-event-form', 1)">Lugar y logística</button>
+                <button class="guided-form-step" type="button" data-guided-step="2" onclick="setGuidedFormStep('erp-event-form', 2)">Menú y operación</button>
+                <button class="guided-form-step" type="button" data-guided-step="3" onclick="setGuidedFormStep('erp-event-form', 3)">Comercial</button>
+                <button class="guided-form-step" type="button" data-guided-step="4" onclick="setGuidedFormStep('erp-event-form', 4)">Revisión</button>
               </div>
             <form id="erp-event-form" class="form-grid guided-form-body" novalidate>
               <input type="hidden" name="id">
@@ -8297,6 +8528,7 @@
             <p class="subtitle section-subtitle">Margen real por producto, ingredientes y precios de venta.</p>
           </div>
           <div class="actions section-actions">
+            <button class="filter action-ghost" type="button" onclick="mcExportExcel()">⬇ Exportar Excel</button>
             <button class="filter action-secondary" type="button" onclick="mcSwitchTab('editar')">Editar productos</button>
             <button class="approve action-primary" type="button" onclick="mcNewProduct()">Nuevo producto</button>
           </div>
@@ -23114,6 +23346,94 @@
       return "danger";
     }
 
+    function mcExportExcel() {
+      const prods = mcLoad();
+      const fmt = (n) => Number(n || 0).toFixed(2).replace(".", ",");
+      const pct = (n) => Number(n || 0).toFixed(1).replace(".", ",") + "%";
+
+      // Build HTML workbook (Excel opens this natively)
+      let html = `
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:x="urn:schemas-microsoft-com:office:excel"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8">
+<style>
+  td, th { mso-number-format: General; }
+  .num  { mso-number-format: "#\,##0\\.00"; }
+  .pct  { mso-number-format: "0\\.0%"; }
+  .head { background: #0f4d40; color: white; font-weight: bold; font-size: 12pt; }
+  .sub  { background: #e8f5f1; font-weight: bold; }
+  .ing  { padding-left: 16pt; color: #444; }
+  .total{ font-weight: bold; background: #f9f9f9; }
+</style>
+</head><body>`;
+
+      // ── Tabla 1: Resumen de productos ──────────────────────────────────────
+      html += `<table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="8" class="head">COSTOS DE MENÚ — Gratitud Gourmet — ${new Date().toLocaleDateString("es-AR")}</td></tr>
+<tr class="sub">
+  <th>ID</th><th>Producto</th><th>Categoría</th>
+  <th>Precio de venta ($)</th><th>Costo total ($)</th>
+  <th>Ganancia ($)</th><th>Margen objetivo (%)</th><th>Margen real (%)</th>
+</tr>`;
+
+      prods.forEach((p) => {
+        const costo = mcCostoTotal(p);
+        const venta = Number(p.precioVenta || 0);
+        const ganancia = venta - costo;
+        const margenReal = mcMargenReal(p);
+        html += `<tr>
+  <td>${p.id}</td>
+  <td>${p.nombre || ""}</td>
+  <td>${p.cat || ""}</td>
+  <td class="num">${fmt(venta)}</td>
+  <td class="num">${fmt(costo)}</td>
+  <td class="num">${fmt(ganancia)}</td>
+  <td>${pct(p.margen)}</td>
+  <td>${pct(margenReal)}</td>
+</tr>`;
+      });
+      html += `</table>`;
+
+      // ── Tabla 2: Detalle de ingredientes ──────────────────────────────────
+      html += `<br><table border="1" cellspacing="0" cellpadding="4">
+<tr><td colspan="4" class="head">DETALLE DE INGREDIENTES</td></tr>
+<tr class="sub">
+  <th>Producto</th><th>Categoría</th><th>Ingrediente</th><th>Costo ($)</th>
+</tr>`;
+
+      prods.forEach((p) => {
+        const ings = p.ings || [];
+        if (!ings.length) {
+          html += `<tr><td>${p.nombre}</td><td>${p.cat || ""}</td><td><i>Sin ingredientes</i></td><td class="num">0,00</td></tr>`;
+        } else {
+          ings.forEach((ing, i) => {
+            html += `<tr>
+  <td>${i === 0 ? p.nombre : ""}</td>
+  <td>${i === 0 ? (p.cat || "") : ""}</td>
+  <td class="ing">${ing.txt || ""}</td>
+  <td class="num">${fmt(ing.costo)}</td>
+</tr>`;
+          });
+          html += `<tr class="total">
+  <td></td><td></td><td>Costo total</td><td class="num">${fmt(mcCostoTotal(p))}</td>
+</tr>`;
+        }
+      });
+      html += `</table></body></html>`;
+
+      const blob = new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `costos-menu-gratitud-${new Date().toISOString().slice(0,10)}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showNotice("Exportación lista. Revisá tus descargas.", "success");
+    }
+
     function mcCategories() {
       const cats = [...new Set(mcLoad().map(p => p.cat).filter(Boolean))].sort();
       return cats;
@@ -23432,7 +23752,7 @@
           </div>
           <div class="vp-kpis">
             <div class="vp-kpi">
-              <div class="vp-kpi-label">Asistentes estimados</div>
+              <div class="vp-kpi-label">Asistentes</div>
               <div class="vp-kpi-value">${guestCount}</div>
             </div>
             <div class="vp-kpi">
