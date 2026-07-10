@@ -158,6 +158,13 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .modal-form details{border:1px solid var(--border);border-radius:12px;padding:12px;background:var(--bg)}
 .modal-form summary{font-size:14px;font-weight:700;cursor:pointer}
 .computed-total{border-radius:12px;background:var(--accent-bg);color:var(--accent-text);padding:12px;font-weight:800;text-align:center}
+.new-item-card{border:1px solid var(--border);border-radius:16px;background:var(--bg);padding:12px;display:flex;flex-direction:column;gap:12px}
+.new-item-section{border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.new-item-section:first-child{border-top:0;padding-top:0}
+.new-item-section-title{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.new-item-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.new-item-grid .full{grid-column:1/-1}
+@media(max-width:420px){.new-item-grid{grid-template-columns:1fr}}
 .modal-form input:focus,.modal-form select:focus{outline:none;border-color:var(--accent)}
 .modal-btns{display:flex;gap:10px;margin-top:4px}
 
@@ -271,40 +278,81 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
   <div class="modal" onclick="event.stopPropagation()">
     <h3>Agregar item</h3>
     <div class="modal-form">
-      <div>
-        <label>Nombre</label>
-        <input type="text" id="ni-name" placeholder="Ej: Platos llanos">
-      </div>
-      <div>
-        <label>Categoria</label>
-        <select id="ni-category"></select>
-      </div>
-      <div>
-        <label>Modo de conteo</label>
-        <select id="ni-count-mode" onchange="toggleNewItemCountMode()">
-          <option value="units">Unidades</option>
-          <option value="packages">Cajas / bultos</option>
-        </select>
-      </div>
-      <div id="ni-units-wrap">
-        <label>Cantidad total</label>
-        <input type="number" id="ni-qty" value="1" min="0" step="1">
-      </div>
-      <div id="ni-packages-wrap" style="display:none">
-        <div class="modal-form">
-          <div>
-            <label>Bultos</label>
-            <input type="number" id="ni-pkg-boxes" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+      <div class="new-item-card">
+        <div class="new-item-section">
+          <div class="new-item-section-title">Articulo</div>
+          <div class="new-item-grid">
+            <div class="full">
+              <label>Nombre</label>
+              <input type="text" id="ni-name" placeholder="Ej: Platos llanos">
+            </div>
+            <div>
+              <label>Categoria</label>
+              <select id="ni-category"></select>
+            </div>
+            <div>
+              <label>Modo de conteo</label>
+              <select id="ni-count-mode" onchange="toggleNewItemCountMode()">
+                <option value="units">Unidades</option>
+                <option value="packages">Cajas / bultos</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label>Unidades por bulto</label>
-            <input type="number" id="ni-pkg-units" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+        </div>
+        <div class="new-item-section">
+          <div class="new-item-section-title">Cantidad</div>
+          <div id="ni-units-wrap">
+            <label>Cantidad total</label>
+            <input type="number" id="ni-qty" value="1" min="0" step="1">
           </div>
-          <div>
-            <label>Sueltas</label>
-            <input type="number" id="ni-pkg-loose" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+          <div id="ni-packages-wrap" style="display:none" class="new-item-grid">
+            <div>
+              <label>Bultos</label>
+              <input type="number" id="ni-pkg-boxes" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+            </div>
+            <div>
+              <label>Unidades por bulto</label>
+              <input type="number" id="ni-pkg-units" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+            </div>
+            <div>
+              <label>Sueltas</label>
+              <input type="number" id="ni-pkg-loose" min="0" step="1" value="0" oninput="updateNewItemPackageTotal()">
+            </div>
+            <div class="computed-total">Total contado: <span id="ni-pkg-total">0</span></div>
           </div>
-          <div class="computed-total">Total contado: <span id="ni-pkg-total">0</span></div>
+        </div>
+        <div class="new-item-section">
+          <div class="new-item-section-title">Vencimiento y ubicacion</div>
+          <div class="new-item-grid">
+            <div>
+              <label>Vencimiento</label>
+              <select id="ni-expiry-status">
+                <option value="">No cargar vencimiento</option>
+                <option value="vence_el">Vence el</option>
+                <option value="vencido">Vencido</option>
+              </select>
+            </div>
+            <div>
+              <label>Fecha de vencimiento</label>
+              <input type="date" id="ni-expiry-date">
+            </div>
+            <div>
+              <label>Deposito / sector</label>
+              <input type="text" id="ni-loc-deposit" placeholder="Ej: Salon">
+            </div>
+            <div>
+              <label>Estanteria</label>
+              <input type="text" id="ni-loc-shelf" placeholder="Ej: A">
+            </div>
+            <div>
+              <label>Nivel</label>
+              <input type="text" id="ni-loc-level" placeholder="Ej: 2">
+            </div>
+            <div>
+              <label>Posicion</label>
+              <input type="text" id="ni-loc-position" placeholder="Ej: Frente">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1023,6 +1071,12 @@ function openNewItemModal() {
   document.getElementById('ni-pkg-boxes').value = '0';
   document.getElementById('ni-pkg-units').value = '0';
   document.getElementById('ni-pkg-loose').value = '0';
+  document.getElementById('ni-expiry-status').value = '';
+  document.getElementById('ni-expiry-date').value = '';
+  document.getElementById('ni-loc-deposit').value = sesion?.location || '';
+  document.getElementById('ni-loc-shelf').value = '';
+  document.getElementById('ni-loc-level').value = '';
+  document.getElementById('ni-loc-position').value = '';
   toggleNewItemCountMode();
   updateNewItemPackageTotal();
   document.getElementById('new-item-overlay').classList.add('open');
@@ -1040,10 +1094,29 @@ async function saveNewItem() {
   const mode = document.getElementById('ni-count-mode').value;
   const packageCount = mode === 'packages' ? newItemPackageCount() : null;
   const qty = mode === 'packages' ? packageCount.totalUnits : Math.max(0, Number(document.getElementById('ni-qty').value) || 0);
+  const selectedExpiryStatus = document.getElementById('ni-expiry-status').value;
+  const expiryDate = document.getElementById('ni-expiry-date').value;
+  const expiryStatus = expiryDate ? (selectedExpiryStatus || 'vence_el') : '';
   if (!name) { toast('Ingresa el nombre del item.'); return; }
   if (qty <= 0) { toast('Ingresa una cantidad mayor a cero.'); return; }
+  if (expiryStatus && !expiryDate) { toast('Carga la fecha de vencimiento.'); return; }
+  const itemPayload = {
+    name,
+    categoryId,
+    quantity: qty,
+    location: sesion?.location || '',
+    status: 'available',
+    expiryStatus,
+    expiryDate,
+    preciseLocation: {
+      deposit: document.getElementById('ni-loc-deposit').value.trim(),
+      shelf: document.getElementById('ni-loc-shelf').value.trim(),
+      level: document.getElementById('ni-loc-level').value.trim(),
+      position: document.getElementById('ni-loc-position').value.trim(),
+    },
+  };
   try {
-    const res = await fetch('/api/operational-inventory', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ item: { name, categoryId, quantity: qty, location: sesion?.location || '', status: 'available' } }) });
+    const res = await fetch('/api/operational-inventory', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ item: itemPayload }) });
     const data = await res.json();
     if (!data.ok) { toast(data.error || 'Error al guardar.'); return; }
     closeNewItemModal();

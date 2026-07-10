@@ -1657,13 +1657,13 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/operational-inventory") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write", "logistics:read"]);
         if (!user) return;
         return sendJson(response, { ok: true, operationalInventory: getOperationalInventoryAdminView() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "events:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "events:write", "logistics:write"]);
         if (!user) return;
         const body = await readJsonBody(request);
         const operationalInventory = saveOperationalInventoryRecord(body, user);
@@ -1719,13 +1719,13 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/inventario-sesion") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write", "logistics:read"]);
         if (!user) return;
         return sendJson(response, { ok: true, ...getInventarioSesionView() });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/start") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "logistics:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "iniciar toma de inventario")) return;
         const body = await readJsonBody(request);
@@ -1734,7 +1734,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/item") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "logistics:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "registrar conteo de inventario")) return;
         const body = await readJsonBody(request);
