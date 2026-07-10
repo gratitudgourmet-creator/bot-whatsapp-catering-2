@@ -535,6 +535,41 @@ let archiveItemId = null;
 let syncTimer = null;
 
 // --- AUTH ---
+function getGpsCoords() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) return resolve(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }),
+      () => resolve(null),
+      { timeout: 8000, maximumAge: 60000, enableHighAccuracy: true }
+    );
+  });
+}
+
+async function updateUserLocationFromDevice() {
+  const gps = await getGpsCoords();
+  if (!gps) return { ok: false, error: 'Activa la ubicacion del navegador y permiti compartirla.' };
+  const res = await fetch('/api/me/location', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ gps }) });
+  const data = await res.json().catch(() => ({ ok: false }));
+  if (data.ok && data.user) currentUser = data.user;
+  return data.ok ? { ok: true, atSalon: data.atSalon } : { ok: false, error: data.error || 'No se pudo registrar la ubicacion.' };
+}
+
+async function fetchJsonWithLocationRetry(url, options, actionLabel) {
+  const run = async () => {
+    const res = await fetch(url, options);
+    return res.json();
+  };
+  let data = await run();
+  if (data?.code !== 'LOCATION_REQUIRED') return data;
+  toast('Para ' + actionLabel + ', activa la ubicacion y permiti compartirla.');
+  const locationResult = await updateUserLocationFromDevice();
+  if (!locationResult.ok) return { ok: false, error: locationResult.error, code: 'LOCATION_REQUIRED' };
+  if (locationResult.atSalon === false) return { ok: false, error: 'Ubicacion registrada, pero no estas dentro del radio del salon.', code: 'LOCATION_REQUIRED' };
+  data = await run();
+  return data;
+}
+
 async function doLogin() {
   const username = document.getElementById('login-user').value.trim();
   const password = document.getElementById('login-pass').value;
@@ -542,7 +577,8 @@ async function doLogin() {
   errEl.textContent = '';
   if (!username || !password) { errEl.textContent = 'Ingresa usuario y contrasena.'; return; }
   try {
-    const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, password}) });
+    const gps = await getGpsCoords();
+    const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, password, gps}) });
     const data = await res.json();
     if (!data.ok) { errEl.textContent = data.error || 'Error al ingresar.'; return; }
     currentUser = data.user;
@@ -694,8 +730,7 @@ async function startSession() {
   const location = document.getElementById('session-location').value.trim();
   if (!location) { toast('Ingresa la ubicación donde queda guardado.'); return; }
   try {
-    const res = await fetch('/api/inventario-sesion/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({location}) });
-    const data = await res.json();
+    const data = await fetchJsonWithLocationRetry('/api/inventario-sesion/start', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({location}) }, 'iniciar la toma');
     if (!data.ok) { toast(data.error || 'Error al iniciar.'); return; }
     sesion = data.sesion;
     goToMain();
@@ -869,7 +904,8 @@ async function changeQty(itemId, currentQty, delta) {
   const newQty = Math.max(0, Number(currentQty) + delta);
   const input = document.getElementById('qty-' + itemId);
   if (input) input.value = newQty;
-  await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false, null);
+  const saved = await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false, null);
+  if (!saved) { renderItems(); return; }
   renderItems();
   if (input) {
     // update onclick delta reference
@@ -880,29 +916,29 @@ async function changeQty(itemId, currentQty, delta) {
 
 async function setQtyDirect(itemId, val) {
   const newQty = Math.max(0, Number(val) || 0);
-  await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false, null);
-  renderItems();
+  if (await patchItem(itemId, newQty, sesion?.counts?.[itemId]?.counted || false, null)) renderItems();
 }
 
 async function toggleCount(itemId) {
   const count = sesion?.counts?.[itemId];
   const isCounted = count?.counted || false;
   const qty = count?.qty ?? (items.find(i => i.id === itemId)?.quantity ?? 0);
-  await patchItem(itemId, qty, !isCounted);
-  renderItems();
+  if (await patchItem(itemId, qty, !isCounted)) renderItems();
 }
 
 async function patchItem(itemId, qty, counted, packageCount) {
   try {
     const body = { itemId, qty, counted };
     if (packageCount !== undefined) body.packageCount = packageCount;
-    const res = await fetch('/api/inventario-sesion/item', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-    const data = await res.json();
+    const data = await fetchJsonWithLocationRetry('/api/inventario-sesion/item', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }, 'registrar conteo');
     if (data.ok) {
       sesion = data.sesion;
       updateProgress();
+      return true;
     }
+    if (data.error) toast(data.error);
   } catch {}
+  return false;
 }
 
 // --- SESSION LOCATION ---
@@ -1116,8 +1152,7 @@ async function saveNewItem() {
     },
   };
   try {
-    const res = await fetch('/api/operational-inventory', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ item: itemPayload }) });
-    const data = await res.json();
+    const data = await fetchJsonWithLocationRetry('/api/operational-inventory', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ item: itemPayload }) }, 'agregar item');
     if (!data.ok) { toast(data.error || 'Error al guardar.'); return; }
     closeNewItemModal();
     toast('Item agregado');

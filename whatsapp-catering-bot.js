@@ -848,6 +848,16 @@ function startApprovalPanelServer() {
         });
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/me/location") {
+        const user = getPanelSessionUser(request);
+        if (!user) return sendJson(response, { ok: false, error: "Sesión expirada." }, 401);
+        const body = await readJsonBody(request);
+        if (!updateUserGpsLocation(user, body.gps || body)) {
+          return sendJson(response, { ok: false, error: "No se pudo registrar la ubicación." }, 400);
+        }
+        return sendJson(response, { ok: true, user: getPublicUser(user), atSalon: isUserAtSalon(user) });
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/ubicacion") {
         const user = getPanelSessionUser(request);
         if (!user) return sendJson(response, { ok: false }, 401);
@@ -2169,7 +2179,7 @@ function applySecurityHeaders(response) {
   response.setHeader("X-Content-Type-Options", "nosniff");
   response.setHeader("X-Frame-Options", "DENY");
   response.setHeader("Referrer-Policy", "same-origin");
-  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
   response.setHeader(
     "Content-Security-Policy",
     "default-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline' https://unpkg.com; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://unpkg.com;"
@@ -3675,6 +3685,18 @@ function requireSalonLocation(user, response, actionLabel) {
   return true;
 }
 
+function updateUserGpsLocation(user, gpsCoords) {
+  const lat = Number(gpsCoords?.lat);
+  const lng = Number(gpsCoords?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+  user.lastLoginLat = lat;
+  user.lastLoginLng = lng;
+  user.lastLoginAccuracy = Number(gpsCoords?.accuracy || gpsCoords?.precision || 0) || null;
+  user.updatedAt = new Date().toISOString();
+  saveErpUsers();
+  return true;
+}
+
 function fetchIpLocation(ip) {
   return new Promise((resolve) => {
     if (!ip || ip === "127.0.0.1" || ip === "::1" || ip.startsWith("192.168.") || ip.startsWith("10.")) {
@@ -3714,11 +3736,7 @@ function authenticatePanelUser(username, password, request, gpsCoords) {
   user.lastLoginIp = ip;
   user.lastLoginUserAgent = String(request?.headers?.["user-agent"] || "").slice(0, 300);
   user.lastLoginLocation = "";
-  if (gpsCoords && typeof gpsCoords.lat === "number" && typeof gpsCoords.lng === "number") {
-    user.lastLoginLat = gpsCoords.lat;
-    user.lastLoginLng = gpsCoords.lng;
-    user.lastLoginAccuracy = gpsCoords.accuracy || null;
-  }
+  updateUserGpsLocation(user, gpsCoords);
   user.updatedAt = now;
   saveErpUsers();
 
