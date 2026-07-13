@@ -5018,6 +5018,97 @@
       margin-top: 4px;
     }
 
+    .recipe-card-toggle {
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      display: none;
+      font-size: 18px;
+      min-height: 36px;
+      min-width: 36px;
+      padding: 0;
+      place-items: center;
+    }
+
+    .recipe-card-mobile-body,
+    .recipe-card-actions {
+      display: none;
+    }
+
+    .recipe-card-meta {
+      display: grid;
+      gap: 8px;
+    }
+
+    .recipe-card-meta-row {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .recipe-card-meta-row span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .recipe-card-meta-row strong {
+      font-size: 13px;
+      font-weight: 800;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .recipe-card-note {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      padding: 10px;
+    }
+
+    .recipe-card-action-menu {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 12px 26px rgba(16, 24, 32, .10);
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+    }
+
+    .recipe-card-action-button {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      font-size: 13px;
+      font-weight: 800;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 12px;
+      text-align: center;
+    }
+
+    .recipe-card-action-button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .recipe-card-action-button.danger {
+      background: var(--danger-soft);
+      border-color: transparent;
+      color: var(--danger);
+    }
+
     .recipe-detail-summary {
       display: grid;
       gap: 10px;
@@ -7349,6 +7440,67 @@
       .inventory-meta {
         justify-items: start;
         text-align: left;
+      }
+
+      .recipe-list {
+        gap: 10px;
+        grid-template-columns: 1fr;
+      }
+
+      .recipe-card {
+        border-radius: 12px;
+        gap: 10px;
+        min-height: 0;
+        padding: 12px;
+      }
+
+      .recipe-card:hover {
+        box-shadow: none;
+        transform: none;
+      }
+
+      .recipe-card-head {
+        align-items: center;
+        gap: 8px;
+      }
+
+      .recipe-card-title {
+        display: -webkit-box;
+        font-size: 15px;
+        line-height: 1.25;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .recipe-card .recipe-head-secondary,
+      .recipe-card .recipe-pill,
+      .recipe-card > .recipe-card-stats {
+        display: none;
+      }
+
+      .recipe-card-toggle {
+        display: inline-grid;
+      }
+
+      .recipe-card.expanded .recipe-card-mobile-body,
+      .recipe-card.expanded .recipe-card-actions {
+        display: grid;
+      }
+
+      .recipe-card.expanded .recipe-pill {
+        display: inline-flex;
+        justify-self: start;
+      }
+
+      .recipe-card-mobile-body {
+        border-top: 1px solid var(--line);
+        gap: 10px;
+        padding-top: 10px;
+      }
+
+      .recipe-card-actions {
+        gap: 8px;
       }
 
       .logistics-card {
@@ -10927,6 +11079,8 @@
     let allCustomers = [];
     let allProviders = [];
     let allRecipes = [];
+    const expandedRecipeCards = new Set();
+    const openRecipeActionCards = new Set();
     let purchaseOrders = [];
     let buyerOrders = [];
     let purchaseReceipts = [];
@@ -22892,21 +23046,98 @@
         return;
       }
 
-      list.innerHTML = filtered.map((recipe) => `
-        <article class="recipe-card" onclick="showRecipeDetail('${escapeAttribute(recipe.id)}')">
+      list.innerHTML = filtered.map((recipe) => {
+        const isExpanded = expandedRecipeCards.has(recipe.id);
+        const isActionsOpen = openRecipeActionCards.has(recipe.id);
+        return `
+        <article class="recipe-card ${isExpanded ? "expanded" : ""} ${isActionsOpen ? "actions-open" : ""}" onclick="handleRecipeCardClick('${escapeAttribute(recipe.id)}', event)">
           <div class="recipe-card-head">
             <div>
               <div class="recipe-card-title">${escapeHtml(recipe.name)}</div>
-              <div class="secondary">Rinde ${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</div>
+              <div class="secondary recipe-head-secondary">Rinde ${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</div>
             </div>
             <div class="actions" onclick="event.stopPropagation()">
               <span class="recipe-pill">${escapeHtml(recipe.category || "Receta")}</span>
-              <button class="menu-dot" onclick="showRecipeActions('${escapeAttribute(recipe.id)}')">...</button>
+              <button class="menu-dot" type="button" aria-label="Acciones de ${escapeAttribute(recipe.name || "receta")}" aria-expanded="${isActionsOpen || isExpanded ? "true" : "false"}" onclick="toggleRecipeCardActions('${escapeAttribute(recipe.id)}', event)">...</button>
+              <button class="recipe-card-toggle" type="button" aria-label="${isExpanded ? "Cerrar receta" : "Abrir receta"}" aria-expanded="${isExpanded ? "true" : "false"}" onclick="toggleRecipeCard('${escapeAttribute(recipe.id)}', event)">${isExpanded ? "−" : "+"}</button>
             </div>
           </div>
+          <div class="recipe-card-mobile-body">
+            ${renderRecipeMobileMeta(recipe)}
+          </div>
+          ${renderRecipeCardActions(recipe)}
           ${renderRecipeCardStats(recipe)}
         </article>
-      `).join("");
+      `; }).join("");
+    }
+
+    function isRecipeMobileLayout() {
+      return window.matchMedia("(max-width: 700px)").matches;
+    }
+
+    function handleRecipeCardClick(id, event) {
+      if (event?.target?.closest("button, a, input, select, textarea")) return;
+      if (isRecipeMobileLayout()) {
+        toggleRecipeCard(id, event);
+        return;
+      }
+      showRecipeDetail(id);
+    }
+
+    function toggleRecipeCard(id, event) {
+      event?.stopPropagation?.();
+      if (expandedRecipeCards.has(id)) {
+        expandedRecipeCards.delete(id);
+        openRecipeActionCards.delete(id);
+      } else {
+        expandedRecipeCards.add(id);
+      }
+      renderRecipes();
+    }
+
+    function toggleRecipeCardActions(id, event) {
+      event?.stopPropagation?.();
+      if (!isRecipeMobileLayout()) {
+        showRecipeActions(id);
+        return;
+      }
+      expandedRecipeCards.add(id);
+      if (openRecipeActionCards.has(id)) {
+        openRecipeActionCards.delete(id);
+      } else {
+        openRecipeActionCards.add(id);
+      }
+      renderRecipes();
+    }
+
+    function renderRecipeMobileMeta(recipe) {
+      const updatedAt = recipe.updatedAt || recipe.modifiedAt || recipe.createdAt || "";
+      const note = String(recipe.notes || recipe.summary || "").trim();
+      return `
+        <div class="recipe-card-meta">
+          <div class="recipe-card-meta-row"><span>Categoría</span><strong>${escapeHtml(recipe.category || "Receta")}</strong></div>
+          <div class="recipe-card-meta-row"><span>Rendimiento</span><strong>${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</strong></div>
+          ${canSeeRecipeCosts() ? `<div class="recipe-card-meta-row"><span>Costo estimado</span><strong>${formatCurrency(recipe.totalCost)}</strong></div>` : ""}
+          ${updatedAt ? `<div class="recipe-card-meta-row"><span>Actualización</span><strong>${escapeHtml(formatDate(updatedAt))}</strong></div>` : ""}
+        </div>
+        ${note ? `<div class="recipe-card-note">${escapeHtml(note)}</div>` : ""}
+      `;
+    }
+
+    function renderRecipeCardActions(recipe) {
+      const id = escapeAttribute(recipe.id);
+      return `
+        <div class="recipe-card-actions">
+          <div class="recipe-card-action-menu" onclick="event.stopPropagation()">
+            <button class="recipe-card-action-button primary" type="button" onclick="editRecipe('${id}')">Editar receta</button>
+            <button class="recipe-card-action-button" type="button" onclick="showRecipeDetail('${id}')">Ver ficha</button>
+            ${canSeeRecipeCosts() ? `<button class="recipe-card-action-button" type="button" onclick="startBudgetFromRecipe('${id}')">Presupuestar</button>` : ""}
+            <button class="recipe-card-action-button" type="button" onclick="downloadRecipeSheet('${id}')">Descargar ficha</button>
+            <button class="recipe-card-action-button" type="button" onclick="printRecipeSheet('${id}')">Imprimir</button>
+            ${can("*") ? `<button class="recipe-card-action-button danger" type="button" onclick="deleteRecipe('${id}')">Eliminar receta</button>` : ""}
+          </div>
+        </div>
+      `;
     }
 
     function renderRecipeCardStats(recipe) {
