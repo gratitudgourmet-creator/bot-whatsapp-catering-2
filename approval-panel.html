@@ -53,15 +53,15 @@
       background: linear-gradient(135deg, #102d26 0%, #1b4d3f 100%);
       border-bottom: 1px solid rgba(209, 169, 101, .45);
       color: #fff;
-      padding: 10px 22px;
+      padding: 8px 22px;
     }
 
     .header-inner {
       color: #fff;
       align-items: center;
       display: grid;
-      gap: 12px;
-      grid-template-columns: minmax(210px, auto) minmax(300px, 1fr) auto;
+      gap: 14px;
+      grid-template-columns: minmax(180px, auto) minmax(300px, 1fr) auto;
       margin: 0 auto;
       max-width: 1280px;
     }
@@ -77,15 +77,15 @@
       background: rgba(255, 255, 255, .96);
       border: 1px solid rgba(209, 169, 101, .5);
       border-radius: 8px;
-      height: 42px;
+      height: 38px;
       object-fit: contain;
       padding: 4px 7px;
-      width: 64px;
+      width: 58px;
     }
 
     h1 {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 780;
       margin: 0;
       white-space: nowrap;
     }
@@ -2970,9 +2970,21 @@
 
     .purchase-item {
       align-items: start;
+      background: var(--surface, #fff);
+      border: 1px solid var(--border);
+      border-radius: 12px;
       display: grid;
-      gap: 8px;
-      grid-template-columns: minmax(0, 1.6fr) 90px 120px 110px 38px;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1.4fr) 92px 130px 118px 44px;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .purchase-item .icon-action {
+      align-self: end;
+      height: 38px;
+      justify-self: end;
+      width: 38px;
     }
     .purchase-item-unit-wrap {
       display: flex;
@@ -2988,6 +3000,334 @@
 
     .purchase-item input {
       min-height: 38px;
+    }
+
+    #purchase .detail-panel {
+      max-width: min(880px, calc(100vw - 24px));
+      width: min(880px, calc(100vw - 24px));
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .purchase-manual-head {
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+    }
+
+    .purchase-manual-head h2 {
+      font-size: 21px;
+      margin: 0;
+    }
+
+    .purchase-manual-head .subtitle {
+      margin-top: 4px;
+    }
+
+    .purchase-manual-form {
+      display: flex;
+      flex-direction: column;
+      max-height: min(86vh, 860px);
+      min-height: 0;
+    }
+
+    .purchase-manual-scroll {
+      display: grid;
+      gap: 16px;
+      overflow-y: auto;
+      padding: 18px 20px 120px;
+    }
+
+    .purchase-section {
+      border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+      border-radius: 14px;
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+      background: color-mix(in srgb, var(--surface) 96%, var(--bg) 4%);
+    }
+
+    .purchase-section-head {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .purchase-section-head h3 {
+      font-size: 15px;
+      margin: 0;
+    }
+
+    .purchase-section-head p {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 3px 0 0;
+    }
+
+    .purchase-section-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .purchase-section-grid .full,
+    .purchase-section .full {
+      grid-column: 1 / -1;
+    }
+
+    #purchase select,
+    #purchase input,
+    #purchase textarea {
+      border: 1px solid color-mix(in srgb, var(--border) 78%, var(--primary) 22%);
+      border-radius: 10px;
+    }
+
+    #purchase select:focus,
+    #purchase input:focus,
+    #purchase textarea:focus {
+      border-color: color-mix(in srgb, var(--primary) 60%, var(--border) 40%);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent);
+      outline: none;
+    }
+
+    .purchase-date-control {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .purchase-date-control input {
+      min-width: 0;
+    }
+
+    .purchase-search-select {
+      position: relative;
+    }
+
+    .purchase-search-select input {
+      border: 1px solid color-mix(in srgb, var(--border) 78%, var(--primary) 22%);
+      border-radius: 10px;
+      min-height: 40px;
+      padding-right: 36px;
+    }
+
+    .purchase-search-select::after {
+      color: var(--muted);
+      content: "⌄";
+      font-size: 16px;
+      pointer-events: none;
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .purchase-summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .purchase-summary-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .purchase-summary-grid div,
+    .purchase-review-line {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      min-width: 0;
+    }
+
+    .purchase-summary-grid span,
+    .purchase-review-line span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .purchase-summary-grid strong,
+    .purchase-review-line strong {
+      display: block;
+      font-size: 15px;
+      margin-top: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    .purchase-review-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .purchase-alerts {
+      display: grid;
+      gap: 6px;
+    }
+
+    .purchase-alert {
+      background: #fff7e0;
+      border: 1px solid #f3d28a;
+      border-radius: 10px;
+      color: #7a4a00;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 9px 10px;
+    }
+
+    .purchase-form-footer {
+      align-items: center;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      bottom: 0;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding: 12px 20px 18px;
+      position: sticky;
+      z-index: 8;
+    }
+
+    .purchase-footer-total {
+      margin-right: auto;
+      min-width: 0;
+    }
+
+    .purchase-footer-total span {
+      color: var(--muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .purchase-footer-total strong {
+      display: block;
+      font-size: 18px;
+      margin-top: 2px;
+    }
+
+    .purchase-option-dialog {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow, 0 18px 48px rgba(15, 23, 42, .18));
+      display: none;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .purchase-option-dialog.open {
+      display: grid;
+    }
+
+    .purchase-option-dialog.purchase-floating-dialog {
+      border-color: color-mix(in srgb, var(--primary) 28%, var(--border) 72%);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, .26);
+      left: 50%;
+      max-height: min(78vh, 620px);
+      overflow-y: auto;
+      position: fixed;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(520px, calc(100vw - 28px));
+      z-index: 80;
+    }
+
+    .purchase-option-dialog.purchase-floating-dialog:not(.open) {
+      display: none;
+    }
+
+    .purchase-option-dialog.purchase-floating-dialog.open::before {
+      background: rgba(15, 23, 42, .34);
+      content: "";
+      inset: -100vh -100vw;
+      position: fixed;
+      z-index: -1;
+    }
+
+    .purchase-option-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .purchase-option-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .purchase-option-dialog-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    #purchase-option-dialog {
+      margin: 0 20px 12px;
+    }
+
+    @media (max-width: 720px) {
+      #purchase .detail-panel {
+        border-radius: 0;
+        height: 100vh;
+        max-height: none;
+        max-width: 100vw;
+        width: 100vw;
+      }
+
+      .purchase-manual-form {
+        max-height: calc(100vh - 74px);
+      }
+
+      .purchase-manual-scroll {
+        padding: 14px 14px 112px;
+      }
+
+      .purchase-section {
+        border-radius: 12px;
+        padding: 14px;
+      }
+
+      .purchase-section-grid,
+      .purchase-summary-grid,
+      .purchase-review-grid,
+      .purchase-option-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .purchase-item {
+        grid-template-columns: 1fr;
+      }
+
+      .purchase-item .icon-action {
+        justify-self: stretch;
+        width: 100%;
+      }
+
+      .purchase-form-footer {
+        align-items: stretch;
+        padding: 10px 14px 14px;
+      }
+
+      .purchase-form-footer .reject,
+      .purchase-form-footer .approve {
+        min-width: 0;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
     }
 
     .purchase-order-row {
@@ -3702,6 +4042,310 @@
       margin: 0;
     }
 
+    .purchase-workbench {
+      display: grid;
+      gap: 12px;
+    }
+
+    .purchase-workbench-tabs {
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      display: flex;
+      gap: 4px;
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 4px;
+      scrollbar-width: none;
+    }
+
+    .purchase-workbench-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .purchase-workbench-tab {
+      align-items: center;
+      background: transparent;
+      border: 0;
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      flex: 0 0 auto;
+      font-size: 13px;
+      font-weight: 700;
+      gap: 6px;
+      min-height: 34px;
+      padding: 7px 12px;
+      white-space: nowrap;
+    }
+
+    .purchase-workbench-tab.active {
+      background: var(--surface-soft);
+      box-shadow: inset 0 -2px 0 var(--accent);
+      color: var(--text);
+    }
+
+    .purchase-workbench-tab .count {
+      align-items: center;
+      background: #eef2f7;
+      border-radius: 999px;
+      color: var(--muted);
+      display: inline-flex;
+      font-size: 11px;
+      font-weight: 800;
+      justify-content: center;
+      min-width: 20px;
+      padding: 2px 6px;
+    }
+
+    .purchase-workbench-toolbar {
+      align-items: center;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(140px, 180px));
+    }
+
+    .purchase-workbench-toolbar .search,
+    .purchase-workbench-toolbar select {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .purchase-board {
+      display: grid;
+      gap: 8px;
+    }
+
+    .purchase-board-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 10px 26px rgba(23, 33, 43, 0.04);
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .purchase-board-card:hover {
+      border-color: rgba(15, 77, 64, .28);
+    }
+
+    .purchase-board-main {
+      align-items: center;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: minmax(210px, 1.35fr) minmax(130px, .8fr) minmax(118px, .7fr) minmax(118px, .7fr) minmax(98px, .55fr) minmax(130px, .7fr) auto;
+      min-width: 0;
+    }
+
+    .purchase-provider-cell {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .purchase-avatar {
+      align-items: center;
+      background: var(--accent);
+      border-radius: 999px;
+      color: #fff;
+      display: inline-flex;
+      flex: 0 0 auto;
+      font-size: 14px;
+      font-weight: 800;
+      height: 36px;
+      justify-content: center;
+      width: 36px;
+    }
+
+    .purchase-provider-name,
+    .purchase-board-label,
+    .purchase-board-value {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .purchase-provider-name {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .purchase-provider-meta,
+    .purchase-board-label {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .purchase-board-value {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .purchase-board-value.money {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .purchase-board-value.balance-due {
+      color: #b42318;
+    }
+
+    .purchase-status-badge {
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 11px;
+      font-weight: 800;
+      justify-content: center;
+      padding: 5px 9px;
+      white-space: nowrap;
+    }
+
+    .purchase-status-badge.paid {
+      background: #e7f7ef;
+      color: #137a45;
+    }
+
+    .purchase-status-badge.partial {
+      background: #eef4ff;
+      color: #2358a8;
+    }
+
+    .purchase-status-badge.pending {
+      background: #fff4db;
+      color: #9a5a00;
+    }
+
+    .purchase-card-actions {
+      align-items: center;
+      display: flex;
+      gap: 7px;
+      justify-content: flex-end;
+      white-space: nowrap;
+    }
+
+    .purchase-primary-action {
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      min-height: 34px;
+      padding: 7px 11px;
+    }
+
+    .purchase-secondary-action {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      min-height: 34px;
+      padding: 7px 11px;
+    }
+
+    .purchase-expand-action {
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      min-height: 34px;
+      padding: 0 2px;
+    }
+
+    .purchase-card-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .purchase-line-panel {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .purchase-line-row {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) 88px 112px 90px 120px;
+      padding: 8px 10px;
+    }
+
+    .purchase-line-row + .purchase-line-row {
+      border-top: 1px solid var(--line);
+    }
+
+    .purchase-line-row.header {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .purchase-line-row:not(.header) {
+      background: #fff;
+      font-size: 12px;
+    }
+
+    .purchase-line-row .money,
+    .purchase-line-row .number {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .purchase-analysis-toggle {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    .purchase-analysis-toggle button {
+      background: transparent;
+      border: 0;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 0;
+    }
+
+    .purchase-panels.collapsed {
+      display: none;
+    }
+
+    @media (max-width: 1180px) {
+      .purchase-board-main {
+        grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(110px, auto)) auto;
+      }
+
+      .purchase-board-main > div:nth-child(6) {
+        grid-column: 2 / span 2;
+      }
+
+      .purchase-card-actions {
+        grid-column: 5;
+      }
+
+      .purchase-workbench-toolbar {
+        grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(120px, 1fr));
+      }
+    }
+
     .purchase-table th:nth-child(1),
     .purchase-table td:nth-child(1) {
       min-width: 92px;
@@ -3748,17 +4392,18 @@
 
     .workspace-tabs {
       align-items: center;
-      background: rgba(255, 255, 255, .78);
-      border: 1px solid rgba(214, 222, 230, .9);
-      border-radius: 10px;
-      box-shadow: 0 8px 18px rgba(23, 33, 43, 0.045);
+      background: rgba(255, 255, 255, .82);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(214, 222, 230, .82);
+      border-radius: 14px;
+      box-shadow: 0 14px 34px rgba(23, 33, 43, 0.06);
       display: flex;
       flex-wrap: nowrap;
-      gap: 4px;
-      margin-bottom: 14px;
-      min-height: 42px;
+      gap: 6px;
+      margin-bottom: 8px;
+      min-height: 46px;
       overflow: visible;
-      padding: 4px;
+      padding: 6px;
       width: max-content;
       max-width: 100%;
       position: relative;
@@ -3782,11 +4427,12 @@
       align-items: center;
       background: rgba(255, 255, 255, .92);
       border: 1px solid var(--line);
-      border-radius: 10px;
+      border-radius: 14px;
       box-shadow: 0 8px 18px rgba(23, 33, 43, 0.045);
       display: grid;
-      gap: 2px;
-      padding: 7px 10px;
+      gap: 4px;
+      min-width: 0;
+      padding: 9px 11px;
     }
 
     .workspace-menu {
@@ -3805,16 +4451,16 @@
       align-items: center;
       background: transparent;
       border: 0;
-      border-radius: 8px;
+      border-radius: 999px;
       color: var(--muted);
       cursor: default;
       display: inline-flex;
       gap: 7px;
       font-size: 12px;
-      font-weight: 800;
-      height: 32px;
+      font-weight: 850;
+      height: 34px;
       letter-spacing: .01em;
-      padding: 0 11px;
+      padding: 0 13px;
       white-space: nowrap;
     }
 
@@ -3829,7 +4475,8 @@
     .workspace-group.active .workspace-group-trigger,
     .workspace-group:hover .workspace-group-trigger,
     .workspace-group:focus-within .workspace-group-trigger {
-      background: var(--surface-strong);
+      background: color-mix(in srgb, var(--surface-strong) 92%, var(--gold) 8%);
+      box-shadow: inset 0 0 0 1px rgba(209, 169, 101, .22);
       color: var(--gold);
     }
 
@@ -3842,13 +4489,13 @@
     .workspace-group-panel {
       background: rgba(255, 255, 255, .98);
       border: 1px solid var(--line);
-      border-radius: 10px;
-      box-shadow: 0 18px 42px rgba(16, 24, 32, .18);
+      border-radius: 14px;
+      box-shadow: 0 24px 56px rgba(16, 24, 32, .18);
       display: none;
-      gap: 6px;
+      gap: 8px;
       left: 0;
-      min-width: 224px;
-      padding: 8px;
+      min-width: 284px;
+      padding: 10px;
       position: absolute;
       top: calc(100% + 8px);
       z-index: 42;
@@ -3894,11 +4541,11 @@
     .workspace-menu-panel {
       position: static;
       min-width: 0;
-      padding: 8px;
+      padding: 8px 0 0;
       border: 0;
       border-top: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface-soft);
+      border-radius: 0;
+      background: transparent;
       box-shadow: none;
       display: none;
       z-index: 40;
@@ -3920,16 +4567,16 @@
       background: transparent;
       color: var(--text);
       border: 0;
-      padding: 8px 10px;
-      border-radius: 6px;
+      padding: 8px 9px;
+      border-radius: 9px;
       font-size: 13px;
-      min-height: 32px;
+      min-height: 34px;
       transition: background .12s ease, border-color .12s ease, color .12s ease;
     }
 
     .workspace-subitem:hover,
     .workspace-subitem.active {
-      background: #fff7e6;
+      background: color-mix(in srgb, var(--gold) 13%, #fff 87%);
       color: var(--surface-strong);
     }
 
@@ -3940,25 +4587,101 @@
     .workspace-tab {
       background: transparent;
       border: 0;
-      border-radius: 7px;
+      border-radius: 10px;
       color: var(--text);
       display: block;
       font-size: 13px;
       font-weight: 800;
-      min-height: 34px;
+      min-height: 36px;
       padding: 0 10px;
       text-align: left;
       width: 100%;
     }
 
     .workspace-tab:hover {
-      background: var(--surface-soft);
+      background: color-mix(in srgb, var(--surface-soft) 74%, #fff 26%);
     }
 
     .workspace-tab.active {
-      background: var(--surface-strong);
-      border-color: var(--surface-strong);
-      color: #d1a965;
+      background: color-mix(in srgb, var(--surface-strong) 94%, var(--gold) 6%);
+      color: var(--gold);
+    }
+
+    .shell-context {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin: 0 0 14px;
+      min-height: 36px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .shell-breadcrumb {
+      align-items: center;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 12px;
+      font-weight: 800;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .shell-breadcrumb strong {
+      color: var(--text);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .shell-breadcrumb span {
+      overflow-wrap: anywhere;
+    }
+
+    .shell-breadcrumb-separator {
+      color: color-mix(in srgb, var(--muted) 58%, transparent);
+      font-weight: 700;
+    }
+
+    .shell-quick-action {
+      align-items: center;
+      background: color-mix(in srgb, var(--surface-strong) 94%, var(--gold) 6%);
+      border: 1px solid color-mix(in srgb, var(--gold) 32%, var(--surface-strong) 68%);
+      border-radius: 999px;
+      color: var(--gold);
+      cursor: pointer;
+      display: inline-flex;
+      flex: 0 0 auto;
+      font-size: 13px;
+      font-weight: 850;
+      gap: 7px;
+      min-height: 34px;
+      padding: 0 13px;
+      white-space: nowrap;
+    }
+
+    .shell-quick-action::before {
+      content: "+";
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .shell-quick-action.hidden {
+      display: none;
+    }
+
+    .mobile-context-copy {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mobile-shell-quick-action {
+      display: none;
     }
 
     .section-focus {
@@ -6350,6 +7073,10 @@
         display: grid;
       }
 
+      .shell-context {
+        display: none;
+      }
+
       .mobile-module-switcher select {
         background-color: transparent;
         border: 0;
@@ -6358,6 +7085,26 @@
         min-height: 24px;
         padding: 0 28px 0 0;
         width: 100%;
+      }
+
+      .mobile-shell-quick-action {
+        align-items: center;
+        background: color-mix(in srgb, var(--surface-strong) 94%, var(--gold) 6%);
+        border: 1px solid color-mix(in srgb, var(--gold) 30%, var(--surface-strong) 70%);
+        border-radius: 999px;
+        color: var(--gold);
+        display: inline-flex;
+        font-size: 13px;
+        font-weight: 850;
+        justify-content: center;
+        margin-top: 4px;
+        min-height: 34px;
+        padding: 0 12px;
+        width: max-content;
+      }
+
+      .mobile-shell-quick-action.hidden {
+        display: none;
       }
 
       .workspace-menu-panel {
@@ -6412,6 +7159,46 @@
       .toolbar-actions {
         align-items: stretch;
         flex-direction: column;
+      }
+
+      .purchase-period-bar,
+      .purchase-workbench-toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .purchase-period-summary {
+        justify-self: start;
+        text-align: left;
+      }
+
+      .purchase-workbench-tabs {
+        margin-inline: -2px;
+      }
+
+      .purchase-board {
+        display: none;
+      }
+
+      .purchase-mobile-cards {
+        display: grid;
+      }
+
+      .purchase-mobile-card {
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      .purchase-mobile-meta .balance-due {
+        color: #b42318;
+      }
+
+      .table-pagination {
+        align-items: stretch;
+        display: grid;
+      }
+
+      .table-pagination .actions {
+        justify-content: space-between;
       }
 
       .table-head {
@@ -7130,7 +7917,7 @@
         <img class="brand-logo" src="/assets/gratitud-gourmet-logo.png" alt="Gratitud Gourmet">
         <div>
           <h1>
-            <span class="brand-title-desktop">Gratitud Gourmet ERP</span>
+            <span class="brand-title-desktop">Gratitud ERP</span>
             <span class="brand-title-mobile">Gratitud ERP</span>
           </h1>
           <p class="subtitle">Gestión integral de eventos</p>
@@ -7185,6 +7972,8 @@
       <div class="mobile-module-control">
         <label for="mobile-module-select">Modulo</label>
         <select id="mobile-module-select" onchange="showWorkspaceView(this.value)"></select>
+        <div id="mobile-shell-context" class="mobile-context-copy">Dirección / ERP</div>
+        <button id="mobile-shell-quick-action" class="mobile-shell-quick-action hidden" type="button"></button>
       </div>
     </div>
 
@@ -7366,6 +8155,15 @@
       </div>
         </div>
       </div>
+    </div>
+
+    <div class="shell-context" aria-live="polite">
+      <div id="shell-breadcrumb" class="shell-breadcrumb">
+        <span>Dirección</span>
+        <span class="shell-breadcrumb-separator">/</span>
+        <strong>ERP</strong>
+      </div>
+      <button id="shell-quick-action" class="shell-quick-action hidden" type="button"></button>
     </div>
 
     <section id="view-erp" class="workspace-view open">
@@ -7997,6 +8795,25 @@
           <button class="filter" type="button" onclick="showErpQuoteForm()" data-permission="quotes:write">Nuevo presupuesto</button>
         </div>
         <div id="events-quote-list"></div>
+      </section>
+
+      <section id="events-history-section" class="erp-section">
+        <div class="events-section-head">
+          <div>
+            <h2>Historial de eventos</h2>
+            <p class="subtitle">Eventos cerrados, cancelados y perdidos.</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select id="events-history-filter" class="filter" onchange="renderEventsHistory()" style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;">
+              <option value="all">Todos</option>
+              <option value="done">Realizados</option>
+              <option value="cancelled">Cancelados</option>
+              <option value="lost">Perdidos</option>
+            </select>
+            <input id="events-history-search" class="filter" type="search" placeholder="Buscar evento..." oninput="renderEventsHistory()" style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;width:180px;">
+          </div>
+        </div>
+        <div id="events-history-list"></div>
       </section>
     </section>
 
@@ -9200,97 +10017,199 @@
 
   <section id="purchase" class="detail" onclick="closePurchase(event)">
     <aside class="detail-panel" onclick="event.stopPropagation()">
-      <div class="detail-head">
+      <div class="purchase-manual-head">
         <div>
-          <h2 id="purchase-title" style="margin:0;font-size:22px;">Cargar compra</h2>
-          <p class="subtitle">Registro de gastos para la hoja Registro_Gastos.</p>
+          <h2 id="purchase-title">Nueva compra</h2>
+          <p id="purchase-subtitle" class="subtitle">Carga manual clara para registrar comprobantes, productos e imputación.</p>
         </div>
         <button class="close" onclick="hidePurchaseForm()">X</button>
       </div>
 
-      <form id="purchase-form" class="form-grid">
+      <form id="purchase-form" class="purchase-manual-form">
         <input type="hidden" name="id">
-        <div class="form-field">
-          <label>Fecha</label>
-          <input name="date" type="date" required>
-        </div>
-
-        <div class="form-field">
-          <label>Proveedor</label>
-          <div class="inline-control">
-            <div class="autocomplete">
-              <input name="provider" id="purchase-provider" autocomplete="off" required>
-              <div id="purchase-provider-suggestions" class="autocomplete-list"></div>
+        <div class="purchase-manual-scroll">
+          <section class="purchase-section">
+            <div class="purchase-section-head">
+              <div>
+                <h3>Comprobante</h3>
+                <p>Datos base del proveedor y documento.</p>
+              </div>
             </div>
-            <button class="filter icon-action" type="button" onclick="addPurchaseOptionFromPrompt('provider')">+</button>
+            <div id="purchase-draft-tools" class="purchase-option-dialog"></div>
+            <div class="purchase-section-grid">
+              <div class="form-field">
+                <label>Fecha</label>
+                <div class="purchase-date-control">
+                  <input name="date" type="date" required>
+                  <button class="filter" type="button" onclick="setPurchaseDateToday()">Hoy</button>
+                </div>
+              </div>
+              <div class="form-field">
+                <label>Proveedor</label>
+                <div class="inline-control">
+                  <div class="autocomplete">
+                    <input name="provider" id="purchase-provider" autocomplete="off" required>
+                    <div id="purchase-provider-suggestions" class="autocomplete-list"></div>
+                  </div>
+                  <button class="filter icon-action" type="button" onclick="addPurchaseOptionFromPrompt('provider')">+</button>
+                </div>
+              </div>
+              <div class="form-field">
+                <label>Tipo de comprobante</label>
+                <select name="invoiceType">
+                  <option>Factura A</option>
+                  <option>Factura B</option>
+                  <option>Factura C</option>
+                  <option>Ticket</option>
+                  <option>Remito</option>
+                  <option>Presupuesto</option>
+                  <option>Sin comprobante</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>IVA por defecto</label>
+                <select name="ivaRate">
+                  <option value="0">0%</option>
+                  <option value="0.105">10.5%</option>
+                  <option value="0.21">21%</option>
+                  <option value="0.27">27%</option>
+                </select>
+              </div>
+              <div class="form-field full">
+                <label>Observaciones</label>
+                <textarea name="notes" placeholder="Datos internos, aclaraciones o link del comprobante."></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="purchase-section">
+            <div class="purchase-section-head">
+              <div>
+                <h3>Productos</h3>
+                <p>Cargá cada producto con cantidad, unitario sin IVA e IVA correspondiente.</p>
+              </div>
+            </div>
+            <div id="purchase-items" class="purchase-items"></div>
+            <div class="actions">
+              <button class="filter" type="button" onclick="addPurchaseItemRow()">Agregar producto</button>
+              <button class="filter" type="button" onclick="addPurchaseOptionFromPrompt('product')">Cargar producto nuevo</button>
+            </div>
+            <div class="purchase-summary-card">
+              <div class="purchase-summary-grid">
+                <div><span>Neto</span><strong id="purchase-summary-net">$0</strong></div>
+                <div><span>IVA estimado</span><strong id="purchase-summary-iva">$0</strong></div>
+                <div><span>Total final</span><strong id="purchase-summary-total">$0</strong></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="purchase-section">
+            <div class="purchase-section-head">
+              <div>
+                <h3>Imputación</h3>
+                <p>¿Para qué evento o área es esta compra?</p>
+              </div>
+            </div>
+            <div class="purchase-section-grid">
+              <div class="form-field full">
+                <label>Evento</label>
+                <input name="eventName" id="purchase-event" type="hidden">
+                <div class="purchase-search-select autocomplete">
+                  <input id="purchase-event-search" autocomplete="off" placeholder="Buscar evento" required>
+                  <div id="purchase-event-suggestions" class="autocomplete-list"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="purchase-section" id="purchase-payment-section">
+            <div class="purchase-section-head">
+              <div>
+                <h3>Pago</h3>
+                <p>Estado, medio y origen de fondos.</p>
+              </div>
+            </div>
+            <div class="purchase-section-grid">
+              <div class="form-field">
+                <label>Estado de pago</label>
+                <select name="paymentStatus" id="purchase-payment-status">
+                  <option>Pendiente</option>
+                  <option>Parcial</option>
+                  <option>Pagado</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Medio de pago</label>
+                <select name="paymentMethod" id="purchase-payment-method"></select>
+              </div>
+              <div class="form-field full">
+                <label>Origen de fondos</label>
+                <select name="fundsSource" id="purchase-funds-source"></select>
+              </div>
+            </div>
+          </section>
+
+          <section class="purchase-section">
+            <div class="purchase-section-head">
+              <div>
+                <h3>Revisión</h3>
+                <p>Resumen antes de guardar.</p>
+              </div>
+            </div>
+            <div class="purchase-review-grid">
+              <div class="purchase-review-line"><span>Proveedor</span><strong id="purchase-review-provider">Sin proveedor</strong></div>
+              <div class="purchase-review-line"><span>Fecha</span><strong id="purchase-review-date">Sin fecha</strong></div>
+              <div class="purchase-review-line"><span>Evento</span><strong id="purchase-review-event">Sin evento</strong></div>
+              <div class="purchase-review-line"><span>Productos</span><strong id="purchase-review-items">0</strong></div>
+              <div class="purchase-review-line"><span>Pago</span><strong id="purchase-review-payment">Pendiente</strong></div>
+              <div class="purchase-review-line"><span>Origen</span><strong id="purchase-review-funds">Sin definir</strong></div>
+            </div>
+            <div id="purchase-review-alerts" class="purchase-alerts"></div>
+          </section>
+        </div>
+
+        <div id="purchase-option-dialog" class="purchase-option-dialog purchase-floating-dialog">
+          <strong id="purchase-option-title">Nuevo dato</strong>
+          <p id="purchase-option-helper" class="secondary">Guardá el nombre para usarlo en esta compra.</p>
+          <div id="purchase-option-fields" class="purchase-option-grid">
+            <div class="form-field full">
+              <label>Nombre</label>
+              <input id="purchase-option-input" type="text" placeholder="Nombre">
+            </div>
+            <div class="form-field purchase-provider-extra">
+              <label>Alias</label>
+              <input id="purchase-option-alias" type="text" placeholder="alias.banco">
+            </div>
+            <div class="form-field purchase-provider-extra">
+              <label>Banco</label>
+              <input id="purchase-option-bank" type="text" placeholder="Banco">
+            </div>
+            <div class="form-field purchase-provider-extra">
+              <label>Titular</label>
+              <input id="purchase-option-holder" type="text" placeholder="Titular de cuenta">
+            </div>
+            <div class="form-field purchase-provider-extra">
+              <label>CBU / CVU</label>
+              <input id="purchase-option-cbu" type="text" placeholder="CBU o CVU">
+            </div>
+            <div class="form-field purchase-provider-extra full">
+              <label>Notas</label>
+              <input id="purchase-option-notes" type="text" placeholder="Dato adicional opcional">
+            </div>
+          </div>
+          <div class="purchase-option-dialog-actions">
+            <button class="filter" type="button" onclick="closePurchaseOptionDialog()">Cancelar</button>
+            <button class="approve" type="button" onclick="savePurchaseOptionFromDialog()">Guardar</button>
           </div>
         </div>
 
-        <div class="form-field full">
-          <label>Productos de la factura</label>
-          <div id="purchase-draft-tools" class="notice" style="margin-bottom:8px;"></div>
-          <div id="purchase-items" class="purchase-items"></div>
-          <div class="actions">
-            <button class="filter" type="button" onclick="addPurchaseItemRow()">Agregar producto</button>
-            <button class="filter" type="button" onclick="addPurchaseOptionFromPrompt('product')">Cargar producto nuevo</button>
+        <div class="purchase-form-footer">
+          <div class="purchase-footer-total">
+            <span>Total estimado</span>
+            <strong id="purchase-footer-total">$0</strong>
           </div>
-        </div>
-
-        <div class="form-field">
-          <label>Comprobante</label>
-          <select name="invoiceType">
-            <option>Factura A</option>
-            <option>Factura B</option>
-            <option>Factura C</option>
-            <option>Ticket</option>
-            <option>Remito</option>
-            <option>Presupuesto</option>
-            <option>Sin comprobante</option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label>IVA por defecto</label>
-          <select name="ivaRate">
-            <option value="0">0%</option>
-            <option value="0.105">10.5%</option>
-            <option value="0.21">21%</option>
-            <option value="0.27">27%</option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label>Evento</label>
-          <select name="eventName" id="purchase-event" required></select>
-        </div>
-
-        <div class="form-field">
-          <label>Estado de pago</label>
-          <select name="paymentStatus">
-            <option>Pendiente</option>
-            <option>Parcial</option>
-            <option>Pagado</option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label>Medio de pago</label>
-          <select name="paymentMethod" id="purchase-payment-method"></select>
-        </div>
-
-        <div class="form-field">
-          <label>Origen de fondos</label>
-          <select name="fundsSource" id="purchase-funds-source"></select>
-        </div>
-
-        <div class="form-field full">
-          <label>Observaciones</label>
-          <textarea name="notes" placeholder="Datos internos, aclaraciones o link del comprobante."></textarea>
-        </div>
-
-        <div class="actions full">
-          <button class="approve" type="submit">Enviar a compras</button>
           <button class="reject" type="button" onclick="hidePurchaseForm()">Cancelar</button>
+          <button class="approve" type="submit">Guardar compra</button>
         </div>
       </form>
     </aside>
@@ -9590,12 +10509,16 @@
       from: "",
       to: "",
     };
+    let purchaseBoardFilter = "all";
+    let purchaseAnalysisCollapsed = true;
+    const expandedPurchaseCards = new Set();
     let purchaseTablePage = 1;
     const PURCHASE_TABLE_PAGE_SIZE = 50;
     let purchaseOrderAdvisorLastText = "";
     let recipeProducts = [];
     let costSettings = { laborHourlyCost: 0 };
     let purchaseItemCounter = 0;
+    let purchaseOptionDialogType = "";
     let recipeItemCounter = 0;
     let recipeProcessCounter = 0;
     let budgetRecipeCounter = 0;
@@ -9862,6 +10785,52 @@
       reports: "reports-home-section",
       comandas: "comandas-home-section",
     };
+    const WORKSPACE_GROUP_LABELS = {
+      direction: "Dirección",
+      commercial: "Comercial",
+      purchases: "Compras & Stock",
+      finance: "Finanzas",
+      operations: "Operación",
+      system: "Sistema",
+    };
+    const WORKSPACE_QUICK_ACTIONS = {
+      events: {
+        label: "Nuevo evento",
+        permission: "events:write",
+        run: () => showBlankErpEventForm(),
+      },
+      purchases: {
+        label: "Cargar compra",
+        permission: "purchases:write",
+        run: () => showPurchaseForm(),
+      },
+      stock: {
+        label: "Inventario general",
+        permission: "stock:read",
+        run: () => window.open("/inventario", "_blank", "noopener"),
+      },
+      providers: {
+        label: "Nuevo proveedor",
+        permission: "providers:write",
+        run: () => {
+          resetProviderForm();
+          document.getElementById("provider-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        },
+      },
+      customers: {
+        label: "Nuevo cliente",
+        permission: "customers:write",
+        run: () => {
+          document.getElementById("customer-form")?.reset();
+          document.getElementById("customer-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        },
+      },
+      recipes: {
+        label: "Cargar receta",
+        permission: "recipes:write",
+        run: () => showRecipeForm(),
+      },
+    };
     const ERP_DATA_VIEWS = new Set([
       "erp", "commercial", "events", "purchases", "finance",
       "production", "stock", "reports", "hr", "sanitation", "payment_orders",
@@ -9906,6 +10875,8 @@
     document.querySelectorAll(".workspace-subitem").forEach((button) => {
       button.addEventListener("click", () => navigateWorkspaceItem(button));
     });
+    document.getElementById("shell-quick-action")?.addEventListener("click", runShellQuickAction);
+    document.getElementById("mobile-shell-quick-action")?.addEventListener("click", runShellQuickAction);
 
     search.addEventListener("input", renderRows);
     document.getElementById("customer-search").addEventListener("input", renderCustomers);
@@ -9915,8 +10886,15 @@
     document.getElementById("manual-form").addEventListener("submit", createManualBudget);
     document.getElementById("edit-form").addEventListener("submit", updateBudget);
     document.getElementById("purchase-form").addEventListener("submit", createPurchase);
-    document.getElementById("purchase-form").addEventListener("input", savePurchaseDraft);
-    document.getElementById("purchase-form").addEventListener("change", savePurchaseDraft);
+    document.getElementById("purchase-form").addEventListener("input", () => { savePurchaseDraft(); updatePurchaseSummary(); });
+    document.getElementById("purchase-form").addEventListener("change", () => { savePurchaseDraft(); updatePurchaseSummary(); });
+    document.getElementById("purchase-option-input").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        savePurchaseOptionFromDialog();
+      }
+      if (event.key === "Escape") closePurchaseOptionDialog();
+    });
     document.getElementById("customer-form").addEventListener("submit", saveCustomer);
     document.getElementById("provider-form").addEventListener("submit", saveProvider);
     document.getElementById("recipe-form").addEventListener("submit", saveRecipe);
@@ -9941,6 +10919,10 @@
     document.getElementById("role-filter").addEventListener("change", renderErp);
     document.getElementById("invoice-photo")?.addEventListener("change", previewInvoicePhoto);
     setupAutocomplete("purchase-provider", "purchase-provider-suggestions", () => purchaseOptions.providers || []);
+    setupAutocomplete("purchase-event-search", "purchase-event-suggestions", () => purchaseOptions.events || [], setPurchaseEventValue, { showOnEmpty: true });
+    document.getElementById("purchase-event-search").addEventListener("input", (event) => {
+      setPurchaseEventValue(event.target.value);
+    });
     syncGlobalSearchPlaceholder();
     renderProfileMenu();
 
@@ -10252,6 +11234,7 @@
         section.classList.toggle("open", section.id === `view-${view}`);
       });
       syncMobileModuleSelect(view);
+      updateShellContext(view);
     }
 
     function getCurrentErpView() {
@@ -10322,6 +11305,7 @@
       });
       applyTabVisibility();
       applyRecipeCostVisibility();
+      updateShellContext(document.querySelector(".workspace-tab.active:not(.hidden)")?.dataset.view || getCurrentErpView());
     }
 
     function applyRecipeCostVisibility() {
@@ -10370,6 +11354,7 @@
         const firstVisible = document.querySelector(".workspace-tab:not(.hidden)");
         if (firstVisible) showWorkspaceView(firstVisible.dataset.view);
       }
+      updateShellContext(activeButton?.dataset.view || document.querySelector(".workspace-tab.active:not(.hidden)")?.dataset.view || "");
     }
 
     function canAccessTab(tabId) {
@@ -10391,6 +11376,67 @@
       }));
       select.innerHTML = options.map((option) => `<option value="${escapeAttribute(option.value)}">${escapeHtml(option.label)}</option>`).join("");
       if (options.some((option) => option.value === currentValue)) select.value = currentValue;
+      updateShellContext(currentValue);
+    }
+
+    function getWorkspaceGroupForView(view) {
+      return Array.from(document.querySelectorAll(".workspace-group"))
+        .find((group) => group.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`));
+    }
+
+    function getWorkspaceGroupLabel(view) {
+      const group = getWorkspaceGroupForView(view);
+      const key = group?.dataset.navGroup || "";
+      return WORKSPACE_GROUP_LABELS[key] || group?.querySelector(".workspace-group-trigger")?.textContent?.trim() || "ERP";
+    }
+
+    function getWorkspaceViewLabel(view) {
+      return document.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`)?.textContent?.trim()
+        || MODULE_HOMES[view]?.title
+        || view;
+    }
+
+    function userCanRunQuickAction(config, view) {
+      if (!config || !canAccessTab(view)) return false;
+      if (!config.permission) return true;
+      if (view === "stock" && canAccessTab("stock")) return true;
+      return can(config.permission);
+    }
+
+    function updateShellContext(view = getCurrentErpView()) {
+      if (!view) return;
+      const groupLabel = getWorkspaceGroupLabel(view);
+      const viewLabel = getWorkspaceViewLabel(view);
+      const breadcrumb = document.getElementById("shell-breadcrumb");
+      const mobileContext = document.getElementById("mobile-shell-context");
+      if (breadcrumb) {
+        breadcrumb.innerHTML = `
+          <span>${escapeHtml(groupLabel)}</span>
+          <span class="shell-breadcrumb-separator">/</span>
+          <strong>${escapeHtml(viewLabel)}</strong>
+        `;
+      }
+      if (mobileContext) {
+        mobileContext.textContent = `${groupLabel} / ${viewLabel}`;
+      }
+
+      const buttons = [
+        document.getElementById("shell-quick-action"),
+        document.getElementById("mobile-shell-quick-action"),
+      ].filter(Boolean);
+      const config = WORKSPACE_QUICK_ACTIONS[view];
+      buttons.forEach((button) => {
+        button.classList.toggle("hidden", !userCanRunQuickAction(config, view));
+        button.textContent = config?.label || "";
+        button.dataset.view = view;
+      });
+    }
+
+    function runShellQuickAction(event) {
+      const view = event?.currentTarget?.dataset.view || document.getElementById("shell-quick-action")?.dataset.view || getCurrentErpView();
+      const config = WORKSPACE_QUICK_ACTIONS[view];
+      if (!userCanRunQuickAction(config, view)) return;
+      config.run();
     }
 
     function getFallbackTabDefinition(tabId) {
@@ -10454,7 +11500,7 @@
     }
 
     function renderPurchaseOptions() {
-      fillSelect("purchase-event", purchaseOptions.events || [], "Seleccionar evento");
+      syncPurchaseEventSearch();
       fillSelect("purchase-payment-method", purchaseOptions.paymentMethods || [], "Sin definir");
       fillSelect("purchase-funds-source", purchaseOptions.fundsSources || [], "Sin definir");
       const tablewareOptions = document.getElementById("tableware-product-options");
@@ -10633,6 +11679,7 @@
         section.classList.toggle("open", section.id === `view-${view}`);
       });
       syncMobileModuleSelect(view);
+      updateShellContext(view);
 
       let loadTask = Promise.resolve();
       if (view === "customers") loadTask = loadCustomers();
@@ -10974,6 +12021,7 @@
         renderEventStatusDashboard(dashboard);
         renderErpEvents();
         renderErpQuotes();
+        renderEventsHistory();
       }
       renderErpQuoteEventOptions();
       renderErpCustomerOptions();
@@ -12624,21 +13672,27 @@
           <div class="purchase-kpi metric-card"><span class="metric-label">Ticket promedio</span><strong class="metric-value">${formatCurrency(summary.averageTicket || 0)}</strong></div>
           <div class="purchase-kpi metric-card"><span class="metric-label">Proveedores</span><strong class="metric-value">${escapeHtml(summary.providersCount || 0)}</strong></div>
         </section>
-        <section class="purchase-panels">
+        <section class="purchase-workbench">
+          <div class="purchase-workbench-tabs">
+            ${renderPurchaseBoardTabs(visiblePurchases)}
+          </div>
+          <div class="purchase-workbench-toolbar">
+            <input id="purchase-dashboard-search" class="search" placeholder="Buscar proveedor, producto, evento o pago">
+            <select id="purchase-dashboard-provider"></select>
+            <select id="purchase-dashboard-event"></select>
+            <select id="purchase-dashboard-funds"></select>
+          </div>
+        </section>
+        <div id="purchase-table-wrap"></div>
+        <div class="purchase-analysis-toggle">
+          <strong>Análisis de compras</strong>
+          <button type="button" onclick="togglePurchaseAnalysis()">${purchaseAnalysisCollapsed ? "Mostrar" : "Ocultar"}</button>
+        </div>
+        <section class="purchase-panels ${purchaseAnalysisCollapsed ? "collapsed" : ""}">
           ${renderPurchaseRank("Por proveedor", "byProvider", summary.byProvider || [])}
           ${renderPurchaseRank("Por evento", "byEvent", summary.byEvent || [])}
           ${renderPurchaseRank("Por medio de pago", "byPaymentMethod", summary.byPaymentMethod || [])}
         </section>
-        <div class="toolbar-actions" style="margin-top:4px;">
-          <input id="purchase-dashboard-search" class="search" placeholder="Filtrar compras por proveedor, producto, evento o pago">
-          <select id="purchase-dashboard-status">
-            <option value="">Todos los pagos</option>
-            <option value="Pagado">Pagado</option>
-            <option value="Parcial">Parcial</option>
-            <option value="Pendiente">Pendiente</option>
-          </select>
-        </div>
-        <div id="purchase-table-wrap"></div>
       `;
 
       document.getElementById("purchase-period-preset").addEventListener("change", (event) => {
@@ -12664,12 +13718,85 @@
         purchaseTablePage = 1;
         renderPurchaseTable();
       });
-      document.getElementById("purchase-dashboard-status").addEventListener("change", () => {
-        purchaseTablePage = 1;
-        renderPurchaseTable();
+      ["purchase-dashboard-provider", "purchase-dashboard-event", "purchase-dashboard-funds"].forEach((id) => {
+        document.getElementById(id)?.addEventListener("change", () => {
+          purchaseTablePage = 1;
+          renderPurchaseTable();
+        });
       });
+      document.querySelectorAll(".purchase-workbench-tab").forEach((button) => {
+        button.addEventListener("click", () => {
+          purchaseBoardFilter = button.dataset.filter || "all";
+          purchaseTablePage = 1;
+          renderPurchaseDashboard();
+        });
+      });
+      populatePurchaseWorkbenchFilters(visiblePurchases);
       renderPurchaseTable();
       renderPurchaseSecondaryBoards();
+    }
+
+    function togglePurchaseAnalysis() {
+      purchaseAnalysisCollapsed = !purchaseAnalysisCollapsed;
+      renderPurchaseDashboard();
+    }
+
+    function renderPurchaseBoardTabs(purchases = []) {
+      const counts = getPurchaseBoardCounts(purchases);
+      const tabs = [
+        ["all", "Todas", counts.all],
+        ["pending", "Pendientes", counts.pending],
+        ["partial", "Parciales", counts.partial],
+        ["paid", "Pagadas", counts.paid],
+        ["reimbursements", "Reintegros", counts.reimbursements],
+        ["withoutEvent", "Sin evento", counts.withoutEvent],
+        ["latest", "Ultimas", counts.latest],
+      ];
+      return tabs.map(([id, label, count]) => `
+        <button class="purchase-workbench-tab ${purchaseBoardFilter === id ? "active" : ""}" type="button" data-filter="${id}">
+          ${escapeHtml(label)} <span class="count">${escapeHtml(count)}</span>
+        </button>
+      `).join("");
+    }
+
+    function getPurchaseBoardCounts(purchases = []) {
+      return {
+        all: purchases.length,
+        pending: purchases.filter((purchase) => purchase.paymentStatus === "Pendiente").length,
+        partial: purchases.filter((purchase) => purchase.paymentStatus === "Parcial").length,
+        paid: purchases.filter((purchase) => purchase.paymentStatus === "Pagado").length,
+        reimbursements: purchases.filter((purchase) => isPersonalFundsSource(purchase.fundsSource)).length,
+        withoutEvent: purchases.filter((purchase) => !purchase.eventName).length,
+        latest: Math.min(10, purchases.length),
+      };
+    }
+
+    function populatePurchaseWorkbenchFilters(purchases = []) {
+      fillPurchaseWorkbenchSelect("purchase-dashboard-provider", purchases.map((purchase) => purchase.provider).filter(Boolean), "Todos los proveedores");
+      fillPurchaseWorkbenchSelect("purchase-dashboard-event", purchases.map((purchase) => purchase.eventName || "Sin evento"), "Todos los eventos");
+      fillPurchaseWorkbenchSelect("purchase-dashboard-funds", purchases.map((purchase) => purchase.fundsSource || "Sin origen"), "Todos los origenes");
+    }
+
+    function fillPurchaseWorkbenchSelect(id, values = [], placeholder = "Todos") {
+      const select = document.getElementById(id);
+      if (!select) return;
+      const previous = select.value || "";
+      const unique = [...new Set(values)].sort((a, b) => normalizeSearch(a).localeCompare(normalizeSearch(b)));
+      select.innerHTML = `<option value="">${escapeHtml(placeholder)}</option>` + unique.map((value) => `<option value="${escapeAttribute(value)}">${escapeHtml(value)}</option>`).join("");
+      select.value = unique.includes(previous) ? previous : "";
+    }
+
+    function applyPurchaseBoardFilter(purchases = []) {
+      let rows = [...purchases];
+      if (purchaseBoardFilter === "pending") rows = rows.filter((purchase) => purchase.paymentStatus === "Pendiente");
+      if (purchaseBoardFilter === "partial") rows = rows.filter((purchase) => purchase.paymentStatus === "Parcial");
+      if (purchaseBoardFilter === "paid") rows = rows.filter((purchase) => purchase.paymentStatus === "Pagado");
+      if (purchaseBoardFilter === "reimbursements") rows = rows.filter((purchase) => isPersonalFundsSource(purchase.fundsSource));
+      if (purchaseBoardFilter === "withoutEvent") rows = rows.filter((purchase) => !purchase.eventName);
+      if (purchaseBoardFilter === "latest") rows = rows
+        .sort((a, b) => (normalizePurchaseDate(b.date) || "").localeCompare(normalizePurchaseDate(a.date) || ""))
+        .slice(0, 10);
+      return rows;
     }
 
     function renderPurchaseSecondaryBoards() {
@@ -14739,9 +15866,13 @@
       if (!container) return;
 
       const term = normalizeSearch(document.getElementById("purchase-dashboard-search")?.value || "");
-      const status = document.getElementById("purchase-dashboard-status")?.value || "";
-      const rows = getVisiblePurchasesByPeriod()
-        .filter((purchase) => !status || purchase.paymentStatus === status)
+      const providerFilter = document.getElementById("purchase-dashboard-provider")?.value || "";
+      const eventFilter = document.getElementById("purchase-dashboard-event")?.value || "";
+      const fundsFilter = document.getElementById("purchase-dashboard-funds")?.value || "";
+      const rows = applyPurchaseBoardFilter(getVisiblePurchasesByPeriod())
+        .filter((purchase) => !providerFilter || purchase.provider === providerFilter)
+        .filter((purchase) => !eventFilter || (purchase.eventName || "Sin evento") === eventFilter)
+        .filter((purchase) => !fundsFilter || (purchase.fundsSource || "Sin origen") === fundsFilter)
         .filter((purchase) => !term || normalizeSearch([
           purchase.date,
           purchase.provider,
@@ -14779,52 +15910,8 @@
         <div class="purchase-mobile-cards">
           ${pageRows.map((purchase) => renderPurchaseMobileCard(purchase)).join("")}
         </div>
-        <div class="purchase-table-wrap">
-          <table class="purchase-table">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Proveedor</th>
-                <th>Producto / descripcion</th>
-                <th>Evento</th>
-                <th class="number">Cantidad</th>
-                <th class="money">Unitario</th>
-                <th class="money">Total</th>
-                <th class="money">Pagado</th>
-                <th class="money">Saldo</th>
-                <th>Comprobante</th>
-                <th>Estado pago</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${pageRows.flatMap((purchase) => {
-                const items = purchase.lineItems?.length ? purchase.lineItems : [{ description: purchase.description, quantity: "", unitAmount: "", total: getPurchaseTotal(purchase) }];
-                return items.map((item, index) => `
-                  <tr onclick="editPurchase('${escapeAttribute(purchase.id)}')">
-                    <td>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</td>
-                    <td>${escapeHtml(purchase.provider || "")}</td>
-                    <td>${escapeHtml(item.description || purchase.description || "")}</td>
-                    <td>${escapeHtml(purchase.eventName || "")}</td>
-                    <td class="number">${escapeHtml(item.quantity || "")}</td>
-                    <td class="money">${formatCurrency(item.unitAmount || 0)}</td>
-                    <td class="money">${formatCurrency(getPurchaseLineTotal(purchase, item) || getPurchaseTotal(purchase) || 0)}</td>
-                    <td class="money">${index === 0 ? formatCurrency(purchase.paidAmount || 0) : ""}</td>
-                    <td class="money">${index === 0 ? formatCurrency(getPurchasePending(purchase)) : ""}</td>
-                    <td>${escapeHtml(purchase.invoiceType || "")}</td>
-                    <td><span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span></td>
-                    <td class="number">
-                      ${index === 0 ? `
-                        <div class="actions" onclick="event.stopPropagation()">
-                          <button class="menu-dot" type="button" onclick="showPurchaseActions('${escapeAttribute(purchase.id)}')">...</button>
-                        </div>
-                      ` : ""}
-                    </td>
-                  </tr>
-                `);
-              }).join("")}
-            </tbody>
-          </table>
+        <div class="purchase-board">
+          ${pageRows.map((purchase) => renderPurchaseBoardCard(purchase)).join("")}
         </div>
       `;
     }
@@ -14834,9 +15921,132 @@
       renderPurchaseTable();
     }
 
+    function getPurchaseStatusClass(status = "") {
+      if (status === "Pagado") return "paid";
+      if (status === "Parcial") return "partial";
+      return "pending";
+    }
+
+    function getPurchasePrimaryActionLabel(purchase = {}) {
+      if (purchase.paymentStatus === "Pagado") return "Ver detalle";
+      if (purchase.paymentStatus === "Parcial") return "Completar pago";
+      return "Registrar pago";
+    }
+
+    function runPurchasePrimaryAction(id) {
+      const purchase = (erpData.purchases || []).find((item) => item.id === id);
+      if (!purchase) return;
+      if (getPurchasePending(purchase) > 0 && purchase.provider) {
+        showProviderDebt(purchase.provider);
+        return;
+      }
+      showPurchaseActions(id);
+    }
+
+    function getPurchaseProviderInitials(provider = "") {
+      const words = String(provider || "S").trim().split(/\s+/).filter(Boolean);
+      return words.slice(0, 2).map((word) => word[0]).join("").toUpperCase() || "S";
+    }
+
+    function togglePurchaseCard(id) {
+      if (expandedPurchaseCards.has(id)) {
+        expandedPurchaseCards.delete(id);
+      } else {
+        expandedPurchaseCards.add(id);
+      }
+      renderPurchaseTable();
+    }
+
+    function getPurchaseItemsForDisplay(purchase = {}) {
+      return purchase.lineItems?.length ? purchase.lineItems : [{ description: purchase.description, quantity: "", unitAmount: "", total: getPurchaseTotal(purchase), ivaRate: purchase.ivaRate }];
+    }
+
+    function formatIvaRate(value) {
+      const rate = Number(value || 0);
+      if (!rate) return "0%";
+      const pct = rate > 1 ? rate : rate * 100;
+      return `${Number.isInteger(pct) ? pct : pct.toFixed(1)}%`;
+    }
+
+    function renderPurchaseLinePanel(purchase = {}) {
+      const items = getPurchaseItemsForDisplay(purchase);
+      return `
+        <div class="purchase-line-panel">
+          <div class="purchase-line-row header">
+            <div>Producto</div>
+            <div class="number">Cantidad</div>
+            <div class="money">Unitario</div>
+            <div class="number">IVA</div>
+            <div class="money">Subtotal</div>
+          </div>
+          ${items.map((item) => `
+            <div class="purchase-line-row">
+              <div>${escapeHtml(item.description || purchase.description || "Sin descripcion")}</div>
+              <div class="number">${escapeHtml(item.quantity || "")}</div>
+              <div class="money">${formatCurrency(item.unitAmount || 0)}</div>
+              <div class="number">${escapeHtml(formatIvaRate(item.ivaRate ?? purchase.ivaRate))}</div>
+              <div class="money">${formatCurrency(getPurchaseLineTotal(purchase, item) || 0)}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderPurchaseBoardCard(purchase = {}) {
+      const total = getPurchaseTotal(purchase);
+      const paid = Number(purchase.paidAmount || (purchase.paymentStatus === "Pagado" ? total : 0));
+      const pending = getPurchasePending(purchase);
+      const items = getPurchaseItemsForDisplay(purchase);
+      const expanded = expandedPurchaseCards.has(purchase.id);
+      const statusClass = getPurchaseStatusClass(purchase.paymentStatus || "Pendiente");
+      const note = [
+        isPersonalFundsSource(purchase.fundsSource) ? "Origen personal: revisar reintegro" : "",
+        !purchase.eventName ? "Compra sin evento asociado" : "",
+      ].filter(Boolean).join(" · ");
+      return `
+        <article class="purchase-board-card">
+          <div class="purchase-board-main">
+            <div class="purchase-provider-cell">
+              <span class="purchase-avatar">${escapeHtml(getPurchaseProviderInitials(purchase.provider))}</span>
+              <div style="min-width:0">
+                <div class="purchase-provider-name">${escapeHtml(purchase.provider || "Sin proveedor")}</div>
+                <div class="purchase-provider-meta">${escapeHtml(formatShortDate(purchase.date) || purchase.date || "Sin fecha")} · ${escapeHtml(purchase.invoiceType || "Sin comprobante")}</div>
+              </div>
+            </div>
+            <div>
+              <div class="purchase-board-label">Evento</div>
+              <div class="purchase-board-value">${escapeHtml(purchase.eventName || "Compra general")}</div>
+            </div>
+            <div>
+              <div class="purchase-board-label">Total</div>
+              <div class="purchase-board-value money">${formatCurrency(total || 0)}</div>
+            </div>
+            <div>
+              <div class="purchase-board-label">Saldo</div>
+              <div class="purchase-board-value money ${pending > 0 ? "balance-due" : ""}">${formatCurrency(pending || 0)}</div>
+            </div>
+            <div>
+              <span class="purchase-status-badge ${statusClass}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span>
+            </div>
+            <div>
+              <div class="purchase-board-label">Origen</div>
+              <div class="purchase-board-value">${escapeHtml(purchase.fundsSource || purchase.paymentMethod || "Sin definir")}</div>
+            </div>
+            <div class="purchase-card-actions" onclick="event.stopPropagation()">
+              <button class="${purchase.paymentStatus === "Pagado" ? "purchase-secondary-action" : "purchase-primary-action"}" type="button" onclick="runPurchasePrimaryAction('${escapeAttribute(purchase.id)}')">${escapeHtml(getPurchasePrimaryActionLabel(purchase))}</button>
+              <button class="purchase-expand-action" type="button" aria-label="Ver productos" onclick="togglePurchaseCard('${escapeAttribute(purchase.id)}')">${expanded ? "⌃" : "⌄"}</button>
+            </div>
+          </div>
+          <div class="purchase-card-note">${escapeHtml(items.length)} item(s)${paid ? ` · Pagado ${formatCurrency(paid)}` : ""}${note ? ` · ${escapeHtml(note)}` : ""}</div>
+          ${expanded ? renderPurchaseLinePanel(purchase) : ""}
+        </article>
+      `;
+    }
+
     function renderPurchaseMobileCard(purchase = {}) {
       const firstItem = purchase.lineItems?.[0] || {};
       const extraItems = Math.max(0, Number(purchase.lineItems?.length || 0) - 1);
+      const pending = getPurchasePending(purchase);
       return `
         <article class="purchase-mobile-card" onclick="editPurchase('${escapeAttribute(purchase.id)}')">
           <div>
@@ -14845,12 +16055,16 @@
           </div>
           <p>${escapeHtml(firstItem.description || purchase.description || "Sin descripcion")}${extraItems ? ` +${extraItems} item(s)` : ""}</p>
           <div class="purchase-mobile-meta">
-            <span>${escapeHtml(purchase.eventName || "Sin evento")}</span>
+            <span>${escapeHtml(purchase.eventName || "Compra general")}</span>
             <strong>${formatCurrency(getPurchaseTotal(purchase) || 0)}</strong>
           </div>
           <div class="purchase-mobile-meta">
-            <span class="badge ${purchase.paymentStatus === "Pagado" ? "confirmed" : "missing_info"}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span>
-            <button class="menu-dot" type="button" onclick="event.stopPropagation(); showPurchaseActions('${escapeAttribute(purchase.id)}')">...</button>
+            <span>Saldo</span>
+            <strong class="${pending > 0 ? "balance-due" : ""}">${formatCurrency(pending || 0)}</strong>
+          </div>
+          <div class="purchase-mobile-meta">
+            <span class="purchase-status-badge ${getPurchaseStatusClass(purchase.paymentStatus || "Pendiente")}">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span>
+            <button class="${purchase.paymentStatus === "Pagado" ? "purchase-secondary-action" : "purchase-primary-action"}" type="button" onclick="event.stopPropagation(); runPurchasePrimaryAction('${escapeAttribute(purchase.id)}')">${escapeHtml(getPurchasePrimaryActionLabel(purchase))}</button>
           </div>
         </article>
       `;
@@ -17870,6 +19084,41 @@
           return false;
         })
         .sort(compareEventsByDate);
+    }
+
+    function renderEventsHistory(limit = 3) {
+      const container = document.getElementById("events-history-list");
+      if (!container) return;
+      const filter = document.getElementById("events-history-filter")?.value || "all";
+      const search = (document.getElementById("events-history-search")?.value || "").toLowerCase().trim();
+      const closed = ["done", "cancelled", "lost"];
+      const events = (erpData.events || [])
+        .filter((e) => closed.includes(e.status))
+        .filter((e) => filter === "all" || e.status === filter)
+        .filter((e) => !search || (e.name || "").toLowerCase().includes(search) || (e.clientName || "").toLowerCase().includes(search))
+        .sort((a, b) => (b.eventDate || "").localeCompare(a.eventDate || ""));
+      if (!events.length) {
+        container.innerHTML = `<div class="empty compact-empty"><strong>Sin eventos para mostrar.</strong><div class="secondary">Probá cambiando el filtro o la búsqueda.</div></div>`;
+        return;
+      }
+      const statusBadge = { done: "confirmed", cancelled: "lost", lost: "lost" };
+      const shown = events.slice(0, limit);
+      const hasMore = events.length > limit;
+      container.innerHTML = `
+        <div class="today-event-list">
+          ${shown.map((event) => `
+            <article class="today-event-row">
+              <div>
+                <strong>${escapeHtml(event.name || "Evento sin nombre")}</strong>
+                <div class="secondary">${escapeHtml(formatShortDate(event.eventDate) || "Sin fecha")} · ${escapeHtml(event.clientName || "Sin cliente")}</div>
+                <span class="badge ${escapeAttribute(statusBadge[event.status] || "missing_info")}">${escapeHtml(getErpEventStatusLabel(event.status))}</span>
+              </div>
+              <button class="filter" type="button" onclick="showEventOverview('${escapeAttribute(event.id)}')">Abrir ficha</button>
+            </article>
+          `).join("")}
+        </div>
+        ${hasMore ? `<div class="secondary" style="text-align:center;margin-top:8px;font-size:12px">Mostrando los 3 más recientes. Usá el buscador para encontrar otros.</div>` : ""}
+      `;
     }
 
     function renderEventsStage({ title, subtitle, items, context, emptyTitle, emptyDetail }) {
@@ -22517,11 +23766,13 @@
       await loadPurchaseOptions();
       const form = document.getElementById("purchase-form");
       form.reset();
-      document.getElementById("purchase-title").textContent = "Cargar compra";
+      document.getElementById("purchase-title").textContent = "Nueva compra";
+      document.getElementById("purchase-subtitle").textContent = "Carga manual clara para registrar comprobantes, productos e imputación.";
       resetPurchaseItems();
-      setFormValue(form, "date", new Date().toISOString().slice(0, 10));
+      setPurchaseEventValue("");
       document.getElementById("purchase").classList.add("open");
       renderPurchaseDraftTools();
+      updatePurchaseSummary();
     }
 
     async function editPurchase(id) {
@@ -22535,6 +23786,7 @@
       const form = document.getElementById("purchase-form");
       form.reset();
       document.getElementById("purchase-title").textContent = "Editar compra";
+      document.getElementById("purchase-subtitle").textContent = `${purchase.provider || "Proveedor sin definir"} · ${formatCurrency(purchase.totalAmount || 0)}`;
       setFormValue(form, "id", purchase.id || "");
       setFormValue(form, "date", purchase.date || "");
       setFormValue(form, "provider", purchase.provider || "");
@@ -22545,9 +23797,11 @@
       setFormValue(form, "paymentMethod", purchase.paymentMethod || "");
       setFormValue(form, "fundsSource", purchase.fundsSource || "");
       setFormValue(form, "notes", purchase.notes || "");
+      syncPurchaseEventSearch();
       resetPurchaseItems(purchase.lineItems || []);
       document.getElementById("purchase").classList.add("open");
       renderPurchaseDraftTools();
+      updatePurchaseSummary();
     }
 
     function showPurchaseActions(id) {
@@ -22583,9 +23837,13 @@
     function hidePurchaseForm() {
       document.getElementById("purchase").classList.remove("open");
       document.getElementById("purchase-form").reset();
-      document.getElementById("purchase-title").textContent = "Cargar compra";
+      document.getElementById("purchase-title").textContent = "Nueva compra";
+      document.getElementById("purchase-subtitle").textContent = "Carga manual clara para registrar comprobantes, productos e imputación.";
+      closePurchaseOptionDialog();
+      setPurchaseEventValue("");
       resetPurchaseItems();
       renderPurchaseDraftTools();
+      updatePurchaseSummary();
     }
 
     function closePurchase(event) {
@@ -22610,7 +23868,7 @@
       const form = document.getElementById("purchase-form");
       return {
         id: form.elements.id.value || "",
-        date: form.elements.date.value || "",
+        date: getPurchaseDateInput()?.value || "",
         provider: form.elements.provider.value || "",
         invoiceType: form.elements.invoiceType.value || "",
         ivaRate: form.elements.ivaRate.value || "",
@@ -22660,13 +23918,14 @@
       if (!box) return;
       const draft = getPurchaseDraft();
       if (!draft?.payload || !hasMeaningfulPurchaseDraft(draft.payload)) {
-        box.className = "notice";
+        box.className = "purchase-option-dialog";
         box.innerHTML = "";
         return;
       }
-      box.className = "notice open";
+      box.className = "purchase-option-dialog open";
       box.innerHTML = `
-        Borrador guardado ${escapeHtml(formatDate(draft.savedAt) || "")}: ${escapeHtml(draft.payload.provider || "Sin proveedor")} · ${(draft.payload.items || []).length} producto(s)
+        <strong>Borrador guardado</strong>
+        <span class="secondary">${escapeHtml(formatDate(draft.savedAt) || "")}: ${escapeHtml(draft.payload.provider || "Sin proveedor")} · ${(draft.payload.items || []).length} producto(s)</span>
         <div class="actions" style="margin-top:8px;">
           <button class="filter" type="button" onclick="restorePurchaseDraft()">Restaurar borrador</button>
           <button class="reject" type="button" onclick="clearPurchaseDraft()">Descartar</button>
@@ -22693,8 +23952,40 @@
       setFormValue(form, "paymentMethod", data.paymentMethod || "");
       setFormValue(form, "fundsSource", data.fundsSource || "");
       setFormValue(form, "notes", data.notes || "");
+      syncPurchaseEventSearch();
       resetPurchaseItems(data.items || []);
       renderPurchaseDraftTools();
+      updatePurchaseSummary();
+    }
+
+    function setPurchaseDateToday() {
+      const input = getPurchaseDateInput();
+      if (!input) return;
+      input.value = new Date().toISOString().slice(0, 10);
+      savePurchaseDraft();
+      updatePurchaseSummary();
+    }
+
+    function getPurchaseDateInput() {
+      return document.querySelector('#purchase-form input[name="date"]');
+    }
+
+    function setPurchaseEventValue(value = "") {
+      const form = document.getElementById("purchase-form");
+      const cleanValue = value || "";
+      if (form?.elements.eventName) {
+        form.elements.eventName.value = cleanValue;
+      }
+      const search = document.getElementById("purchase-event-search");
+      if (search && search.value !== cleanValue) {
+        search.value = cleanValue;
+      }
+      updatePurchaseSummary();
+    }
+
+    function syncPurchaseEventSearch() {
+      const form = document.getElementById("purchase-form");
+      setPurchaseEventValue(form?.elements.eventName?.value || "");
     }
 
     function addPurchaseItemRow(item = {}) {
@@ -22705,21 +23996,31 @@
       const row = document.createElement("div");
       row.className = "purchase-item";
       row.innerHTML = `
-        <div class="autocomplete">
-          <input class="purchase-item-description" autocomplete="off" placeholder="Producto o descripcion" value="${escapeAttribute(item.description || "")}" required>
-          <div id="${id}-suggestions" class="autocomplete-list"></div>
+        <div class="form-field">
+          <label>Producto</label>
+          <div class="autocomplete">
+            <input class="purchase-item-description" autocomplete="off" placeholder="Producto o descripción" value="${escapeAttribute(item.description || "")}" required>
+            <div id="${id}-suggestions" class="autocomplete-list"></div>
+          </div>
         </div>
-        <input class="purchase-item-quantity" type="number" min="0.01" step="0.01" placeholder="Cant." value="${escapeAttribute(item.quantity || 1)}" required>
-        <div class="purchase-item-unit-wrap">
-          <input class="purchase-item-unit" type="number" min="0.01" step="0.01" placeholder="Unitario s/IVA" value="${escapeAttribute(item.unitAmount || "")}" required>
+        <div class="form-field">
+          <label>Cantidad</label>
+          <input class="purchase-item-quantity" type="number" min="0.01" step="0.01" placeholder="Cant." value="${escapeAttribute(item.quantity || 1)}" required>
+        </div>
+        <div class="form-field purchase-item-unit-wrap">
+          <label>Unitario s/IVA</label>
+          <input class="purchase-item-unit" type="number" min="0.01" step="0.01" placeholder="0" value="${escapeAttribute(item.unitAmount || "")}" required>
           <div class="purchase-item-total-hint">${item.unitAmount ? "= " + formatCurrency(Number(item.quantity || 1) * Number(item.unitAmount)) : ""}</div>
         </div>
-        <select class="purchase-item-iva">
-          <option value="0" ${Number(itemIvaRate || 0) === 0 ? "selected" : ""}>IVA 0%</option>
-          <option value="0.105" ${Number(itemIvaRate || 0) === 0.105 ? "selected" : ""}>IVA 10.5%</option>
-          <option value="0.21" ${Number(itemIvaRate || 0) === 0.21 ? "selected" : ""}>IVA 21%</option>
-          <option value="0.27" ${Number(itemIvaRate || 0) === 0.27 ? "selected" : ""}>IVA 27%</option>
-        </select>
+        <div class="form-field">
+          <label>IVA</label>
+          <select class="purchase-item-iva">
+            <option value="0" ${Number(itemIvaRate || 0) === 0 ? "selected" : ""}>IVA 0%</option>
+            <option value="0.105" ${Number(itemIvaRate || 0) === 0.105 ? "selected" : ""}>IVA 10.5%</option>
+            <option value="0.21" ${Number(itemIvaRate || 0) === 0.21 ? "selected" : ""}>IVA 21%</option>
+            <option value="0.27" ${Number(itemIvaRate || 0) === 0.27 ? "selected" : ""}>IVA 27%</option>
+          </select>
+        </div>
         <button class="reject icon-action" type="button" onclick="removePurchaseItemRow(this)">X</button>
       `;
       container.appendChild(row);
@@ -22730,22 +24031,28 @@
         () => purchaseOptions.products || []
       );
 
-      row.querySelector(".purchase-item-iva").addEventListener("change", syncPurchaseDefaultIvaFromFirstItem);
-
       function updateRowTotal() {
         const qty = parseFloat(row.querySelector(".purchase-item-quantity").value) || 0;
         const unit = parseFloat(row.querySelector(".purchase-item-unit").value) || 0;
+        const iva = parseFloat(row.querySelector(".purchase-item-iva").value) || 0;
         const hint = row.querySelector(".purchase-item-total-hint");
         if (qty > 0 && unit > 0) {
-          hint.textContent = "= " + formatCurrency(qty * unit);
+          const net = qty * unit;
+          hint.textContent = `Neto ${formatCurrency(net)} · Total ${formatCurrency(net * (1 + iva))}`;
         } else {
           hint.textContent = "";
         }
+        updatePurchaseSummary();
       }
+      row.querySelector(".purchase-item-iva").addEventListener("change", () => {
+        syncPurchaseDefaultIvaFromFirstItem();
+        updateRowTotal();
+      });
       row.querySelector(".purchase-item-quantity").addEventListener("input", updateRowTotal);
       row.querySelector(".purchase-item-unit").addEventListener("input", updateRowTotal);
 
       savePurchaseDraft();
+      updateRowTotal();
     }
 
     function getDefaultPurchaseItemIvaRate() {
@@ -22771,6 +24078,7 @@
 
       button.closest(".purchase-item").remove();
       savePurchaseDraft();
+      updatePurchaseSummary();
     }
 
     function getPurchaseItems() {
@@ -22782,6 +24090,78 @@
           ivaRate: row.querySelector(".purchase-item-iva").value,
         }))
         .filter((item) => item.description);
+    }
+
+    function calculatePurchaseManualTotals() {
+      return Array.from(document.querySelectorAll("#purchase-items .purchase-item"))
+        .reduce((totals, row) => {
+          const description = row.querySelector(".purchase-item-description")?.value?.trim() || "";
+          const quantity = parseFloat(row.querySelector(".purchase-item-quantity")?.value) || 0;
+          const unitAmount = parseFloat(row.querySelector(".purchase-item-unit")?.value) || 0;
+          const ivaRate = parseFloat(row.querySelector(".purchase-item-iva")?.value) || 0;
+          if (!description || quantity <= 0 || unitAmount <= 0) return totals;
+          const net = quantity * unitAmount;
+          const iva = net * ivaRate;
+          totals.net += net;
+          totals.iva += iva;
+          totals.total += net + iva;
+          totals.items += 1;
+          return totals;
+        }, { net: 0, iva: 0, total: 0, items: 0 });
+    }
+
+    function updatePurchaseSummary() {
+      const form = document.getElementById("purchase-form");
+      if (!form) return;
+      const totals = calculatePurchaseManualTotals();
+      const provider = form.elements.provider?.value?.trim() || "";
+      const eventName = form.elements.eventName?.value || "";
+      const paymentStatus = form.elements.paymentStatus?.value || "Pendiente";
+      const fundsSource = form.elements.fundsSource?.value || "";
+      const paymentMethod = form.elements.paymentMethod?.value || "";
+
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      };
+
+      setText("purchase-summary-net", formatCurrency(totals.net || 0));
+      setText("purchase-summary-iva", formatCurrency(totals.iva || 0));
+      setText("purchase-summary-total", formatCurrency(totals.total || 0));
+      setText("purchase-footer-total", formatCurrency(totals.total || 0));
+      setText("purchase-review-provider", provider || "Sin proveedor");
+      const purchaseDate = getPurchaseDateInput()?.value || "";
+      setText("purchase-review-date", formatShortDate(purchaseDate) || purchaseDate || "Sin fecha");
+      setText("purchase-review-event", eventName || "Compra general / sin evento");
+      setText("purchase-review-items", String(totals.items || 0));
+      setText("purchase-review-payment", paymentStatus);
+      setText("purchase-review-funds", fundsSource || "Sin definir");
+
+      const subtitleParts = [provider, eventName, totals.total ? formatCurrency(totals.total) : ""].filter(Boolean);
+      setText("purchase-subtitle", subtitleParts.length ? subtitleParts.join(" · ") : "Carga manual clara para registrar comprobantes, productos e imputación.");
+
+      const alerts = [];
+      if (!eventName) alerts.push("Compra sin evento asociado.");
+      if (paymentStatus === "Pendiente") alerts.push("Pago pendiente.");
+      if (paymentStatus !== "Pendiente" && !paymentMethod) alerts.push("Pago informado sin medio de pago definido.");
+      if (paymentStatus !== "Pendiente" && !fundsSource) alerts.push("Pago informado sin origen de fondos.");
+      if (fundsSource && isPersonalFundsSource(fundsSource)) alerts.push("Origen de fondos personal: genera reintegro pendiente.");
+      if (!provider) alerts.push("Falta proveedor.");
+      if (!totals.items) alerts.push("Falta cargar al menos un producto.");
+
+      const alertBox = document.getElementById("purchase-review-alerts");
+      if (alertBox) {
+        alertBox.innerHTML = alerts.map((alert) => `<div class="purchase-alert">${escapeHtml(alert)}</div>`).join("");
+      }
+      updatePurchasePaymentState();
+    }
+
+    function updatePurchasePaymentState() {
+      const form = document.getElementById("purchase-form");
+      const section = document.getElementById("purchase-payment-section");
+      if (!form || !section) return;
+      const status = form.elements.paymentStatus?.value || "Pendiente";
+      section.classList.toggle("payment-active", status !== "Pendiente");
     }
 
     async function previewInvoicePhoto(event) {
@@ -22894,6 +24274,12 @@
       const payload = Object.fromEntries(formData.entries());
       payload.items = getPurchaseItems();
 
+      if (!payload.date) {
+        showNotice("Ingrese la fecha de la factura antes de guardar.", "error");
+        getPurchaseDateInput()?.focus();
+        return;
+      }
+
       if (!payload.items.length) {
         showNotice("Ingrese al menos un producto.", "error");
         return;
@@ -22977,23 +24363,84 @@
       return readJsonResponse(response);
     }
 
-    async function addPurchaseOptionFromPrompt(type) {
+    function addPurchaseOptionFromPrompt(type) {
+      openPurchaseOptionDialog(type);
+    }
+
+    function openPurchaseOptionDialog(type) {
       const labels = {
         provider: "proveedor",
         product: "producto",
       };
-      const value = prompt(`Ingrese el nuevo ${labels[type] || "dato"}:`);
+      purchaseOptionDialogType = type;
+      const dialog = document.getElementById("purchase-option-dialog");
+      const title = document.getElementById("purchase-option-title");
+      const helper = document.getElementById("purchase-option-helper");
+      const input = document.getElementById("purchase-option-input");
+      if (!dialog || !input) return;
+      if (title) title.textContent = `Nuevo ${labels[type] || "dato"}`;
+      if (helper) {
+        helper.textContent = type === "provider"
+          ? "El nombre alcanza para crearlo. Alias, banco, titular y CBU son opcionales."
+          : "Guardá el producto para usarlo en esta compra.";
+      }
+      input.value = "";
+      input.placeholder = `Nombre del ${labels[type] || "dato"}`;
+      document.querySelectorAll(".purchase-provider-extra").forEach((field) => {
+        field.style.display = type === "provider" ? "" : "none";
+        field.querySelectorAll("input").forEach((extraInput) => {
+          extraInput.value = "";
+        });
+      });
+      dialog.classList.add("open");
+      setTimeout(() => input.focus(), 50);
+    }
 
-      if (!value || !value.trim()) {
+    function closePurchaseOptionDialog() {
+      const dialog = document.getElementById("purchase-option-dialog");
+      if (dialog) dialog.classList.remove("open");
+      document.querySelectorAll("#purchase-option-dialog input").forEach((input) => {
+        input.value = "";
+      });
+      purchaseOptionDialogType = "";
+    }
+
+    async function savePurchaseOptionFromDialog() {
+      const type = purchaseOptionDialogType;
+      const labels = {
+        provider: "proveedor",
+        product: "producto",
+      };
+      const input = document.getElementById("purchase-option-input");
+      const value = input?.value?.trim() || "";
+
+      if (!type || !value) {
+        showNotice("Ingrese un nombre para guardar.", "error");
         return;
       }
 
-      const response = await fetch("/api/purchase-option", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, value }),
-      });
-      const result = await response.json();
+      const providerPayload = type === "provider" ? {
+        name: value,
+        alias: document.getElementById("purchase-option-alias")?.value?.trim() || "",
+        bankName: document.getElementById("purchase-option-bank")?.value?.trim() || "",
+        bankAccountHolder: document.getElementById("purchase-option-holder")?.value?.trim() || "",
+        cbu: document.getElementById("purchase-option-cbu")?.value?.trim() || "",
+        notes: document.getElementById("purchase-option-notes")?.value?.trim() || "",
+      } : null;
+      const hasProviderDetails = providerPayload && Object.entries(providerPayload)
+        .some(([key, fieldValue]) => key !== "name" && Boolean(fieldValue));
+      const response = hasProviderDetails
+        ? await fetch("/api/provider", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(providerPayload),
+          })
+        : await fetch("/api/purchase-option", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type, value }),
+          });
+      const result = await readJsonResponse(response);
 
       if (!result.ok) {
         showNotice(result.error || "No se pudo guardar el dato.", "error");
@@ -23003,13 +24450,21 @@
       await loadPurchaseOptions();
 
       if (type === "provider") {
-        setFormValue(document.getElementById("purchase-form"), "provider", result.result.value);
+        setFormValue(document.getElementById("purchase-form"), "provider", result.provider?.name || result.result?.value || value);
       }
 
       if (type === "product") {
-        setFormValue(document.getElementById("purchase-form"), "description", result.result.value);
+        let target = Array.from(document.querySelectorAll("#purchase-items .purchase-item-description")).find((el) => !el.value.trim());
+        if (!target) {
+          addPurchaseItemRow();
+          target = document.querySelector("#purchase-items .purchase-item:last-child .purchase-item-description");
+        }
+        if (target) target.value = result.result.value;
       }
 
+      closePurchaseOptionDialog();
+      updatePurchaseSummary();
+      savePurchaseDraft();
       showNotice(`${labels[type] || "Dato"} guardado correctamente.`);
     }
 
