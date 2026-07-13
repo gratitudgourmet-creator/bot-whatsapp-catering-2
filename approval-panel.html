@@ -19589,6 +19589,13 @@
       return `"${text}"`;
     }
 
+    function closeGlobalSearch() {
+      const input = document.getElementById("global-search");
+      const container = document.getElementById("global-results");
+      if (input) input.value = "";
+      if (container) { container.innerHTML = ""; container.classList.remove("open"); }
+    }
+
     function renderGlobalSearch() {
       const term = normalizeSearch(document.getElementById("global-search").value || "");
       const container = document.getElementById("global-results");
@@ -19600,16 +19607,21 @@
       }
 
       const results = [
-        ...(erpData.events || []).map((item) => ({ type: "Evento", title: item.name, detail: `${item.clientName || ""} ${item.serviceType || ""}` })),
-        ...(erpData.quotes || []).map((item) => ({ type: "Presupuesto", title: item.eventName, detail: `${formatCurrency(item.priceTotal)} ${item.status}` })),
-        ...(erpData.customers || []).map((item) => ({ type: "Cliente", title: item.fullName || item.contactName, detail: `${item.displayPhone || ""} Cierre ${formatPercent(item.closeRate || 0)}` })),
-        ...(erpData.purchases || []).map((item) => ({ type: "Compra", title: item.provider, detail: `${item.description || ""} ${item.eventName || ""}` })),
-        ...(allRecipes || []).map((item) => ({ type: "Receta", title: item.name, detail: `${item.category || ""} ${formatCurrency(item.costPerPortion)}` })),
+        ...(erpData.events || []).map((item) => ({ type: "Evento", title: item.name, detail: `${item.clientName || ""} ${item.serviceType || ""}`, action: () => { showEventOverview(item.id); closeGlobalSearch(); } })),
+        ...(erpData.quotes || []).map((item) => ({ type: "Presupuesto", title: item.eventName, detail: `${formatCurrency(item.priceTotal)} ${item.status}`, action: () => { showWorkspaceView("commercial", { anchor: "commercial-quotes-section" }); closeGlobalSearch(); } })),
+        ...(erpData.customers || []).map((item) => ({ type: "Cliente", title: item.fullName || item.contactName, detail: `${item.displayPhone || ""} Cierre ${formatPercent(item.closeRate || 0)}`, action: () => { showCustomerDetail(item.id); closeGlobalSearch(); } })),
+        ...(erpData.purchases || []).map((item) => ({ type: "Compra", title: item.provider, detail: `${item.description || ""} ${item.eventName || ""}`, action: () => { showWorkspaceView("purchases", { anchor: "purchase-sheet-section" }); closeGlobalSearch(); } })),
+        ...(allRecipes || []).map((item) => ({ type: "Receta", title: item.name, detail: `${item.category || ""} ${formatCurrency(item.costPerPortion)}`, action: () => { showRecipeDetail(item.id); closeGlobalSearch(); } })),
       ].filter((item) => normalizeSearch(`${item.type} ${item.title} ${item.detail}`).includes(term)).slice(0, 10);
 
       container.innerHTML = results.length
-        ? results.map((item) => `<div class="erp-card"><div class="primary">${escapeHtml(item.type)} | ${escapeHtml(item.title || "")}</div><div class="secondary">${escapeHtml(item.detail || "")}</div></div>`).join("")
+        ? results.map((item, i) => `<div class="erp-card" style="cursor:pointer" data-search-idx="${i}"><div class="primary">${escapeHtml(item.type)} | ${escapeHtml(item.title || "")}</div><div class="secondary">${escapeHtml(item.detail || "")}</div></div>`).join("")
         : `<div class="empty">Sin resultados.</div>`;
+
+      container.querySelectorAll("[data-search-idx]").forEach((el) => {
+        el.addEventListener("click", () => results[Number(el.dataset.searchIdx)]?.action?.());
+      });
+
       container.classList.add("open");
     }
 
