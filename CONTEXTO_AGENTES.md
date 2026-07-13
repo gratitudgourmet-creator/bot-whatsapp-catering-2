@@ -21,6 +21,28 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-10] Claude (sesion — modal evento rediseño + exportar Excel costos de menú)
+
+**De que se hablo:** prueba local de los cambios acumulados en approval-panel.html (guided event modal compact redesign + mcExportExcel). Fix de sticky en modal. Deploy a prod.
+
+**Decisiones tomadas:**
+- Se descartaron los cambios de tipo-de-evento/venta-planner (selectEventType, vpRender, vpCreatePurchaseOrder) — el usuario los rechazó explícitamente.
+- Se mantuvieron SOLO: CSS compact modal + HTML guided-form-header simplificado + botón/función mcExportExcel.
+- Fix overflow:visible en #erp-event-card para que position:sticky funcione dentro del contenedor de scroll del aside.
+- Fix "Guardar usuario" en iOS (requestSubmit → type="submit" form="user-form") ya deployado como commit aislado en sesión anterior (caf8e9f).
+- Tab "Equipo" no aparecía para admin: fix en sanitizeRoleTabs() ya mergeado por Codex en sus commits.
+
+**Cambios en el codigo:**
+- Commit 8e3114b (approval-panel.html): modal evento compact redesign, sticky fix, botón + función mcExportExcel.
+- Push a main y deploy a prod (git pull + systemctl restart en VPS por el usuario).
+
+**Pendiente para la proxima sesion:**
+- Verificar en prod que el modal y el Excel funcionen.
+- Pendientes de seguridad de la sesión anterior siguen abiertos (ver entrada 2026-07-09).
+- Plan de integración comandas↔ERP (CONTEXTO_AGENTES plan en .claude/plans/) sigue sin iniciar.
+
+---
+
 ## [2026-07-09] Claude (sesion — seguridad, paneo general, estado local/produccion)
 
 **De que se hablo:** paneo general de salud de la app, balance local vs produccion, y fixes de seguridad puntuales.
