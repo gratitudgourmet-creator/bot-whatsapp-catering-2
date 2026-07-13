@@ -7908,11 +7908,478 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* App Shell Sidebar / Drawer */
+    .shell-menu-button {
+      align-items: center;
+      background: rgba(255, 255, 255, .09);
+      border: 1px solid rgba(209, 169, 101, .48);
+      border-radius: 10px;
+      color: var(--gold);
+      cursor: pointer;
+      display: none;
+      font-size: 18px;
+      font-weight: 900;
+      height: 36px;
+      justify-content: center;
+      padding: 0;
+      width: 38px;
+    }
+
+    .shell-drawer-overlay {
+      background: rgba(13, 24, 28, .42);
+      border: 0;
+      display: none;
+      inset: 0;
+      padding: 0;
+      position: fixed;
+      z-index: 88;
+    }
+
+    body.shell-drawer-open {
+      overflow: hidden;
+    }
+
+    @media (min-width: 981px) {
+      body {
+        background: #eef2f1;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 70;
+      }
+
+      .header-inner {
+        max-width: none;
+      }
+
+      main {
+        margin: 0;
+        max-width: none;
+        padding: 18px 24px 38px 304px;
+        width: 100%;
+      }
+
+      .workspace-tabs {
+        align-content: start;
+        align-items: stretch;
+        background: #0f2d26;
+        border: 1px solid rgba(209, 169, 101, .22);
+        border-radius: 18px;
+        bottom: 16px;
+        box-shadow: 0 24px 60px rgba(8, 21, 18, .20);
+        color: #fff;
+        display: grid;
+        gap: 9px;
+        left: 16px;
+        margin: 0;
+        max-width: none;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 16px 12px;
+        position: fixed;
+        top: 72px;
+        width: 264px;
+        z-index: 55;
+      }
+
+      .workspace-tabs.sidebar-collapsed {
+        align-items: center;
+        padding-left: 8px;
+        padding-right: 8px;
+        width: 72px;
+      }
+
+      .workspace-tabs::before {
+        color: rgba(255, 255, 255, .92);
+        content: "Gratitud ERP";
+        display: block;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: .02em;
+        padding: 0 8px 8px;
+      }
+
+      .workspace-tabs.sidebar-collapsed::before {
+        content: "GG";
+        font-size: 14px;
+        padding-left: 0;
+        padding-right: 0;
+        text-align: center;
+      }
+
+      body.shell-sidebar-collapsed main {
+        padding-left: 112px;
+      }
+
+      .shell-sidebar-toggle {
+        align-items: center;
+        background: rgba(255, 255, 255, .08);
+        border: 1px solid rgba(209, 169, 101, .22);
+        border-radius: 10px;
+        color: var(--gold);
+        cursor: pointer;
+        display: inline-flex;
+        font-size: 12px;
+        font-weight: 900;
+        gap: 8px;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0 10px;
+        width: 100%;
+      }
+
+      .workspace-tabs.sidebar-collapsed .shell-sidebar-toggle {
+        font-size: 0;
+        padding: 0;
+        width: 42px;
+      }
+
+      .workspace-tabs.sidebar-collapsed .shell-sidebar-toggle::before {
+        content: "›";
+        font-size: 18px;
+      }
+
+      .workspace-group {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+      }
+
+      .workspace-group-trigger {
+        border-radius: 10px;
+        color: rgba(255, 255, 255, .56);
+        cursor: pointer;
+        font-size: 11px;
+        height: 30px;
+        justify-content: space-between;
+        padding: 0 8px;
+        text-transform: uppercase;
+        width: 100%;
+      }
+
+      .workspace-group.expanded .workspace-group-trigger {
+        background: rgba(255, 255, 255, .07);
+        box-shadow: inset 0 0 0 1px rgba(209, 169, 101, .16);
+        color: var(--gold);
+      }
+
+      .workspace-group.active:not(.expanded) .workspace-group-trigger {
+        background: transparent;
+        box-shadow: none;
+        color: rgba(245, 217, 157, .82);
+      }
+
+      .workspace-group-panel,
+      .workspace-group-panel.align-right {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        display: none;
+        gap: 4px;
+        left: auto;
+        min-width: 0;
+        padding: 0;
+        position: static;
+        right: auto;
+      }
+
+      .workspace-group.expanded .workspace-group-panel {
+        display: grid;
+      }
+
+      .workspace-group:not(.expanded) .workspace-group-panel {
+        display: none !important;
+      }
+
+      .workspace-tabs.sidebar-collapsed .workspace-group-panel {
+        display: none !important;
+      }
+
+      .workspace-tabs.sidebar-collapsed .workspace-group {
+        place-items: center;
+      }
+
+      .workspace-tabs.sidebar-collapsed .workspace-group-trigger {
+        font-size: 0;
+        height: 38px;
+        justify-content: center;
+        padding: 0;
+        width: 42px;
+      }
+
+      .workspace-tabs.sidebar-collapsed .workspace-group-trigger::after {
+        border-width: 0;
+        content: attr(data-short);
+        color: rgba(255, 255, 255, .76);
+        font-size: 12px;
+        font-weight: 900;
+        margin: 0;
+      }
+
+      .workspace-tabs.sidebar-collapsed .workspace-group.active .workspace-group-trigger::after {
+        color: var(--gold);
+      }
+
+      .workspace-menu {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .workspace-tab {
+        align-items: center;
+        border-radius: 11px;
+        color: rgba(255, 255, 255, .82);
+        display: flex;
+        min-height: 36px;
+        padding: 0 10px;
+      }
+
+      .workspace-tab:hover {
+        background: rgba(255, 255, 255, .08);
+      }
+
+      .workspace-tab.active {
+        background: rgba(209, 169, 101, .16);
+        box-shadow: inset 3px 0 0 var(--gold);
+        color: #f5d99d;
+      }
+
+      .workspace-menu-panel {
+        background: rgba(255, 255, 255, .055);
+        border: 0;
+        border-radius: 11px;
+        display: none;
+        gap: 2px;
+        margin: 0 0 4px 8px;
+        padding: 5px;
+        position: static;
+      }
+
+      .workspace-menu.open .workspace-menu-panel {
+        display: grid;
+      }
+
+      .workspace-menu:not(.open) .workspace-menu-panel {
+        display: none !important;
+      }
+
+      .workspace-subitem {
+        border-radius: 9px;
+        color: rgba(255, 255, 255, .70);
+        font-size: 12px;
+        min-height: 31px;
+        padding: 6px 9px;
+      }
+
+      .workspace-subitem:hover,
+      .workspace-subitem.active {
+        background: rgba(255, 255, 255, .10);
+        color: #fff;
+      }
+
+      .mobile-module-switcher {
+        display: none !important;
+      }
+
+      .shell-context {
+        background: rgba(255, 255, 255, .72);
+        border: 1px solid rgba(214, 222, 230, .72);
+        border-radius: 14px;
+        padding: 7px 10px;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .shell-menu-button {
+        display: inline-grid;
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .header-inner {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+      }
+
+      .brand-lockup {
+        grid-column: 2;
+        min-width: 0;
+      }
+
+      .header-status {
+        grid-column: 3;
+      }
+
+      .header-search {
+        grid-column: 1 / -1;
+      }
+
+      main {
+        margin: 8px auto;
+        padding: 0 10px 24px;
+        width: 100%;
+      }
+
+      .mobile-module-switcher {
+        display: grid;
+      }
+
+      .mobile-module-switcher label,
+      .mobile-module-switcher select {
+        display: none;
+      }
+
+      .workspace-tabs {
+        align-content: start;
+        background: #0f2d26;
+        border: 1px solid rgba(209, 169, 101, .22);
+        border-radius: 0 18px 18px 0;
+        bottom: 0;
+        box-shadow: 24px 0 60px rgba(8, 21, 18, .28);
+        display: grid;
+        gap: 9px;
+        left: 0;
+        margin: 0;
+        max-height: none;
+        max-width: min(326px, calc(100vw - 38px));
+        min-height: 0;
+        overflow-y: auto;
+        padding: 18px 12px;
+        position: fixed;
+        top: 0;
+        transform: translateX(-104%);
+        transition: transform .18s ease;
+        width: min(326px, calc(100vw - 38px));
+        z-index: 90;
+      }
+
+      .workspace-tabs::before {
+        color: rgba(255, 255, 255, .92);
+        content: "Gratitud ERP";
+        display: block;
+        font-size: 14px;
+        font-weight: 900;
+        padding: 0 8px 8px;
+      }
+
+      body.shell-drawer-open .workspace-tabs {
+        transform: translateX(0);
+      }
+
+      body.shell-drawer-open .shell-drawer-overlay {
+        display: block;
+      }
+
+      .workspace-group {
+        display: grid;
+        gap: 5px;
+      }
+
+      .workspace-group-trigger {
+        border-radius: 10px;
+        color: rgba(255, 255, 255, .58);
+        cursor: pointer;
+        font-size: 11px;
+        height: 32px;
+        justify-content: space-between;
+        padding: 0 8px;
+        text-transform: uppercase;
+        width: 100%;
+      }
+
+      .workspace-group.expanded .workspace-group-trigger {
+        background: rgba(255, 255, 255, .08);
+        box-shadow: inset 0 0 0 1px rgba(209, 169, 101, .16);
+        color: var(--gold);
+      }
+
+      .workspace-group.active:not(.expanded) .workspace-group-trigger {
+        background: transparent;
+        box-shadow: none;
+        color: rgba(245, 217, 157, .82);
+      }
+
+      .workspace-group-panel,
+      .workspace-group-panel.align-right {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        display: none;
+        gap: 4px;
+        min-width: 0;
+        padding: 0;
+        position: static;
+      }
+
+      .workspace-group.expanded .workspace-group-panel {
+        display: grid;
+      }
+
+      .workspace-group:not(.expanded) .workspace-group-panel {
+        display: none !important;
+      }
+
+      .workspace-tab {
+        align-items: center;
+        border-radius: 11px;
+        color: rgba(255, 255, 255, .82);
+        display: flex;
+        min-height: 40px;
+        padding: 0 10px;
+      }
+
+      .workspace-tab:hover,
+      .workspace-tab.active {
+        background: rgba(209, 169, 101, .16);
+        color: #f5d99d;
+      }
+
+      .workspace-menu-panel {
+        background: rgba(255, 255, 255, .055);
+        border: 0;
+        border-radius: 11px;
+        display: none;
+        gap: 2px;
+        margin: 0 0 4px 8px;
+        padding: 5px;
+        position: static;
+      }
+
+      .workspace-menu.open .workspace-menu-panel {
+        display: grid;
+      }
+
+      .workspace-menu:not(.open) .workspace-menu-panel {
+        display: none !important;
+      }
+
+      .workspace-subitem {
+        border-radius: 9px;
+        color: rgba(255, 255, 255, .72);
+        font-size: 13px;
+        min-height: 36px;
+        padding: 8px 9px;
+      }
+
+      .workspace-subitem:hover,
+      .workspace-subitem.active {
+        background: rgba(255, 255, 255, .10);
+        color: #fff;
+      }
+
+      .shell-context {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="header-inner">
+      <button id="shell-menu-button" class="shell-menu-button" type="button" aria-label="Abrir navegación" aria-controls="workspace-navigation" aria-expanded="false" onclick="openShellDrawer()">☰</button>
       <div class="brand-lockup">
         <img class="brand-logo" src="/assets/gratitud-gourmet-logo.png" alt="Gratitud Gourmet">
         <div>
@@ -7943,6 +8410,7 @@
       </div>
     </div>
   </header>
+  <button id="shell-drawer-overlay" class="shell-drawer-overlay" type="button" aria-label="Cerrar navegación" onclick="closeShellDrawer()"></button>
 
   <section id="login-screen" class="login-screen open">
     <form id="login-form" class="login-card">
@@ -7977,7 +8445,8 @@
       </div>
     </div>
 
-    <div class="workspace-tabs">
+    <div id="workspace-navigation" class="workspace-tabs" aria-label="Navegación principal">
+      <button id="shell-sidebar-toggle" class="shell-sidebar-toggle" type="button" onclick="toggleShellSidebar()" aria-expanded="true">Colapsar</button>
       <div class="workspace-group" data-nav-group="direction">
         <button class="workspace-group-trigger" type="button">Dirección</button>
         <div class="workspace-group-panel">
@@ -8813,7 +9282,7 @@
             <input id="events-history-search" class="filter" type="search" placeholder="Buscar evento..." oninput="renderEventsHistory()" style="padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:13px;width:180px;">
           </div>
         </div>
-        <div id="events-history-list"></div>
+        <div id="events-history-list" style="max-height:420px;overflow-y:auto;"></div>
       </section>
     </section>
 
@@ -10869,11 +11338,19 @@
     });
 
     document.querySelectorAll(".workspace-tab").forEach((button) => {
+      button.setAttribute("aria-expanded", String(button.closest(".workspace-menu")?.classList.contains("open")));
       button.addEventListener("click", () => navigateWorkspaceItem(button));
     });
 
     document.querySelectorAll(".workspace-subitem").forEach((button) => {
       button.addEventListener("click", () => navigateWorkspaceItem(button));
+    });
+    document.querySelectorAll(".workspace-group-trigger").forEach((button) => {
+      button.setAttribute("aria-expanded", String(button.closest(".workspace-group")?.classList.contains("active")));
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        toggleWorkspaceGroup(button.closest(".workspace-group"));
+      });
     });
     document.getElementById("shell-quick-action")?.addEventListener("click", runShellQuickAction);
     document.getElementById("mobile-shell-quick-action")?.addEventListener("click", runShellQuickAction);
@@ -10915,6 +11392,7 @@
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") closeProfileMenu();
+      if (event.key === "Escape") closeShellDrawer();
     });
     document.getElementById("role-filter").addEventListener("change", renderErp);
     document.getElementById("invoice-photo")?.addEventListener("change", previewInvoicePhoto);
@@ -10925,6 +11403,8 @@
     });
     syncGlobalSearchPlaceholder();
     renderProfileMenu();
+    prepareShellNavigation();
+    restoreShellSidebarState();
 
     async function bootstrapPanel() {
       const response = await fetch("/api/me");
@@ -11225,7 +11705,16 @@
         button.classList.toggle("active", button.dataset.view === view);
       });
       document.querySelectorAll(".workspace-group").forEach((group) => {
-        group.classList.toggle("active", !!group.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`));
+        const isActive = !!group.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`);
+        group.classList.toggle("active", isActive);
+        if (isActive) group.classList.add("expanded");
+        group.querySelector(".workspace-group-trigger")?.setAttribute("aria-expanded", String(group.classList.contains("expanded")));
+      });
+      document.querySelectorAll(".workspace-menu").forEach((menu) => {
+        const isActive = !!menu.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`);
+        menu.classList.toggle("active", isActive);
+        if (isActive) menu.classList.add("open");
+        menu.querySelector(".workspace-tab")?.setAttribute("aria-expanded", String(menu.classList.contains("open")));
       });
       document.querySelectorAll(".workspace-subitem").forEach((button) => {
         button.classList.toggle("active", button.dataset.view === view && (button.dataset.anchor || "") === (MODULE_DEFAULT_SECTIONS[view] || ""));
@@ -11377,6 +11866,89 @@
       select.innerHTML = options.map((option) => `<option value="${escapeAttribute(option.value)}">${escapeHtml(option.label)}</option>`).join("");
       if (options.some((option) => option.value === currentValue)) select.value = currentValue;
       updateShellContext(currentValue);
+    }
+
+    function openShellDrawer() {
+      document.body.classList.add("shell-drawer-open");
+      document.getElementById("shell-menu-button")?.setAttribute("aria-expanded", "true");
+      const activeGroup = document.querySelector(".workspace-group.active");
+      if (activeGroup) {
+        activeGroup.classList.add("expanded");
+        activeGroup.querySelector(".workspace-group-trigger")?.setAttribute("aria-expanded", "true");
+      }
+    }
+
+    function closeShellDrawer() {
+      document.body.classList.remove("shell-drawer-open");
+      document.getElementById("shell-menu-button")?.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleWorkspaceGroup(group) {
+      if (!group) return;
+      const willExpand = !group.classList.contains("expanded");
+      group.classList.toggle("expanded", willExpand);
+      group.querySelector(".workspace-group-trigger")?.setAttribute("aria-expanded", String(willExpand));
+    }
+
+    function toggleWorkspaceMenu(menu) {
+      if (!menu) return;
+      const willOpen = !menu.classList.contains("open");
+      menu.classList.toggle("open", willOpen);
+      menu.querySelector(".workspace-tab")?.setAttribute("aria-expanded", String(willOpen));
+    }
+
+    function toggleShellSidebar() {
+      const nav = document.getElementById("workspace-navigation");
+      const button = document.getElementById("shell-sidebar-toggle");
+      if (!nav || !button) return;
+      const willCollapse = !nav.classList.contains("sidebar-collapsed");
+      nav.classList.toggle("sidebar-collapsed", willCollapse);
+      document.body.classList.toggle("shell-sidebar-collapsed", willCollapse);
+      button.textContent = willCollapse ? "Expandir" : "Colapsar";
+      button.setAttribute("aria-expanded", String(!willCollapse));
+      try {
+        localStorage.setItem("gratitud-shell-sidebar-collapsed", willCollapse ? "1" : "0");
+      } catch (error) {
+        // Some local file contexts block localStorage; the visual toggle still works.
+      }
+    }
+
+    function restoreShellSidebarState() {
+      const nav = document.getElementById("workspace-navigation");
+      const button = document.getElementById("shell-sidebar-toggle");
+      let collapsed = false;
+      try {
+        collapsed = localStorage.getItem("gratitud-shell-sidebar-collapsed") === "1";
+      } catch (error) {
+        collapsed = false;
+      }
+      if (!nav || !button) return;
+      nav.classList.toggle("sidebar-collapsed", collapsed);
+      document.body.classList.toggle("shell-sidebar-collapsed", collapsed);
+      button.textContent = collapsed ? "Expandir" : "Colapsar";
+      button.setAttribute("aria-expanded", String(!collapsed));
+    }
+
+    function prepareShellNavigation() {
+      const shortcuts = {
+        direction: "DI",
+        commercial: "CO",
+        purchases: "CS",
+        finance: "FI",
+        operations: "OP",
+        system: "SI",
+      };
+      document.querySelectorAll(".workspace-group").forEach((group) => {
+        const trigger = group.querySelector(".workspace-group-trigger");
+        if (!trigger) return;
+        trigger.dataset.short = shortcuts[group.dataset.navGroup] || trigger.textContent.trim().slice(0, 2).toUpperCase();
+        trigger.setAttribute("aria-expanded", String(group.classList.contains("expanded")));
+      });
+      document.querySelectorAll(".workspace-menu").forEach((menu) => {
+        const tab = menu.querySelector(".workspace-tab");
+        if (!tab) return;
+        tab.setAttribute("aria-expanded", String(menu.classList.contains("open")));
+      });
     }
 
     function getWorkspaceGroupForView(view) {
@@ -11647,6 +12219,10 @@
       if (!element) return;
       const view = element.dataset.view;
       const isPrimaryTab = element.classList.contains("workspace-tab");
+      if (isPrimaryTab && element.classList.contains("active") && element.closest(".workspace-menu")?.querySelector(".workspace-menu-panel")) {
+        toggleWorkspaceMenu(element.closest(".workspace-menu"));
+        return;
+      }
       showWorkspaceView(view, {
         anchor: element.dataset.anchor || (isPrimaryTab ? MODULE_DEFAULT_SECTIONS[view] || "" : ""),
         action: element.dataset.action || "",
@@ -11670,7 +12246,16 @@
         button.classList.toggle("active", button.dataset.view === view);
       });
       document.querySelectorAll(".workspace-group").forEach((group) => {
-        group.classList.toggle("active", !!group.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`));
+        const isActive = !!group.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`);
+        group.classList.toggle("active", isActive);
+        if (isActive) group.classList.add("expanded");
+        group.querySelector(".workspace-group-trigger")?.setAttribute("aria-expanded", String(group.classList.contains("expanded")));
+      });
+      document.querySelectorAll(".workspace-menu").forEach((menu) => {
+        const isActive = !!menu.querySelector(`.workspace-tab[data-view="${cssEscape(view)}"]`);
+        menu.classList.toggle("active", isActive);
+        if (isActive) menu.classList.add("open");
+        menu.querySelector(".workspace-tab")?.setAttribute("aria-expanded", String(menu.classList.contains("open")));
       });
       document.querySelectorAll(".workspace-subitem").forEach((button) => {
         button.classList.toggle("active", button.dataset.view === view && (button.dataset.anchor || "") === (navigationOptions.anchor || "") && (button.dataset.action || "") === (navigationOptions.action || ""));
@@ -11680,6 +12265,7 @@
       });
       syncMobileModuleSelect(view);
       updateShellContext(view);
+      closeShellDrawer();
 
       let loadTask = Promise.resolve();
       if (view === "customers") loadTask = loadCustomers();
@@ -19086,7 +19672,7 @@
         .sort(compareEventsByDate);
     }
 
-    function renderEventsHistory(limit = 3) {
+    function renderEventsHistory(limit = Infinity) {
       const container = document.getElementById("events-history-list");
       if (!container) return;
       const filter = document.getElementById("events-history-filter")?.value || "all";
@@ -19117,7 +19703,6 @@
             </article>
           `).join("")}
         </div>
-        ${hasMore ? `<div class="secondary" style="text-align:center;margin-top:8px;font-size:12px">Mostrando los 3 más recientes. Usá el buscador para encontrar otros.</div>` : ""}
       `;
     }
 
