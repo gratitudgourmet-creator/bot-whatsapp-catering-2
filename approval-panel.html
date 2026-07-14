@@ -4947,6 +4947,91 @@
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
 
+    .recipe-toolbar {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(220px, 1fr) auto auto;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .recipe-toolbar .search {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .recipe-actions-wrap {
+      position: relative;
+    }
+
+    .recipe-actions-toggle {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      font-size: 13px;
+      font-weight: 800;
+      gap: 8px;
+      justify-content: center;
+      min-height: 38px;
+      padding: 0 12px;
+      white-space: nowrap;
+    }
+
+    .recipe-actions-panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 18px 38px rgba(16, 24, 32, .16);
+      display: none;
+      gap: 6px;
+      min-width: 230px;
+      padding: 8px;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      z-index: 35;
+    }
+
+    .recipe-actions-panel.open {
+      display: grid;
+    }
+
+    .recipe-actions-panel button {
+      align-items: center;
+      background: transparent;
+      border-radius: 8px;
+      color: var(--text);
+      display: flex;
+      font-size: 13px;
+      font-weight: 800;
+      gap: 8px;
+      justify-content: space-between;
+      min-height: 38px;
+      padding: 0 10px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .recipe-actions-panel button:hover {
+      background: var(--surface-soft);
+    }
+
+    .recipe-actions-badge {
+      background: var(--accent);
+      border-radius: 999px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      min-width: 20px;
+      padding: 3px 6px;
+      text-align: center;
+    }
+
     .recipe-card {
       background: #fff;
       border: 1px solid var(--line);
@@ -4958,6 +5043,97 @@
       min-width: 0;
       padding: 16px;
       transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+    }
+
+    .recipe-production-form {
+      display: grid;
+      gap: 14px;
+      padding-bottom: 72px;
+    }
+
+    .recipe-form-section {
+      background: #fff;
+      border: 1px solid rgba(214, 222, 230, .86);
+      border-radius: 12px;
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .recipe-form-section-head {
+      align-items: start;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .recipe-form-section.collapsed > :not(.recipe-form-section-head) {
+      display: none;
+    }
+
+    .recipe-form-section-head h3 {
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .recipe-form-section-head p,
+    .recipe-form-subblock span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      margin: 3px 0 0;
+    }
+
+    .recipe-form-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recipe-form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .recipe-form-subblock {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      min-width: 0;
+      padding: 10px;
+    }
+
+    .recipe-dynamic-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .recipe-dynamic-list .recipe-item,
+    .recipe-dynamic-list .recipe-process-item {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .recipe-form-section-cost {
+      background: #f7fbfa;
+    }
+
+    .recipe-form-footer {
+      align-items: center;
+      background: rgba(255, 255, 255, .95);
+      border-top: 1px solid var(--line);
+      bottom: 0;
+      justify-content: flex-end;
+      margin: 0 -18px -18px;
+      padding: 12px 18px;
+      position: sticky;
+      z-index: 5;
     }
 
     .recipe-card:hover {
@@ -5647,6 +5823,68 @@
     .recipe-process-item.is-note .recipe-process-quantity,
     .recipe-process-item.is-note .recipe-process-unit {
       display: none;
+    }
+
+    .recipe-mise-item {
+      align-items: start;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(180px, 1.2fr) 132px 100px 130px minmax(130px, 1fr) minmax(130px, 1fr) minmax(150px, 1fr) 92px 38px;
+      padding: 10px;
+    }
+
+    .recipe-mise-completed {
+      align-items: center;
+      color: var(--muted);
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 800;
+      gap: 6px;
+      min-height: 36px;
+    }
+
+    .recipe-mise-summary {
+      align-items: center;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 13px;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .recipe-mise-summary strong {
+      color: var(--text);
+    }
+
+    .recipe-mise-badge {
+      background: #eef8f4;
+      border: 1px solid #c5ddd7;
+      border-radius: 999px;
+      color: var(--accent);
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 4px 8px;
+    }
+
+    .recipe-mise-card-badge {
+      background: #f6fbf9;
+      border: 1px solid #d6e9e3;
+      border-radius: 999px;
+      color: var(--accent);
+      display: inline-flex;
+      font-size: 11px;
+      font-weight: 900;
+      margin-top: 6px;
+      padding: 3px 7px;
+      width: fit-content;
     }
 
     .recipe-photo-panel {
@@ -7447,6 +7685,35 @@
         grid-template-columns: 1fr;
       }
 
+      .recipe-toolbar {
+        align-items: stretch;
+        grid-template-columns: 1fr auto;
+      }
+
+      .recipe-toolbar .search {
+        grid-column: 1 / -1;
+      }
+
+      .recipe-toolbar .approve {
+        min-height: 40px;
+      }
+
+      .recipe-actions-wrap {
+        display: grid;
+      }
+
+      .recipe-actions-toggle {
+        min-height: 40px;
+      }
+
+      .recipe-actions-panel {
+        border-radius: 14px;
+        left: auto;
+        max-width: min(280px, calc(100vw - 24px));
+        min-width: min(260px, calc(100vw - 24px));
+        right: 0;
+      }
+
       .recipe-card {
         border-radius: 12px;
         gap: 10px;
@@ -7461,7 +7728,9 @@
 
       .recipe-card-head {
         align-items: center;
+        display: grid;
         gap: 8px;
+        grid-template-columns: minmax(0, 1fr) auto;
       }
 
       .recipe-card-title {
@@ -7474,23 +7743,56 @@
       }
 
       .recipe-card .recipe-head-secondary,
-      .recipe-card .recipe-pill,
       .recipe-card > .recipe-card-stats {
         display: none;
       }
 
+      .recipe-card .recipe-head-secondary {
+        color: var(--muted);
+        display: block;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .recipe-card .recipe-pill {
+        display: inline-flex;
+        font-size: 11px;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .recipe-card-head > .actions {
+        align-items: center;
+        display: grid;
+        gap: 6px;
+        grid-template-columns: auto auto;
+        justify-items: end;
+      }
+
+      .recipe-card-head > .actions .recipe-pill {
+        grid-column: 1 / -1;
+      }
+
+      .recipe-card-head .menu-dot,
       .recipe-card-toggle {
+        min-height: 34px;
+        min-width: 34px;
+      }
+
+      .recipe-card-toggle {
+        background: var(--surface-soft);
         display: inline-grid;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--accent);
+        font-size: 16px;
+        font-weight: 900;
       }
 
       .recipe-card.expanded .recipe-card-mobile-body,
       .recipe-card.expanded .recipe-card-actions {
         display: grid;
-      }
-
-      .recipe-card.expanded .recipe-pill {
-        display: inline-flex;
-        justify-self: start;
       }
 
       .recipe-card-mobile-body {
@@ -7501,6 +7803,109 @@
 
       .recipe-card-actions {
         gap: 8px;
+      }
+
+      .recipe-production-form {
+        gap: 10px;
+        padding-bottom: 84px;
+      }
+
+      .recipe-form-section {
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      .recipe-form-section-head {
+        align-items: stretch;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+
+      .recipe-form-section-head::after {
+        align-items: center;
+        background: var(--surface-soft);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--accent);
+        content: "−";
+        display: inline-grid;
+        font-weight: 900;
+        height: 30px;
+        place-items: center;
+        width: 30px;
+      }
+
+      .recipe-form-section.collapsed .recipe-form-section-head::after {
+        content: "+";
+      }
+
+      .recipe-form-section-head button,
+      .recipe-form-subblock button {
+        grid-column: 1 / -1;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .recipe-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .recipe-form-subblock {
+        align-items: stretch;
+        display: grid;
+      }
+
+      .recipe-item,
+      .recipe-process-item,
+      .recipe-process-item.is-note,
+      .recipe-mise-item {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(16, 24, 32, .06);
+        grid-template-columns: 1fr;
+        padding: 10px;
+      }
+
+      .recipe-item .icon-action,
+      .recipe-process-item .icon-action,
+      .recipe-mise-item .icon-action {
+        justify-self: end;
+      }
+
+      .recipe-mise-summary {
+        align-items: start;
+        display: grid;
+      }
+
+      .recipe-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .recipe-summary strong {
+        font-size: 18px;
+      }
+
+      .recipe-form-footer {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 1fr 1.2fr;
+        margin-left: -12px;
+        margin-right: -12px;
+        padding: 10px 12px;
+      }
+
+      .recipe-form-footer button {
+        min-height: 40px;
+        width: 100%;
+      }
+
+      .recipe-form-footer .recipe-form-reset {
+        background: transparent;
+        grid-column: 2;
+        justify-self: end;
+        min-height: 34px;
+        width: auto;
       }
 
       .logistics-card {
@@ -9830,14 +10235,19 @@
     <section id="view-recipes" class="workspace-view">
       <div class="panel-grid recipes-layout">
         <section id="recipe-list-section" class="panel-box">
-          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div class="recipe-toolbar">
             <input id="recipe-search" class="search" placeholder="Buscar receta">
-            <button id="recipe-budget-button" class="approve" onclick="showBudgetBuilder()">Generar presupuesto</button>
-            <button id="recipe-review-button" class="filter hidden" onclick="showRecipeReviewInbox()">Revisiones pendientes</button>
-            <button class="filter" onclick="downloadRecipeBook()">Descargar libro</button>
-            <button id="recipe-cost-settings-button" class="filter" onclick="showCostSettingsForm()">Costos generales</button>
-            <button class="approve" onclick="showRecipeForm()">Cargar receta</button>
-            <button class="filter" onclick="loadRecipes()">Actualizar</button>
+            <button class="approve" type="button" onclick="showRecipeForm()">Cargar receta</button>
+            <div class="recipe-actions-wrap">
+              <button id="recipe-actions-toggle" class="recipe-actions-toggle" type="button" aria-expanded="false" onclick="toggleRecipeActionsMenu(event)">Acciones</button>
+              <div id="recipe-actions-panel" class="recipe-actions-panel">
+                <button id="recipe-budget-button" type="button" onclick="closeRecipeActionsMenu(); showBudgetBuilder()">Generar presupuesto</button>
+                <button id="recipe-review-button" class="hidden" type="button" onclick="closeRecipeActionsMenu(); showRecipeReviewInbox()">Revisiones pendientes</button>
+                <button type="button" onclick="closeRecipeActionsMenu(); downloadRecipeBook()">Descargar libro</button>
+                <button id="recipe-cost-settings-button" type="button" onclick="closeRecipeActionsMenu(); showCostSettingsForm()">Costos generales</button>
+                <button type="button" onclick="closeRecipeActionsMenu(); loadRecipes()">Actualizar lista</button>
+              </div>
+            </div>
           </div>
           <div id="recipe-list" class="compact-list recipe-list"></div>
         </section>
@@ -9871,84 +10281,140 @@
           </form>
         </section>
         <section id="recipe-form-card" class="erp-modal-section">
-          <h2 style="margin-top:0;font-size:20px;">Receta y costo</h2>
-          <form id="recipe-form" class="form-grid">
+          <form id="recipe-form" class="recipe-production-form">
             <input type="hidden" name="id">
-            <div class="form-field">
-              <label>Nombre</label>
-              <input name="name" required>
-            </div>
-            <div class="form-field">
-              <label>Rinde cantidad</label>
-              <input name="portions" inputmode="decimal" placeholder="Ej: 30,950" required>
-            </div>
-            <div class="form-field">
-              <label>Unidad de rendimiento</label>
-              <select name="yieldUnit">
-                <option value="unidad">Unidades / porciones</option>
-                <option value="kg">Kg</option>
-                <option value="litros">Litros</option>
-              </select>
-            </div>
-            <div class="form-field full">
-              <label>Categoria</label>
-              <input name="category" placeholder="Entrada, principal, postre, coffee">
-            </div>
-            <div class="form-field full">
-              <label>Horas de personal</label>
-              <input name="laborHours" inputmode="decimal" placeholder="Horas para esta receta base">
-            </div>
-            <div class="form-field">
-              <label>Tiempo de elaboracion</label>
-              <input name="productionTimeHours" inputmode="decimal" placeholder="Horas de cocina">
-            </div>
-            <div class="form-field">
-              <label>Tiempo de armado</label>
-              <input name="assemblyTimeMinutes" inputmode="decimal" placeholder="Minutos">
-            </div>
-            <div class="form-field">
-              <label>Personas de armado</label>
-              <input name="assemblyPeople" inputmode="decimal" placeholder="Cantidad">
-            </div>
-            <div class="form-field">
-              <label>Cantidad armada</label>
-              <input name="assemblyQuantity" inputmode="decimal" placeholder="Ej: 100">
-            </div>
-            <div class="form-field full">
-              <label>Unidad de armado</label>
-              <input name="assemblyUnit" placeholder="Empanadas, cazuelas, bandejas">
-            </div>
-            <div class="form-field full">
-              <label>Foto del plato terminado</label>
-              <div class="recipe-photo-panel">
-                <input name="platePhotoData" type="hidden">
-                <input name="platePhotoName" type="hidden">
-                <input type="file" accept="image/*" onchange="handleRecipePlatePhoto(this)">
-                <div id="recipe-plate-photo-preview" class="recipe-photo-preview"></div>
+            <section class="recipe-form-section">
+              <div class="recipe-form-section-head">
+                <div>
+                  <h3>Identidad</h3>
+                  <p>Nombre, rendimiento y familia gastronómica.</p>
+                </div>
               </div>
-            </div>
-            <div class="form-field full">
-              <label>Procesos, mermas y rendimiento</label>
-              <div id="recipe-process-rows" class="purchase-items"></div>
-              <button class="filter" type="button" onclick="addRecipeProcessRow()">Agregar registro tecnico</button>
-            </div>
-            <div class="form-field full">
-              <label>Ingredientes</label>
-              <div id="recipe-items" class="purchase-items"></div>
-              <button class="filter" type="button" onclick="addRecipeItemRow()">Agregar insumo</button>
-            </div>
-            <div id="recipe-cost-summary" class="recipe-summary full">
-              <div><span>Total receta</span><strong id="recipe-total">$0</strong></div>
-              <div><span id="recipe-unit-label">Costo unitario</span><strong id="recipe-portion">$0</strong></div>
-              <div><span>Personal</span><strong id="recipe-labor">$0</strong></div>
-            </div>
-            <div class="form-field full">
-              <label>Notas</label>
-              <textarea name="notes"></textarea>
-            </div>
-            <div class="actions full">
+              <div class="recipe-form-grid">
+                <div class="form-field full">
+                  <label>Nombre</label>
+                  <input name="name" required>
+                </div>
+                <div class="form-field">
+                  <label>Rinde cantidad</label>
+                  <input name="portions" inputmode="decimal" placeholder="Ej: 30,950" required>
+                </div>
+                <div class="form-field">
+                  <label>Unidad de rendimiento</label>
+                  <select name="yieldUnit">
+                    <option value="unidad">Unidades / porciones</option>
+                    <option value="kg">Kg</option>
+                    <option value="litros">Litros</option>
+                  </select>
+                </div>
+                <div class="form-field full">
+                  <label>Categoría</label>
+                  <input name="category" placeholder="Entrada, principal, postre, coffee">
+                </div>
+              </div>
+            <section class="recipe-form-section">
+              <div class="recipe-form-section-head">
+                <div>
+                  <h3>Mise en place</h3>
+                  <p>Tareas previas, conservación y responsables antes del servicio.</p>
+                </div>
+                <button class="filter" type="button" onclick="addRecipeMiseRow()">Agregar tarea</button>
+              </div>
+              <div id="recipe-mise-summary" class="recipe-mise-summary"></div>
+              <div id="recipe-mise-rows" class="purchase-items recipe-dynamic-list recipe-mise-list"></div>
+            </section>
+            </section>
+            <section class="recipe-form-section">
+              <div class="recipe-form-section-head">
+                <div>
+                  <h3>Proceso</h3>
+                  <p>Tiempos, armado, fotos y registros técnicos.</p>
+                </div>
+              </div>
+              <div class="recipe-form-grid">
+                <div class="form-field">
+                  <label>Horas de personal</label>
+                  <input name="laborHours" inputmode="decimal" placeholder="Horas para esta receta base">
+                </div>
+                <div class="form-field">
+                  <label>Tiempo de elaboración</label>
+                  <input name="productionTimeHours" inputmode="decimal" placeholder="Horas de cocina">
+                </div>
+                <div class="form-field">
+                  <label>Tiempo de armado</label>
+                  <input name="assemblyTimeMinutes" inputmode="decimal" placeholder="Minutos">
+                </div>
+                <div class="form-field">
+                  <label>Personas de armado</label>
+                  <input name="assemblyPeople" inputmode="decimal" placeholder="Cantidad">
+                </div>
+                <div class="form-field">
+                  <label>Cantidad armada</label>
+                  <input name="assemblyQuantity" inputmode="decimal" placeholder="Ej: 100">
+                </div>
+                <div class="form-field">
+                  <label>Unidad de armado</label>
+                  <input name="assemblyUnit" placeholder="Empanadas, cazuelas, bandejas">
+                </div>
+                <div class="form-field full">
+                  <label>Foto del plato terminado</label>
+                  <div class="recipe-photo-panel">
+                    <input name="platePhotoData" type="hidden">
+                    <input name="platePhotoName" type="hidden">
+                    <input type="file" accept="image/*" onchange="handleRecipePlatePhoto(this)">
+                    <div id="recipe-plate-photo-preview" class="recipe-photo-preview"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="recipe-form-subblock">
+                <div>
+                  <strong>Procesos, mermas y rendimiento</strong>
+                  <span>Registro de preparación, cocción, merma o notas internas.</span>
+                </div>
+                <button class="filter" type="button" onclick="addRecipeProcessRow()">Agregar registro técnico</button>
+              </div>
+              <div id="recipe-process-rows" class="purchase-items recipe-dynamic-list"></div>
+            </section>
+            <section class="recipe-form-section">
+              <div class="recipe-form-section-head">
+                <div>
+                  <h3>Ingredientes</h3>
+                  <p>Insumos, cantidades, mermas y costo base.</p>
+                </div>
+                <button class="filter" type="button" onclick="addRecipeItemRow()">Agregar insumo</button>
+              </div>
+              <div id="recipe-items" class="purchase-items recipe-dynamic-list"></div>
+            </section>
+
+            <section class="recipe-form-section recipe-form-section-cost">
+              <div class="recipe-form-section-head">
+                <div>
+                  <h3>Costeo</h3>
+                  <p>Resumen calculado con insumos y personal.</p>
+                </div>
+              </div>
+              <div id="recipe-cost-summary" class="recipe-summary full">
+                <div><span>Total receta</span><strong id="recipe-total">$0</strong></div>
+                <div><span id="recipe-unit-label">Costo unitario</span><strong id="recipe-portion">$0</strong></div>
+                <div><span>Personal</span><strong id="recipe-labor">$0</strong></div>
+              </div>
+            </section>
+            <section class="recipe-form-section">
+              <div class="recipe-form-section-head">
+                <div>
+                  <h3>Revisión</h3>
+                  <p>Notas de producción antes de guardar.</p>
+                </div>
+              </div>
+              <div class="form-field full">
+                <label>Notas</label>
+                <textarea name="notes"></textarea>
+              </div>
+            </section>
+            <div class="actions full recipe-form-footer">
+              <button class="filter" type="button" onclick="hideRecipeForm()">Cancelar</button>
               <button class="approve" type="submit">Guardar receta</button>
-              <button class="filter" type="button" onclick="resetRecipeForm()">Nueva</button>
+              <button class="filter recipe-form-reset" type="button" onclick="resetRecipeForm()">Nueva</button>
             </div>
           </form>
         </section>
@@ -11543,10 +12009,13 @@
     window.addEventListener("resize", syncGlobalSearchPlaceholder);
     document.addEventListener("click", (event) => {
       if (!event.target.closest(".profile-menu-wrap")) closeProfileMenu();
+      if (!event.target.closest(".recipe-actions-wrap")) closeRecipeActionsMenu();
+      handleRecipeSectionAccordionClick(event);
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") closeProfileMenu();
       if (event.key === "Escape") closeShellDrawer();
+      if (event.key === "Escape") closeRecipeActionsMenu();
     });
     document.getElementById("role-filter").addEventListener("change", renderErp);
     document.getElementById("invoice-photo")?.addEventListener("change", previewInvoicePhoto);
@@ -22702,7 +23171,7 @@
 
     function showRecipeForm(recipe = null) {
       document.getElementById("recipe-editor-title").textContent = recipe?.id ? "Editar receta" : "Cargar receta";
-      document.getElementById("recipe-editor-subtitle").textContent = "Carga de receta, procesos, mermas e ingredientes.";
+      document.getElementById("recipe-editor-subtitle").textContent = "Ficha de producción, ingredientes, proceso y mise en place.";
       document.getElementById("cost-settings-card").classList.add("hidden");
       document.getElementById("recipe-form-card").classList.remove("hidden");
       resetRecipeForm(recipe || {});
@@ -22905,7 +23374,33 @@
       const button = document.getElementById("recipe-review-button");
       if (!button) return;
       button.classList.toggle("hidden", !can("*"));
-      button.textContent = `Revisiones pendientes (${pendingRecipeEdits.length})`;
+      button.innerHTML = `
+        <span>Revisiones pendientes</span>
+        ${pendingRecipeEdits.length ? `<span class="recipe-actions-badge">${escapeHtml(pendingRecipeEdits.length)}</span>` : ""}
+      `;
+    }
+
+    function toggleRecipeActionsMenu(event) {
+      event?.stopPropagation?.();
+      const panel = document.getElementById("recipe-actions-panel");
+      const button = document.getElementById("recipe-actions-toggle");
+      if (!panel || !button) return;
+      const willOpen = !panel.classList.contains("open");
+      panel.classList.toggle("open", willOpen);
+      button.setAttribute("aria-expanded", String(willOpen));
+    }
+
+    function closeRecipeActionsMenu() {
+      document.getElementById("recipe-actions-panel")?.classList.remove("open");
+      document.getElementById("recipe-actions-toggle")?.setAttribute("aria-expanded", "false");
+    }
+
+    function handleRecipeSectionAccordionClick(event) {
+      if (!isRecipeMobileLayout()) return;
+      const head = event.target.closest(".recipe-form-section-head");
+      if (!head || !head.closest("#recipe-form")) return;
+      if (event.target.closest("button, input, select, textarea, a")) return;
+      head.closest(".recipe-form-section")?.classList.toggle("collapsed");
     }
 
     function showRecipeReviewInbox() {
@@ -22949,7 +23444,7 @@
           <label>${escapeHtml(title)}</label>
           <div class="primary">${escapeHtml(recipe.name || "")}</div>
           <div class="secondary">${escapeHtml(recipe.category || "Sin categoria")} · Rinde ${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</div>
-          <div class="secondary">Ingredientes: ${escapeHtml(recipe.items?.length || 0)} · Procesos: ${escapeHtml(recipe.processRows?.length || 0)} · Fotos: ${escapeHtml(countRecipePhotos(recipe))}</div>
+          <div class="secondary">Ingredientes: ${escapeHtml(recipe.items?.length || 0)} · Procesos: ${escapeHtml(recipe.processRows?.length || 0)} · Mise: ${escapeHtml(recipe.miseEnPlace?.length || 0)} · Fotos: ${escapeHtml(countRecipePhotos(recipe))}</div>
           <div class="secondary">Costo: ${formatCurrency(recipe.totalCost || 0)} · Unitario: ${formatCurrency(recipe.costPerPortion || 0)}</div>
           ${recipe.platePhoto?.dataUrl ? `<div class="recipe-photo-preview" style="margin-top:8px;">${renderRecipePhotoThumbs([recipe.platePhoto], "readonly")}</div>` : ""}
         </div>
@@ -22970,6 +23465,7 @@
           `).join("") : `<div class="secondary">Sin cambios de campos principales.</div>`}
           ${renderRecipeCollectionDiff("Ingredientes", changes.ingredients)}
           ${renderRecipeCollectionDiff("Procesos", changes.processRows)}
+          ${renderRecipeCollectionDiff("Mise en place", changes.miseEnPlace)}
         </div>
       `;
     }
@@ -23054,7 +23550,10 @@
           <div class="recipe-card-head">
             <div>
               <div class="recipe-card-title">${escapeHtml(recipe.name)}</div>
-              <div class="secondary recipe-head-secondary">Rinde ${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</div>
+              <div class="secondary recipe-head-secondary">
+                Rinde ${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}${canSeeRecipeCosts() && Number(recipe.totalCost || 0) ? ` · ${formatCurrency(recipe.totalCost)}` : ""}
+              </div>
+              ${renderRecipeMiseBadge(recipe)}
             </div>
             <div class="actions" onclick="event.stopPropagation()">
               <span class="recipe-pill">${escapeHtml(recipe.category || "Receta")}</span>
@@ -23113,15 +23612,42 @@
     function renderRecipeMobileMeta(recipe) {
       const updatedAt = recipe.updatedAt || recipe.modifiedAt || recipe.createdAt || "";
       const note = String(recipe.notes || recipe.summary || "").trim();
+      const reviewState = getRecipeReviewState(recipe);
       return `
         <div class="recipe-card-meta">
           <div class="recipe-card-meta-row"><span>Categoría</span><strong>${escapeHtml(recipe.category || "Receta")}</strong></div>
           <div class="recipe-card-meta-row"><span>Rendimiento</span><strong>${escapeHtml(formatRecipeQuantity(recipe.portions, recipe.yieldUnit || "unidad"))}</strong></div>
           ${canSeeRecipeCosts() ? `<div class="recipe-card-meta-row"><span>Costo estimado</span><strong>${formatCurrency(recipe.totalCost)}</strong></div>` : ""}
+          <div class="recipe-card-meta-row"><span>Ingredientes</span><strong>${escapeHtml(recipe.items?.length || 0)}</strong></div>
+          <div class="recipe-card-meta-row"><span>Mise en place</span><strong>${escapeHtml(getRecipeMiseSummaryText(recipe))}</strong></div>
           ${updatedAt ? `<div class="recipe-card-meta-row"><span>Actualización</span><strong>${escapeHtml(formatDate(updatedAt))}</strong></div>` : ""}
+          ${reviewState ? `<div class="recipe-card-meta-row"><span>Revisión</span><strong>${escapeHtml(reviewState)}</strong></div>` : ""}
         </div>
         ${note ? `<div class="recipe-card-note">${escapeHtml(note)}</div>` : ""}
       `;
+    }
+
+    function renderRecipeMiseBadge(recipe) {
+      const count = recipe.miseEnPlace?.length || 0;
+      return count ? `<span class="recipe-mise-card-badge">Mise en place: ${escapeHtml(count)} tarea(s)</span>` : "";
+    }
+
+    function getRecipeMiseSummaryText(recipe) {
+      const tasks = recipe.miseEnPlace || [];
+      if (!tasks.length) return "Sin tareas";
+      const totalMinutes = tasks.reduce((sum, task) => sum + parseMiseTimeMinutes(task.estimatedTime), 0);
+      return `${tasks.length} tarea(s)${totalMinutes ? ` · ${formatMiseMinutes(totalMinutes)}` : ""}`;
+    }
+
+    function getRecipeReviewState(recipe) {
+      if (!recipe) return "";
+      if (recipe.reviewStatus) return recipe.reviewStatus;
+      if (recipe.status) return recipe.status;
+      const key = normalizeSearch(recipe.id || recipe.name || "");
+      const hasPending = (pendingRecipeEdits || []).some((review) =>
+        normalizeSearch(review.recipeId || review.recipeName || review.next?.id || review.next?.name || "") === key
+      );
+      return hasPending ? "Pendiente" : "";
     }
 
     function renderRecipeCardActions(recipe) {
@@ -23211,6 +23737,10 @@
             <div class="recipe-stat"><span>Cantidad armado</span><strong>${escapeHtml(recipe.assemblyQuantity ? `${recipe.assemblyQuantity} ${recipe.assemblyUnit || ""}` : "-")}</strong></div>
           </div>
           ${renderRecipeProcessRows(recipe)}
+        </section>
+        <section class="recipe-detail-section" style="margin-top:16px;">
+          <div class="primary">Mise en place</div>
+          ${renderRecipeMiseRows(recipe)}
         </section>
         <section class="recipe-detail-section">
           <div class="primary">Composicion</div>
@@ -23341,6 +23871,35 @@
           <div class="secondary"></div>
         </div>
       `).join("");
+    }
+
+    function renderRecipeMiseRows(recipe) {
+      const tasks = recipe.miseEnPlace || [];
+      if (!tasks.length) {
+        return `<div class="secondary">Sin tareas de mise en place cargadas.</div>`;
+      }
+      return `
+        <div class="recipe-mise-summary" style="margin-bottom:10px;">
+          <span><strong>${tasks.length}</strong> tarea(s)</span>
+          <span>${escapeHtml(getRecipeMiseSummaryText(recipe))}</span>
+        </div>
+        ${tasks.map((task) => `
+          <div class="recipe-breakdown-row">
+            <div>
+              <div class="primary">${escapeHtml(task.name || "")}</div>
+              <div class="secondary">
+                ${escapeHtml(task.momentLabel || getRecipeMiseMomentLabel(task.moment))}
+                ${task.owner ? ` · ${escapeHtml(task.owner)}` : ""}
+                ${task.conservation ? ` · ${escapeHtml(task.conservation)}` : ""}
+                ${task.shelfLife ? ` · ${escapeHtml(task.shelfLife)}` : ""}
+              </div>
+              ${task.notes ? `<div class="secondary">${escapeHtml(task.notes)}</div>` : ""}
+            </div>
+            <div class="primary">${escapeHtml(task.estimatedTime || "")}</div>
+            <div class="secondary">${task.completed ? "Hecho" : ""}</div>
+          </div>
+        `).join("")}
+      `;
     }
 
     function getProcessTypeLabel(type) {
@@ -23625,6 +24184,11 @@
           </section>
 
           <section>
+            <h3>Mise en place</h3>
+            ${renderPrintableMiseRows(recipe)}
+          </section>
+
+          <section>
             <h3>Ingredientes y preparaciones</h3>
             ${renderPrintableRecipeItems(recipe)}
           </section>
@@ -23700,6 +24264,31 @@
                 ${includeCosts ? `<td>${formatCurrency(item.unitCost || 0)}</td><td>${formatCurrency(item.cost || 0)}</td>` : ""}
               </tr>
               ${item.linkedRecipe ? renderPrintableNestedItems(item.linkedRecipe, getCostQuantity(item.quantity, item.unit)) : ""}
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderPrintableMiseRows(recipe) {
+      const tasks = recipe.miseEnPlace || [];
+      if (!tasks.length) {
+        return `<p class="muted">Sin tareas de mise en place cargadas.</p>`;
+      }
+      return `
+        <table>
+          <thead><tr><th>Tarea</th><th>Momento</th><th>Tiempo</th><th>Responsable</th><th>Conservacion</th><th>Vida util</th><th>Notas</th></tr></thead>
+          <tbody>
+            ${tasks.map((task) => `
+              <tr>
+                <td>${escapeHtml(task.name || "")}</td>
+                <td>${escapeHtml(task.momentLabel || getRecipeMiseMomentLabel(task.moment))}</td>
+                <td>${escapeHtml(task.estimatedTime || "")}</td>
+                <td>${escapeHtml(task.owner || "")}</td>
+                <td>${escapeHtml(task.conservation || "")}</td>
+                <td>${escapeHtml(task.shelfLife || "")}</td>
+                <td>${escapeHtml(task.notes || "")}</td>
+              </tr>
             `).join("")}
           </tbody>
         </table>
@@ -23953,6 +24542,7 @@
     function resetRecipeForm(recipe = {}) {
       const form = document.getElementById("recipe-form");
       form.reset();
+      document.querySelectorAll("#recipe-form .recipe-form-section").forEach((section) => section.classList.remove("collapsed"));
       setFormValue(form, "id", recipe.id || "");
       setFormValue(form, "name", recipe.name || "");
       setFormValue(form, "portions", recipe.portions || "");
@@ -23972,10 +24562,13 @@
       recipeProcessCounter = 0;
       document.getElementById("recipe-items").innerHTML = "";
       document.getElementById("recipe-process-rows").innerHTML = "";
+      document.getElementById("recipe-mise-rows").innerHTML = "";
 
       (recipe.processRows?.length ? recipe.processRows : [{}]).forEach((row) => addRecipeProcessRow(row));
       const items = recipe.items?.length ? recipe.items : [{}];
       items.forEach((item) => addRecipeItemRow(item));
+      (recipe.miseEnPlace || []).forEach((item) => addRecipeMiseRow(item));
+      updateRecipeMiseSummary();
       updateRecipeTotals();
     }
 
@@ -24053,6 +24646,122 @@
           };
         })
         .filter((item) => item.label);
+    }
+
+    function addRecipeMiseRow(item = {}) {
+      const row = document.createElement("div");
+      row.className = "recipe-mise-item";
+      row.innerHTML = `
+        <input class="recipe-mise-name" placeholder="Tarea previa" value="${escapeAttribute(item.name || "")}">
+        <select class="recipe-mise-moment">
+          ${getRecipeMiseMomentOptions(item.moment)}
+        </select>
+        <input class="recipe-mise-time" placeholder="20 min" value="${escapeAttribute(item.estimatedTime || "")}">
+        <select class="recipe-mise-owner">
+          ${getRecipeMiseOwnerOptions(item.owner)}
+        </select>
+        <input class="recipe-mise-conservation" placeholder="Conservación" value="${escapeAttribute(item.conservation || "")}">
+        <input class="recipe-mise-shelf-life" placeholder="Vida útil" value="${escapeAttribute(item.shelfLife || "")}">
+        <input class="recipe-mise-notes" placeholder="Notas" value="${escapeAttribute(item.notes || "")}">
+        <label class="recipe-mise-completed"><input class="recipe-mise-completed-input" type="checkbox" ${item.completed ? "checked" : ""}> Hecho</label>
+        <button class="reject icon-action" type="button" onclick="removeRecipeMiseRow(this)">X</button>
+      `;
+      document.getElementById("recipe-mise-rows").appendChild(row);
+      row.querySelectorAll("input, select").forEach((input) => input.addEventListener("input", updateRecipeMiseSummary));
+      row.querySelectorAll("input, select").forEach((input) => input.addEventListener("change", updateRecipeMiseSummary));
+      updateRecipeMiseSummary();
+    }
+
+    function getRecipeMiseMomentOptions(selected = "") {
+      const options = [
+        ["day_before", "Día anterior"],
+        ["event_morning", "Mañana del evento"],
+        ["before_departure", "Antes de salir"],
+        ["on_site", "En sitio"],
+        ["other", "Otro"],
+      ];
+      return options.map(([value, label]) => `<option value="${value}" ${selected === value || selected === label ? "selected" : ""}>${label}</option>`).join("");
+    }
+
+    function getRecipeMiseOwnerOptions(selected = "") {
+      const options = [
+        ["", "Sin definir"],
+        ["Cocina", "Cocina"],
+        ["Pastelería", "Pastelería"],
+        ["Producción", "Producción"],
+        ["Logística", "Logística"],
+      ];
+      return options.map(([value, label]) => `<option value="${escapeAttribute(value)}" ${selected === value || selected === label ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");
+    }
+
+    function removeRecipeMiseRow(button) {
+      button.closest(".recipe-mise-item")?.remove();
+      updateRecipeMiseSummary();
+    }
+
+    function getRecipeMiseRows() {
+      return Array.from(document.querySelectorAll(".recipe-mise-item"))
+        .map((row) => ({
+          name: row.querySelector(".recipe-mise-name").value.trim(),
+          moment: row.querySelector(".recipe-mise-moment").value,
+          momentLabel: row.querySelector(".recipe-mise-moment").selectedOptions[0]?.textContent || "",
+          estimatedTime: row.querySelector(".recipe-mise-time").value.trim(),
+          owner: row.querySelector(".recipe-mise-owner").value,
+          conservation: row.querySelector(".recipe-mise-conservation").value.trim(),
+          shelfLife: row.querySelector(".recipe-mise-shelf-life").value.trim(),
+          notes: row.querySelector(".recipe-mise-notes").value.trim(),
+          completed: row.querySelector(".recipe-mise-completed-input").checked,
+        }))
+        .filter((item) => item.name);
+    }
+
+    function updateRecipeMiseSummary() {
+      const summary = document.getElementById("recipe-mise-summary");
+      if (!summary) return;
+      const rows = getRecipeMiseRows();
+      if (!rows.length) {
+        summary.innerHTML = `<span>Sin tareas de mise en place cargadas.</span>`;
+        return;
+      }
+      const totalMinutes = rows.reduce((sum, item) => sum + parseMiseTimeMinutes(item.estimatedTime), 0);
+      const momentCounts = rows.reduce((acc, item) => {
+        const label = item.momentLabel || getRecipeMiseMomentLabel(item.moment);
+        acc[label] = (acc[label] || 0) + 1;
+        return acc;
+      }, {});
+      summary.innerHTML = `
+        <span><strong>${rows.length}</strong> tarea(s) de mise en place</span>
+        ${totalMinutes ? `<span class="recipe-mise-badge">Tiempo: ${escapeHtml(formatMiseMinutes(totalMinutes))}</span>` : ""}
+        <span>${escapeHtml(Object.entries(momentCounts).map(([label, count]) => `${count} ${label}`).join(" · "))}</span>
+      `;
+    }
+
+    function parseMiseTimeMinutes(value) {
+      const raw = String(value || "").toLowerCase().replace(",", ".");
+      const hourMatch = raw.match(/(\d+(?:\.\d+)?)\s*(?:h|hs|hora|horas)/);
+      const minuteMatch = raw.match(/(\d+(?:\.\d+)?)\s*(?:m|min|minuto|minutos)/);
+      if (hourMatch || minuteMatch) {
+        return Math.round(parseFloat(hourMatch?.[1] || "0") * 60 + parseFloat(minuteMatch?.[1] || "0"));
+      }
+      const numeric = parseDecimal(raw);
+      return numeric ? Math.round(numeric) : 0;
+    }
+
+    function formatMiseMinutes(minutes) {
+      if (!minutes) return "";
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return [hours ? `${hours} h` : "", mins ? `${mins} min` : ""].filter(Boolean).join(" ");
+    }
+
+    function getRecipeMiseMomentLabel(value) {
+      return {
+        day_before: "Día anterior",
+        event_morning: "Mañana del evento",
+        before_departure: "Antes de salir",
+        on_site: "En sitio",
+        other: "Otro",
+      }[value] || value || "Sin momento";
     }
 
     function addRecipeItemRow(item = {}) {
@@ -24268,6 +24977,7 @@
       const payload = Object.fromEntries(new FormData(event.target).entries());
       payload.items = getRecipeItems();
       payload.processRows = getRecipeProcessRows();
+      payload.miseEnPlace = getRecipeMiseRows();
       payload.platePhoto = getRecipePlatePhotoPayload(event.target);
       delete payload.platePhotoData;
       delete payload.platePhotoName;

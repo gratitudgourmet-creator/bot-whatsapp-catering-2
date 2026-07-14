@@ -4817,6 +4817,9 @@ function buildRecipeRecord(input, previous = {}) {
   const processRows = Array.isArray(input.processRows)
     ? input.processRows.map(normalizeRecipeProcessRow).filter((row) => row.label)
     : [];
+  const miseEnPlace = Array.isArray(input.miseEnPlace)
+    ? input.miseEnPlace.map(normalizeRecipeMiseTask).filter((task) => task.name)
+    : [];
 
   if (!name) {
     throw new Error("Ingrese el nombre de la receta.");
@@ -4844,6 +4847,7 @@ function buildRecipeRecord(input, previous = {}) {
     assemblyQuantity: parseDecimalNumber(input.assemblyQuantity || 0),
     assemblyUnit: normalizeText(input.assemblyUnit || ""),
     processRows,
+    miseEnPlace,
     items,
     platePhoto: normalizeRecipePhoto(input.platePhoto || previous.platePhoto || null),
     notes: normalizeText(input.notes || ""),
@@ -4971,6 +4975,7 @@ function getRecipeEditChanges(before, after) {
     fields,
     ingredients: diffRecipeCollections(before?.items || [], after.items || [], (item) => `${item.type}:${normalizeSearchKey(item.name)}`),
     processRows: diffRecipeCollections(before?.processRows || [], after.processRows || [], (item) => `${item.type}:${normalizeSearchKey(item.label)}`),
+    miseEnPlace: diffRecipeCollections(before?.miseEnPlace || [], after.miseEnPlace || [], (item) => `${item.moment}:${normalizeSearchKey(item.name)}`),
   };
 }
 
@@ -5019,6 +5024,30 @@ function normalizeRecipeProcessRow(row) {
     unit: type === "note" ? "" : normalizeRecipeIngredientUnit(row.unit || ""),
     notes: normalizeText(row.notes || ""),
     photos: normalizeRecipePhotos(row.photos || []),
+  };
+}
+
+function normalizeRecipeMiseTask(task = {}) {
+  const allowedMoments = new Set(["day_before", "event_morning", "before_departure", "on_site", "other"]);
+  const rawMoment = normalizeSearchKey(task.moment || task.momentLabel || "");
+  const momentAliases = {
+    "dia anterior": "day_before",
+    "manana del evento": "event_morning",
+    "antes de salir": "before_departure",
+    "en sitio": "on_site",
+    otro: "other",
+  };
+  const moment = allowedMoments.has(task.moment) ? task.moment : (momentAliases[rawMoment] || "other");
+  return {
+    name: normalizeText(task.name || task.task || ""),
+    moment,
+    momentLabel: normalizeText(task.momentLabel || ""),
+    estimatedTime: normalizeText(task.estimatedTime || task.time || ""),
+    owner: normalizeText(task.owner || task.responsible || ""),
+    conservation: normalizeText(task.conservation || ""),
+    shelfLife: normalizeText(task.shelfLife || task.expiry || ""),
+    notes: normalizeText(task.notes || ""),
+    completed: Boolean(task.completed),
   };
 }
 
@@ -5099,6 +5128,7 @@ function calculateRecipeCost(recipe, stack = []) {
     assemblyQuantity: parseDecimalNumber(recipe.assemblyQuantity || 0),
     assemblyUnit: recipe.assemblyUnit || "",
     processRows: Array.isArray(recipe.processRows) ? recipe.processRows : [],
+    miseEnPlace: Array.isArray(recipe.miseEnPlace) ? recipe.miseEnPlace.map(normalizeRecipeMiseTask).filter((task) => task.name) : [],
     platePhoto: normalizeRecipePhoto(recipe.platePhoto || null),
     yieldUnit: normalizeRecipeYieldUnit(recipe.yieldUnit || "unidad"),
     laborHourlyCost: getCostSettings().laborHourlyCost,
