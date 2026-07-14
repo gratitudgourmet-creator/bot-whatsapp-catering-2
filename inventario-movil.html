@@ -62,6 +62,13 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
 /* SEARCH + FILTERS */
 .search-area{background:var(--surface);padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.domain-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.domain-tab{min-width:0;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:12px;padding:10px 8px;font-size:13px;font-weight:800;cursor:pointer;white-space:normal;line-height:1.2}
+.domain-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.inventory-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.inventory-kpi{min-width:0;border:1px solid var(--border);border-radius:12px;padding:9px 10px;background:var(--bg)}
+.inventory-kpi strong{display:block;font-size:17px;line-height:1.1;color:var(--text)}
+.inventory-kpi span{display:block;margin-top:3px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}
 .search-input-wrap{position:relative;margin-bottom:8px}
 .search-input-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
 .search-input-wrap input{width:100%;padding:10px 12px 10px 38px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg)}
@@ -70,9 +77,11 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .filter-chips::-webkit-scrollbar{display:none}
 .chip{padding:6px 14px;border-radius:20px;font-size:13px;border:1px solid var(--border);cursor:pointer;white-space:nowrap;background:var(--surface);color:var(--muted);transition:all .15s}
 .chip.active{background:var(--accent-bg);border-color:var(--accent-text);color:var(--accent-text);font-weight:600}
-.category-filter-wrap{margin-top:8px;display:flex;gap:8px;align-items:center}
-.category-filter-wrap label{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
-.category-filter-wrap select{min-width:0;flex:1;padding:9px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text)}
+.inventory-filter-grid{margin-top:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.category-filter-wrap{min-width:0;display:flex;flex-direction:column;gap:4px}
+.category-filter-wrap label{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
+.category-filter-wrap select{min-width:0;width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text)}
+@media(max-width:420px){.inventory-filter-grid{grid-template-columns:1fr 1fr}.domain-tab{font-size:12px;padding:9px 6px}}
 
 /* ITEM LIST */
 .item-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px}
@@ -81,6 +90,11 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .item-info{flex:1;min-width:0}
 .item-name{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item-cat{font-size:12px;color:var(--muted);margin-top:2px}
+.item-meta-line{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.item-meta-pill{display:inline-flex;width:max-content;max-width:100%;padding:3px 8px;border-radius:999px;background:var(--bg);color:var(--muted);font-size:11px;font-weight:700;overflow-wrap:anywhere}
+.item-meta-pill.warn{background:#fff7e0;color:#8a5200}
+.item-meta-pill.danger{background:var(--danger-bg);color:var(--danger)}
+.item-meta-pill.ok{background:var(--accent-bg);color:var(--accent-text)}
 .item-stock-line{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:7px;font-size:11px;color:var(--muted)}
 .item-stock-line span{min-width:0;white-space:nowrap}
 .diff-pill{display:inline-flex;align-items:center;justify-content:center;width:max-content;margin-top:8px;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:700;background:var(--bg);color:var(--muted)}
@@ -247,6 +261,11 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
   </div>
 
   <div class="search-area">
+    <div class="domain-tabs" role="tablist" aria-label="Tipo de inventario">
+      <button class="domain-tab active" id="domain-tab-kitchen" type="button" onclick="setInventoryDomain('kitchen')">Inventario Cocina</button>
+      <button class="domain-tab" id="domain-tab-equipment" type="button" onclick="setInventoryDomain('equipment')">Equipamiento Operativo</button>
+    </div>
+    <div class="inventory-kpis" id="inventory-kpis"></div>
     <div class="search-input-wrap">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="search" id="search-input" placeholder="Buscar..." oninput="renderItems()">
@@ -254,11 +273,31 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
     <div class="filter-chips" id="filter-chips">
       <div class="chip active" data-filter="pending" onclick="setFilter(this)">Pendientes</div>
     </div>
-    <div class="category-filter-wrap">
-      <label for="category-filter">Rubro</label>
-      <select id="category-filter" onchange="setCategoryFilter(this.value)">
-        <option value="">Todos los rubros</option>
-      </select>
+    <div class="inventory-filter-grid">
+      <div class="category-filter-wrap">
+        <label for="category-filter">Rubro</label>
+        <select id="category-filter" onchange="setCategoryFilter(this.value)">
+          <option value="">Todos los rubros</option>
+        </select>
+      </div>
+      <div class="category-filter-wrap">
+        <label for="subcategory-filter">Subrubro</label>
+        <select id="subcategory-filter" onchange="setSubcategoryFilter(this.value)">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="category-filter-wrap">
+        <label for="location-type-filter">Ubicacion</label>
+        <select id="location-type-filter" onchange="setLocationTypeFilter(this.value)">
+          <option value="">Todas</option>
+        </select>
+      </div>
+      <div class="category-filter-wrap" id="usage-filter-wrap">
+        <label for="usage-filter">Uso</label>
+        <select id="usage-filter" onchange="setUsageFilter(this.value)">
+          <option value="">Todos</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -287,8 +326,23 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
               <input type="text" id="ni-name" placeholder="Ej: Platos llanos">
             </div>
             <div>
+              <label>Inventario</label>
+              <select id="ni-inventory-domain" onchange="syncNewItemDomainFields()">
+                <option value="kitchen">Inventario Cocina</option>
+                <option value="equipment">Equipamiento Operativo</option>
+              </select>
+            </div>
+            <div>
               <label>Categoria</label>
-              <select id="ni-category"></select>
+              <select id="ni-category" onchange="fillSubcategorySelect('ni-subcategory', document.getElementById('ni-inventory-domain').value, this.value, document.getElementById('ni-subcategory').value)"></select>
+            </div>
+            <div>
+              <label>Subcategoria</label>
+              <select id="ni-subcategory"></select>
+            </div>
+            <div>
+              <label>Unidad</label>
+              <select id="ni-unit"></select>
             </div>
             <div>
               <label>Modo de conteo</label>
@@ -322,8 +376,39 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
           </div>
         </div>
         <div class="new-item-section">
-          <div class="new-item-section-title">Vencimiento y ubicacion</div>
+          <div class="new-item-section-title">Clasificacion operativa</div>
           <div class="new-item-grid">
+            <div>
+              <label>Ubicacion principal</label>
+              <select id="ni-location-type"></select>
+            </div>
+            <div>
+              <label>Ubicacion detalle</label>
+              <input type="text" id="ni-location-detail" placeholder="Ej: Heladera 1, Estante B">
+            </div>
+            <div id="ni-usage-wrap">
+              <label>Uso</label>
+              <select id="ni-usage-type">
+                <option value="">Sin definir</option>
+                <option value="cocina_diaria">Cocina diaria</option>
+                <option value="eventos">Eventos</option>
+                <option value="mixto">Mixto</option>
+              </select>
+            </div>
+            <div>
+              <label>Stock minimo</label>
+              <input type="number" id="ni-min-stock" min="0" step="0.01" placeholder="Opcional">
+            </div>
+            <div>
+              <label>Estado operativo</label>
+              <select id="ni-operational-status">
+                <option value="">Sin estado</option>
+                <option value="ok">OK</option>
+                <option value="bajo_stock">Bajo stock</option>
+                <option value="faltante">Faltante</option>
+                <option value="bloqueado">Bloqueado / no usar</option>
+              </select>
+            </div>
             <div>
               <label>Vencimiento</label>
               <select id="ni-expiry-status">
@@ -336,6 +421,15 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
               <label>Fecha de vencimiento</label>
               <input type="date" id="ni-expiry-date">
             </div>
+            <div class="full">
+              <label>Notas</label>
+              <input type="text" id="ni-kitchen-notes" placeholder="Notas de cocina o del equipo">
+            </div>
+          </div>
+        </div>
+        <div class="new-item-section">
+          <div class="new-item-section-title">Ubicacion precisa opcional</div>
+          <div class="new-item-grid">
             <div>
               <label>Deposito / sector</label>
               <input type="text" id="ni-loc-deposit" placeholder="Ej: Salon">
@@ -428,6 +522,58 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
     <h3>Datos del artículo</h3>
     <p id="meta-item-name" style="font-size:13px;color:var(--muted);margin-bottom:12px"></p>
     <div class="modal-form">
+      <div class="new-item-grid">
+        <div>
+          <label>Inventario</label>
+          <select id="meta-inventory-domain" onchange="syncMetaDomainFields()">
+            <option value="kitchen">Inventario Cocina</option>
+            <option value="equipment">Equipamiento Operativo</option>
+          </select>
+        </div>
+        <div>
+          <label>Rubro</label>
+          <select id="meta-category" onchange="fillSubcategorySelect('meta-subcategory', document.getElementById('meta-inventory-domain').value, this.value, document.getElementById('meta-subcategory').value)"></select>
+        </div>
+        <div>
+          <label>Subrubro</label>
+          <select id="meta-subcategory"></select>
+        </div>
+        <div>
+          <label>Ubicacion principal</label>
+          <select id="meta-location-type"></select>
+        </div>
+        <div>
+          <label>Ubicacion detalle</label>
+          <input id="meta-location-detail" type="text" placeholder="Heladera 1, Estante B">
+        </div>
+        <div id="meta-usage-wrap">
+          <label>Uso</label>
+          <select id="meta-usage-type">
+            <option value="">Sin definir</option>
+            <option value="cocina_diaria">Cocina diaria</option>
+            <option value="eventos">Eventos</option>
+            <option value="mixto">Mixto</option>
+          </select>
+        </div>
+        <div>
+          <label>Stock minimo</label>
+          <input id="meta-min-stock" type="number" min="0" step="0.01" placeholder="Opcional">
+        </div>
+        <div>
+          <label>Estado operativo</label>
+          <select id="meta-operational-status">
+            <option value="">Sin estado</option>
+            <option value="ok">OK</option>
+            <option value="bajo_stock">Bajo stock</option>
+            <option value="faltante">Faltante</option>
+            <option value="bloqueado">Bloqueado / no usar</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Notas</label>
+          <input id="meta-kitchen-notes" type="text" placeholder="Notas de cocina o del equipo">
+        </div>
+      </div>
       <div>
         <label>Vencimiento</label>
         <select id="meta-expiry-status">
@@ -526,8 +672,12 @@ let currentUser = null;
 let sesion = null;
 let items = [];
 let categories = [];
+let activeDomain = new URLSearchParams(window.location.search).get('domain') === 'equipment' ? 'equipment' : 'kitchen';
 let activeFilter = 'pending';
 let activeCategoryFilter = '';
+let activeSubcategoryFilter = '';
+let activeLocationTypeFilter = '';
+let activeUsageFilter = '';
 const newItemIds = new Set();
 let packageItemId = null;
 let metaItemId = null;
@@ -672,13 +822,13 @@ function fmtDateOnly(value) {
   return y && m && d ? d + '/' + m + '/' + y : String(value);
 }
 
-function inventorySummary() {
-  const total = items.length;
+function inventorySummary(sourceItems = items) {
+  const total = sourceItems.length;
   let counted = 0;
   let differences = 0;
   let problems = 0;
   let added = 0;
-  items.forEach(item => {
+  sourceItems.forEach(item => {
     if (isItemCounted(item)) {
       counted++;
       if (Math.abs(itemDiff(item)) >= 0.0001) differences++;
@@ -748,8 +898,9 @@ async function cancelSession() {
 async function goToMain() {
   await loadSesion();
   show('main-screen');
+  syncDomainUi();
   buildFilterChips();
-  buildCategoryFilter();
+  buildSecondaryFilters();
   renderItems();
   startSync();
 }
@@ -775,32 +926,108 @@ function startSync() {
 
 function buildFilterChips() {
   const el = document.getElementById('filter-chips');
-  const filters = [
-    ['pending', 'Pendientes'],
-    ['counted', 'Contados'],
-    ['diff', 'Con diferencias'],
-    ['problems', 'Con problemas'],
-    ['expiry', 'Con vencimiento / vencidos'],
-    ['new', 'Nuevos'],
-    ['all', 'Todos']
-  ];
+  const filters = activeDomain === 'kitchen'
+    ? [
+      ['all', 'Todos'],
+      ['pending', 'Pendientes'],
+      ['low', 'Bajo stock'],
+      ['expired', 'Vencidos'],
+      ['expires', 'Proximos a vencer'],
+      ['missing', 'Faltantes'],
+      ['blocked', 'Bloqueados'],
+      ['new', 'Nuevos']
+    ]
+    : [
+      ['all', 'Todos'],
+      ['pending', 'Pendientes'],
+      ['counted', 'Contados'],
+      ['diff', 'Con diferencias'],
+      ['problems', 'Con problemas'],
+      ['new', 'Nuevos']
+    ];
+  if (!filters.some(([id]) => id === activeFilter)) activeFilter = activeDomain === 'kitchen' ? 'all' : 'pending';
   el.innerHTML = filters.map(([id, label]) =>
     `<div class="chip ${activeFilter === id ? 'active' : ''}" data-filter="${id}" onclick="setFilter(this)">${label}</div>`
   ).join('');
+}
+
+function domainItems() {
+  return items.filter(item => itemDomain(item) === activeDomain);
+}
+
+function buildSecondaryFilters() {
+  buildCategoryFilter();
+  buildSubcategoryFilter();
+  buildLocationTypeFilter();
+  buildUsageFilter();
 }
 
 function buildCategoryFilter() {
   const sel = document.getElementById('category-filter');
   if (!sel) return;
   const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
-  const used = [...new Set(items.map(i => i.categoryId).filter(Boolean))].sort((a, b) => (catMap[a] || a).localeCompare(catMap[b] || b));
+  const used = [...new Set(domainItems().map(i => i.categoryId).filter(Boolean))].sort((a, b) => (catMap[a] || a).localeCompare(catMap[b] || b));
   sel.innerHTML = '<option value="">Todos los rubros</option>' + used.map(id => `<option value="${esc(id)}">${esc(catMap[id] || id)}</option>`).join('');
   sel.value = used.includes(activeCategoryFilter) ? activeCategoryFilter : '';
   activeCategoryFilter = sel.value;
 }
 
+function buildSubcategoryFilter() {
+  const sel = document.getElementById('subcategory-filter');
+  if (!sel) return;
+  const used = [...new Set(domainItems().map(i => i.subcategory).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  sel.innerHTML = '<option value="">Todos</option>' + used.map(value => `<option value="${esc(value)}">${esc(value)}</option>`).join('');
+  sel.value = used.includes(activeSubcategoryFilter) ? activeSubcategoryFilter : '';
+  activeSubcategoryFilter = sel.value;
+}
+
+function buildLocationTypeFilter() {
+  const sel = document.getElementById('location-type-filter');
+  if (!sel) return;
+  const base = activeDomain === 'kitchen'
+    ? [['heladera','Heladera'], ['freezer','Freezer'], ['deposito','Deposito'], ['otro','Otro']]
+    : [['cocina','Cocina'], ['deposito','Deposito'], ['salon','Salon'], ['estanteria','Estanteria'], ['movil','Movil'], ['otro','Otro']];
+  const dynamic = [...new Set(domainItems().map(i => i.locationType).filter(Boolean))]
+    .filter(value => !base.some(([id]) => id === value))
+    .map(value => [value, locationTypeLabel(value)]);
+  const options = [...base, ...dynamic];
+  sel.innerHTML = '<option value="">Todas</option>' + options.map(([id, label]) => `<option value="${esc(id)}">${esc(label)}</option>`).join('');
+  sel.value = options.some(([id]) => id === activeLocationTypeFilter) ? activeLocationTypeFilter : '';
+  activeLocationTypeFilter = sel.value;
+}
+
+function buildUsageFilter() {
+  const wrap = document.getElementById('usage-filter-wrap');
+  const sel = document.getElementById('usage-filter');
+  if (!wrap || !sel) return;
+  wrap.style.display = activeDomain === 'equipment' ? '' : 'none';
+  if (activeDomain !== 'equipment') {
+    activeUsageFilter = '';
+    return;
+  }
+  const options = [['cocina_diaria','Cocina diaria'], ['eventos','Eventos'], ['mixto','Mixto']];
+  sel.innerHTML = '<option value="">Todos</option>' + options.map(([id, label]) => `<option value="${id}">${label}</option>`).join('');
+  sel.value = options.some(([id]) => id === activeUsageFilter) ? activeUsageFilter : '';
+  activeUsageFilter = sel.value;
+}
+
 function setCategoryFilter(value) {
   activeCategoryFilter = value || '';
+  renderItems();
+}
+
+function setSubcategoryFilter(value) {
+  activeSubcategoryFilter = value || '';
+  renderItems();
+}
+
+function setLocationTypeFilter(value) {
+  activeLocationTypeFilter = value || '';
+  renderItems();
+}
+
+function setUsageFilter(value) {
+  activeUsageFilter = value || '';
   renderItems();
 }
 
@@ -811,19 +1038,98 @@ function setFilter(el) {
   renderItems();
 }
 
+function setInventoryDomain(domain) {
+  activeDomain = domain === 'equipment' ? 'equipment' : 'kitchen';
+  activeFilter = activeDomain === 'kitchen' ? 'all' : 'pending';
+  activeCategoryFilter = '';
+  activeSubcategoryFilter = '';
+  activeLocationTypeFilter = '';
+  activeUsageFilter = '';
+  syncDomainUi();
+  buildFilterChips();
+  buildSecondaryFilters();
+  renderItems();
+}
+
+function syncDomainUi() {
+  document.getElementById('domain-tab-kitchen')?.classList.toggle('active', activeDomain === 'kitchen');
+  document.getElementById('domain-tab-equipment')?.classList.toggle('active', activeDomain === 'equipment');
+  const title = document.querySelector('.header-title h1');
+  if (title) title.textContent = domainLabel();
+  const addBtn = document.querySelector('.btn-add');
+  if (addBtn) {
+    const label = activeDomain === 'kitchen' ? 'Nuevo alimento' : 'Nuevo equipo';
+    addBtn.lastChild.textContent = label;
+  }
+}
+
+function renderInventoryKpis() {
+  const el = document.getElementById('inventory-kpis');
+  if (!el) return;
+  const scoped = domainItems();
+  const counted = scoped.filter(isItemCounted).length;
+  if (activeDomain === 'kitchen') {
+    const low = scoped.filter(isLowStock).length;
+    const expired = scoped.filter(isKitchenExpired).length;
+    const expiring = scoped.filter(isKitchenExpiring).length;
+    el.innerHTML = [
+      ['Total alimentos', scoped.length],
+      ['Bajo stock', low],
+      ['Vencidos', expired],
+      ['Por vencer', expiring],
+    ].map(([label, value]) => `<div class="inventory-kpi"><strong>${value}</strong><span>${label}</span></div>`).join('');
+  } else {
+    const problems = scoped.filter(itemHasProblem).length;
+    const eventUse = scoped.filter(item => item.usageType === 'eventos').length;
+    el.innerHTML = [
+      ['Total equipos', scoped.length],
+      ['Contados', counted],
+      ['Con problemas', problems],
+      ['Uso eventos', eventUse],
+    ].map(([label, value]) => `<div class="inventory-kpi"><strong>${value}</strong><span>${label}</span></div>`).join('');
+  }
+}
+
+function itemMetaPills(item) {
+  const pills = [];
+  if (activeDomain === 'kitchen') {
+    if (item.locationType) pills.push({ label: locationTypeLabel(item.locationType) + (item.locationDetail ? ' · ' + item.locationDetail : '') });
+    if (item.minStock) pills.push({ label: 'Min. ' + fmtQty(item.minStock), cls: isLowStock(item) ? 'warn' : '' });
+    if (item.operationalStatus) pills.push({ label: operationalStatusLabel(item.operationalStatus), cls: item.operationalStatus === 'bloqueado' || item.operationalStatus === 'faltante' ? 'danger' : '' });
+    if (item.kitchenNotes) pills.push({ label: item.kitchenNotes });
+  } else {
+    if (item.usageType) pills.push({ label: usageLabel(item.usageType) });
+    if (item.locationType) pills.push({ label: locationTypeLabel(item.locationType) + (item.locationDetail ? ' · ' + item.locationDetail : '') });
+    if (item.condition && item.condition !== 'ok') pills.push({ label: 'Estado: ' + item.condition, cls: 'warn' });
+    if (item.notes) pills.push({ label: item.notes });
+  }
+  return pills.filter(p => p.label).slice(0, 4);
+}
+
 function renderItems() {
   const list = document.getElementById('item-list');
   const term = (document.getElementById('search-input').value || '').toLowerCase();
   const catMap = Object.fromEntries(categories.map(c => [c.id, c.label]));
+  renderInventoryKpis();
   const visible = items.filter(item => {
+    if (itemDomain(item) !== activeDomain) return false;
     if (activeFilter === 'pending' && isItemCounted(item)) return false;
     if (activeFilter === 'counted' && !isItemCounted(item)) return false;
     if (activeFilter === 'diff' && (!isItemCounted(item) || Math.abs(itemDiff(item)) < 0.0001)) return false;
     if (activeFilter === 'problems' && !itemHasProblem(item)) return false;
     if (activeFilter === 'expiry' && !itemHasExpiryAlert(item)) return false;
+    if (activeFilter === 'low' && !isLowStock(item)) return false;
+    if (activeFilter === 'expired' && !isKitchenExpired(item)) return false;
+    if (activeFilter === 'expires' && !isKitchenExpiring(item)) return false;
+    if (activeFilter === 'missing' && item.operationalStatus !== 'faltante') return false;
+    if (activeFilter === 'blocked' && item.operationalStatus !== 'bloqueado') return false;
     if (activeFilter === 'new' && !isNewItem(item)) return false;
     if (activeCategoryFilter && item.categoryId !== activeCategoryFilter) return false;
-    if (term && !item.name.toLowerCase().includes(term) && !(catMap[item.categoryId]||'').toLowerCase().includes(term)) return false;
+    if (activeSubcategoryFilter && item.subcategory !== activeSubcategoryFilter) return false;
+    if (activeLocationTypeFilter && item.locationType !== activeLocationTypeFilter) return false;
+    if (activeUsageFilter && item.usageType !== activeUsageFilter) return false;
+    const searchable = [item.name, catMap[item.categoryId], item.subcategory, item.location, item.locationType, item.locationDetail, item.usageType, item.kitchenNotes, item.notes].join(' ').toLowerCase();
+    if (term && !searchable.includes(term)) return false;
     return true;
   });
 
@@ -849,6 +1155,7 @@ function renderItems() {
     const isNew = isNewItem(item);
     const expiry = expiryBadge(item);
     const preciseLocation = preciseLocationLabel(item);
+    const metaPills = itemMetaPills(item);
 
     const div = document.createElement('div');
     div.className = 'item' + (isCounted ? ' counted' : '');
@@ -856,6 +1163,7 @@ function renderItems() {
       <div class="item-info">
         <div class="item-name">${esc(item.name)}${isNew ? '<span class="new-pill">Nuevo</span>' : ''}</div>
         <div class="item-cat">${esc(catLabel)}${item.subcategory ? ' · ' + esc(item.subcategory) : ''}</div>
+        ${metaPills.length ? `<div class="item-meta-line">${metaPills.map(pill => `<span class="item-meta-pill ${pill.cls || ''}">${esc(pill.label)}</span>`).join('')}</div>` : ''}
         <div class="item-stock-line">
           <span>Registrada: ${fmtQty(registeredQty(item))}</span>
           <span>Contada: ${isCounted ? fmtQty(countedQty(item)) : '-'}</span>
@@ -878,7 +1186,7 @@ function renderItems() {
       <div class="cond-mini-btn ${itemHasProblem(item) ? 'has-issue' : ''}" ontouchstart="" onclick="openCondModal('${item.id}')" title="Estado del artículo">Estado</div>
       <div class="item-actions">
         <button class="item-action" type="button" onclick="openPackageModal('${item.id}')">Cajas / bultos</button>
-        <button class="item-action" type="button" onclick="openMetaModal('${item.id}')">Vencimiento / ubicación</button>
+        <button class="item-action" type="button" onclick="openMetaModal('${item.id}')">Clasificar / ubicacion</button>
         <button class="item-action danger" type="button" onclick="openArchiveModal('${item.id}')">Dar de baja</button>
       </div>`;
     list.appendChild(div);
@@ -889,7 +1197,8 @@ function renderItems() {
 }
 
 function updateProgress() {
-  const summary = inventorySummary();
+  const summary = inventorySummary(domainItems());
+  const allSummary = inventorySummary();
   const total = summary.total;
   const counted = summary.counted;
   const pct = total ? Math.round(counted / total * 100) : 0;
@@ -897,7 +1206,7 @@ function updateProgress() {
   document.getElementById('prog-label').textContent = counted + ' de ' + total + ' contados';
   document.getElementById('prog-pct').textContent = pct + '%';
   const btn = document.getElementById('btn-close');
-  btn.disabled = counted === 0;
+  btn.disabled = allSummary.counted === 0;
 }
 
 async function changeQty(itemId, currentQty, delta) {
@@ -1016,18 +1325,38 @@ function currentPackageCount() {
 }
 
 // --- ITEM META ---
+function syncMetaDomainFields() {
+  const domain = document.getElementById('meta-inventory-domain')?.value === 'equipment' ? 'equipment' : 'kitchen';
+  fillCategorySelect('meta-category', domain, document.getElementById('meta-category')?.value || '');
+  fillSubcategorySelect('meta-subcategory', domain, document.getElementById('meta-category')?.value || '', document.getElementById('meta-subcategory')?.value || '');
+  fillLocationTypeSelect('meta-location-type', domain, document.getElementById('meta-location-type')?.value || '');
+  const usageWrap = document.getElementById('meta-usage-wrap');
+  if (usageWrap) usageWrap.style.display = domain === 'equipment' ? '' : 'none';
+}
+
 function openMetaModal(itemId) {
   const item = items.find(i => i.id === itemId);
   if (!item) return;
   metaItemId = itemId;
   const loc = item.preciseLocation || {};
+  const domain = itemDomain(item);
   document.getElementById('meta-item-name').textContent = item.name;
+  document.getElementById('meta-inventory-domain').value = domain;
+  fillCategorySelect('meta-category', domain, item.categoryId || '');
+  fillSubcategorySelect('meta-subcategory', domain, item.categoryId || '', item.subcategory || '');
+  fillLocationTypeSelect('meta-location-type', domain, item.locationType || '');
+  document.getElementById('meta-location-detail').value = item.locationDetail || '';
+  document.getElementById('meta-usage-type').value = item.usageType || '';
+  document.getElementById('meta-min-stock').value = item.minStock || '';
+  document.getElementById('meta-operational-status').value = item.operationalStatus || '';
+  document.getElementById('meta-kitchen-notes').value = item.kitchenNotes || item.notes || '';
   document.getElementById('meta-expiry-status').value = item.expiryStatus || '';
   document.getElementById('meta-expiry-date').value = item.expiryDate || '';
   document.getElementById('meta-loc-deposit').value = loc.deposit || '';
   document.getElementById('meta-loc-shelf').value = loc.shelf || '';
   document.getElementById('meta-loc-level').value = loc.level || '';
   document.getElementById('meta-loc-position').value = loc.position || '';
+  syncMetaDomainFields();
   document.getElementById('meta-overlay').classList.add('open');
 }
 
@@ -1041,8 +1370,20 @@ async function saveItemMeta() {
   const expiryStatus = document.getElementById('meta-expiry-status').value;
   const expiryDate = document.getElementById('meta-expiry-date').value;
   if (expiryStatus && !expiryDate) { toast('Carga la fecha de vencimiento.'); return; }
+  const inventoryDomain = document.getElementById('meta-inventory-domain').value === 'equipment' ? 'equipment' : 'kitchen';
+  const notes = document.getElementById('meta-kitchen-notes').value.trim();
   const body = {
     itemId: metaItemId,
+    inventoryDomain,
+    categoryId: document.getElementById('meta-category').value,
+    subcategory: document.getElementById('meta-subcategory').value,
+    locationType: document.getElementById('meta-location-type').value,
+    locationDetail: document.getElementById('meta-location-detail').value.trim(),
+    usageType: inventoryDomain === 'equipment' ? document.getElementById('meta-usage-type').value : '',
+    minStock: document.getElementById('meta-min-stock').value,
+    operationalStatus: document.getElementById('meta-operational-status').value,
+    kitchenNotes: inventoryDomain === 'kitchen' ? notes : '',
+    notes: inventoryDomain === 'equipment' ? notes : '',
     expiryStatus,
     expiryDate,
     preciseLocation: {
@@ -1059,6 +1400,7 @@ async function saveItemMeta() {
     const idx = items.findIndex(i => i.id === metaItemId);
     if (idx >= 0) items[idx] = { ...items[idx], ...data.item };
     closeMetaModal();
+    buildSecondaryFilters();
     renderItems();
     toast('Datos guardados');
   } catch { toast('Error al guardar.'); }
@@ -1091,19 +1433,140 @@ async function archiveItem() {
     items = data.items || items.filter(i => i.id !== archiveItemId);
     categories = data.categories || categories;
     closeArchiveModal();
-    buildCategoryFilter();
+    buildSecondaryFilters();
     renderItems();
     toast('Artículo dado de baja');
   } catch { toast('Error al dar de baja.'); }
 }
 
 // --- NEW ITEM ---
+function defaultCategoryOptions(domain = activeDomain) {
+  return domain === 'kitchen'
+    ? [
+      ['alimentos', 'Alimentos'],
+      ['bebidas', 'Bebidas'],
+      ['lacteos', 'Lacteos'],
+      ['carnes', 'Carnes'],
+      ['verduras', 'Verduras'],
+      ['secos', 'Secos'],
+      ['salsas', 'Salsas'],
+      ['descartables_alimentarios', 'Descartables alimentarios'],
+      ['otros', 'Otros']
+    ]
+    : [
+      ['utensilios', 'Utensilios'],
+      ['ollas', 'Ollas'],
+      ['vajilla', 'Vajilla'],
+      ['manteleria', 'Manteleria'],
+      ['equipos', 'Equipos'],
+      ['contenedores', 'Contenedores'],
+      ['servicio', 'Servicio'],
+      ['limpieza', 'Limpieza'],
+      ['otros', 'Otros']
+    ];
+}
+
+function defaultSubcategoryOptions(domain = activeDomain, categoryId = '') {
+  const categoryKey = searchKey(categoryId);
+  const kitchen = {
+    alimentos: ['Lacteos', 'Carnes', 'Verduras', 'Secos', 'Condimentos', 'Salsas', 'Otros'],
+    bebidas: ['Agua', 'Gaseosa', 'Vino', 'Cerveza', 'Hielo', 'Otros'],
+    lacteos: ['Quesos', 'Crema', 'Leche', 'Manteca', 'Otros'],
+    carnes: ['Carne vacuna', 'Pollo', 'Cerdo', 'Fiambres', 'Otros'],
+    verduras: ['Hojas', 'Raices', 'Cebolla', 'Tomate', 'Otros'],
+    secos: ['Harinas', 'Legumbres', 'Arroz', 'Pastas', 'Condimentos', 'Otros'],
+    salsas: ['Salsas base', 'Aderezos', 'Marinadas', 'Otros'],
+    descartables_alimentarios: ['Bandejas', 'Envoltorios', 'Potes', 'Otros'],
+    otros: ['Sin definir', 'Otros'],
+  };
+  const equipment = {
+    utensilios: ['Cuchillos', 'Pinzas', 'Tablas', 'Cucharones', 'Otros'],
+    ollas: ['Ollas', 'Sartenes', 'Discos', 'Tapas', 'Otros'],
+    vajilla: ['Platos', 'Copas', 'Vasos', 'Cubiertos', 'Otros'],
+    manteleria: ['Manteles', 'Servilletas', 'Faldones', 'Otros'],
+    equipos: ['Electricos', 'Gas', 'Frio', 'Calor', 'Otros'],
+    contenedores: ['Cajas', 'Bachas', 'Conservadoras', 'Otros'],
+    servicio: ['Bandejas', 'Decoracion', 'Coffee', 'Otros'],
+    limpieza: ['Quimicos', 'Trapos', 'Escobas', 'Otros'],
+    otros: ['Sin definir', 'Otros'],
+  };
+  return (domain === 'kitchen' ? kitchen : equipment)[categoryKey] || ['Sin definir', 'Otros'];
+}
+
+function defaultUnitOptions(domain = activeDomain) {
+  return domain === 'kitchen'
+    ? ['kg', 'g', 'l', 'ml', 'unidad', 'caja', 'paquete', 'bolsa', 'frasco', 'lata']
+    : ['unidad', 'juego', 'caja', 'bulto', 'metro', 'litro', 'kg'];
+}
+
+function fillCategorySelect(selectId, domain, selected = '') {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const catMap = new Map(defaultCategoryOptions(domain));
+  categories.forEach(cat => {
+    if (itemDomain({ inventoryDomain: domain, categoryId: cat.id }) === domain || !catMap.has(cat.id)) catMap.set(cat.id, cat.label || cat.id);
+  });
+  const options = Array.from(catMap.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+  sel.innerHTML = options.map(([id, label]) => `<option value="${esc(id)}">${esc(label)}</option>`).join('');
+  sel.value = options.some(([id]) => id === selected) ? selected : (options[0]?.[0] || '');
+}
+
+function fillSubcategorySelect(selectId, domain, categoryId, selected = '') {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const category = categories.find(cat => cat.id === categoryId) || {};
+  const rawOptions = [
+    '',
+    ...(Array.isArray(category.subcategories) ? category.subcategories : []),
+    ...defaultSubcategoryOptions(domain, categoryId),
+  ];
+  const options = Array.from(new Set(rawOptions.map(value => String(value || '').trim()).filter((value, index) => index === 0 || value)));
+  sel.innerHTML = options.map(value => `<option value="${esc(value)}">${esc(value || 'Sin definir')}</option>`).join('');
+  sel.value = options.includes(selected) ? selected : '';
+}
+
+function fillUnitSelect(selectId, domain, selected = '') {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const options = defaultUnitOptions(domain);
+  sel.innerHTML = options.map(value => `<option value="${esc(value)}">${esc(value)}</option>`).join('');
+  sel.value = options.includes(selected) ? selected : (domain === 'kitchen' ? 'kg' : 'unidad');
+}
+
+function fillLocationTypeSelect(selectId, domain, selected = '') {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  const options = domain === 'kitchen'
+    ? [['', 'Sin definir'], ['heladera','Heladera'], ['freezer','Freezer'], ['deposito','Deposito'], ['otro','Otro']]
+    : [['', 'Sin definir'], ['cocina','Cocina'], ['deposito','Deposito'], ['salon','Salon'], ['estanteria','Estanteria'], ['movil','Movil'], ['otro','Otro']];
+  sel.innerHTML = options.map(([id, label]) => `<option value="${esc(id)}">${esc(label)}</option>`).join('');
+  sel.value = options.some(([id]) => id === selected) ? selected : '';
+}
+
+function syncNewItemDomainFields() {
+  const domain = document.getElementById('ni-inventory-domain')?.value === 'equipment' ? 'equipment' : 'kitchen';
+  fillCategorySelect('ni-category', domain, document.getElementById('ni-category')?.value || '');
+  fillSubcategorySelect('ni-subcategory', domain, document.getElementById('ni-category')?.value || '', document.getElementById('ni-subcategory')?.value || '');
+  fillUnitSelect('ni-unit', domain, document.getElementById('ni-unit')?.value || '');
+  fillLocationTypeSelect('ni-location-type', domain, document.getElementById('ni-location-type')?.value || '');
+  const usageWrap = document.getElementById('ni-usage-wrap');
+  if (usageWrap) usageWrap.style.display = domain === 'equipment' ? '' : 'none';
+}
+
 function openNewItemModal() {
-  const sel = document.getElementById('ni-category');
-  sel.innerHTML = categories.map(c => `<option value="${esc(c.id)}">${esc(c.label)}</option>`).join('');
+  document.getElementById('ni-inventory-domain').value = activeDomain;
+  fillCategorySelect('ni-category', activeDomain);
+  fillLocationTypeSelect('ni-location-type', activeDomain);
   document.getElementById('ni-name').value = '';
+  fillSubcategorySelect('ni-subcategory', activeDomain, document.getElementById('ni-category').value || '');
+  fillUnitSelect('ni-unit', activeDomain);
   document.getElementById('ni-qty').value = '1';
   document.getElementById('ni-count-mode').value = 'units';
+  document.getElementById('ni-location-detail').value = '';
+  document.getElementById('ni-usage-type').value = '';
+  document.getElementById('ni-min-stock').value = '';
+  document.getElementById('ni-operational-status').value = '';
+  document.getElementById('ni-kitchen-notes').value = '';
   document.getElementById('ni-pkg-boxes').value = '0';
   document.getElementById('ni-pkg-units').value = '0';
   document.getElementById('ni-pkg-loose').value = '0';
@@ -1113,6 +1576,7 @@ function openNewItemModal() {
   document.getElementById('ni-loc-shelf').value = '';
   document.getElementById('ni-loc-level').value = '';
   document.getElementById('ni-loc-position').value = '';
+  syncNewItemDomainFields();
   toggleNewItemCountMode();
   updateNewItemPackageTotal();
   document.getElementById('new-item-overlay').classList.add('open');
@@ -1126,6 +1590,7 @@ function closeNewItemModal(e) {
 
 async function saveNewItem() {
   const name = document.getElementById('ni-name').value.trim();
+  const inventoryDomain = document.getElementById('ni-inventory-domain').value === 'equipment' ? 'equipment' : 'kitchen';
   const categoryId = document.getElementById('ni-category').value;
   const mode = document.getElementById('ni-count-mode').value;
   const packageCount = mode === 'packages' ? newItemPackageCount() : null;
@@ -1138,10 +1603,20 @@ async function saveNewItem() {
   if (expiryStatus && !expiryDate) { toast('Carga la fecha de vencimiento.'); return; }
   const itemPayload = {
     name,
+    inventoryDomain,
     categoryId,
+    subcategory: document.getElementById('ni-subcategory').value,
     quantity: qty,
+    unit: document.getElementById('ni-unit').value || (inventoryDomain === 'kitchen' ? 'kg' : 'unidad'),
     location: sesion?.location || '',
+    locationType: document.getElementById('ni-location-type').value,
+    locationDetail: document.getElementById('ni-location-detail').value.trim(),
+    usageType: inventoryDomain === 'equipment' ? document.getElementById('ni-usage-type').value : '',
+    minStock: document.getElementById('ni-min-stock').value,
+    operationalStatus: document.getElementById('ni-operational-status').value,
     status: 'available',
+    kitchenNotes: document.getElementById('ni-kitchen-notes').value.trim(),
+    notes: inventoryDomain === 'equipment' ? document.getElementById('ni-kitchen-notes').value.trim() : '',
     expiryStatus,
     expiryDate,
     preciseLocation: {
@@ -1158,7 +1633,7 @@ async function saveNewItem() {
     toast('Item agregado');
     await loadSesion();
     buildFilterChips();
-    buildCategoryFilter();
+    buildSecondaryFilters();
     renderItems();
     // marcar como contado automaticamente
     const newItem = (data.operationalInventory?.items || []).find(i => i.name.toLowerCase() === name.toLowerCase());
@@ -1166,7 +1641,10 @@ async function saveNewItem() {
       newItemIds.add(newItem.id);
       await patchItem(newItem.id, qty, true, mode === 'packages' ? packageCount : undefined);
       activeFilter = 'new';
+      activeDomain = inventoryDomain;
+      syncDomainUi();
       buildFilterChips();
+      buildSecondaryFilters();
     }
     renderItems();
   } catch { toast('Error al guardar el item.'); }
@@ -1245,6 +1723,63 @@ function fmtDate(iso) {
 
 function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function searchKey(value) {
+  return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
+function itemDomain(item) {
+  const domain = searchKey(item.inventoryDomain);
+  if (domain === 'kitchen' || domain === 'cocina') return 'kitchen';
+  if (['alimentos', 'bebidas'].includes(searchKey(item.categoryId))) return 'kitchen';
+  return 'equipment';
+}
+
+function domainLabel(domain = activeDomain) {
+  return domain === 'kitchen' ? 'Inventario Cocina' : 'Equipamiento Operativo';
+}
+
+function locationTypeLabel(value) {
+  return {
+    heladera: 'Heladera',
+    freezer: 'Freezer',
+    deposito: 'Deposito',
+    cocina: 'Cocina',
+    salon: 'Salon',
+    estanteria: 'Estanteria',
+    movil: 'Movil',
+    otro: 'Otro',
+  }[searchKey(value)] || value || '';
+}
+
+function usageLabel(value) {
+  return {
+    cocina_diaria: 'Cocina diaria',
+    eventos: 'Eventos',
+    mixto: 'Mixto',
+  }[searchKey(value)] || value || '';
+}
+
+function operationalStatusLabel(value) {
+  return {
+    ok: 'OK',
+    bajo_stock: 'Bajo stock',
+    faltante: 'Faltante',
+    bloqueado: 'Bloqueado',
+  }[searchKey(value)] || '';
+}
+
+function isLowStock(item) {
+  return Number(item.minStock || 0) > 0 && countedQty(item) <= Number(item.minStock || 0);
+}
+
+function isKitchenExpired(item) {
+  return item.expiryStatus === 'vencido';
+}
+
+function isKitchenExpiring(item) {
+  return item.expiryStatus === 'vence_el';
 }
 
 // --- CONDITION MODAL ---

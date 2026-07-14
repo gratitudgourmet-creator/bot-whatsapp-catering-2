@@ -6614,16 +6614,24 @@ function normalizeOperationalInventoryCategory(input = {}) {
 function normalizeOperationalInventoryItem(input = {}) {
   const categoryId = normalizeText(input.categoryId || input.category || "utensilios");
   const quantity = Math.max(0, parseDecimalNumber(input.quantity || input.totalQuantity || 1));
+  const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || inferInventoryDomainFromCategory(categoryId));
   return {
     id: normalizeText(input.id || `opinv-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     name: normalizeText(input.name || input.productName || input.description || ""),
     categoryId,
     subcategory: normalizeText(input.subcategory || ""),
+    inventoryDomain,
     quantity,
     unit: normalizeText(input.unit || "unidad"),
+    minStock: Math.max(0, parseDecimalNumber(input.minStock || 0)),
     status: normalizeOperationalInventoryStatus(input.status || "available"),
+    operationalStatus: normalizeInventoryOperationalStatus(input.operationalStatus || ""),
     location: normalizeText(input.location || ""),
+    locationType: normalizeInventoryLocationType(input.locationType || ""),
+    locationDetail: normalizeText(input.locationDetail || ""),
+    usageType: normalizeInventoryUsageType(input.usageType || ""),
     notes: normalizeText(input.notes || ""),
+    kitchenNotes: normalizeText(input.kitchenNotes || ""),
     condition: input.condition || null,
     conditionNotes: normalizeText(input.conditionNotes || ""),
     conditionImagePath: normalizeText(input.conditionImagePath || ""),
@@ -6637,6 +6645,46 @@ function normalizeOperationalInventoryItem(input = {}) {
     archivedReason: normalizeText(input.archivedReason || ""),
     updatedAt: input.updatedAt || new Date().toISOString(),
   };
+}
+
+function inferInventoryDomainFromCategory(categoryId = "") {
+  const key = normalizeSearchKey(categoryId);
+  if (["alimentos", "bebidas"].includes(key)) return "kitchen";
+  return "equipment";
+}
+
+function normalizeInventoryDomain(value = "") {
+  const key = normalizeSearchKey(value);
+  if (["kitchen", "cocina", "inventario cocina", "alimentos"].includes(key)) return "kitchen";
+  if (["equipment", "equipamiento", "equipamiento operativo", "operativo"].includes(key)) return "equipment";
+  return "equipment";
+}
+
+function normalizeInventoryLocationType(value = "") {
+  const key = normalizeSearchKey(value);
+  if (["heladera", "freezer", "deposito", "cocina", "salon", "estanteria", "movil", "otro"].includes(key)) return key;
+  if (["depósito"].includes(value)) return "deposito";
+  if (["salón"].includes(value)) return "salon";
+  if (["móvil"].includes(value)) return "movil";
+  return "";
+}
+
+function normalizeInventoryUsageType(value = "") {
+  const key = normalizeSearchKey(value);
+  if (["cocina_diaria", "cocina diaria"].includes(key)) return "cocina_diaria";
+  if (["eventos", "evento"].includes(key)) return "eventos";
+  if (["mixto", "mixta"].includes(key)) return "mixto";
+  return "";
+}
+
+function normalizeInventoryOperationalStatus(value = "") {
+  const key = normalizeSearchKey(value);
+  if (["ok", "bajo_stock", "bajo stock", "faltante", "bloqueado", "bloqueado no usar", "no usar"].includes(key)) {
+    if (key.includes("bajo")) return "bajo_stock";
+    if (key.includes("bloqueado") || key.includes("no usar")) return "bloqueado";
+    return key;
+  }
+  return "";
 }
 
 function normalizeOperationalExpiryStatus(status) {
@@ -6907,6 +6955,16 @@ function updateOperationalInventoryMeta(input = {}, user = null) {
   if (Object.prototype.hasOwnProperty.call(input, "expiryStatus")) next.expiryStatus = normalizeOperationalExpiryStatus(input.expiryStatus);
   if (Object.prototype.hasOwnProperty.call(input, "expiryDate")) next.expiryDate = normalizeText(input.expiryDate || "");
   if (!next.expiryStatus) next.expiryDate = "";
+  if (Object.prototype.hasOwnProperty.call(input, "inventoryDomain")) next.inventoryDomain = normalizeInventoryDomain(input.inventoryDomain);
+  if (Object.prototype.hasOwnProperty.call(input, "categoryId")) next.categoryId = normalizeText(input.categoryId || next.categoryId || "");
+  if (Object.prototype.hasOwnProperty.call(input, "subcategory")) next.subcategory = normalizeText(input.subcategory || "");
+  if (Object.prototype.hasOwnProperty.call(input, "locationType")) next.locationType = normalizeInventoryLocationType(input.locationType || "");
+  if (Object.prototype.hasOwnProperty.call(input, "locationDetail")) next.locationDetail = normalizeText(input.locationDetail || "");
+  if (Object.prototype.hasOwnProperty.call(input, "usageType")) next.usageType = normalizeInventoryUsageType(input.usageType || "");
+  if (Object.prototype.hasOwnProperty.call(input, "minStock")) next.minStock = Math.max(0, parseDecimalNumber(input.minStock || 0));
+  if (Object.prototype.hasOwnProperty.call(input, "operationalStatus")) next.operationalStatus = normalizeInventoryOperationalStatus(input.operationalStatus || "");
+  if (Object.prototype.hasOwnProperty.call(input, "kitchenNotes")) next.kitchenNotes = normalizeText(input.kitchenNotes || "");
+  if (Object.prototype.hasOwnProperty.call(input, "notes")) next.notes = normalizeText(input.notes || "");
   if (Object.prototype.hasOwnProperty.call(input, "preciseLocation")) next.preciseLocation = normalizePreciseInventoryLocation(input.preciseLocation || {});
   data.items[idx] = next;
   erpOperationalInventory = { ...data, updatedAt: now };
