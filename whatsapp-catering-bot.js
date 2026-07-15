@@ -11418,14 +11418,21 @@ function deleteBudgetRecord(phone) {
 }
 
 async function submitPurchaseRecord(input) {
-  const purchase = buildPurchaseRecord(input);
+  const existingId = normalizeText(input.id || "");
+  const updateExisting = parseBooleanLike(input.updateExisting);
+  const purchaseInput = { ...input };
+  if (existingId && !updateExisting) {
+    purchaseInput.id = "";
+    purchaseInput.restoredFromClientId = existingId;
+  }
+  const purchase = buildPurchaseRecord(purchaseInput);
   const newProvider = ensurePurchaseOptionExists("provider", purchase.proveedor);
   const newProducts = purchase.lineItems.filter((item) =>
     ensurePurchaseOptionExists("product", item.description)
   ).length;
   rememberPurchasePrices(purchase);
   rememberErpPurchase(purchase);
-  const googleResult = await syncPurchaseToSheets(input.id ? "upsert" : "create", purchase);
+  const googleResult = await syncPurchaseToSheets(existingId && updateExisting ? "upsert" : "create", purchase);
 
   return {
     ...googleResult,

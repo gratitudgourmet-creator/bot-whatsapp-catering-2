@@ -25911,6 +25911,7 @@
       event.preventDefault();
       const formData = new FormData(event.target);
       const payload = Object.fromEntries(formData.entries());
+      payload.updateExisting = Boolean(payload.id && document.getElementById("purchase-title")?.textContent === "Editar compra");
       payload.items = getPurchaseItems();
 
       if (!payload.date) {
