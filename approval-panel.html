@@ -5833,7 +5833,16 @@
       display: grid;
       gap: 8px;
       grid-template-columns: minmax(180px, 1.2fr) 132px 100px 130px minmax(130px, 1fr) minmax(130px, 1fr) minmax(150px, 1fr) 92px 38px;
+      max-width: 100%;
+      overflow-x: auto;
       padding: 10px;
+    }
+
+    .recipe-mise-item > input,
+    .recipe-mise-item > select,
+    .recipe-mise-item > label,
+    .recipe-mise-item > button {
+      min-width: 0;
     }
 
     .recipe-mise-completed {
@@ -7865,6 +7874,25 @@
         box-shadow: 0 8px 20px rgba(16, 24, 32, .06);
         grid-template-columns: 1fr;
         padding: 10px;
+      }
+
+      .recipe-mise-item {
+        overflow-x: visible;
+      }
+
+      .recipe-mise-item > input,
+      .recipe-mise-item > select {
+        width: 100%;
+      }
+
+      .recipe-mise-completed {
+        align-items: center;
+        background: var(--surface-soft);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        min-height: 40px;
+        padding: 0 10px;
+        width: 100%;
       }
 
       .recipe-item .icon-action,
