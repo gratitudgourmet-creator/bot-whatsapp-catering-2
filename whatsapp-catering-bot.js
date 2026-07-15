@@ -5301,6 +5301,7 @@ function getFinanceDashboard() {
   const supplierDebt = roundMoney(purchases.reduce((sum, purchase) => sum + Number(purchase.pendingAmount || (purchase.paymentStatus === "Pagado" ? 0 : purchase.totalAmount || 0)), 0));
   const reimbursementGroups = getPayerReimbursementGroups(purchases);
   const reimbursementPendingTotal = roundMoney(reimbursementGroups.reduce((sum, group) => sum + Number(group.pendingAmount || 0), 0));
+  const reimbursementCreditTotal = roundMoney(reimbursementGroups.reduce((sum, group) => sum + Number(group.creditAmount || 0), 0));
   const reimbursementPaidTotal = roundMoney(reimbursementGroups.reduce((sum, group) => sum + Number(group.reimbursedAmount || 0), 0));
   const salesTotal = roundMoney(events.reduce((sum, event) => sum + Number(event.saleTotal || 0), 0));
   const collectedTotal = roundMoney(events.reduce((sum, event) => sum + Number(event.collectedAmount || 0), 0));
@@ -5322,8 +5323,9 @@ function getFinanceDashboard() {
       upcomingCollectionTotal,
       supplierDebt,
       reimbursementPendingTotal,
+      reimbursementCreditTotal,
       reimbursementPaidTotal,
-      projectedBalance: roundMoney(collectedTotal + pendingCollectionTotal - supplierDebt - reimbursementPendingTotal),
+      projectedBalance: roundMoney(collectedTotal + pendingCollectionTotal - supplierDebt - reimbursementPendingTotal + reimbursementCreditTotal),
       eventsCount: events.length,
     },
     events,
@@ -9465,6 +9467,7 @@ function _computeErpPurchaseList() {
     const pendingAmount = getPurchasePendingAmount(purchase, amounts.totalAmount);
     const paymentStatus = pendingAmount <= 0 ? "Pagado" : (paidAmount > 0 ? "Parcial" : (purchase.paymentStatus || "Pendiente"));
     const reimbursementPaidAmount = getPurchaseReimbursementPaidAmount(purchase, paidAmount);
+    const reimbursementBalance = getPurchaseReimbursementBalance(purchase, paidAmount);
     const reimbursementPendingAmount = getPurchaseReimbursementPendingAmount(purchase, paidAmount);
     return {
       ...purchase,
@@ -9477,8 +9480,10 @@ function _computeErpPurchaseList() {
       pendingAmount,
       paymentStatus,
       reimbursementPaidAmount,
+      reimbursementBalance,
       reimbursementPendingAmount,
-      reimbursementStatus: reimbursementPendingAmount <= 0 && reimbursementPaidAmount > 0 ? "Reintegrado" : (reimbursementPaidAmount > 0 ? "Parcial" : "Pendiente"),
+      reimbursementCreditAmount: roundMoney(Math.max(0, -reimbursementBalance)),
+      reimbursementStatus: reimbursementBalance < 0 ? "Saldo a favor" : (reimbursementPendingAmount <= 0 && reimbursementPaidAmount > 0 ? "Reintegrado" : (reimbursementPaidAmount > 0 ? "Parcial" : "Pendiente")),
       notes: purchase.notes || "",
     };
   }).sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
@@ -9521,12 +9526,17 @@ function getPurchasePendingAmount(purchase = {}, totalAmount = 0) {
 
 function getPurchaseReimbursementPaidAmount(purchase = {}, paidByPayerAmount = 0) {
   const explicitPaid = Number(purchase.reimbursementPaidAmount || purchase.montoReintegrado || 0);
-  return roundMoney(Math.min(Math.max(0, explicitPaid), Math.max(0, Number(paidByPayerAmount || 0))));
+  return roundMoney(Math.max(0, explicitPaid));
+}
+
+function getPurchaseReimbursementBalance(purchase = {}, paidByPayerAmount = 0) {
+  if (!isReimbursablePurchase(purchase)) return 0;
+  return roundMoney(Number(paidByPayerAmount || 0) - getPurchaseReimbursementPaidAmount(purchase, paidByPayerAmount));
 }
 
 function getPurchaseReimbursementPendingAmount(purchase = {}, paidByPayerAmount = 0) {
   if (!isReimbursablePurchase(purchase)) return 0;
-  return roundMoney(Math.max(0, Number(paidByPayerAmount || 0) - getPurchaseReimbursementPaidAmount(purchase, paidByPayerAmount)));
+  return roundMoney(Math.max(0, getPurchaseReimbursementBalance(purchase, paidByPayerAmount)));
 }
 
 function isReimbursablePurchase(purchase = {}) {
@@ -9557,6 +9567,9 @@ function rememberErpPurchase(purchase) {
   const reimbursementPaidAmount = purchase.reimbursementPaidAmount !== undefined
     ? roundMoney(Number(purchase.reimbursementPaidAmount || 0))
     : getPurchaseReimbursementPaidAmount(previous, paidAmount);
+  const reimbursementBalance = isReimbursablePurchase(purchase)
+    ? roundMoney(paidAmount - reimbursementPaidAmount)
+    : 0;
   const record = {
     id: purchase.id || `compra-${Date.now()}`,
     date: purchase.fecha || getDateOnly(new Date()),
@@ -9576,7 +9589,10 @@ function rememberErpPurchase(purchase) {
     totalAmount: amounts.totalAmount,
     paidAmount,
     pendingAmount,
-    reimbursementPaidAmount: roundMoney(Math.min(reimbursementPaidAmount, paidAmount)),
+    reimbursementPaidAmount,
+    reimbursementBalance,
+    reimbursementPendingAmount: roundMoney(Math.max(0, reimbursementBalance)),
+    reimbursementCreditAmount: roundMoney(Math.max(0, -reimbursementBalance)),
     reimbursementLog: Array.isArray(previous.reimbursementLog) ? previous.reimbursementLog : [],
     notes: purchase.observaciones || "",
     lineItems: purchase.lineItems || [],
@@ -9736,20 +9752,28 @@ function getPayerReimbursementGroups(purchases = getErpPurchaseList()) {
       if (paidByPayer <= 0) return;
       const payer = normalizeText(purchase.fundsSource || "Sin definir");
       const reimbursed = Number(purchase.reimbursementPaidAmount || 0);
-      const pending = Number(purchase.reimbursementPendingAmount || 0);
+      const balance = purchase.reimbursementBalance !== undefined
+        ? Number(purchase.reimbursementBalance || 0)
+        : roundMoney(paidByPayer - reimbursed);
+      const pending = Math.max(0, balance);
+      const credit = Math.max(0, -balance);
       if (!groups[payer]) {
         groups[payer] = {
           payer,
           totalPaid: 0,
           reimbursedAmount: 0,
+          balanceAmount: 0,
           pendingAmount: 0,
+          creditAmount: 0,
           purchaseCount: 0,
           purchases: [],
         };
       }
       groups[payer].totalPaid += paidByPayer;
       groups[payer].reimbursedAmount += reimbursed;
+      groups[payer].balanceAmount += balance;
       groups[payer].pendingAmount += pending;
+      groups[payer].creditAmount += credit;
       groups[payer].purchaseCount += 1;
       groups[payer].purchases.push(purchase);
     });
@@ -9759,9 +9783,11 @@ function getPayerReimbursementGroups(purchases = getErpPurchaseList()) {
       ...group,
       totalPaid: roundMoney(group.totalPaid),
       reimbursedAmount: roundMoney(group.reimbursedAmount),
+      balanceAmount: roundMoney(group.balanceAmount),
       pendingAmount: roundMoney(group.pendingAmount),
+      creditAmount: roundMoney(group.creditAmount),
     }))
-    .sort((a, b) => b.pendingAmount - a.pendingAmount);
+    .sort((a, b) => Math.abs(b.balanceAmount) - Math.abs(a.balanceAmount));
 }
 
 function applyPayerReimbursement(input = {}) {
@@ -9777,16 +9803,16 @@ function applyPayerReimbursement(input = {}) {
     throw new Error("Seleccione a quien se le reintegra la plata.");
   }
 
-  const pendingPurchases = getErpPurchaseList()
+  const payerPurchases = getErpPurchaseList()
     .filter((purchase) => isReimbursablePurchase(purchase))
     .filter((purchase) => normalizeSearchKey(purchase.fundsSource || "").includes(normalizeSearchKey(payer).slice(0, 5)))
-    .filter((purchase) => Number(purchase.reimbursementPendingAmount || 0) > 0)
     .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
 
-  if (!pendingPurchases.length) {
-    throw new Error("No hay reintegros pendientes para esa persona.");
+  if (!payerPurchases.length) {
+    throw new Error("No hay compras pagadas por esa persona.");
   }
 
+  const pendingPurchases = payerPurchases.filter((purchase) => Number(purchase.reimbursementPendingAmount || 0) > 0);
   const debtTotal = roundMoney(pendingPurchases.reduce((sum, purchase) => sum + Number(purchase.reimbursementPendingAmount || 0), 0));
   let remaining = mode === "total" ? debtTotal : roundMoney(parseOptionalNumber(input.amount));
 
@@ -9806,12 +9832,16 @@ function applyPayerReimbursement(input = {}) {
     const currentAmounts = getPurchaseAmounts(current);
     const paidByPayer = getPurchasePaidAmount(current, currentAmounts.totalAmount);
     const previousReimbursed = getPurchaseReimbursementPaidAmount(current, paidByPayer);
-    const nextReimbursed = roundMoney(Math.min(paidByPayer, previousReimbursed + amount));
+    const nextReimbursed = roundMoney(previousReimbursed + amount);
+    const nextBalance = roundMoney(paidByPayer - nextReimbursed);
     const reimbursementLog = Array.isArray(current.reimbursementLog) ? current.reimbursementLog : [];
 
     erpPurchases[index] = {
       ...current,
       reimbursementPaidAmount: nextReimbursed,
+      reimbursementBalance: nextBalance,
+      reimbursementPendingAmount: roundMoney(Math.max(0, nextBalance)),
+      reimbursementCreditAmount: roundMoney(Math.max(0, -nextBalance)),
       reimbursementLog: [
         ...reimbursementLog,
         {
@@ -9834,20 +9864,73 @@ function applyPayerReimbursement(input = {}) {
       provider: purchase.provider,
       description: purchase.description,
       appliedAmount: roundMoney(amount),
-      pendingAmount: roundMoney(Math.max(0, paidByPayer - nextReimbursed)),
+      pendingAmount: roundMoney(Math.max(0, nextBalance)),
+      balanceAmount: nextBalance,
+      creditAmount: roundMoney(Math.max(0, -nextBalance)),
     });
     remaining = roundMoney(remaining - amount);
   }
 
+  if (remaining > 0) {
+    const target = [...payerPurchases].reverse()[0];
+    const index = erpPurchases.findIndex((item) => item.id === target.id);
+    if (index >= 0) {
+      const current = erpPurchases[index];
+      const currentAmounts = getPurchaseAmounts(current);
+      const paidByPayer = getPurchasePaidAmount(current, currentAmounts.totalAmount);
+      const previousReimbursed = getPurchaseReimbursementPaidAmount(current, paidByPayer);
+      const nextReimbursed = roundMoney(previousReimbursed + remaining);
+      const nextBalance = roundMoney(paidByPayer - nextReimbursed);
+      const reimbursementLog = Array.isArray(current.reimbursementLog) ? current.reimbursementLog : [];
+      const amount = remaining;
+      erpPurchases[index] = {
+        ...current,
+        reimbursementPaidAmount: nextReimbursed,
+        reimbursementBalance: nextBalance,
+        reimbursementPendingAmount: roundMoney(Math.max(0, nextBalance)),
+        reimbursementCreditAmount: roundMoney(Math.max(0, -nextBalance)),
+        reimbursementLog: [
+          ...reimbursementLog,
+          {
+            id: `reintegro-${Date.now()}-${applied.length + 1}`,
+            date: paymentDate,
+            amount: roundMoney(amount),
+            paymentMethod,
+            fundsSource,
+            notes,
+            receipt,
+          },
+        ],
+        notes: [current.notes, `Reintegro ${payer} ${paymentDate}: ${formatMoneyText(amount)}${notes ? ` - ${notes}` : ""}`].filter(Boolean).join("\n"),
+        updatedAt: new Date().toISOString(),
+      };
+      applied.push({
+        id: target.id,
+        date: target.date,
+        provider: target.provider,
+        description: target.description,
+        appliedAmount: roundMoney(amount),
+        pendingAmount: roundMoney(Math.max(0, nextBalance)),
+        balanceAmount: nextBalance,
+        creditAmount: roundMoney(Math.max(0, -nextBalance)),
+      });
+      remaining = 0;
+    }
+  }
+
   saveErpPurchases();
 
+  const appliedAmount = roundMoney(applied.reduce((sum, item) => sum + item.appliedAmount, 0));
+  const balanceAfter = roundMoney(debtTotal - appliedAmount);
   return {
     payer,
     requestedAmount: mode === "total" ? debtTotal : roundMoney(parseOptionalNumber(input.amount)),
-    appliedAmount: roundMoney(applied.reduce((sum, item) => sum + item.appliedAmount, 0)),
+    appliedAmount,
     remainingCredit: roundMoney(Math.max(0, remaining)),
     debtBefore: debtTotal,
-    debtAfter: roundMoney(Math.max(0, debtTotal - applied.reduce((sum, item) => sum + item.appliedAmount, 0))),
+    debtAfter: roundMoney(Math.max(0, balanceAfter)),
+    balanceAfter,
+    creditAmount: roundMoney(Math.max(0, -balanceAfter)),
     purchases: applied,
   };
 }

@@ -15193,19 +15193,27 @@
         if (!isPersonalFundsSource(purchase.fundsSource)) return;
         const paidByPerson = Number(purchase.paidAmount || (purchase.paymentStatus === "Pagado" ? getPurchaseTotal(purchase) : 0));
         if (paidByPerson <= 0) return;
-        const reimbursed = Math.min(Number(purchase.reimbursementPaidAmount || 0), paidByPerson);
+        const reimbursed = Math.max(0, Number(purchase.reimbursementPaidAmount || 0));
+        const balance = purchase.reimbursementBalance !== undefined
+          ? Number(purchase.reimbursementBalance || 0)
+          : roundClientMoney(paidByPerson - reimbursed);
         const pending = purchase.reimbursementPendingAmount !== undefined
           ? Number(purchase.reimbursementPendingAmount || 0)
-          : Math.max(0, paidByPerson - reimbursed);
+          : Math.max(0, balance);
+        const credit = purchase.reimbursementCreditAmount !== undefined
+          ? Number(purchase.reimbursementCreditAmount || 0)
+          : Math.max(0, -balance);
         const payer = purchase.fundsSource || "Sin definir";
         if (!groups[payer]) {
-          groups[payer] = { payer, totalPaid: 0, reimbursedAmount: 0, pendingAmount: 0, purchaseCount: 0, purchases: [] };
+          groups[payer] = { payer, totalPaid: 0, reimbursedAmount: 0, balanceAmount: 0, pendingAmount: 0, creditAmount: 0, purchaseCount: 0, purchases: [] };
         }
         groups[payer].totalPaid += paidByPerson;
         groups[payer].reimbursedAmount += reimbursed;
+        groups[payer].balanceAmount += balance;
         groups[payer].pendingAmount += pending;
+        groups[payer].creditAmount += credit;
         groups[payer].purchaseCount += 1;
-        groups[payer].purchases.push({ ...purchase, paidByPerson, reimbursementPaidAmount: reimbursed, reimbursementPendingAmount: pending });
+        groups[payer].purchases.push({ ...purchase, paidByPerson, reimbursementPaidAmount: reimbursed, reimbursementBalance: balance, reimbursementPendingAmount: pending, reimbursementCreditAmount: credit });
       });
 
       return Object.values(groups)
@@ -15213,9 +15221,11 @@
           ...group,
           totalPaid: roundClientMoney(group.totalPaid),
           reimbursedAmount: roundClientMoney(group.reimbursedAmount),
+          balanceAmount: roundClientMoney(group.balanceAmount),
           pendingAmount: roundClientMoney(group.pendingAmount),
+          creditAmount: roundClientMoney(group.creditAmount),
         }))
-        .sort((a, b) => b.pendingAmount - a.pendingAmount);
+        .sort((a, b) => Math.abs(b.balanceAmount) - Math.abs(a.balanceAmount));
     }
 
     function roundClientMoney(value) {
@@ -15260,26 +15270,27 @@
 
     function renderReimbursementBoard(groups = buildReimbursementGroups()) {
       const totalPending = groups.reduce((sum, item) => sum + Number(item.pendingAmount || 0), 0);
+      const totalCredit = groups.reduce((sum, item) => sum + Number(item.creditAmount || 0), 0);
       return `
         <section class="debt-board">
           <div class="debt-board-head">
             <div>
               <h3 style="margin:0;">Reintegros a personas</h3>
-              <p class="subtitle" style="margin:4px 0 0;">Compras pagadas con plata personal y pendientes de devolver.</p>
+              <p class="subtitle" style="margin:4px 0 0;">Compras pagadas con plata personal, pendientes y saldos a favor.</p>
             </div>
-            <strong>${formatCurrency(totalPending)}</strong>
+            <strong>${formatCurrency(totalPending)}${totalCredit ? ` · a favor ${formatCurrency(totalCredit)}` : ""}</strong>
           </div>
           <div class="debt-list">
             ${groups.length ? groups.map((group) => `
               <article class="debt-row">
                 <div>
                   <div class="primary">${escapeHtml(group.payer)}</div>
-                  <div class="secondary">${escapeHtml(group.purchaseCount)} compra(s) pagadas · devuelto ${formatCurrency(group.reimbursedAmount || 0)}</div>
+                  <div class="secondary">${escapeHtml(group.purchaseCount)} compra(s) pagadas · devuelto ${formatCurrency(group.reimbursedAmount || 0)}${group.creditAmount ? ` · a favor ${formatCurrency(group.creditAmount)}` : ""}</div>
                 </div>
-                <div class="debt-amount">${formatCurrency(group.pendingAmount || 0)}</div>
+                <div class="debt-amount">${Number(group.balanceAmount || 0) < 0 ? `A favor ${formatCurrency(Math.abs(Number(group.balanceAmount || 0)))}` : formatCurrency(group.pendingAmount || 0)}</div>
                 <button class="filter" type="button" onclick="showReimbursementDetail('${escapeAttribute(group.payer)}')">Ver / reintegrar</button>
               </article>
-            `).join("") : `<div class="empty">No hay reintegros pendientes. Para usarlo, cargue la compra como pagada y ponga Origen de fondos = Joaquin o German.</div>`}
+            `).join("") : `<div class="empty">No hay reintegros cargados. Para usarlo, cargue la compra como pagada y ponga Origen de fondos = Joaquin o German.</div>`}
           </div>
         </section>
         <section class="debt-board" style="margin-top:14px;">
@@ -15314,6 +15325,7 @@
           <div><span>Vencido</span><strong>${formatCurrency(summary.overdueCollectionTotal || 0)}</strong></div>
           <div><span>Deuda proveedores</span><strong>${formatCurrency(summary.supplierDebt || 0)}</strong></div>
           <div><span>Reintegros pendientes</span><strong>${formatCurrency(summary.reimbursementPendingTotal || 0)}</strong></div>
+          <div><span>Saldo a favor reintegros</span><strong>${formatCurrency(summary.reimbursementCreditTotal || 0)}</strong></div>
           <div><span>Saldo proyectado</span><strong>${formatCurrency(summary.projectedBalance || 0)}</strong></div>
         </section>
         ${renderFinanceEvents(finance.events || [])}
@@ -15342,6 +15354,7 @@
       const supplierDebt = (erpData.purchases || []).reduce((sum, purchase) => sum + getPurchasePending(purchase), 0);
       const reimbursements = buildReimbursementGroups();
       const reimbursementPendingTotal = reimbursements.reduce((sum, group) => sum + Number(group.pendingAmount || 0), 0);
+      const reimbursementCreditTotal = reimbursements.reduce((sum, group) => sum + Number(group.creditAmount || 0), 0);
       const reimbursementPaidTotal = reimbursements.reduce((sum, group) => sum + Number(group.reimbursedAmount || 0), 0);
       const salesTotal = events.reduce((sum, event) => sum + Number(event.saleTotal || 0), 0);
       const collectedTotal = events.reduce((sum, event) => sum + Number(event.collectedAmount || 0), 0);
@@ -15354,8 +15367,9 @@
           overdueCollectionTotal: 0,
           supplierDebt,
           reimbursementPendingTotal,
+          reimbursementCreditTotal,
           reimbursementPaidTotal,
-          projectedBalance: collectedTotal + pendingCollectionTotal - supplierDebt - reimbursementPendingTotal,
+          projectedBalance: collectedTotal + pendingCollectionTotal - supplierDebt - reimbursementPendingTotal + reimbursementCreditTotal,
         },
         events,
         reimbursements,
@@ -16728,14 +16742,20 @@
       const totalPaid = roundClientMoney(group.purchases.reduce((sum, purchase) => sum + Number(purchase.paidByPerson || 0), 0));
       const totalReimbursed = roundClientMoney(group.purchases.reduce((sum, purchase) => sum + Number(purchase.reimbursementPaidAmount || 0), 0));
       const totalPending = roundClientMoney(group.purchases.reduce((sum, purchase) => sum + Number(purchase.reimbursementPendingAmount || 0), 0));
+      const totalCredit = roundClientMoney(group.purchases.reduce((sum, purchase) => sum + Number(purchase.reimbursementCreditAmount || 0), 0));
+      const totalBalance = roundClientMoney(totalPaid - totalReimbursed);
+      const balanceLabel = totalBalance < 0
+        ? `a favor ${formatCurrency(Math.abs(totalBalance))}`
+        : `pendiente ${formatCurrency(totalPending)}`;
 
       document.getElementById("purchase-rank-title").textContent = `Reintegro - ${payer}`;
-      document.getElementById("purchase-rank-subtitle").textContent = `${group.purchaseCount} compra(s) pagadas con plata personal · pendiente ${formatCurrency(totalPending)}`;
+      document.getElementById("purchase-rank-subtitle").textContent = `${group.purchaseCount} compra(s) pagadas con plata personal · ${balanceLabel}`;
       document.getElementById("purchase-rank-body").innerHTML = `
         <section class="rank-modal-summary metric-grid">
           <div><span>Pagado por ${escapeHtml(payer)}</span><strong>${formatCurrency(totalPaid)}</strong></div>
           <div><span>Ya reintegrado</span><strong>${formatCurrency(totalReimbursed)}</strong></div>
           <div><span>Pendiente de reintegro</span><strong>${formatCurrency(totalPending)}</strong></div>
+          <div><span>Saldo a favor</span><strong>${formatCurrency(totalCredit)}</strong></div>
         </section>
         <form class="form-grid" onsubmit="submitPayerReimbursement(event, '${escapeAttribute(payer)}')">
           <div class="form-field">
@@ -16775,24 +16795,31 @@
         </form>
         <h3 style="margin:14px 0 8px;">Compras que componen el reintegro</h3>
         <div class="debt-detail-list">
-          ${group.purchases.map((purchase) => `
-            <div class="debt-detail-row">
-              <div>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</div>
-              <div>
-                <strong>${escapeHtml(purchase.description || "Compra")}</strong>
-                <div class="secondary">${escapeHtml(purchase.provider || "Sin proveedor")} · ${escapeHtml(purchase.eventName || "Sin evento")}</div>
+          ${group.purchases.map((purchase) => {
+            const lineBalance = purchase.reimbursementBalance !== undefined
+              ? Number(purchase.reimbursementBalance || 0)
+              : roundClientMoney(Number(purchase.paidByPerson || 0) - Number(purchase.reimbursementPaidAmount || 0));
+            const lineCredit = Math.max(0, -lineBalance);
+            const linePending = Math.max(0, lineBalance);
+            return `
+              <div class="debt-detail-row">
+                <div>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</div>
+                <div>
+                  <strong>${escapeHtml(purchase.description || "Compra")}</strong>
+                  <div class="secondary">${escapeHtml(purchase.provider || "Sin proveedor")} · ${escapeHtml(purchase.eventName || "Sin evento")}</div>
+                </div>
+                <div>
+                  <span class="secondary">${lineCredit > 0 ? "A favor" : "Pendiente"}</span>
+                  <strong>${formatCurrency(lineCredit > 0 ? lineCredit : linePending)}</strong>
+                  <div class="secondary">Pagado: ${formatCurrency(purchase.paidByPerson || 0)} · Reintegrado: ${formatCurrency(purchase.reimbursementPaidAmount || 0)}</div>
+                </div>
               </div>
-              <div>
-                <span class="secondary">Pendiente</span>
-                <strong>${formatCurrency(purchase.reimbursementPendingAmount || 0)}</strong>
-                <div class="secondary">Pagado: ${formatCurrency(purchase.paidByPerson || 0)} · Reintegrado: ${formatCurrency(purchase.reimbursementPaidAmount || 0)}</div>
-              </div>
-            </div>
-          `).join("")}
+            `;
+          }).join("")}
           <div class="debt-detail-row total">
             <div></div>
-            <div>Total pendiente de reintegro</div>
-            <div>${formatCurrency(totalPending)}</div>
+            <div>${totalBalance < 0 ? "Saldo neto a favor para sueldo" : "Total pendiente de reintegro"}</div>
+            <div>${formatCurrency(totalBalance < 0 ? Math.abs(totalBalance) : totalPending)}</div>
           </div>
         </div>
         <h3 style="margin:14px 0 8px;">Historial de reintegros</h3>
@@ -25425,7 +25452,15 @@
         ${field("Medio de pago", purchase.paymentMethod || "Sin definir")}
         ${field("Origen de fondos", purchase.fundsSource || "Sin definir")}
         ${purchase.invoiceType ? field("Comprobante", purchase.invoiceType) : ""}
-        ${isPersonal ? field(`Reintegro (${purchase.fundsSource || "personal"})`, `${purchase.reimbursementStatus || "Pendiente"} · pendiente ${formatCurrency(purchase.reimbursementPendingAmount || 0)}`) : ""}
+        ${isPersonal ? (() => {
+          const reimbursementBalance = purchase.reimbursementBalance !== undefined
+            ? Number(purchase.reimbursementBalance || 0)
+            : Number(purchase.paidAmount || 0) - Number(purchase.reimbursementPaidAmount || 0);
+          const reimbursementLabel = reimbursementBalance < 0
+            ? `a favor ${formatCurrency(Math.abs(reimbursementBalance))}`
+            : `pendiente ${formatCurrency(purchase.reimbursementPendingAmount || 0)}`;
+          return field(`Reintegro (${purchase.fundsSource || "personal"})`, `${purchase.reimbursementStatus || "Pendiente"} · ${reimbursementLabel}`);
+        })() : ""}
 
         <!-- Bloque colapsable de ítems -->
         ${items.length > 0 ? `
