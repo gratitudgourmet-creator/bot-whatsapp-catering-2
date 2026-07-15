@@ -17270,7 +17270,7 @@
               <div class="purchase-board-value">${escapeHtml(purchase.fundsSource || purchase.paymentMethod || "Sin definir")}</div>
             </div>
             <div class="purchase-card-actions" onclick="event.stopPropagation()">
-              <button class="${purchase.paymentStatus === "Pagado" ? "purchase-secondary-action" : "purchase-primary-action"}" type="button" onclick="runPurchasePrimaryAction('${escapeAttribute(purchase.id)}')">${escapeHtml(getPurchasePrimaryActionLabel(purchase))}</button>
+              <button class="purchase-secondary-action" type="button" onclick="showPurchaseActions('${escapeAttribute(purchase.id)}')">Ver detalle</button>
               <button class="purchase-expand-action" type="button" aria-label="Ver productos" onclick="togglePurchaseCard('${escapeAttribute(purchase.id)}')">${expanded ? "⌃" : "⌄"}</button>
             </div>
           </div>
@@ -20257,13 +20257,15 @@
         return;
       }
 
+      const _matchSearch = (item) => normalizeSearch(`${item.type} ${item.title} ${item.detail}`).includes(term);
+      const _cap = (arr, n) => arr.filter(_matchSearch).slice(0, n);
       const results = [
-        ...(erpData.events || []).map((item) => ({ type: "Evento", title: item.name, detail: `${item.clientName || ""} ${item.serviceType || ""}`, action: () => { showEventOverview(item.id); closeGlobalSearch(); } })),
-        ...(erpData.quotes || []).map((item) => ({ type: "Presupuesto", title: item.eventName, detail: `${formatCurrency(item.priceTotal)} ${item.status}`, action: () => { showWorkspaceView("commercial", { anchor: "commercial-quotes-section" }); closeGlobalSearch(); } })),
-        ...(erpData.customers || []).map((item) => ({ type: "Cliente", title: item.fullName || item.contactName, detail: `${item.displayPhone || ""} Cierre ${formatPercent(item.closeRate || 0)}`, action: () => { showCustomerDetail(item.id); closeGlobalSearch(); } })),
-        ...(erpData.purchases || []).map((item) => ({ type: "Compra", title: item.provider, detail: `${item.description || ""} ${item.eventName || ""}`, action: () => { showWorkspaceView("purchases", { anchor: "purchase-sheet-section" }); closeGlobalSearch(); } })),
-        ...(allRecipes || []).map((item) => ({ type: "Receta", title: item.name, detail: `${item.category || ""} ${formatCurrency(item.costPerPortion)}`, action: () => { showRecipeDetail(item.id); closeGlobalSearch(); } })),
-      ].filter((item) => normalizeSearch(`${item.type} ${item.title} ${item.detail}`).includes(term)).slice(0, 10);
+        ..._cap((erpData.events || []).map((item) => ({ type: "Evento", title: item.name, detail: `${item.clientName || ""} ${item.serviceType || ""}`, action: () => { showEventOverview(item.id); closeGlobalSearch(); } })), 4),
+        ..._cap((erpData.quotes || []).map((item) => ({ type: "Presupuesto", title: item.eventName, detail: `${formatCurrency(item.priceTotal)} ${item.status}`, action: () => { showWorkspaceView("commercial", { anchor: "commercial-quotes-section" }); closeGlobalSearch(); } })), 3),
+        ..._cap((erpData.customers || []).map((item) => ({ type: "Cliente", title: item.fullName || item.contactName, detail: `${item.displayPhone || ""} Cierre ${formatPercent(item.closeRate || 0)}`, action: () => { showCustomerDetail(item.id); closeGlobalSearch(); } })), 3),
+        ..._cap((erpData.purchases || []).map((item) => ({ type: "Compra", title: item.provider, detail: `${item.description || ""} ${item.eventName || ""}`, action: () => { showWorkspaceView("purchases", { anchor: "purchase-sheet-section" }); closeGlobalSearch(); } })), 4),
+        ..._cap((allRecipes || []).map((item) => ({ type: "Receta", title: item.name, detail: `${item.category || ""} ${formatCurrency(item.costPerPortion)}`, action: () => { showRecipeDetail(item.id); closeGlobalSearch(); } })), 3),
+      ];
 
       container.innerHTML = results.length
         ? results.map((item, i) => `<div class="erp-card" style="cursor:pointer" data-search-idx="${i}"><div class="primary">${escapeHtml(item.type)} | ${escapeHtml(item.title || "")}</div><div class="secondary">${escapeHtml(item.detail || "")}</div></div>`).join("")
@@ -25374,17 +25376,80 @@
       const purchase = (erpData.purchases || []).find((item) => item.id === id);
       if (!purchase) return;
 
+      const total = getPurchaseTotal(purchase);
+      const paid = Number(purchase.paidAmount || (purchase.paymentStatus === "Pagado" ? total : 0));
+      const pending = getPurchasePending(purchase);
+      const items = getPurchaseItemsForDisplay(purchase);
+      const statusClass = getPurchaseStatusClass(purchase.paymentStatus || "Pendiente");
+      const isPersonal = isPersonalFundsSource(purchase.fundsSource);
+
+      // Acciones contextuales segun estado
+      let primaryAction = "";
+      let secondaryAction = `<button class="filter" style="flex:1" onclick="hidePurchaseActions(); editPurchase('${escapeAttribute(purchase.id)}')">Editar</button>`;
+      let destructiveAction = `<button class="reject" style="flex:1" onclick="hidePurchaseActions(); deletePurchase('${escapeAttribute(purchase.id)}')">Eliminar</button>`;
+      if (purchase.paymentStatus === "Pagado") {
+        primaryAction = "";
+      } else if (purchase.paymentStatus === "Parcial") {
+        primaryAction = `<button class="approve" style="flex:1" onclick="hidePurchaseActions(); editPurchase('${escapeAttribute(purchase.id)}')">Completar pago</button>`;
+      } else {
+        primaryAction = `<button class="approve" style="flex:1" onclick="hidePurchaseActions(); editPurchase('${escapeAttribute(purchase.id)}')">Registrar pago</button>`;
+      }
+
       document.getElementById("purchase-action-title").textContent = purchase.provider || "Compra";
-      document.getElementById("purchase-action-subtitle").textContent = `${formatShortDate(purchase.date) || purchase.date || ""} · ${formatCurrency(purchase.totalAmount || 0)}`;
+      document.getElementById("purchase-action-subtitle").textContent = `${formatShortDate(purchase.date) || purchase.date || ""}`;
       document.getElementById("purchase-action-body").innerHTML = `
-        ${field("Producto", purchase.description || "Sin descripcion")}
+        <!-- KPIs financieros -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+          <div style="background:var(--surface-alt,var(--bg));border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em;">Total</div>
+            <div style="font-size:16px;font-weight:700;">${formatCurrency(total)}</div>
+          </div>
+          <div style="background:var(--surface-alt,var(--bg));border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em;">Pagado</div>
+            <div style="font-size:16px;font-weight:700;color:${paid > 0 ? "var(--green,#22c55e)" : "var(--muted)"};">${formatCurrency(paid)}</div>
+          </div>
+          <div style="background:var(--surface-alt,var(--bg));border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em;">Saldo</div>
+            <div style="font-size:16px;font-weight:700;color:${pending > 0 ? "var(--red,#ef4444)" : "var(--muted)"};">${formatCurrency(pending)}</div>
+          </div>
+        </div>
+
+        <!-- Badge de estado -->
+        <div style="margin-bottom:14px;">
+          <span class="purchase-status-badge ${statusClass}" style="font-size:13px;padding:4px 10px;">${escapeHtml(purchase.paymentStatus || "Pendiente")}</span>
+        </div>
+
+        <!-- Campos de info -->
         ${field("Evento", purchase.eventName || "Sin evento")}
-        ${field("Estado", purchase.paymentStatus || "Pendiente")}
-        ${field("Medio / origen", [purchase.paymentMethod, purchase.fundsSource].filter(Boolean).join(" · ") || "Sin definir")}
-        ${isPersonalFundsSource(purchase.fundsSource) ? field(`Reintegro ${purchase.fundsSource || "personal"}`, `${purchase.reimbursementStatus || "Pendiente"} · pendiente ${formatCurrency(purchase.reimbursementPendingAmount || 0)}`) : ""}
-        <div class="actions">
-          <button class="approve" onclick="hidePurchaseActions(); editPurchase('${escapeAttribute(purchase.id)}')">Editar compra</button>
-          <button class="reject" onclick="hidePurchaseActions(); deletePurchase('${escapeAttribute(purchase.id)}')">Eliminar compra</button>
+        ${purchase.description ? field("Descripción", purchase.description) : ""}
+        ${field("Medio de pago", purchase.paymentMethod || "Sin definir")}
+        ${field("Origen de fondos", purchase.fundsSource || "Sin definir")}
+        ${purchase.invoiceType ? field("Comprobante", purchase.invoiceType) : ""}
+        ${isPersonal ? field(`Reintegro (${purchase.fundsSource || "personal"})`, `${purchase.reimbursementStatus || "Pendiente"} · pendiente ${formatCurrency(purchase.reimbursementPendingAmount || 0)}`) : ""}
+
+        <!-- Bloque colapsable de ítems -->
+        ${items.length > 0 ? `
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:14px 0 4px;">
+          <button type="button"
+            onclick="const b=this.nextElementSibling;const open=b.style.display!=='none';b.style.display=open?'none':'block';this.querySelector('.pad-chevron').style.transform=open?'':'rotate(90deg)';"
+            style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface-alt,var(--bg));border:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);text-align:left;">
+            <span>Ítems de la compra (${items.length})</span>
+            <svg class="pad-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform .2s;flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <div style="display:none;">
+            ${renderPurchaseLinePanel(purchase)}
+          </div>
+        </div>
+        ` : ""}
+
+        <!-- Notas -->
+        ${purchase.notes ? field("Notas", purchase.notes) : ""}
+
+        <!-- Acciones -->
+        <div class="actions" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;">
+          ${primaryAction}
+          ${secondaryAction}
+          ${destructiveAction}
         </div>
       `;
       document.getElementById("purchase-action-detail").classList.add("open");
