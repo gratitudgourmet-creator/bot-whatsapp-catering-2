@@ -25554,8 +25554,9 @@
         return;
       }
       box.className = "purchase-option-dialog open";
+      const isEditDraft = Boolean(draft.payload.id);
       box.innerHTML = `
-        <strong>Borrador guardado</strong>
+        <strong>${isEditDraft ? "Borrador de edición guardado" : "Borrador guardado"}</strong>
         <span class="secondary">${escapeHtml(formatDate(draft.savedAt) || "")}: ${escapeHtml(draft.payload.provider || "Sin proveedor")} · ${(draft.payload.items || []).length} producto(s)</span>
         <div class="actions" style="margin-top:8px;">
           <button class="filter" type="button" onclick="restorePurchaseDraft()">Restaurar borrador</button>
@@ -25567,8 +25568,15 @@
     function restorePurchaseDraft() {
       const draft = getPurchaseDraft();
       if (!draft?.payload) return;
-      fillPurchaseForm(draft.payload);
-      showNotice("Borrador de compra restaurado.", "success");
+      const form = document.getElementById("purchase-form");
+      const payload = { ...draft.payload };
+      if (!form.elements.id.value && payload.id) {
+        payload.id = "";
+        showNotice("Borrador restaurado como compra nueva para evitar modificar una compra anterior.", "success");
+      } else {
+        showNotice("Borrador de compra restaurado.", "success");
+      }
+      fillPurchaseForm(payload);
     }
 
     function fillPurchaseForm(data = {}) {
