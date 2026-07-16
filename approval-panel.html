@@ -880,6 +880,11 @@
     /* 1. Modal size — override extra-wide, constrain to 840px */
     #erp-form-modal.guided-event-modal .detail-panel {
       max-width: min(840px, calc(100vw - 24px));
+      max-height: min(92vh, 900px);
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      position: relative;
       width: min(840px, calc(100vw - 24px));
       padding: 20px;
     }
@@ -978,6 +983,7 @@
     #erp-form-modal.guided-event-modal .guided-form-body,
     #erp-form-modal.guided-event-modal .guided-form form.guided-form-body {
       display: block;
+      min-height: 0;
       padding: 20px 0 0;
     }
 
@@ -1039,6 +1045,60 @@
 
     /* 14. Remove extra chrome from erp-section */
     #erp-form-modal.guided-event-modal #erp-event-card { padding: 0; overflow: visible; }
+
+    .event-context-panel {
+      background: #fff;
+      border: 1px solid rgba(214, 222, 230, .9);
+      border-radius: 14px;
+      box-shadow: 0 24px 55px rgba(15, 27, 42, .18);
+      display: grid;
+      gap: 14px;
+      max-height: calc(100% - 96px);
+      min-width: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 16px;
+      position: absolute;
+      right: 20px;
+      top: 72px;
+      width: min(430px, calc(100% - 40px));
+      z-index: 24;
+    }
+
+    .event-context-panel.hidden {
+      display: none;
+    }
+
+    .event-context-head {
+      align-items: start;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .event-context-head h3 {
+      font-size: 17px;
+      margin: 0;
+    }
+
+    .event-context-head p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      margin: 3px 0 0;
+    }
+
+    .event-context-panel .quick-form {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .event-context-panel .quick-form .full,
+    .event-context-panel .quick-form .actions {
+      grid-column: 1 / -1;
+    }
 
     /* 15. Mobile ≤600px: progress bar instead of horizontal tabs */
     @media (max-width: 600px) {
@@ -1105,6 +1165,19 @@
       #erp-form-modal.guided-event-modal .guided-form-body,
       #erp-form-modal.guided-event-modal .guided-form form.guided-form-body {
         padding: 16px 0 0;
+      }
+      .event-context-panel {
+        border-radius: 16px 16px 0 0;
+        bottom: 0;
+        left: 0;
+        max-height: min(82dvh, 720px);
+        max-height: min(82vh, 720px);
+        right: 0;
+        top: auto;
+        width: 100%;
+      }
+      .event-context-panel .quick-form {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -8571,6 +8644,11 @@
       overflow: hidden;
     }
 
+    body.modal-open {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
     .shell-sidebar-toggle,
     .shell-drawer-close {
       display: none;
@@ -9528,10 +9606,10 @@
                 <div class="guided-form-panel">
               <div class="form-field full">
                 <label>Servicio</label>
-                <div id="service-options" class="option-checks"></div>
+                <div class="option-checks" data-legacy-service-options></div>
                 <div class="inline-action-field" style="margin-top:8px;">
-                  <input id="new-service-option" placeholder="Agregar servicio" onkeydown="handleOperationalOptionKey(event, 'service', 'new-service-option')">
-                  <button class="filter action-secondary" type="button" onclick="addOperationalOptionFromPanel('service', 'new-service-option')">Agregar</button>
+                  <input data-legacy-service-add placeholder="Agregar servicio" onkeydown="handleOperationalOptionKey(event, 'service', this)">
+                  <button class="filter action-secondary" type="button" onclick="addOperationalOptionFromPanel('service', this.previousElementSibling)">Agregar</button>
                 </div>
               </div>
                 </div>
@@ -9728,6 +9806,8 @@
             </form>
             </div>
           </section>
+
+          <section id="event-context-panel" class="event-context-panel hidden" aria-live="polite"></section>
 
           <section id="erp-quote-card" class="erp-section erp-modal-section">
             <h2>Presupuesto rentable</h2>
@@ -14747,11 +14827,13 @@
       document.getElementById("erp-form-modal-title").textContent = "Crear evento";
       document.getElementById("erp-event-card").classList.remove("hidden");
       document.getElementById("erp-quote-card").classList.add("hidden");
+      closeEventContextPanel();
       if (!document.querySelector("#event-menu-items .menu-line")) renderEventMenuLines();
       if (!document.querySelector("#event-stock-items .stock-line")) renderEventStockLines();
       if (!document.querySelector("#event-operational-checklist .event-operational-category")) renderEventOperationalChecklist();
       initEventGuidedForm();
       document.getElementById("erp-form-modal").classList.add("open");
+      document.body.classList.add("modal-open");
     }
 
     function showBlankErpEventForm() {
@@ -14765,7 +14847,9 @@
       document.getElementById("erp-form-modal-title").textContent = "Presupuesto rentable";
       document.getElementById("erp-event-card").classList.add("hidden");
       document.getElementById("erp-quote-card").classList.remove("hidden");
+      closeEventContextPanel();
       document.getElementById("erp-form-modal").classList.add("open");
+      document.body.classList.add("modal-open");
     }
 
     function ensureGlobalErpFormModal() {
@@ -14776,7 +14860,9 @@
     }
 
     function hideErpForms() {
+      closeEventContextPanel();
       document.getElementById("erp-form-modal").classList.remove("open");
+      document.body.classList.remove("modal-open");
     }
 
     function closeErpForms(event) {
@@ -21774,18 +21860,19 @@
     }
 
     function renderCheckGroup(containerId, fieldName, options, selectedText) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
       const selected = new Set(String(selectedText || "").split(",").map((item) => normalizeSearch(item)).filter(Boolean));
       const selectedValues = (options || []).filter((option) => selected.has(normalizeSearch(option)));
       const type = fieldName === "serviceType" ? "service" : "moment";
-      const addInputId = fieldName === "serviceType" ? "new-service-option" : "new-moment-option";
-      document.getElementById(containerId).innerHTML = `
+      container.innerHTML = `
         <div class="operation-picker-shell" data-operation-picker="${escapeAttribute(fieldName)}">
           <button class="operation-picker-trigger" type="button" onclick="toggleOperationPicker('${escapeAttribute(containerId)}')">
-            <span>${selectedValues.length ? `${selectedValues.length} seleccionado(s)` : (fieldName === "serviceType" ? "Seleccionar servicios" : "Seleccionar momentos")}</span>
+            <span data-operation-picker-label>${selectedValues.length ? `${selectedValues.length} seleccionado(s)` : (fieldName === "serviceType" ? "Seleccionar servicios" : "Seleccionar momentos")}</span>
             <span>+</span>
           </button>
-          <div class="operation-chip-list">
-            ${selectedValues.map((item) => `<span class="operation-chip">${escapeHtml(item)} <button type="button" onclick="setOperationPickerValue('${escapeAttribute(fieldName)}', '${escapeAttribute(item)}', false)">x</button></span>`).join("")}
+          <div class="operation-chip-list" data-operation-picker-chips>
+            ${renderOperationPickerChips(fieldName, selectedValues)}
           </div>
           <div class="operation-picker-panel" hidden>
             <input type="search" placeholder="Buscar" oninput="filterOperationPickerOptions(this)">
@@ -21796,8 +21883,8 @@
               }).join("")}
             </div>
             <div class="inline-action-field">
-              <input id="${escapeAttribute(addInputId)}" placeholder="${fieldName === "serviceType" ? "Agregar servicio" : "Agregar momento"}" onkeydown="handleOperationPickerAddKey(event, '${escapeAttribute(type)}', '${escapeAttribute(addInputId)}')">
-              <button class="filter action-secondary" type="button" onclick="addOperationPickerOption('${escapeAttribute(type)}', '${escapeAttribute(addInputId)}')">Agregar</button>
+              <input data-operation-picker-new-option placeholder="${fieldName === "serviceType" ? "Agregar servicio" : "Agregar momento"}" onkeydown="handleOperationPickerAddKey(event, '${escapeAttribute(type)}', this)">
+              <button class="filter action-secondary" type="button" onclick="addOperationPickerOption('${escapeAttribute(type)}', this.previousElementSibling)">Agregar</button>
             </div>
           </div>
         </div>
@@ -21808,6 +21895,12 @@
           }).join("")}
         </div>
       `;
+    }
+
+    function renderOperationPickerChips(fieldName, selectedValues) {
+      return selectedValues
+        .map((item) => `<span class="operation-chip">${escapeHtml(item)} <button type="button" onclick="setOperationPickerValue('${escapeAttribute(fieldName)}', '${escapeAttribute(item)}', false)">x</button></span>`)
+        .join("");
     }
 
     function toggleOperationPicker(containerId) {
@@ -21827,19 +21920,41 @@
         if (input.value !== value) return;
         input.checked = checked;
       });
-      const options = getOperationalOptions();
-      renderCheckGroup(fieldName === "serviceType" ? "service-options" : "moment-options", fieldName, fieldName === "serviceType" ? options.services || [] : options.moments || [], getCheckedOptionText(fieldName));
+      document.querySelectorAll(`input[data-visible-field="${fieldName}"]`).forEach((input) => {
+        if (input.value !== value) return;
+        input.checked = checked;
+      });
+      updateOperationPickerDisplay(fieldName);
       updateEventGuidedSummary();
     }
 
-    function handleOperationPickerAddKey(event, type, inputId) {
-      if (event.key !== "Enter") return;
-      event.preventDefault();
-      addOperationPickerOption(type, inputId);
+    function updateOperationPickerDisplay(fieldName) {
+      const shell = document.querySelector(`[data-operation-picker="${fieldName}"]`);
+      if (!shell) return;
+      const options = getOperationalOptions();
+      const list = fieldName === "serviceType" ? options.services || [] : options.moments || [];
+      const selected = new Set(getCheckedOptionText(fieldName).split(",").map((item) => normalizeSearch(item)).filter(Boolean));
+      const selectedValues = list.filter((option) => selected.has(normalizeSearch(option)));
+      const label = shell.querySelector("[data-operation-picker-label]");
+      if (label) label.textContent = selectedValues.length ? `${selectedValues.length} seleccionado(s)` : (fieldName === "serviceType" ? "Seleccionar servicios" : "Seleccionar momentos");
+      const chips = shell.querySelector("[data-operation-picker-chips]");
+      if (chips) chips.innerHTML = renderOperationPickerChips(fieldName, selectedValues);
     }
 
-    function addOperationPickerOption(type, inputId) {
-      const input = document.getElementById(inputId);
+    function handleOperationPickerAddKey(event, type, inputRef) {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      addOperationPickerOption(type, inputRef);
+    }
+
+    function getInputFromRef(inputRef) {
+      if (!inputRef) return null;
+      if (typeof inputRef !== "string") return inputRef;
+      return document.getElementById(inputRef);
+    }
+
+    function addOperationPickerOption(type, inputRef) {
+      const input = getInputFromRef(inputRef);
       const value = input?.value?.trim() || "";
       if (!value) return;
       const fieldName = type === "service" ? "serviceType" : "eventMoments";
@@ -21849,6 +21964,7 @@
       options[key] = Array.from(new Set([...(options[key] || []), value]));
       const selected = [getCheckedOptionText(fieldName), value].filter(Boolean).join(", ");
       renderCheckGroup(fieldName === "serviceType" ? "service-options" : "moment-options", fieldName, options[key], selected);
+      toggleOperationPicker(fieldName === "serviceType" ? "service-options" : "moment-options");
     }
 
     function getCheckedOptionText(fieldName) {
@@ -22236,9 +22352,9 @@
         .filter((item) => item.description || item.total > 0);
     }
 
-    async function addOperationalOptionFromPanel(type, inputId) {
-      const input = document.getElementById(inputId);
-      const value = input.value.trim();
+    async function addOperationalOptionFromPanel(type, inputRef) {
+      const input = getInputFromRef(inputRef);
+      const value = input?.value?.trim() || "";
       if (!value) return;
       const selectedBefore = {
         serviceType: getCheckedOptionText("serviceType"),
@@ -22268,20 +22384,25 @@
       showNotice("Opcion agregada.");
     }
 
-    function handleOperationalOptionKey(event, type, inputId) {
+    function handleOperationalOptionKey(event, type, inputRef) {
       if (event.key !== "Enter") return;
       event.preventDefault();
       event.stopPropagation();
-      addOperationalOptionFromPanel(type, inputId);
+      addOperationalOptionFromPanel(type, inputRef);
     }
 
     function showQuickCustomerForm() {
       const form = document.getElementById("erp-event-form");
       const currentName = form.elements.clientName.value || "";
-      document.getElementById("detail-title").textContent = "Crear cliente";
-      document.getElementById("detail-subtitle").textContent = "Se asocia al evento que estas cargando.";
-      document.getElementById("detail-fields").innerHTML = `
-        <form class="form-grid quick-form" onsubmit="saveQuickCustomer(event)">
+      openEventContextPanel(`
+        <div class="event-context-head">
+          <div>
+            <h3>Nuevo cliente</h3>
+            <p>Se guarda y vuelve al evento sin cerrar esta carga.</p>
+          </div>
+          <button class="close action-ghost" type="button" onclick="closeEventContextPanel()" aria-label="Volver al evento">×</button>
+        </div>
+        <form class="quick-form" onsubmit="saveQuickCustomer(event)">
           <div class="form-field full">
             <label>Nombre</label>
             <input name="fullName" required value="${escapeAttribute(currentName)}">
@@ -22303,11 +22424,11 @@
             <textarea name="dietaryRestrictions"></textarea>
           </div>
           <div class="actions full">
-            <button class="approve" type="submit">Guardar cliente</button>
+            <button class="filter action-ghost" type="button" onclick="closeEventContextPanel()">Cancelar</button>
+            <button class="approve action-primary" type="submit">Guardar cliente</button>
           </div>
         </form>
-      `;
-      document.getElementById("detail").classList.add("open");
+      `);
     }
 
     async function saveQuickCustomer(event) {
@@ -22326,17 +22447,99 @@
       }
 
       const customerName = result.customer.fullName || payload.fullName || "";
-      document.getElementById("erp-event-form").elements.clientName.value = customerName;
       allCustomers = [result.customer, ...allCustomers.filter((customer) => customer.id !== result.customer.id)];
       renderErpCustomerOptions();
-      hideDetail();
+      document.getElementById("erp-event-form").elements.clientName.value = customerName;
+      updateEventGuidedSummary();
+      closeEventContextPanel();
       showNotice("Cliente creado y asociado al evento.");
     }
 
     function showQuickVenueForm() {
       const form = document.getElementById("erp-event-form");
       const currentVenue = form.elements.venue.value || "";
-      showVenueForm("", { name: currentVenue });
+      openEventContextPanel(`
+        <div class="event-context-head">
+          <div>
+            <h3>Nuevo lugar</h3>
+            <p>Podés cargar solo el nombre y completar el resto más adelante.</p>
+          </div>
+          <button class="close action-ghost" type="button" onclick="closeEventContextPanel()" aria-label="Volver al evento">×</button>
+        </div>
+        <form class="quick-form" onsubmit="saveQuickVenue(event)">
+          <div class="form-field full">
+            <label>Nombre del lugar</label>
+            <input name="name" required value="${escapeAttribute(currentVenue)}">
+          </div>
+          <div class="form-field full">
+            <label>Dirección</label>
+            <input name="address" placeholder="Calle, salón, referencia">
+          </div>
+          <div class="form-field">
+            <label>Teléfono</label>
+            <input name="phone">
+          </div>
+          <div class="form-field">
+            <label>Contacto</label>
+            <input name="contactName">
+          </div>
+          <div class="form-field full">
+            <label>Email</label>
+            <input name="email" type="email">
+          </div>
+          <div class="form-field full">
+            <label>Referencia operativa</label>
+            <input name="reference" placeholder="Ingreso, estacionamiento, salón, seguridad">
+          </div>
+          <div class="form-field full">
+            <label>Notas</label>
+            <textarea name="notes"></textarea>
+          </div>
+          <div class="actions full">
+            <button class="filter action-ghost" type="button" onclick="closeEventContextPanel()">Cancelar</button>
+            <button class="approve action-primary" type="submit">Guardar lugar</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function openEventContextPanel(html) {
+      const panel = document.getElementById("event-context-panel");
+      if (!panel) return;
+      panel.innerHTML = html;
+      panel.classList.remove("hidden");
+      window.setTimeout(() => panel.querySelector("input, select, textarea, button")?.focus(), 30);
+    }
+
+    function closeEventContextPanel() {
+      const panel = document.getElementById("event-context-panel");
+      if (!panel) return;
+      panel.classList.add("hidden");
+      panel.innerHTML = "";
+    }
+
+    async function saveQuickVenue(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      const response = await fetch("/api/venue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await readJsonResponse(response);
+
+      if (!result.ok) {
+        showNotice(result.error || "No se pudo guardar el lugar.", "error");
+        return;
+      }
+
+      erpData.venues = result.venues || erpData.venues || [];
+      const venueName = result.venue?.name || payload.name || "";
+      renderErpVenueOptions();
+      document.getElementById("erp-event-form").elements.venue.value = venueName;
+      updateEventGuidedSummary();
+      closeEventContextPanel();
+      showNotice("Lugar creado y asociado al evento.");
     }
 
     async function saveErpEvent(event) {
