@@ -9001,7 +9001,7 @@
 <body>
   <header>
     <div class="header-inner">
-      <button id="shell-menu-button" class="shell-menu-button" type="button" aria-label="Abrir navegación" aria-controls="workspace-navigation" aria-expanded="false" onclick="openShellDrawer()">☰</button>
+      <button id="shell-menu-button" class="shell-menu-button" type="button" aria-label="Abrir navegación" aria-controls="workspace-navigation" aria-expanded="false">☰</button>
       <div class="brand-lockup">
         <img class="brand-logo" src="/assets/gratitud-gourmet-logo.png" alt="Gratitud Gourmet">
         <div>
@@ -9032,7 +9032,7 @@
       </div>
     </div>
   </header>
-  <button id="shell-drawer-overlay" class="shell-drawer-overlay" type="button" aria-label="Cerrar navegación" onclick="closeShellDrawer()"></button>
+  <button id="shell-drawer-overlay" class="shell-drawer-overlay" type="button" aria-label="Cerrar navegación"></button>
 
   <section id="login-screen" class="login-screen open">
     <form id="login-form" class="login-card">
@@ -9068,8 +9068,8 @@
     </div>
 
     <div id="workspace-navigation" class="workspace-tabs" aria-label="Navegación principal">
-      <button id="shell-sidebar-toggle" class="shell-sidebar-toggle" type="button" onclick="toggleShellSidebar()" aria-expanded="true">Colapsar</button>
-      <button id="shell-drawer-close" class="shell-drawer-close" type="button" onclick="closeShellDrawer()" aria-label="Cerrar navegación">Cerrar navegación <span>×</span></button>
+      <button id="shell-sidebar-toggle" class="shell-sidebar-toggle" type="button" aria-expanded="true">Colapsar</button>
+      <button id="shell-drawer-close" class="shell-drawer-close" type="button" aria-label="Cerrar navegación">Cerrar navegación <span>×</span></button>
       <div class="workspace-group" data-nav-group="direction">
         <button class="workspace-group-trigger" type="button">Dirección</button>
         <div class="workspace-group-panel">
@@ -12038,6 +12038,7 @@
         toggleWorkspaceGroup(button.closest(".workspace-group"));
       });
     });
+    setupShellControls();
     document.getElementById("shell-quick-action")?.addEventListener("click", runShellQuickAction);
     document.getElementById("mobile-shell-quick-action")?.addEventListener("click", runShellQuickAction);
 
@@ -12572,6 +12573,30 @@
       document.getElementById("shell-menu-button")?.setAttribute("aria-expanded", "false");
     }
 
+    function setupShellControls() {
+      const menuButton = document.getElementById("shell-menu-button");
+      const drawerClose = document.getElementById("shell-drawer-close");
+      const drawerOverlay = document.getElementById("shell-drawer-overlay");
+      const sidebarToggle = document.getElementById("shell-sidebar-toggle");
+
+      if (menuButton && !menuButton.dataset.shellBound) {
+        menuButton.dataset.shellBound = "true";
+        menuButton.addEventListener("click", openShellDrawer);
+      }
+      if (drawerClose && !drawerClose.dataset.shellBound) {
+        drawerClose.dataset.shellBound = "true";
+        drawerClose.addEventListener("click", closeShellDrawer);
+      }
+      if (drawerOverlay && !drawerOverlay.dataset.shellBound) {
+        drawerOverlay.dataset.shellBound = "true";
+        drawerOverlay.addEventListener("click", closeShellDrawer);
+      }
+      if (sidebarToggle && !sidebarToggle.dataset.shellBound) {
+        sidebarToggle.dataset.shellBound = "true";
+        sidebarToggle.addEventListener("click", toggleShellSidebar);
+      }
+    }
+
     function toggleWorkspaceGroup(group) {
       if (!group) return;
       const willExpand = !group.classList.contains("expanded");
@@ -12617,6 +12642,10 @@
       button.textContent = collapsed ? "Expandir" : "Colapsar";
       button.setAttribute("aria-expanded", String(!collapsed));
     }
+
+    window.openShellDrawer = openShellDrawer;
+    window.closeShellDrawer = closeShellDrawer;
+    window.toggleShellSidebar = toggleShellSidebar;
 
     function prepareShellNavigation() {
       const shortcuts = {
