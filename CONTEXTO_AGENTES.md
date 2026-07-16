@@ -492,3 +492,33 @@ manuales en PDF/DOCX para el personal.
   (commit `60ddca4`) por ser superficie sensible (tokens, expiracion, permisos).
 - Mejorar mensajes de commit: muchos commits anteriores son genericos
   ("resumen", "varios", "cambios") sin describir que se toco.
+
+---
+
+## [2026-07-16] Codex (higiene Git y seguridad de datos)
+
+**Criterio acordado:** el repositorio debe contener codigo, documentacion tecnica
+y scripts necesarios para operar/desplegar el ERP. No deben versionarse datos vivos,
+secretos locales, bases SQLite, sesiones, caches, capturas generadas por pruebas ni
+paquetes temporales de deploy.
+
+**Reglas operativas para agentes:**
+- No commitear `catering.db`, `*.db`, `*.sqlite`, `*.sqlite3`, `*.db-shm` ni `*.db-wal`.
+- No commitear JSON operativos/locales: `*-erp.json`, `config-bot.json`,
+  `bot-state.json`, `clientes-bot.json`, `mensajes-bot.json`, `costos-bot.json`,
+  `precios-productos-bot.json`, `recetas-bot.json`, `rescate-compra-pendiente.json`,
+  `inventario-sesion.json` ni `comandas-db.json`.
+- No commitear carpetas de sesion/cache local: `.claude/`, `.codex/`, `.agents/`,
+  `.runtime/`, `.wwebjs_auth/`, `.wwebjs_cache/`, `.VSCodeCounter/`.
+- No commitear capturas generadas por pruebas (`docs/tour-screenshots/`,
+  `screenshots/`, `captures/`) ni temporales `.tmp-*`, `tmp/`, `temp/`,
+  `stash_patch.diff`.
+- No commitear `.env` ni `.env.*`; se permiten solo ejemplos como `.env.example`
+  y `deploy/env.production.example`.
+- Si un archivo sensible aparece como modificado o untracked, dejarlo fuera del
+  stage. Si ya estaba trackeado, removerlo con `git rm --cached` sin borrarlo del
+  disco local.
+
+**Nota:** los datos reales de produccion deben vivir fuera del repo, en la ruta de
+datos configurada del servidor. Los cambios funcionales deben mantenerse separados
+de cambios de higiene del repositorio.
