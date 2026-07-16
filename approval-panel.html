@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Panel de presupuestos</title>
+  <title>Gratitud Gourmet ERP</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <style>
@@ -8525,6 +8525,26 @@
       overflow: hidden;
     }
 
+    .shell-sidebar-toggle,
+    .shell-drawer-close {
+      display: none;
+    }
+
+    .shell-drawer-close {
+      align-items: center;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(209, 169, 101, .22);
+      border-radius: 10px;
+      color: var(--gold);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      justify-content: space-between;
+      min-height: 38px;
+      padding: 0 10px;
+      width: 100%;
+    }
+
     @media (min-width: 981px) {
       body {
         background: #eef2f1;
@@ -8614,6 +8634,10 @@
         min-height: 34px;
         padding: 0 10px;
         width: 100%;
+      }
+
+      .shell-drawer-close {
+        display: none !important;
       }
 
       .workspace-tabs.sidebar-collapsed .shell-sidebar-toggle {
@@ -8850,6 +8874,19 @@
         padding: 0 8px 8px;
       }
 
+      .shell-sidebar-toggle {
+        display: none !important;
+      }
+
+      .shell-drawer-close {
+        display: inline-flex;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #0f2d26;
+        box-shadow: 0 8px 14px rgba(8, 21, 18, .16);
+      }
+
       body.shell-drawer-open .workspace-tabs {
         transform: translateX(0);
       }
@@ -9032,6 +9069,7 @@
 
     <div id="workspace-navigation" class="workspace-tabs" aria-label="Navegación principal">
       <button id="shell-sidebar-toggle" class="shell-sidebar-toggle" type="button" onclick="toggleShellSidebar()" aria-expanded="true">Colapsar</button>
+      <button id="shell-drawer-close" class="shell-drawer-close" type="button" onclick="closeShellDrawer()" aria-label="Cerrar navegación">Cerrar navegación <span>×</span></button>
       <div class="workspace-group" data-nav-group="direction">
         <button class="workspace-group-trigger" type="button">Dirección</button>
         <div class="workspace-group-panel">
