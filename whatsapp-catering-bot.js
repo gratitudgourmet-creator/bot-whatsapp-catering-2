@@ -1690,8 +1690,8 @@ function startApprovalPanelServer() {
           return sendJson(response, { ok: false, error: "El area no coincide con la categoria seleccionada." }, 400);
         }
         const existing = item.id ? findOperationalInventoryItem(item.id) : null;
-        if (existing && !canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
-        if (!canWriteInventoryArea(user, getInventoryAreaForItem(item))) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
+        if (existing && !canWriteInventoryItem(user, existing)) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
+        if (!canWriteInventoryItem(user, item)) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
         const operationalInventory = saveOperationalInventoryRecord(body, user);
         return sendJson(response, { ok: true, operationalInventory });
       }
@@ -1711,7 +1711,7 @@ function startApprovalPanelServer() {
         const body = await readJsonBody(request);
         const item = findOperationalInventoryItem(body.id);
         if (!item) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
-        if (!canWriteInventoryArea(user, getInventoryAreaForItem(item))) return sendJson(response, { ok: false, error: "Su usuario no puede eliminar esta area de inventario." }, 403);
+        if (!canWriteInventoryItem(user, item)) return sendJson(response, { ok: false, error: "Su usuario no puede eliminar esta area de inventario." }, 403);
         const operationalInventory = deleteOperationalInventoryItem(body.id, user);
         return sendJson(response, { ok: true, operationalInventory });
       }
@@ -1728,7 +1728,7 @@ function startApprovalPanelServer() {
         if (!reason) return sendJson(response, { ok: false, error: "Motivo requerido." }, 400);
         const existing = findOperationalInventoryItem(itemId);
         if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
-        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede dar de baja esta area de inventario." }, 403);
+        if (!canWriteInventoryItem(user, existing)) return sendJson(response, { ok: false, error: "Su usuario no puede dar de baja esta area de inventario." }, 403);
         const item = archiveOperationalInventoryItem(itemId, reason, user);
         return sendJson(response, { ok: true, item, ...getInventarioSesionView(user) });
       }
@@ -1749,7 +1749,8 @@ function startApprovalPanelServer() {
         if (nextArea && nextCategoryArea && nextArea !== nextCategoryArea) {
           return sendJson(response, { ok: false, error: "El area no coincide con la categoria seleccionada." }, 400);
         }
-        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing)) || !canWriteInventoryArea(user, nextArea)) {
+        const nextItemForPermission = { ...existing, ...body, inventoryArea: nextArea };
+        if (!canWriteInventoryItem(user, existing) || !canWriteInventoryItem(user, nextItemForPermission)) {
           return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
         }
         const expiryStatus = normalizeOperationalExpiryStatus(body.expiryStatus || "");
@@ -1784,7 +1785,7 @@ function startApprovalPanelServer() {
         if (!normalizeText(body.itemId || "")) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
         const existing = findOperationalInventoryItem(body.itemId);
         if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
-        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede contar esta area de inventario." }, 403);
+        if (!canWriteInventoryItem(user, existing)) return sendJson(response, { ok: false, error: "Su usuario no puede contar esta area de inventario." }, 403);
         const packageValidation = validatePackageCountInput(body.packageCount, body.qty);
         if (!packageValidation.ok) return sendJson(response, { ok: false, error: packageValidation.error }, 400);
         const sesion = updateInventarioSesionItem(body.itemId, body.counted, body.qty, user, packageValidation.packageCount);
@@ -1831,7 +1832,7 @@ function startApprovalPanelServer() {
         if (!body.itemId) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
         const existing = findOperationalInventoryItem(body.itemId);
         if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
-        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
+        if (!canWriteInventoryItem(user, existing)) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
         const item = updateItemCondition(body.itemId, body.condition, body.notes, body.imagePath !== undefined ? body.imagePath : undefined, user);
         return sendJson(response, { ok: true, item });
       }
@@ -1843,7 +1844,7 @@ function startApprovalPanelServer() {
         if (!body.itemId || !body.image) return sendJson(response, { ok: false, error: "itemId e image requeridos." }, 400);
         const existing = findOperationalInventoryItem(body.itemId);
         if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
-        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
+        if (!canWriteInventoryItem(user, existing)) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
         const imagePath = await saveConditionImage(body.itemId, body.image);
         return sendJson(response, { ok: true, imagePath });
       }
@@ -3879,13 +3880,56 @@ function hasPanelPermission(user, permission) {
   return permissions.includes("*") || permissions.includes(permission);
 }
 
-const INVENTORY_AREAS = ["kitchen", "kitchen_equipment", "operations"];
+const INVENTORY_AREAS = ["kitchen", "operations", "general_warehouse", "maintenance_technology"];
+const FUNCTIONAL_FAMILIES = [
+  "food", "beverages", "disposables", "tableware", "glassware", "linen_textiles", "utensils",
+  "tools", "kitchen_equipment", "event_equipment", "technology_communication",
+  "furniture_structures", "cleaning", "packaging_containers", "other",
+];
+const INVENTORY_CONTROL_TYPES = ["consumable", "reusable", "event_returnable", "asset_equipment", "perishable", "box_bundle", "loose_unit"];
 
 function normalizeInventoryArea(area = "") {
   const key = normalizeSearchKey(area);
-  if (["kitchen", "cocina", "inventario cocina", "alimentos", "materia prima"].includes(key)) return "kitchen";
-  if (["kitchen_equipment", "equipamiento cocina", "equipamiento de cocina", "herramientas cocina", "utensilios cocina"].includes(key)) return "kitchen_equipment";
-  if (["operations", "operativo", "eventos", "inventario operativo", "logistica", "logistica evento"].includes(key)) return "operations";
+  if (!key) return "";
+  if (["kitchen", "cocina", "inventario cocina", "alimentos", "materia prima", "heladera", "freezer"].includes(key)) return "kitchen";
+  if (["operations", "operativo", "eventos", "inventario operativo", "logistica", "logistica evento", "tecnologia comunicacion", "tecnologia", "handys", "radios", "comunicacion"].includes(key)) return "operations";
+  if (["general_warehouse", "deposito general", "deposito", "almacen", "warehouse"].includes(key)) return "general_warehouse";
+  if (["maintenance_technology", "mantenimiento tecnologia", "mantenimiento"].includes(key)) return "maintenance_technology";
+  return "general_warehouse";
+}
+
+function normalizeFunctionalFamily(value = "") {
+  const key = normalizeSearchKey(value);
+  if (!key) return "";
+  if (["food", "alimentos", "comida", "materia prima", "carnes", "verduras"].includes(key)) return "food";
+  if (["beverages", "bebidas", "agua", "gaseosas", "alcohol", "hielo"].includes(key)) return "beverages";
+  if (["disposables", "descartables", "vasos descartables", "servilletas descartables"].includes(key)) return "disposables";
+  if (["tableware", "vajilla", "platos", "cubiertos"].includes(key)) return "tableware";
+  if (["glassware", "cristaleria", "cristalería", "copas", "vasos vidrio"].includes(key)) return "glassware";
+  if (["linen_textiles", "manteleria", "mantelería", "textiles", "manteles", "servilletas tela"].includes(key)) return "linen_textiles";
+  if (["utensils", "utensilios", "ollas", "sartenes", "pinzas"].includes(key)) return "utensils";
+  if (["tools", "herramientas"].includes(key)) return "tools";
+  if (["kitchen_equipment", "equipamiento cocina", "equipamiento de cocina", "artefactos cocina", "anafes", "hornos"].includes(key)) return "kitchen_equipment";
+  if (["event_equipment", "equipamiento evento", "equipamiento operativo", "evento"].includes(key)) return "event_equipment";
+  if (["technology_communication", "tecnologia comunicacion", "tecnología comunicación", "handys", "radios", "comunicacion"].includes(key)) return "technology_communication";
+  if (["furniture_structures", "mobiliario", "estructuras", "mesas", "sillas", "tableros", "alturas"].includes(key)) return "furniture_structures";
+  if (["cleaning", "limpieza", "productos de limpieza", "quimicos"].includes(key)) return "cleaning";
+  if (["packaging_containers", "contenedores", "packaging", "cajas", "bins", "conservadoras"].includes(key)) return "packaging_containers";
+  if (FUNCTIONAL_FAMILIES.includes(key)) return key;
+  return "other";
+}
+
+function normalizeInventoryControlType(value = "") {
+  const key = normalizeSearchKey(value);
+  if (!key) return "";
+  if (INVENTORY_CONTROL_TYPES.includes(key)) return key;
+  if (["consumible"].includes(key)) return "consumable";
+  if (["reutilizable"].includes(key)) return "reusable";
+  if (["retornable evento", "event_returnable", "retornable"].includes(key)) return "event_returnable";
+  if (["asset", "activo", "equipamiento", "activo equipamiento"].includes(key)) return "asset_equipment";
+  if (["perecedero", "vencimiento"].includes(key)) return "perishable";
+  if (["caja", "bulto", "box", "bundle"].includes(key)) return "box_bundle";
+  if (["unidad", "unidad suelta"].includes(key)) return "loose_unit";
   return "";
 }
 
@@ -3909,13 +3953,31 @@ function canWriteInventoryArea(user, area) {
     || hasPanelPermission(user, `stock:${cleanArea}:write`);
 }
 
+function canReadInventoryItem(user, item = {}) {
+  if (canReadInventoryArea(user, getInventoryAreaForItem(item))) return true;
+  const family = getFunctionalFamilyForItem(item);
+  return family === "kitchen_equipment" && (
+    hasPanelPermission(user, "stock:kitchen_equipment:read")
+    || hasPanelPermission(user, "stock:kitchen_equipment:write")
+  );
+}
+
+function canWriteInventoryItem(user, item = {}) {
+  if (canWriteInventoryArea(user, getInventoryAreaForItem(item))) return true;
+  const family = getFunctionalFamilyForItem(item);
+  return family === "kitchen_equipment" && hasPanelPermission(user, "stock:kitchen_equipment:write");
+}
+
 function getAllowedInventoryAreas(user, mode = "read") {
   const checker = mode === "write" ? canWriteInventoryArea : canReadInventoryArea;
   return INVENTORY_AREAS.filter((area) => checker(user, area));
 }
 
 function hasAnyInventoryAreaPermission(user, mode = "read") {
-  return getAllowedInventoryAreas(user, mode).length > 0;
+  if (getAllowedInventoryAreas(user, mode).length > 0) return true;
+  return mode === "write"
+    ? hasPanelPermission(user, "stock:kitchen_equipment:write")
+    : hasPanelPermission(user, "stock:kitchen_equipment:read") || hasPanelPermission(user, "stock:kitchen_equipment:write");
 }
 
 function requirePanelPermission(request, response, permission) {
@@ -6650,11 +6712,14 @@ function getDefaultOperationalInventoryCategories() {
     { id: "alimentos", label: "Alimentos", type: "consumable", subcategories: ["Freezer", "Heladera", "Deposito", "Secos"] },
     { id: "bebidas", label: "Bebidas", type: "consumable", subcategories: ["Agua", "Gaseosas", "Alcohol", "Hielo"] },
     { id: "vajilla", label: "Vajilla", type: "reusable", subcategories: ["Platos", "Copas", "Cubiertos", "Servicio"] },
+    { id: "cristaleria", label: "Cristaleria", type: "reusable", subcategories: ["Copas", "Vasos", "Jarras"] },
     { id: "utensilios", label: "Utensilios", type: "reusable", subcategories: ["Cocina", "Servicio", "Barra"] },
+    { id: "herramientas", label: "Herramientas", type: "reusable", subcategories: ["Cocina", "Mantenimiento"] },
     { id: "artefactos", label: "Artefactos", type: "reusable", subcategories: ["Calor", "Frio", "Electrico"] },
     { id: "contenedores", label: "Contenedores", type: "reusable", subcategories: ["Grandes", "Chicos", "Termicos"] },
     { id: "manteleria", label: "Manteleria", type: "reusable", subcategories: ["Manteles", "Caminos", "Servilletas"] },
     { id: "mobiliario", label: "Mobiliario", type: "reusable", subcategories: ["Mesas", "Tableros", "Sillas", "Barras"] },
+    { id: "tecnologia", label: "Tecnologia y comunicacion", type: "reusable", subcategories: ["Handys", "Cargadores", "Audio"] },
     { id: "transporte", label: "Transporte", type: "reusable", subcategories: ["Auto", "Camioneta", "Camion", "Carros"] },
     { id: "descartables", label: "Descartables", type: "consumable", subcategories: ["Vasos", "Platos", "Servilletas"] },
     { id: "limpieza", label: "Productos de limpieza", type: "consumable", subcategories: ["Quimicos", "Paños", "Bolsas"] },
@@ -6695,13 +6760,19 @@ function normalizeOperationalInventoryCategory(input = {}) {
 function normalizeOperationalInventoryItem(input = {}) {
   const categoryId = normalizeText(input.categoryId || input.category || "utensilios");
   const quantity = Math.max(0, parseDecimalNumber(input.quantity || input.totalQuantity || 1));
-  const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || "") || inferInventoryDomainFromCategory(categoryId, input);
+  const functionalFamily = normalizeFunctionalFamily(input.functionalFamily || "") || inferFunctionalFamilyFromCategory(categoryId);
+  const inventoryArea = normalizeInventoryArea(input.inventoryArea || input.inventoryDomain || "") || inferInventoryAreaFromFamily(functionalFamily, categoryId);
+  const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || "") || inventoryArea;
+  const controlType = normalizeInventoryControlType(input.controlType || "") || inferInventoryControlType(input, functionalFamily, categoryId);
   return {
     id: normalizeText(input.id || `opinv-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     name: normalizeText(input.name || input.productName || input.description || ""),
     categoryId,
     subcategory: normalizeText(input.subcategory || ""),
     inventoryDomain,
+    inventoryArea,
+    functionalFamily,
+    controlType,
     quantity,
     unit: normalizeText(input.unit || "unidad"),
     minStock: Math.max(0, parseDecimalNumber(input.minStock || 0)),
@@ -6729,29 +6800,74 @@ function normalizeOperationalInventoryItem(input = {}) {
 }
 
 function inferInventoryDomainFromCategory(categoryId = "") {
+  return inferInventoryAreaFromFamily(inferFunctionalFamilyFromCategory(categoryId), categoryId);
+}
+
+function inferFunctionalFamilyFromCategory(categoryId = "") {
   const key = normalizeSearchKey(categoryId);
-  if (["alimentos", "bebidas", "limpieza"].includes(key)) return "kitchen";
-  if (["utensilios", "artefactos", "herramientas", "ollas", "equipamiento_cocina", "equipamiento cocina"].includes(key)) return "kitchen_equipment";
-  if (["vajilla", "manteleria", "contenedores", "mobiliario", "transporte", "descartables", "cajas", "bins"].includes(key)) return "operations";
-  return "operations";
+  if (["alimentos"].includes(key)) return "food";
+  if (["bebidas"].includes(key)) return "beverages";
+  if (["descartables"].includes(key)) return "disposables";
+  if (["vajilla"].includes(key)) return "tableware";
+  if (["cristaleria", "cristalería"].includes(key)) return "glassware";
+  if (["manteleria", "mantelería"].includes(key)) return "linen_textiles";
+  if (["utensilios", "ollas"].includes(key)) return "utensils";
+  if (["herramientas"].includes(key)) return "tools";
+  if (["artefactos", "equipamiento_cocina", "equipamiento cocina"].includes(key)) return "kitchen_equipment";
+  if (["equipamiento_evento", "equipamiento evento"].includes(key)) return "event_equipment";
+  if (["tecnologia", "tecnología", "handys", "comunicacion", "comunicación"].includes(key)) return "technology_communication";
+  if (["mobiliario", "transporte", "estructuras"].includes(key)) return "furniture_structures";
+  if (["limpieza"].includes(key)) return "cleaning";
+  if (["contenedores", "cajas", "bins", "packaging"].includes(key)) return "packaging_containers";
+  return "other";
+}
+
+function inferInventoryAreaFromFamily(family = "", categoryId = "") {
+  const cleanFamily = normalizeFunctionalFamily(family);
+  if (["food", "beverages", "utensils", "tools", "kitchen_equipment", "cleaning"].includes(cleanFamily)) return "kitchen";
+  if (["disposables", "tableware", "glassware", "linen_textiles", "event_equipment", "technology_communication", "furniture_structures", "packaging_containers"].includes(cleanFamily)) return "operations";
+  const key = normalizeSearchKey(categoryId);
+  if (["deposito", "deposito_general", "almacen"].includes(key)) return "general_warehouse";
+  return "general_warehouse";
+}
+
+function inferInventoryControlType(item = {}, family = "", categoryId = "") {
+  const cleanFamily = normalizeFunctionalFamily(family || inferFunctionalFamilyFromCategory(categoryId));
+  const categoryType = normalizeText(item.categoryType || item.type || "").toLowerCase();
+  if (normalizeOperationalExpiryStatus(item.expiryStatus || "") || cleanFamily === "food") return "perishable";
+  if (["disposables", "beverages", "cleaning"].includes(cleanFamily)) return "consumable";
+  if (["tableware", "glassware", "linen_textiles", "event_equipment", "furniture_structures", "packaging_containers"].includes(cleanFamily)) return "event_returnable";
+  if (["kitchen_equipment", "technology_communication"].includes(cleanFamily)) return "asset_equipment";
+  if (cleanFamily === "tools" || cleanFamily === "utensils") return "reusable";
+  if (categoryType === "consumable") return "consumable";
+  if (categoryType === "reusable") return "reusable";
+  if (normalizeInventoryUsageType(item.usageType || "") === "eventos") return "event_returnable";
+  return "loose_unit";
 }
 
 function normalizeInventoryDomain(value = "") {
   const key = normalizeSearchKey(value);
-  if (["kitchen", "cocina", "inventario cocina", "alimentos", "materia prima", "heladera", "freezer"].includes(key)) return "kitchen";
-  if (["kitchen_equipment", "equipamiento cocina", "equipamiento de cocina", "utensilios cocina", "herramientas cocina"].includes(key)) return "kitchen_equipment";
-  if (["operations", "operativo", "equipamiento operativo", "inventario operativo eventos", "eventos", "logistica", "logistica evento"].includes(key)) return "operations";
+  if (["equipment", "equipamiento"].includes(key)) return "";
+  const area = normalizeInventoryArea(value);
+  if (area) return area;
   return "";
 }
 
 function getInventoryAreaForItem(item = {}) {
-  return normalizeInventoryDomain(item.inventoryDomain || "") || inferInventoryDomainFromCategory(item.categoryId || item.category || "", item);
+  return normalizeInventoryArea(item.inventoryArea || item.inventoryDomain || "") || inferInventoryAreaFromFamily(getFunctionalFamilyForItem(item), item.categoryId || item.category || "");
+}
+
+function getFunctionalFamilyForItem(item = {}) {
+  return normalizeFunctionalFamily(item.functionalFamily || "") || inferFunctionalFamilyFromCategory(item.categoryId || item.category || "");
+}
+
+function getControlTypeForItem(item = {}) {
+  return normalizeInventoryControlType(item.controlType || "") || inferInventoryControlType(item, getFunctionalFamilyForItem(item), item.categoryId || item.category || "");
 }
 
 function filterOperationalInventoryItemsForUser(items = [], user = null, mode = "read") {
   return (Array.isArray(items) ? items : []).filter((item) => {
-    const area = getInventoryAreaForItem(item);
-    return mode === "write" ? canWriteInventoryArea(user, area) : canReadInventoryArea(user, area);
+    return mode === "write" ? canWriteInventoryItem(user, item) : canReadInventoryItem(user, item);
   });
 }
 
@@ -6762,8 +6878,12 @@ function filterOperationalInventoryCategoriesForItems(categories = [], items = [
 
 function filterOperationalInventoryCategoriesForUser(categories = [], user = null, mode = "read") {
   return (Array.isArray(categories) ? categories : []).filter((category) => {
-    const area = inferInventoryDomainFromCategory(category.id);
-    return mode === "write" ? canWriteInventoryArea(user, area) : canReadInventoryArea(user, area);
+    const itemLike = {
+      categoryId: category.id,
+      functionalFamily: inferFunctionalFamilyFromCategory(category.id),
+      controlType: category.type === "consumable" ? "consumable" : "reusable",
+    };
+    return mode === "write" ? canWriteInventoryItem(user, itemLike) : canReadInventoryItem(user, itemLike);
   });
 }
 
@@ -7138,7 +7258,7 @@ function closeInventarioSesion(user) {
   data.items = data.items.map((item) => {
     const count = sesion.counts[item.id];
     if (!count || !count.counted) return item;
-    if (!canWriteInventoryArea(user, getInventoryAreaForItem(item))) return item;
+    if (!canWriteInventoryItem(user, item)) return item;
     updated++;
     return { ...item, quantity: count.qty, location: sesion.location, updatedAt: now };
   });

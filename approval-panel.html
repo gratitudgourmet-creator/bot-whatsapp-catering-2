@@ -20194,8 +20194,11 @@
             <form id="operational-inventory-form" class="form-grid" onsubmit="saveOperationalInventoryItem(event)">
               <input type="hidden" name="id">
               <div class="form-field full"><label>Nombre</label><input name="name" required placeholder="Ej: Conservadora grande, pinza, anafe"></div>
-              <div class="form-field"><label>Área</label><select name="inventoryDomain" onchange="renderOperationalCategoryOptionsForArea()">${renderOperationalInventoryAreaOptions()}</select></div>
-              <div class="form-field"><label>Categoria</label><select name="categoryId" onchange="renderOperationalSubcategoryOptions()">${renderOperationalCategoryOptions("", getOperationalInventoryWritableAreas()[0] || "")}</select></div>
+              <div class="form-field"><label>Área operativa</label><select name="inventoryArea" onchange="renderOperationalCategoryOptionsForArea()">${renderOperationalInventoryAreaOptions()}</select></div>
+              <input type="hidden" name="inventoryDomain">
+              <div class="form-field"><label>Familia</label><select name="functionalFamily" onchange="syncOperationalInventoryControlType()">${renderOperationalFunctionalFamilyOptions()}</select></div>
+              <div class="form-field"><label>Tipo de control</label><select name="controlType">${renderOperationalControlTypeOptions()}</select></div>
+              <div class="form-field"><label>Categoria</label><select name="categoryId" onchange="syncOperationalInventoryClassificationFromCategory()">${renderOperationalCategoryOptions("", getDefaultOperationalInventoryFormArea())}</select></div>
               <div class="form-field"><label>Subcategoria</label><select name="subcategory">${renderOperationalSubcategoryOptionsHtml()}</select></div>
               <div class="form-field"><label>Cantidad total</label><input name="quantity" inputmode="decimal" value="1"></div>
               <div class="form-field"><label>Unidad</label><input name="unit" value="unidad"></div>
@@ -20245,11 +20248,14 @@
         { id: "alimentos", label: "Alimentos", type: "consumable", subcategories: ["Freezer", "Heladera", "Deposito", "Secos"] },
         { id: "bebidas", label: "Bebidas", type: "consumable", subcategories: ["Agua", "Gaseosas", "Alcohol", "Hielo"] },
         { id: "vajilla", label: "Vajilla", type: "reusable", subcategories: ["Platos", "Copas", "Cubiertos"] },
+        { id: "cristaleria", label: "Cristaleria", type: "reusable", subcategories: ["Copas", "Vasos", "Jarras"] },
         { id: "utensilios", label: "Utensilios", type: "reusable", subcategories: ["Cocina", "Servicio"] },
+        { id: "herramientas", label: "Herramientas", type: "reusable", subcategories: ["Cocina", "Mantenimiento"] },
         { id: "artefactos", label: "Artefactos", type: "reusable", subcategories: ["Calor", "Frio"] },
         { id: "contenedores", label: "Contenedores", type: "reusable", subcategories: ["Grandes", "Chicos"] },
         { id: "manteleria", label: "Manteleria", type: "reusable", subcategories: ["Manteles", "Caminos", "Servilletas"] },
         { id: "mobiliario", label: "Mobiliario", type: "reusable", subcategories: ["Mesas", "Tableros", "Sillas"] },
+        { id: "tecnologia", label: "Tecnologia y comunicacion", type: "reusable", subcategories: ["Handys", "Cargadores", "Audio"] },
         { id: "transporte", label: "Transporte", type: "reusable", subcategories: ["Auto", "Camioneta", "Camion"] },
         { id: "descartables", label: "Descartables", type: "consumable", subcategories: ["Vasos", "Platos"] },
         { id: "limpieza", label: "Productos de limpieza", type: "consumable", subcategories: ["Quimicos"] },
@@ -20259,63 +20265,185 @@
     function getOperationalInventoryAreaLabel(area = "") {
       return {
         kitchen: "Inventario Cocina",
-        kitchen_equipment: "Equipamiento Cocina",
         operations: "Inventario Operativo Eventos",
+        general_warehouse: "Depósito general",
+        maintenance_technology: "Mantenimiento/Tecnología",
       }[area] || "Inventario";
     }
 
     function inferOperationalInventoryAreaFromCategory(categoryId = "") {
+      return inferOperationalInventoryAreaFromFamily(inferOperationalFunctionalFamilyFromCategory(categoryId), categoryId);
+    }
+
+    function getOperationalFunctionalFamilyLabel(family = "") {
+      return {
+        food: "Alimentos",
+        beverages: "Bebidas",
+        disposables: "Descartables",
+        tableware: "Vajilla",
+        glassware: "Cristalería",
+        linen_textiles: "Mantelería y textiles",
+        utensils: "Utensilios",
+        tools: "Herramientas",
+        kitchen_equipment: "Equipamiento de cocina",
+        event_equipment: "Equipamiento de evento",
+        technology_communication: "Tecnología y comunicación",
+        furniture_structures: "Mobiliario y estructuras",
+        cleaning: "Limpieza",
+        packaging_containers: "Cajas, bins y contenedores",
+        other: "Otro",
+      }[family] || "Otro";
+    }
+
+    function getOperationalControlTypeLabel(type = "") {
+      return {
+        consumable: "Consumible",
+        reusable: "Reusable",
+        event_returnable: "Retornable de evento",
+        asset_equipment: "Activo / equipamiento",
+        perishable: "Perecedero",
+        box_bundle: "Caja / bulto",
+        loose_unit: "Unidad suelta",
+      }[type] || "Unidad suelta";
+    }
+
+    function inferOperationalFunctionalFamilyFromCategory(categoryId = "") {
       const key = normalizeSearch(categoryId);
-      if (["alimentos", "bebidas", "limpieza"].includes(key)) return "kitchen";
-      if (["utensilios", "artefactos", "herramientas", "ollas", "equipamiento_cocina"].includes(key)) return "kitchen_equipment";
-      if (["vajilla", "manteleria", "contenedores", "mobiliario", "transporte", "descartables", "cajas", "bins"].includes(key)) return "operations";
-      return "operations";
+      if (["alimentos"].includes(key)) return "food";
+      if (["bebidas"].includes(key)) return "beverages";
+      if (["descartables"].includes(key)) return "disposables";
+      if (["vajilla"].includes(key)) return "tableware";
+      if (["cristaleria", "cristalería"].includes(key)) return "glassware";
+      if (["manteleria", "mantelería"].includes(key)) return "linen_textiles";
+      if (["utensilios", "ollas"].includes(key)) return "utensils";
+      if (["herramientas"].includes(key)) return "tools";
+      if (["artefactos", "equipamiento_cocina"].includes(key)) return "kitchen_equipment";
+      if (["tecnologia", "tecnología", "handys", "comunicacion", "comunicación"].includes(key)) return "technology_communication";
+      if (["mobiliario", "transporte", "estructuras"].includes(key)) return "furniture_structures";
+      if (["limpieza"].includes(key)) return "cleaning";
+      if (["contenedores", "cajas", "bins", "packaging"].includes(key)) return "packaging_containers";
+      return "other";
+    }
+
+    function inferOperationalInventoryAreaFromFamily(family = "", categoryId = "") {
+      if (["food", "beverages", "utensils", "tools", "kitchen_equipment", "cleaning"].includes(family)) return "kitchen";
+      if (["disposables", "tableware", "glassware", "linen_textiles", "event_equipment", "technology_communication", "furniture_structures", "packaging_containers"].includes(family)) return "operations";
+      return "general_warehouse";
+    }
+
+    function inferOperationalControlType(family = "", categoryType = "") {
+      if (family === "food") return "perishable";
+      if (["beverages", "disposables", "cleaning"].includes(family)) return "consumable";
+      if (["tableware", "glassware", "linen_textiles", "event_equipment", "furniture_structures", "packaging_containers"].includes(family)) return "event_returnable";
+      if (["kitchen_equipment", "technology_communication"].includes(family)) return "asset_equipment";
+      if (["utensils", "tools"].includes(family)) return "reusable";
+      return categoryType === "consumable" ? "consumable" : "loose_unit";
     }
 
     function getOperationalInventoryAllowedAreas() {
       const dataAreas = erpData.operationalInventory?.areas;
       if (Array.isArray(dataAreas) && dataAreas.length) return dataAreas;
       const perms = new Set(currentUser?.permissions || []);
-      if (perms.has("*") || perms.has("stock:read") || perms.has("stock:write") || perms.has("purchases:write")) return ["kitchen", "kitchen_equipment", "operations"];
+      if (perms.has("*") || perms.has("stock:read") || perms.has("stock:write") || perms.has("purchases:write")) return ["kitchen", "operations", "general_warehouse", "maintenance_technology"];
       return [
         perms.has("stock:kitchen:read") || perms.has("stock:kitchen:write") ? "kitchen" : "",
-        perms.has("stock:kitchen_equipment:read") || perms.has("stock:kitchen_equipment:write") ? "kitchen_equipment" : "",
         perms.has("stock:operations:read") || perms.has("stock:operations:write") ? "operations" : "",
-      ].filter(Boolean);
+      ].filter(Boolean).filter((area, index, list) => list.indexOf(area) === index);
     }
 
     function getOperationalInventoryWritableAreas() {
       const dataAreas = erpData.operationalInventory?.writableAreas;
       if (Array.isArray(dataAreas) && dataAreas.length) return dataAreas;
       const perms = new Set(currentUser?.permissions || []);
-      if (perms.has("*") || perms.has("stock:write") || perms.has("purchases:write")) return ["kitchen", "kitchen_equipment", "operations"];
+      if (perms.has("*") || perms.has("stock:write") || perms.has("purchases:write")) return ["kitchen", "operations", "general_warehouse", "maintenance_technology"];
       return [
         perms.has("stock:kitchen:write") ? "kitchen" : "",
-        perms.has("stock:kitchen_equipment:write") ? "kitchen_equipment" : "",
         perms.has("stock:operations:write") ? "operations" : "",
-      ].filter(Boolean);
+      ].filter(Boolean).filter((area, index, list) => list.indexOf(area) === index);
     }
 
     function renderOperationalInventoryAreaOptions(selected = "") {
+      const familyOnly = getOperationalInventoryWritableFamilies();
       const areas = getOperationalInventoryWritableAreas();
+      if (!areas.length && familyOnly.includes("kitchen_equipment")) {
+        return `<option value="kitchen" selected>Cocina · Solo equipamiento</option>`;
+      }
       const current = selected || areas[0] || "operations";
       return areas.map((area) => `<option value="${escapeAttribute(area)}" ${area === current ? "selected" : ""}>${escapeHtml(getOperationalInventoryAreaLabel(area))}</option>`).join("");
     }
 
+    function renderOperationalFunctionalFamilyOptions(selected = "") {
+      const values = ["food", "beverages", "disposables", "tableware", "glassware", "linen_textiles", "utensils", "tools", "kitchen_equipment", "event_equipment", "technology_communication", "furniture_structures", "cleaning", "packaging_containers", "other"];
+      return values.map((value) => `<option value="${escapeAttribute(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(getOperationalFunctionalFamilyLabel(value))}</option>`).join("");
+    }
+
+    function renderOperationalControlTypeOptions(selected = "") {
+      const values = ["consumable", "reusable", "event_returnable", "asset_equipment", "perishable", "box_bundle", "loose_unit"];
+      return values.map((value) => `<option value="${escapeAttribute(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(getOperationalControlTypeLabel(value))}</option>`).join("");
+    }
+
     function renderOperationalCategoryOptions(selected = "", area = "") {
       const currentArea = area || document.getElementById("operational-inventory-form")?.elements.inventoryDomain?.value || "";
-      const categories = getOperationalInventoryCategories().filter((category) => !currentArea || inferOperationalInventoryAreaFromCategory(category.id) === currentArea);
+      const writableFamilies = getOperationalInventoryWritableFamilies();
+      const categories = getOperationalInventoryCategories().filter((category) => {
+        const family = inferOperationalFunctionalFamilyFromCategory(category.id);
+        return (!currentArea || inferOperationalInventoryAreaFromCategory(category.id) === currentArea)
+          && (!writableFamilies.length || writableFamilies.includes(family));
+      });
       return categories.map((category) => `<option value="${escapeAttribute(category.id)}" ${category.id === selected ? "selected" : ""}>${escapeHtml(category.label)}</option>`).join("");
+    }
+
+    function getOperationalInventoryWritableFamilies() {
+      const perms = new Set(currentUser?.permissions || []);
+      if (perms.has("*") || perms.has("stock:write") || perms.has("purchases:write") || perms.has("stock:kitchen:write")) return [];
+      if (perms.has("stock:kitchen_equipment:write")) return ["kitchen_equipment"];
+      return [];
+    }
+
+    function getDefaultOperationalInventoryFormArea() {
+      return getOperationalInventoryWritableAreas()[0]
+        || (getOperationalInventoryWritableFamilies().includes("kitchen_equipment") ? "kitchen" : "operations");
+    }
+
+    function getDefaultOperationalInventoryFormFamily() {
+      const writableFamilies = getOperationalInventoryWritableFamilies();
+      return writableFamilies[0] || inferOperationalFunctionalFamilyFromCategory(getOperationalInventoryCategories()[0]?.id || "");
     }
 
     function renderOperationalCategoryOptionsForArea() {
       const form = document.getElementById("operational-inventory-form");
       if (!form) return;
-      const area = form.elements.inventoryDomain?.value || "";
+      const area = form.elements.inventoryArea?.value || form.elements.inventoryDomain?.value || "";
       if (form.elements.categoryId) {
         form.elements.categoryId.innerHTML = renderOperationalCategoryOptions("", area);
       }
+      const category = form.elements.categoryId?.value || "";
+      const family = category ? inferOperationalFunctionalFamilyFromCategory(category) : getDefaultOperationalInventoryFormFamily();
+      setFormValue(form, "functionalFamily", family);
+      setFormValue(form, "inventoryDomain", area);
+      syncOperationalInventoryControlType();
       renderOperationalSubcategoryOptions();
+    }
+
+    function syncOperationalInventoryClassificationFromCategory() {
+      const form = document.getElementById("operational-inventory-form");
+      if (!form) return;
+      const categoryId = form.elements.categoryId?.value || "";
+      const family = inferOperationalFunctionalFamilyFromCategory(categoryId);
+      const area = inferOperationalInventoryAreaFromFamily(family, categoryId);
+      setFormValue(form, "functionalFamily", family);
+      setFormValue(form, "inventoryArea", area);
+      setFormValue(form, "inventoryDomain", area);
+      syncOperationalInventoryControlType();
+      renderOperationalSubcategoryOptions();
+    }
+
+    function syncOperationalInventoryControlType() {
+      const form = document.getElementById("operational-inventory-form");
+      if (!form) return;
+      const family = form.elements.functionalFamily?.value || "other";
+      const category = getOperationalInventoryCategories().find((item) => item.id === form.elements.categoryId?.value);
+      setFormValue(form, "controlType", inferOperationalControlType(family, category?.type || ""));
     }
 
     function renderOperationalSubcategoryOptionsHtml(selected = "", categoryId = "") {
@@ -20384,6 +20512,8 @@
             <div class="secondary">${escapeHtml([item.subcategory, item.location].filter(Boolean).join(" · ") || "Sin ubicacion")}</div>
             <div class="inventory-tags">
               <span class="badge info">${escapeHtml(getOperationalInventoryAreaLabel(item.inventoryArea || item.inventoryDomain || inferOperationalInventoryAreaFromCategory(item.categoryId)))}</span>
+              <span class="badge">${escapeHtml(getOperationalFunctionalFamilyLabel(item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId)))}</span>
+              <span class="badge">${escapeHtml(getOperationalControlTypeLabel(item.controlType || inferOperationalControlType(item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId))))}</span>
               <span class="badge ${unavailable ? "missing_info" : "confirmed"}">${escapeHtml(item.statusLabel || item.status || "")}</span>
               ${item.notes ? `<span class="secondary">${escapeHtml(item.notes)}</span>` : ""}
             </div>
@@ -20401,9 +20531,13 @@
       const item = (erpData.operationalInventory?.items || []).find((entry) => entry.id === id);
       const form = document.getElementById("operational-inventory-form");
       if (!item || !form) return;
-      setFormValue(form, "inventoryDomain", item.inventoryArea || item.inventoryDomain || inferOperationalInventoryAreaFromCategory(item.categoryId));
-      if (form.elements.categoryId) form.elements.categoryId.innerHTML = renderOperationalCategoryOptions(item.categoryId || "", form.elements.inventoryDomain?.value || "");
+      const area = item.inventoryArea || item.inventoryDomain || inferOperationalInventoryAreaFromCategory(item.categoryId);
+      setFormValue(form, "inventoryArea", area);
+      setFormValue(form, "inventoryDomain", area);
+      if (form.elements.categoryId) form.elements.categoryId.innerHTML = renderOperationalCategoryOptions(item.categoryId || "", area);
       ["id", "name", "categoryId", "quantity", "unit", "status", "location", "notes"].forEach((field) => setFormValue(form, field, item[field] || ""));
+      setFormValue(form, "functionalFamily", item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId));
+      setFormValue(form, "controlType", item.controlType || inferOperationalControlType(item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId)));
       document.getElementById("operational-inventory-delete")?.classList.remove("hidden");
       renderOperationalSubcategoryOptions();
       setFormValue(form, "subcategory", item.subcategory || "");
@@ -20416,7 +20550,9 @@
       setFormValue(form, "quantity", "1");
       setFormValue(form, "unit", "unidad");
       setFormValue(form, "status", "available");
-      setFormValue(form, "inventoryDomain", getOperationalInventoryWritableAreas()[0] || "operations");
+      const area = getDefaultOperationalInventoryFormArea();
+      setFormValue(form, "inventoryArea", area);
+      setFormValue(form, "inventoryDomain", area);
       renderOperationalCategoryOptionsForArea();
       document.getElementById("operational-inventory-delete")?.classList.add("hidden");
       renderOperationalSubcategoryOptions();
