@@ -20373,8 +20373,12 @@
     }
 
     function renderOperationalFunctionalFamilyOptions(selected = "") {
-      const values = ["food", "beverages", "disposables", "tableware", "glassware", "linen_textiles", "utensils", "tools", "kitchen_equipment", "event_equipment", "technology_communication", "furniture_structures", "cleaning", "packaging_containers", "other"];
-      return values.map((value) => `<option value="${escapeAttribute(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(getOperationalFunctionalFamilyLabel(value))}</option>`).join("");
+      const writableFamilies = getOperationalInventoryWritableFamilies();
+      const values = writableFamilies.length
+        ? writableFamilies
+        : ["food", "beverages", "disposables", "tableware", "glassware", "linen_textiles", "utensils", "tools", "kitchen_equipment", "event_equipment", "technology_communication", "furniture_structures", "cleaning", "packaging_containers", "other"];
+      const current = selected || values[0] || "other";
+      return values.map((value) => `<option value="${escapeAttribute(value)}" ${value === current ? "selected" : ""}>${escapeHtml(getOperationalFunctionalFamilyLabel(value))}</option>`).join("");
     }
 
     function renderOperationalControlTypeOptions(selected = "") {

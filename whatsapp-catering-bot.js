@@ -3895,7 +3895,7 @@ function normalizeInventoryArea(area = "") {
   if (["operations", "operativo", "eventos", "inventario operativo", "logistica", "logistica evento", "tecnologia comunicacion", "tecnologia", "handys", "radios", "comunicacion"].includes(key)) return "operations";
   if (["general_warehouse", "deposito general", "deposito", "almacen", "warehouse"].includes(key)) return "general_warehouse";
   if (["maintenance_technology", "mantenimiento tecnologia", "mantenimiento"].includes(key)) return "maintenance_technology";
-  return "general_warehouse";
+  return "";
 }
 
 function normalizeFunctionalFamily(value = "") {
@@ -6761,7 +6761,7 @@ function normalizeOperationalInventoryItem(input = {}) {
   const categoryId = normalizeText(input.categoryId || input.category || "utensilios");
   const quantity = Math.max(0, parseDecimalNumber(input.quantity || input.totalQuantity || 1));
   const functionalFamily = normalizeFunctionalFamily(input.functionalFamily || "") || inferFunctionalFamilyFromCategory(categoryId);
-  const inventoryArea = normalizeInventoryArea(input.inventoryArea || input.inventoryDomain || "") || inferInventoryAreaFromFamily(functionalFamily, categoryId);
+  const inventoryArea = normalizeInventoryArea(input.inventoryArea || "") || normalizeInventoryDomain(input.inventoryDomain || "") || inferInventoryAreaFromFamily(functionalFamily, categoryId);
   const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || "") || inventoryArea;
   const controlType = normalizeInventoryControlType(input.controlType || "") || inferInventoryControlType(input, functionalFamily, categoryId);
   return {
@@ -6854,7 +6854,7 @@ function normalizeInventoryDomain(value = "") {
 }
 
 function getInventoryAreaForItem(item = {}) {
-  return normalizeInventoryArea(item.inventoryArea || item.inventoryDomain || "") || inferInventoryAreaFromFamily(getFunctionalFamilyForItem(item), item.categoryId || item.category || "");
+  return normalizeInventoryArea(item.inventoryArea || "") || normalizeInventoryDomain(item.inventoryDomain || "") || inferInventoryAreaFromFamily(getFunctionalFamilyForItem(item), item.categoryId || item.category || "");
 }
 
 function getFunctionalFamilyForItem(item = {}) {
