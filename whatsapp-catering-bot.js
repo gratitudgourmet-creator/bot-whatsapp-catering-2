@@ -261,8 +261,8 @@ const DEFAULT_ROLE_DEFINITIONS = {
   },
   logistica_evento: {
     label: "Logistica Evento",
-    permissions: ["view", "logistics:read", "logistics:write", "stock:operations:read", "stock:operations:write"],
-    tabs: ["logistics_event", "stock"],
+    permissions: ["view", "logistics:read", "logistics:write", "stock:operations:read", "stock:operations:write", "staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"],
+    tabs: ["logistics_event", "stock", "hr"],
   },
   finanzas: {
     label: "Finanzas",
@@ -298,7 +298,7 @@ const TAB_DEFINITIONS = [
   { id: "stock", label: "Stock", requiredAny: ["stock:read", "stock:write", "stock:kitchen:read", "stock:kitchen_equipment:read", "stock:operations:read", "purchases:write"] },
   { id: "providers", label: "Proveedores", requiredAny: ["providers:write"] },
   { id: "customers", label: "Clientes", requiredAny: ["customers:write"] },
-  { id: "hr", label: "Personal/RRHH", requiredAny: ["hr:read", "hr:write", "payroll:read", "payroll:write"] },
+  { id: "hr", label: "Personal/RRHH", requiredAny: ["hr:read", "hr:write", "payroll:read", "payroll:write", "staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"] },
   { id: "sanitation", label: "Bromatologia", requiredAny: ["sanitation:read", "sanitation:write", "sanitation:approve"] },
   { id: "payment_orders", label: "Ordenes de pago", requiredAny: ["payment_orders:read", "payment_orders:write", "payment_orders:approve"] },
   { id: "security", label: "Seguridad", requiredAny: ["users:write"] },
@@ -328,6 +328,9 @@ const PERMISSION_DEFINITIONS = [
   { id: "payment_orders:approve", label: "Aprobar ordenes de pago", group: "Finanzas" },
   { id: "hr:read", label: "Ver personal/RRHH", group: "RRHH" },
   { id: "hr:write", label: "Crear y editar personal/RRHH", group: "RRHH" },
+  { id: "staff:timesheets:read", label: "Ver carga de horas operativas", group: "RRHH" },
+  { id: "staff:timesheets:write", label: "Cargar horas operativas", group: "RRHH" },
+  { id: "staff:timesheets:export", label: "Exportar horas operativas", group: "RRHH" },
   { id: "payroll:read", label: "Ver sueldos y horas", group: "RRHH" },
   { id: "payroll:write", label: "Liquidar sueldos y horas", group: "RRHH" },
   { id: "sanitation:read", label: "Ver bromatologia", group: "Bromatologia" },
@@ -1070,7 +1073,7 @@ function startApprovalPanelServer() {
         const canSeeCommercial = canSeeEverything || hasPanelPermission(sessionUser, "events:read") || hasPanelPermission(sessionUser, "events:write") || hasPanelPermission(sessionUser, "quotes:write") || hasPanelPermission(sessionUser, "customers:write");
         const canSeePurchases = canSeeEverything || hasPanelPermission(sessionUser, "purchases:write");
         const canSeeFinance = canSeeEverything || hasPanelPermission(sessionUser, "finance:read") || hasPanelPermission(sessionUser, "finance:write");
-        const canSeeHr = canSeeEverything || hasPanelPermission(sessionUser, "hr:read") || hasPanelPermission(sessionUser, "hr:write") || hasPanelPermission(sessionUser, "payroll:read") || hasPanelPermission(sessionUser, "payroll:write");
+        const canSeeHr = canSeeEverything || hasPanelPermission(sessionUser, "hr:read") || hasPanelPermission(sessionUser, "hr:write") || hasPanelPermission(sessionUser, "payroll:read") || hasPanelPermission(sessionUser, "payroll:write") || hasPanelPermission(sessionUser, "staff:timesheets:read") || hasPanelPermission(sessionUser, "staff:timesheets:write") || hasPanelPermission(sessionUser, "staff:timesheets:export");
         const canSeeSanitation = canSeeEverything || hasPanelPermission(sessionUser, "sanitation:read") || hasPanelPermission(sessionUser, "sanitation:write") || hasPanelPermission(sessionUser, "sanitation:approve");
         const canSeePaymentOrders = canSeeEverything || hasPanelPermission(sessionUser, "payment_orders:read") || hasPanelPermission(sessionUser, "payment_orders:write") || hasPanelPermission(sessionUser, "payment_orders:approve");
         const canSeeProviders = canSeeEverything || hasPanelPermission(sessionUser, "providers:write") || canSeePurchases || canSeeFinance;
@@ -1128,7 +1131,7 @@ function startApprovalPanelServer() {
             customers: _has("customers") ? [] : undefined,
             venues: _has("venues") ? [] : undefined,
             productAlerts: _has("productAlerts") ? [] : undefined,
-            hrDashboard: _has("hrDashboard") ? undefined : undefined,
+            hrDashboard: _has("hrDashboard") && canSeeHr ? getHrDashboard() : undefined,
             sanitationDashboard: _has("sanitationDashboard") ? undefined : undefined,
             paymentOrdersDashboard: _has("paymentOrdersDashboard") ? undefined : undefined,
           });
@@ -1454,9 +1457,15 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/hr") {
-        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "payroll:read", "payroll:write"]);
+        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "payroll:read", "payroll:write", "staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"]);
         if (!user) return;
         return sendJson(response, { ok: true, hrDashboard: getHrDashboard() });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/hr-timesheet-export.xlsx") {
+        const user = requireAnyPanelPermission(request, response, ["staff:timesheets:export", "hr:read", "hr:write"]);
+        if (!user) return;
+        return sendHrTimesheetXlsxExport(response, requestUrl.searchParams);
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/hr-staff") {
@@ -1474,7 +1483,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/hr-shift") {
-        const user = requirePanelPermission(request, response, "hr:write");
+        const user = requireAnyPanelPermission(request, response, ["hr:write", "staff:timesheets:write"]);
         if (!user) return;
         const body = await readJsonBody(request);
         try {
@@ -1482,6 +1491,19 @@ function startApprovalPanelServer() {
           const shift = saveStaffShiftRecord(body);
           recordAudit(user, body.id ? "update" : "create", "staff_shift", shift.id, `${shift.staffName} - ${shift.eventName || shift.date}`, before, shift);
           return sendJson(response, { ok: true, shift, hrDashboard: getHrDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/hr-timesheet") {
+        const user = requireAnyPanelPermission(request, response, ["hr:write", "staff:timesheets:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const result = saveStaffTimesheet(body, user);
+          recordAudit(user, "update", "staff_timesheet", result.staffId || body.staffId, `${result.staffName || "Personal"} - ${result.period}`, null, result);
+          return sendJson(response, { ok: true, result, hrDashboard: getHrDashboard() });
         } catch (error) {
           return sendJson(response, { ok: false, error: error.message }, 400);
         }
@@ -2429,6 +2451,55 @@ function sendXlsxExport(response) {
     bookType: "xlsx",
   });
   const fileName = `catering-erp-${getDateOnly(new Date())}.xlsx`;
+
+  response.writeHead(200, {
+    "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "Content-Disposition": `attachment; filename="${fileName}"`,
+    "Cache-Control": "no-store",
+  });
+  response.end(buffer);
+}
+
+function sendHrTimesheetXlsxExport(response, searchParams = new URLSearchParams()) {
+  if (!XLSX) {
+    return sendJson(
+      response,
+      {
+        ok: false,
+        error: "Falta instalar el modulo xlsx para exportar Excel en esta computadora.",
+      },
+      503
+    );
+  }
+
+  const rows = buildHrTimesheetExportRows(searchParams);
+  if (!rows.length) {
+    return sendJson(response, { ok: false, error: "No hay horas para exportar con estos filtros." }, 404);
+  }
+
+  const columns = [
+    "Mes",
+    "Fecha",
+    "Dia",
+    "Evento",
+    "Persona",
+    "Telefono",
+    "Rol/tarea",
+    "Entrada",
+    "Salida",
+    "Descanso",
+    "Horas calculadas",
+    "Nota",
+    "Estado",
+    "Cargado por",
+    "Fecha de carga/actualizacion",
+  ];
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(rows, { header: columns });
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Horas operativas");
+  const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+  const period = normalizeText(searchParams.get("period") || getDateOnly(new Date()).slice(0, 7));
+  const fileName = `horas-operativas-${period || getDateOnly(new Date())}.xlsx`;
 
   response.writeHead(200, {
     "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -3668,6 +3739,8 @@ function verifyPanelPassword(user, password) {
 function getPublicUser(user) {
   if (!user) return null;
   const role = getRoleDefinitions()[user.role] || getRoleDefinitions().comercial;
+  const permissions = getEffectiveRolePermissions(user.role, role.permissions || []);
+  const tabs = getEffectiveRoleTabs(user.role, role.tabs || [], permissions);
   return {
     id: user.id,
     username: user.username,
@@ -3691,9 +3764,27 @@ function getPublicUser(user) {
     lastLoginLat: user.lastLoginLat || null,
     lastLoginLng: user.lastLoginLng || null,
     lastLoginAccuracy: user.lastLoginAccuracy || null,
-    permissions: role.permissions,
-    tabs: role.tabs || [],
+    permissions,
+    tabs,
   };
+}
+
+function getEffectiveRolePermissions(roleId = "", permissions = []) {
+  const list = Array.from(new Set(Array.isArray(permissions) ? permissions : []));
+  if (roleId === "logistica_evento") {
+    ["staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"].forEach((permission) => {
+      if (!list.includes(permission)) list.push(permission);
+    });
+  }
+  return list;
+}
+
+function getEffectiveRoleTabs(roleId = "", tabs = [], permissions = []) {
+  const list = Array.from(new Set(Array.isArray(tabs) ? tabs : []));
+  if (roleId === "logistica_evento" && (permissions.includes("staff:timesheets:read") || permissions.includes("staff:timesheets:write") || permissions.includes("staff:timesheets:export")) && !list.includes("hr")) {
+    list.push("hr");
+  }
+  return list;
 }
 
 function haversineDistance(lat1, lng1, lat2, lng2) {
@@ -3876,7 +3967,8 @@ function clearPanelSession(request) {
 
 function hasPanelPermission(user, permission) {
   if (!permission || permission === "view") return Boolean(user);
-  const permissions = getRoleDefinitions()[user?.role]?.permissions || [];
+  const role = getRoleDefinitions()[user?.role] || {};
+  const permissions = getEffectiveRolePermissions(user?.role, role.permissions || []);
   return permissions.includes("*") || permissions.includes(permission);
 }
 
@@ -5581,6 +5673,10 @@ function normalizeStaffShiftRecord(input = {}) {
     totalAmount,
     attendanceStatus: normalizeAttendanceStatus(input.attendanceStatus || input.status || "scheduled"),
     notes: normalizeText(input.notes || ""),
+    source: normalizeText(input.source || ""),
+    period: normalizeText(input.period || ""),
+    breakMinutes: Math.max(0, parseOptionalNumber(input.breakMinutes || 0)),
+    loadedBy: normalizeText(input.loadedBy || ""),
     createdAt: input.createdAt || new Date().toISOString(),
     updatedAt: input.updatedAt || new Date().toISOString(),
   };
@@ -5621,6 +5717,68 @@ function getStaffShiftList() {
     .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 }
 
+function buildHrTimesheetExportRows(searchParams = new URLSearchParams()) {
+  const period = normalizeText(searchParams.get("period") || getDateOnly(new Date()).slice(0, 7));
+  const eventId = normalizeText(searchParams.get("eventId") || "");
+  const staffId = normalizeText(searchParams.get("staffId") || "");
+  const staffName = normalizeText(searchParams.get("staffName") || "");
+  const date = normalizePanelDate(searchParams.get("date") || "");
+  const staffNameKey = normalizeSearchKey(staffName);
+  const staffById = new Map(erpStaff.map((staff) => [staff.id, staff]));
+  const eventById = new Map(erpEvents.map((event) => [event.id, event]));
+
+  return normalizeStaffShiftList(erpStaffShifts)
+    .filter((shift) => (shift.source || "") === "timesheet")
+    .filter((shift) => !period || String(shift.date || "").startsWith(`${period}-`))
+    .filter((shift) => !eventId || (shift.eventId || "") === eventId)
+    .filter((shift) => !staffId || (shift.staffId || "") === staffId)
+    .filter((shift) => !staffNameKey || normalizeSearchKey(shift.staffName || "") === staffNameKey)
+    .filter((shift) => !date || (shift.date || "") === date)
+    .sort((a, b) => {
+      const byDate = String(a.date || "").localeCompare(String(b.date || ""));
+      if (byDate) return byDate;
+      const byEvent = String(a.eventName || "").localeCompare(String(b.eventName || ""));
+      if (byEvent) return byEvent;
+      return String(a.staffName || "").localeCompare(String(b.staffName || ""));
+    })
+    .map((shift) => {
+      const staff = staffById.get(shift.staffId) || {};
+      const event = eventById.get(shift.eventId) || {};
+      return {
+        Mes: String(shift.period || shift.date || "").slice(0, 7),
+        Fecha: shift.date || "",
+        Dia: getSpanishWeekdayName(shift.date),
+        Evento: shift.eventName || event.name || "",
+        Persona: shift.staffName || staff.fullName || "",
+        Telefono: staff.phone || "",
+        "Rol/tarea": shift.role || staff.role || "",
+        Entrada: shift.startTime || "",
+        Salida: shift.endTime || "",
+        Descanso: shift.breakMinutes ? `${shift.breakMinutes} min` : "",
+        "Horas calculadas": roundMoney(shift.hours || 0),
+        Nota: cleanTimesheetExportNote(shift.notes || ""),
+        Estado: getAttendanceStatusLabel(shift.attendanceStatus),
+        "Cargado por": shift.loadedBy || "",
+        "Fecha de carga/actualizacion": shift.updatedAt || shift.createdAt || "",
+      };
+    });
+}
+
+function getSpanishWeekdayName(date = "") {
+  const match = String(date || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return "";
+  const parsed = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"][parsed.getDay()] || "";
+}
+
+function cleanTimesheetExportNote(notes = "") {
+  return String(notes || "")
+    .split("|")
+    .map((item) => item.trim())
+    .filter((item) => item && !/^Descanso\s+/i.test(item) && !/^Carga mensual/i.test(item))
+    .join(" | ");
+}
+
 function saveStaffShiftRecord(input = {}) {
   const id = normalizeText(input.id || "");
   const index = erpStaffShifts.findIndex((item) => item.id === id);
@@ -5637,6 +5795,76 @@ function saveStaffShiftRecord(input = {}) {
   else erpStaffShifts.push(shift);
   saveErpStaffShifts();
   return shift;
+}
+
+function saveStaffTimesheet(input = {}, user = null) {
+  const staffId = normalizeText(input.staffId || "");
+  const staffNameInput = normalizeText(input.staffName || "");
+  const period = normalizeText(input.period || getDateOnly(new Date()).slice(0, 7));
+  const eventId = normalizeText(input.eventId || "");
+  const staff = erpStaff.find((item) => item.id === staffId);
+  const staffName = normalizeText(staff?.fullName || staffNameInput);
+  const event = erpEvents.find((item) => item.id === eventId) || {};
+  const days = Array.isArray(input.days) ? input.days : [];
+  if (!staffId && !staffName) throw new Error("Ingrese o seleccione una persona.");
+  if (!/^\d{4}-\d{2}$/.test(period)) throw new Error("Seleccione un mes valido.");
+  const normalizedDays = days
+    .map((day) => ({
+      date: normalizePanelDate(day.date || ""),
+      startTime: normalizeText(day.startTime || ""),
+      endTime: normalizeText(day.endTime || ""),
+      breakMinutes: Math.max(0, parseOptionalNumber(day.breakMinutes || 0)),
+      notes: normalizeText(day.notes || ""),
+    }))
+    .filter((day) => day.date && day.date.startsWith(`${period}-`));
+  if (!normalizedDays.length) throw new Error("Seleccione al menos un dia trabajado.");
+
+  erpStaffShifts = normalizeStaffShiftList(erpStaffShifts).filter((shift) => {
+    if (staffId ? shift.staffId !== staffId : normalizeSearchKey(shift.staffName) !== normalizeSearchKey(staffName)) return true;
+    if ((shift.source || "") !== "timesheet") return true;
+    if ((shift.period || "").slice(0, 7) !== period) return true;
+    if ((shift.eventId || "") !== eventId) return true;
+    return false;
+  });
+
+  const saved = normalizedDays.map((day) => {
+    const rawHours = calculateHoursBetween(day.startTime, day.endTime);
+    const breakHours = Math.max(0, Number(day.breakMinutes || 0) / 60);
+    const personKey = staffId || normalizeSearchKey(staffName).replace(/[^a-z0-9]+/g, "-") || "sin-legajo";
+    return normalizeStaffShiftRecord({
+      id: `asistencia-${personKey}-${day.date}-${eventId || "sin-evento"}`,
+      staffId,
+      staffName,
+      eventId,
+      eventName: event.name || normalizeText(input.eventName || ""),
+      date: day.date,
+      role: normalizeText(input.role || staff?.role || ""),
+      startTime: day.startTime,
+      endTime: day.endTime,
+      hours: Math.max(0, roundMoney(rawHours - breakHours)),
+      hourlyRate: staff?.hourlyRate || 0,
+      extrasAmount: 0,
+      attendanceStatus: "present",
+      notes: [day.notes, day.breakMinutes ? `Descanso ${day.breakMinutes} min` : "", `Carga mensual ${period}`].filter(Boolean).join(" | "),
+      source: "timesheet",
+      period,
+      breakMinutes: day.breakMinutes,
+      loadedBy: normalizeText(user?.username || ""),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  });
+  erpStaffShifts.push(...saved);
+  saveErpStaffShifts();
+  return {
+    staffId,
+    staffName,
+    period,
+    eventId,
+    eventName: event.name || "",
+    days: saved.length,
+    totalHours: roundMoney(saved.reduce((sum, shift) => sum + Number(shift.hours || 0), 0)),
+  };
 }
 
 function normalizePayrollRecordList(input = []) {
