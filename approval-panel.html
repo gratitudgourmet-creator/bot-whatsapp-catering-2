@@ -10202,7 +10202,7 @@
       </section>
     </section>
 
-    <section id="view-stock" class="workspace-view" data-permission="stock:read">
+    <section id="view-stock" class="workspace-view" data-permission="stock:any">
       <section id="product-master-section" class="erp-section">
         <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
           <div>
@@ -12176,7 +12176,7 @@
       },
       stock: {
         label: "Inventario general",
-        permission: "stock:read",
+        permission: "stock:any",
         run: () => window.open("/inventario", "_blank", "noopener"),
       },
       providers: {
@@ -12334,7 +12334,7 @@
     function applyInventoryButtonVisibility() {
       const perms = new Set(currentUser?.permissions || []);
       const isAdmin = perms.has("*");
-      const canStock = isAdmin || perms.has("stock:read") || perms.has("purchases:write");
+      const canStock = isAdmin || perms.has("stock:read") || perms.has("stock:write") || perms.has("purchases:write") || perms.has("stock:kitchen:read") || perms.has("stock:kitchen_equipment:read") || perms.has("stock:operations:read");
       const canMaint = isAdmin || perms.has("maintenance:read");
       const btnToma = document.getElementById("btn-toma-inventario");
       const btnEstado = document.getElementById("btn-estado-inventario");
@@ -12537,6 +12537,14 @@
     function can(permission) {
       if (!currentUser) return false;
       const permissions = currentUser.permissions || [];
+      if (permission === "stock:any") {
+        return permissions.includes("*") || permissions.includes("stock:read") || permissions.includes("stock:write") || permissions.includes("purchases:write")
+          || permissions.includes("stock:kitchen:read") || permissions.includes("stock:kitchen_equipment:read") || permissions.includes("stock:operations:read");
+      }
+      if (permission === "stock:write:any") {
+        return permissions.includes("*") || permissions.includes("stock:write") || permissions.includes("purchases:write")
+          || permissions.includes("stock:kitchen:write") || permissions.includes("stock:kitchen_equipment:write") || permissions.includes("stock:operations:write");
+      }
       return permissions.includes("*") || permissions.includes(permission) || permission === "view";
     }
 
@@ -12953,7 +12961,7 @@
         buyer_purchases: { requiredAny: ["purchase_orders:read", "purchase_orders:check"] },
         finance: { requiredAny: ["finance:read", "finance:write"] },
         production: { requiredAny: ["production:read", "recipes:read", "recipes:write"] },
-        stock: { requiredAny: ["stock:read", "purchases:write"] },
+        stock: { requiredAny: ["stock:read", "stock:write", "stock:kitchen:read", "stock:kitchen_equipment:read", "stock:operations:read", "purchases:write"] },
         hr: { requiredAny: ["hr:read", "hr:write", "payroll:read", "payroll:write"] },
         sanitation: { requiredAny: ["sanitation:read", "sanitation:write", "sanitation:approve"] },
         payment_orders: { requiredAny: ["payment_orders:read", "payment_orders:write", "payment_orders:approve"] },
@@ -20181,12 +20189,13 @@
       const categories = getOperationalInventoryCategories();
       container.innerHTML = `
         <div class="operational-inventory-layout">
-          <div class="panel-box soft-panel">
+          <div class="panel-box soft-panel ${can("stock:write:any") ? "" : "hidden"}">
             <h3 style="margin-top:0;">Item operativo</h3>
             <form id="operational-inventory-form" class="form-grid" onsubmit="saveOperationalInventoryItem(event)">
               <input type="hidden" name="id">
               <div class="form-field full"><label>Nombre</label><input name="name" required placeholder="Ej: Conservadora grande, pinza, anafe"></div>
-              <div class="form-field"><label>Categoria</label><select name="categoryId" onchange="renderOperationalSubcategoryOptions()">${renderOperationalCategoryOptions()}</select></div>
+              <div class="form-field"><label>Área</label><select name="inventoryDomain" onchange="renderOperationalCategoryOptionsForArea()">${renderOperationalInventoryAreaOptions()}</select></div>
+              <div class="form-field"><label>Categoria</label><select name="categoryId" onchange="renderOperationalSubcategoryOptions()">${renderOperationalCategoryOptions("", getOperationalInventoryWritableAreas()[0] || "")}</select></div>
               <div class="form-field"><label>Subcategoria</label><select name="subcategory">${renderOperationalSubcategoryOptionsHtml()}</select></div>
               <div class="form-field"><label>Cantidad total</label><input name="quantity" inputmode="decimal" value="1"></div>
               <div class="form-field"><label>Unidad</label><input name="unit" value="unidad"></div>
@@ -20199,7 +20208,7 @@
                 <button id="operational-inventory-delete" class="reject hidden" type="button" onclick="deleteOperationalInventoryItem()">Eliminar</button>
               </div>
             </form>
-            <details class="inventory-collapse" style="margin-top:14px;">
+            <details class="inventory-collapse ${can("stock:write") || can("purchases:write") ? "" : "hidden"}" style="margin-top:14px;">
               <summary><strong>Categorias y subcategorias</strong><span class="badge">${escapeHtml(categories.length)} categoria(s)</span></summary>
               <div class="inventory-collapse-body">
                 <p class="subtitle">Una categoria agrupa items. Las subcategorias son opciones internas para ordenar, no categorias dentro de categorias.</p>
@@ -20247,8 +20256,66 @@
       ];
     }
 
-    function renderOperationalCategoryOptions(selected = "") {
-      return getOperationalInventoryCategories().map((category) => `<option value="${escapeAttribute(category.id)}" ${category.id === selected ? "selected" : ""}>${escapeHtml(category.label)}</option>`).join("");
+    function getOperationalInventoryAreaLabel(area = "") {
+      return {
+        kitchen: "Inventario Cocina",
+        kitchen_equipment: "Equipamiento Cocina",
+        operations: "Inventario Operativo Eventos",
+      }[area] || "Inventario";
+    }
+
+    function inferOperationalInventoryAreaFromCategory(categoryId = "") {
+      const key = normalizeSearch(categoryId);
+      if (["alimentos", "bebidas", "limpieza"].includes(key)) return "kitchen";
+      if (["utensilios", "artefactos", "herramientas", "ollas", "equipamiento_cocina"].includes(key)) return "kitchen_equipment";
+      if (["vajilla", "manteleria", "contenedores", "mobiliario", "transporte", "descartables", "cajas", "bins"].includes(key)) return "operations";
+      return "operations";
+    }
+
+    function getOperationalInventoryAllowedAreas() {
+      const dataAreas = erpData.operationalInventory?.areas;
+      if (Array.isArray(dataAreas) && dataAreas.length) return dataAreas;
+      const perms = new Set(currentUser?.permissions || []);
+      if (perms.has("*") || perms.has("stock:read") || perms.has("stock:write") || perms.has("purchases:write")) return ["kitchen", "kitchen_equipment", "operations"];
+      return [
+        perms.has("stock:kitchen:read") || perms.has("stock:kitchen:write") ? "kitchen" : "",
+        perms.has("stock:kitchen_equipment:read") || perms.has("stock:kitchen_equipment:write") ? "kitchen_equipment" : "",
+        perms.has("stock:operations:read") || perms.has("stock:operations:write") ? "operations" : "",
+      ].filter(Boolean);
+    }
+
+    function getOperationalInventoryWritableAreas() {
+      const dataAreas = erpData.operationalInventory?.writableAreas;
+      if (Array.isArray(dataAreas) && dataAreas.length) return dataAreas;
+      const perms = new Set(currentUser?.permissions || []);
+      if (perms.has("*") || perms.has("stock:write") || perms.has("purchases:write")) return ["kitchen", "kitchen_equipment", "operations"];
+      return [
+        perms.has("stock:kitchen:write") ? "kitchen" : "",
+        perms.has("stock:kitchen_equipment:write") ? "kitchen_equipment" : "",
+        perms.has("stock:operations:write") ? "operations" : "",
+      ].filter(Boolean);
+    }
+
+    function renderOperationalInventoryAreaOptions(selected = "") {
+      const areas = getOperationalInventoryWritableAreas();
+      const current = selected || areas[0] || "operations";
+      return areas.map((area) => `<option value="${escapeAttribute(area)}" ${area === current ? "selected" : ""}>${escapeHtml(getOperationalInventoryAreaLabel(area))}</option>`).join("");
+    }
+
+    function renderOperationalCategoryOptions(selected = "", area = "") {
+      const currentArea = area || document.getElementById("operational-inventory-form")?.elements.inventoryDomain?.value || "";
+      const categories = getOperationalInventoryCategories().filter((category) => !currentArea || inferOperationalInventoryAreaFromCategory(category.id) === currentArea);
+      return categories.map((category) => `<option value="${escapeAttribute(category.id)}" ${category.id === selected ? "selected" : ""}>${escapeHtml(category.label)}</option>`).join("");
+    }
+
+    function renderOperationalCategoryOptionsForArea() {
+      const form = document.getElementById("operational-inventory-form");
+      if (!form) return;
+      const area = form.elements.inventoryDomain?.value || "";
+      if (form.elements.categoryId) {
+        form.elements.categoryId.innerHTML = renderOperationalCategoryOptions("", area);
+      }
+      renderOperationalSubcategoryOptions();
     }
 
     function renderOperationalSubcategoryOptionsHtml(selected = "", categoryId = "") {
@@ -20316,6 +20383,7 @@
             <strong>${escapeHtml(item.name || "")}</strong>
             <div class="secondary">${escapeHtml([item.subcategory, item.location].filter(Boolean).join(" · ") || "Sin ubicacion")}</div>
             <div class="inventory-tags">
+              <span class="badge info">${escapeHtml(getOperationalInventoryAreaLabel(item.inventoryArea || item.inventoryDomain || inferOperationalInventoryAreaFromCategory(item.categoryId)))}</span>
               <span class="badge ${unavailable ? "missing_info" : "confirmed"}">${escapeHtml(item.statusLabel || item.status || "")}</span>
               ${item.notes ? `<span class="secondary">${escapeHtml(item.notes)}</span>` : ""}
             </div>
@@ -20333,6 +20401,8 @@
       const item = (erpData.operationalInventory?.items || []).find((entry) => entry.id === id);
       const form = document.getElementById("operational-inventory-form");
       if (!item || !form) return;
+      setFormValue(form, "inventoryDomain", item.inventoryArea || item.inventoryDomain || inferOperationalInventoryAreaFromCategory(item.categoryId));
+      if (form.elements.categoryId) form.elements.categoryId.innerHTML = renderOperationalCategoryOptions(item.categoryId || "", form.elements.inventoryDomain?.value || "");
       ["id", "name", "categoryId", "quantity", "unit", "status", "location", "notes"].forEach((field) => setFormValue(form, field, item[field] || ""));
       document.getElementById("operational-inventory-delete")?.classList.remove("hidden");
       renderOperationalSubcategoryOptions();
@@ -20346,6 +20416,8 @@
       setFormValue(form, "quantity", "1");
       setFormValue(form, "unit", "unidad");
       setFormValue(form, "status", "available");
+      setFormValue(form, "inventoryDomain", getOperationalInventoryWritableAreas()[0] || "operations");
+      renderOperationalCategoryOptionsForArea();
       document.getElementById("operational-inventory-delete")?.classList.add("hidden");
       renderOperationalSubcategoryOptions();
     }

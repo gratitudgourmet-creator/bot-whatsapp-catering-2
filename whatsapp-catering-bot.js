@@ -251,8 +251,8 @@ const DEFAULT_ROLE_DEFINITIONS = {
   },
   cocina: {
     label: "Cocinero",
-    permissions: ["view", "production:read", "recipes:read", "recipes:write"],
-    tabs: ["production", "recipes"],
+    permissions: ["view", "production:read", "recipes:read", "recipes:write", "stock:kitchen:read", "stock:kitchen:write", "stock:kitchen_equipment:read", "stock:kitchen_equipment:write"],
+    tabs: ["production", "recipes", "stock"],
   },
   operacion: {
     label: "Operacion",
@@ -261,8 +261,8 @@ const DEFAULT_ROLE_DEFINITIONS = {
   },
   logistica_evento: {
     label: "Logistica Evento",
-    permissions: ["view", "logistics:read", "logistics:write"],
-    tabs: ["logistics_event"],
+    permissions: ["view", "logistics:read", "logistics:write", "stock:operations:read", "stock:operations:write"],
+    tabs: ["logistics_event", "stock"],
   },
   finanzas: {
     label: "Finanzas",
@@ -295,7 +295,7 @@ const TAB_DEFINITIONS = [
   { id: "production", label: "Produccion/Cocina", requiredAny: ["production:read", "recipes:read", "recipes:write"] },
   { id: "logistics_event", label: "Logistica Evento", requiredAny: ["logistics:read", "logistics:write"] },
   { id: "recipes", label: "Recetas", requiredAny: ["recipes:read", "recipes:write"] },
-  { id: "stock", label: "Stock", requiredAny: ["stock:read", "purchases:write"] },
+  { id: "stock", label: "Stock", requiredAny: ["stock:read", "stock:write", "stock:kitchen:read", "stock:kitchen_equipment:read", "stock:operations:read", "purchases:write"] },
   { id: "providers", label: "Proveedores", requiredAny: ["providers:write"] },
   { id: "customers", label: "Clientes", requiredAny: ["customers:write"] },
   { id: "hr", label: "Personal/RRHH", requiredAny: ["hr:read", "hr:write", "payroll:read", "payroll:write"] },
@@ -317,6 +317,12 @@ const PERMISSION_DEFINITIONS = [
   { id: "finance:write", label: "Registrar pagos de proveedores", group: "Finanzas" },
   { id: "stock:read", label: "Ver stock e inventario", group: "Stock" },
   { id: "stock:write", label: "Modificar stock e inventario", group: "Stock" },
+  { id: "stock:kitchen:read", label: "Inventario Cocina - Ver", group: "Stock" },
+  { id: "stock:kitchen:write", label: "Inventario Cocina - Modificar", group: "Stock" },
+  { id: "stock:kitchen_equipment:read", label: "Equipamiento Cocina - Ver", group: "Stock" },
+  { id: "stock:kitchen_equipment:write", label: "Equipamiento Cocina - Modificar", group: "Stock" },
+  { id: "stock:operations:read", label: "Inventario Operativo Eventos - Ver", group: "Stock" },
+  { id: "stock:operations:write", label: "Inventario Operativo Eventos - Modificar", group: "Stock" },
   { id: "payment_orders:read", label: "Ver ordenes de pago", group: "Finanzas" },
   { id: "payment_orders:write", label: "Crear ordenes de pago", group: "Finanzas" },
   { id: "payment_orders:approve", label: "Aprobar ordenes de pago", group: "Finanzas" },
@@ -328,7 +334,6 @@ const PERMISSION_DEFINITIONS = [
   { id: "sanitation:write", label: "Crear registros bromatologicos", group: "Bromatologia" },
   { id: "sanitation:approve", label: "Aprobar decomisos y controles", group: "Bromatologia" },
   { id: "production:read", label: "Ver Produccion/Cocina", group: "Produccion/Cocina" },
-  { id: "stock:read", label: "Ver stock e inventario", group: "Stock" },
   { id: "maintenance:read", label: "Ver y reportar estado de articulos", group: "Mantenimiento" },
   { id: "logistics:read", label: "Ver Logistica Evento", group: "Logistica" },
   { id: "logistics:write", label: "Editar ficha logistica", group: "Logistica" },
@@ -1071,7 +1076,7 @@ function startApprovalPanelServer() {
         const canSeeProviders = canSeeEverything || hasPanelPermission(sessionUser, "providers:write") || canSeePurchases || canSeeFinance;
         const canSeeRecipes = canSeeEverything || hasPanelPermission(sessionUser, "recipes:read") || hasPanelPermission(sessionUser, "recipes:write");
         const canSeeProduction = canSeeEverything || hasPanelPermission(sessionUser, "production:read");
-        const canSeeStock = canSeeEverything || hasPanelPermission(sessionUser, "stock:read") || canSeePurchases;
+        const canSeeStock = canSeeEverything || hasAnyInventoryAreaPermission(sessionUser, "read") || canSeePurchases;
         const canSeeReports = canSeeEverything || hasPanelPermission(sessionUser, "reports:read");
         const canSeeCustomers = canSeeEverything || hasPanelPermission(sessionUser, "customers:write");
         const canSeeVenues = canSeeEverything || hasPanelPermission(sessionUser, "venues:read") || hasPanelPermission(sessionUser, "venues:write");
@@ -1104,25 +1109,28 @@ function startApprovalPanelServer() {
             ok: true,
             me: publicUser,
             roles: getPanelRoleList(),
-            dashboard: {},
-            pipeline: { columns: [] },
-            events: [],
-            confirmedEvents: [],
-            quotes: [],
-            purchases: [],
-            purchaseOrders: [],
-            purchaseReceipts: [],
-            inventory: [],
-            inventoryMovements: [],
-            productMaster: [],
-            providers: [],
-            recipes: [],
-            customers: [],
-            venues: [],
-            productAlerts: [],
-            hrDashboard: undefined,
-            sanitationDashboard: undefined,
-            paymentOrdersDashboard: undefined,
+            _view,
+            _partial,
+            dashboard: _has("dashboard") ? {} : undefined,
+            pipeline: _has("pipeline") ? { columns: [] } : undefined,
+            events: _has("events") ? [] : undefined,
+            confirmedEvents: _has("confirmedEvents") ? [] : undefined,
+            quotes: _has("quotes") ? [] : undefined,
+            purchases: _has("purchases") ? [] : undefined,
+            purchaseOrders: _has("purchaseOrders") ? [] : undefined,
+            purchaseReceipts: _has("purchaseReceipts") ? [] : undefined,
+            inventory: _has("inventory") ? [] : undefined,
+            inventoryMovements: _has("inventoryMovements") ? [] : undefined,
+            operationalInventory: _has("operationalInventory") && hasAnyInventoryAreaPermission(sessionUser, "read") ? getOperationalInventoryAdminView(sessionUser) : undefined,
+            productMaster: _has("productMaster") ? [] : undefined,
+            providers: _has("providers") ? [] : undefined,
+            recipes: _has("recipes") ? [] : undefined,
+            customers: _has("customers") ? [] : undefined,
+            venues: _has("venues") ? [] : undefined,
+            productAlerts: _has("productAlerts") ? [] : undefined,
+            hrDashboard: _has("hrDashboard") ? undefined : undefined,
+            sanitationDashboard: _has("sanitationDashboard") ? undefined : undefined,
+            paymentOrdersDashboard: _has("paymentOrdersDashboard") ? undefined : undefined,
           });
         }
         if (publicUser?.role === "finanzas") {
@@ -1174,7 +1182,7 @@ function startApprovalPanelServer() {
           purchaseReceipts: _has("purchaseReceipts") ? (canSeePurchases || canSeeStock ? getPurchaseReceiptList() : []) : undefined,
           inventory: _has("inventory") ? (canSeePurchases || canSeeStock ? getInventoryBalanceList() : []) : undefined,
           inventoryMovements: _has("inventoryMovements") ? (canSeePurchases || canSeeStock ? getInventoryMovementList() : []) : undefined,
-          operationalInventory: _has("operationalInventory") ? (canSeePurchases || canSeeStock || canSeeEverything ? getOperationalInventoryAdminView() : undefined) : undefined,
+          operationalInventory: _has("operationalInventory") ? (canSeePurchases || canSeeStock || canSeeEverything ? getOperationalInventoryAdminView(sessionUser) : undefined) : undefined,
           productMaster: _has("productMaster") ? (canSeePurchases || canSeeStock || canSeeRecipes || canSeeProduction || canSeeEverything ? getProductMasterListForUser(sessionUser) : []) : undefined,
           providers: _has("providers") ? (canSeeProviders ? getProviderList() : []) : undefined,
           recipes: _has("recipes") ? (canSeeRecipes ? getRecipeListForUser(sessionUser) : []) : undefined,
@@ -1667,21 +1675,29 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/operational-inventory") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write", "logistics:read"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "stock:write", "stock:kitchen:read", "stock:kitchen_equipment:read", "stock:operations:read", "events:write", "logistics:read"]);
         if (!user) return;
-        return sendJson(response, { ok: true, operationalInventory: getOperationalInventoryAdminView() });
+        return sendJson(response, { ok: true, operationalInventory: getOperationalInventoryAdminView(user) });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "events:write", "logistics:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "events:write", "logistics:write"]);
         if (!user) return;
         const body = await readJsonBody(request);
+        const item = normalizeOperationalInventoryItem(body.item || body);
+        const categoryArea = inferInventoryDomainFromCategory(item.categoryId);
+        if (item.inventoryDomain && categoryArea && item.inventoryDomain !== categoryArea) {
+          return sendJson(response, { ok: false, error: "El area no coincide con la categoria seleccionada." }, 400);
+        }
+        const existing = item.id ? findOperationalInventoryItem(item.id) : null;
+        if (existing && !canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
+        if (!canWriteInventoryArea(user, getInventoryAreaForItem(item))) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
         const operationalInventory = saveOperationalInventoryRecord(body, user);
         return sendJson(response, { ok: true, operationalInventory });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-categories") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "events:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
         if (!user) return;
         const body = await readJsonBody(request);
         const operationalInventory = saveOperationalInventoryCategories(body, user);
@@ -1689,16 +1705,19 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/delete-operational-inventory") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "events:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write"]);
         if (!user) return;
         if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar inventario operativo")) return;
         const body = await readJsonBody(request);
+        const item = findOperationalInventoryItem(body.id);
+        if (!item) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        if (!canWriteInventoryArea(user, getInventoryAreaForItem(item))) return sendJson(response, { ok: false, error: "Su usuario no puede eliminar esta area de inventario." }, 403);
         const operationalInventory = deleteOperationalInventoryItem(body.id, user);
         return sendJson(response, { ok: true, operationalInventory });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-archive") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write"]);
         if (!user) return;
         if (!requireSensitivePermission(user, response, "sensitive:delete", "dar de baja inventario operativo")) return;
         if (!requireSalonLocation(user, response, "archivar articulo de inventario")) return;
@@ -1707,19 +1726,32 @@ function startApprovalPanelServer() {
         const reason = normalizeText(body.reason || "");
         if (!itemId) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
         if (!reason) return sendJson(response, { ok: false, error: "Motivo requerido." }, 400);
-        if (!findOperationalInventoryItem(itemId)) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        const existing = findOperationalInventoryItem(itemId);
+        if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede dar de baja esta area de inventario." }, 403);
         const item = archiveOperationalInventoryItem(itemId, reason, user);
-        return sendJson(response, { ok: true, item, ...getInventarioSesionView() });
+        return sendJson(response, { ok: true, item, ...getInventarioSesionView(user) });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-meta") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "actualizar datos de inventario")) return;
         const body = await readJsonBody(request);
         const itemId = normalizeText(body.itemId || body.id || "");
         if (!itemId) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
-        if (!findOperationalInventoryItem(itemId)) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        const existing = findOperationalInventoryItem(itemId);
+        if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        const nextArea = Object.prototype.hasOwnProperty.call(body, "inventoryDomain") || Object.prototype.hasOwnProperty.call(body, "categoryId")
+          ? normalizeInventoryDomain(body.inventoryDomain) || inferInventoryDomainFromCategory(body.categoryId || existing.categoryId)
+          : getInventoryAreaForItem(existing);
+        const nextCategoryArea = inferInventoryDomainFromCategory(body.categoryId || existing.categoryId);
+        if (nextArea && nextCategoryArea && nextArea !== nextCategoryArea) {
+          return sendJson(response, { ok: false, error: "El area no coincide con la categoria seleccionada." }, 400);
+        }
+        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing)) || !canWriteInventoryArea(user, nextArea)) {
+          return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
+        }
         const expiryStatus = normalizeOperationalExpiryStatus(body.expiryStatus || "");
         const expiryDate = normalizeText(body.expiryDate || "");
         if (expiryStatus && !expiryDate) return sendJson(response, { ok: false, error: "Fecha de vencimiento requerida." }, 400);
@@ -1729,13 +1761,13 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/inventario-sesion") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "events:write", "logistics:read"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read", "stock:write", "stock:kitchen:read", "stock:kitchen_equipment:read", "stock:operations:read", "events:write", "logistics:read"]);
         if (!user) return;
-        return sendJson(response, { ok: true, ...getInventarioSesionView() });
+        return sendJson(response, { ok: true, ...getInventarioSesionView(user) });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/start") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "logistics:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "logistics:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "iniciar toma de inventario")) return;
         const body = await readJsonBody(request);
@@ -1744,13 +1776,15 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/item") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "logistics:write"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "logistics:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "registrar conteo de inventario")) return;
         const body = await readJsonBody(request);
         if (!loadInventarioSesion().active) return sendJson(response, { ok: false, error: "No hay una sesion de inventario activa." }, 400);
         if (!normalizeText(body.itemId || "")) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
-        if (!findOperationalInventoryItem(body.itemId)) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        const existing = findOperationalInventoryItem(body.itemId);
+        if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede contar esta area de inventario." }, 403);
         const packageValidation = validatePackageCountInput(body.packageCount, body.qty);
         if (!packageValidation.ok) return sendJson(response, { ok: false, error: packageValidation.error }, 400);
         const sesion = updateInventarioSesionItem(body.itemId, body.counted, body.qty, user, packageValidation.packageCount);
@@ -1769,7 +1803,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/close") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "cerrar sesión de inventario")) return;
         const result = closeInventarioSesion(user);
@@ -1777,33 +1811,39 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventario-sesion/cancel") {
-        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write"]);
         if (!user) return;
         cancelInventarioSesion(user);
         return sendJson(response, { ok: true });
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/estado-inventario") {
-        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:read", "purchases:write"]);
+        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:read", "stock:write", "stock:kitchen:read", "stock:kitchen_equipment:read", "stock:operations:read", "purchases:write"]);
         if (!user) return;
-        return sendJson(response, { ok: true, ...getEstadoInventarioView() });
+        return sendJson(response, { ok: true, ...getEstadoInventarioView(user) });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-condition") {
-        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:read", "purchases:write"]);
+        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "purchases:write"]);
         if (!user) return;
         if (!requireSalonLocation(user, response, "actualizar estado de artículo")) return;
         const body = await readJsonBody(request);
         if (!body.itemId) return sendJson(response, { ok: false, error: "itemId requerido." }, 400);
+        const existing = findOperationalInventoryItem(body.itemId);
+        if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
         const item = updateItemCondition(body.itemId, body.condition, body.notes, body.imagePath !== undefined ? body.imagePath : undefined, user);
         return sendJson(response, { ok: true, item });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/upload-condition-image") {
-        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:read", "purchases:write"]);
+        const user = requireAnyPanelPermission(request, response, ["maintenance:read", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "purchases:write"]);
         if (!user) return;
         const body = await readJsonBody(request);
         if (!body.itemId || !body.image) return sendJson(response, { ok: false, error: "itemId e image requeridos." }, 400);
+        const existing = findOperationalInventoryItem(body.itemId);
+        if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+        if (!canWriteInventoryArea(user, getInventoryAreaForItem(existing))) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
         const imagePath = await saveConditionImage(body.itemId, body.image);
         return sendJson(response, { ok: true, imagePath });
       }
@@ -3837,6 +3877,45 @@ function hasPanelPermission(user, permission) {
   if (!permission || permission === "view") return Boolean(user);
   const permissions = getRoleDefinitions()[user?.role]?.permissions || [];
   return permissions.includes("*") || permissions.includes(permission);
+}
+
+const INVENTORY_AREAS = ["kitchen", "kitchen_equipment", "operations"];
+
+function normalizeInventoryArea(area = "") {
+  const key = normalizeSearchKey(area);
+  if (["kitchen", "cocina", "inventario cocina", "alimentos", "materia prima"].includes(key)) return "kitchen";
+  if (["kitchen_equipment", "equipamiento cocina", "equipamiento de cocina", "herramientas cocina", "utensilios cocina"].includes(key)) return "kitchen_equipment";
+  if (["operations", "operativo", "eventos", "inventario operativo", "logistica", "logistica evento"].includes(key)) return "operations";
+  return "";
+}
+
+function canReadInventoryArea(user, area) {
+  const cleanArea = normalizeInventoryArea(area);
+  if (!cleanArea) return false;
+  return hasPanelPermission(user, "*")
+    || hasPanelPermission(user, "stock:read")
+    || hasPanelPermission(user, "stock:write")
+    || hasPanelPermission(user, "purchases:write")
+    || hasPanelPermission(user, `stock:${cleanArea}:read`)
+    || hasPanelPermission(user, `stock:${cleanArea}:write`);
+}
+
+function canWriteInventoryArea(user, area) {
+  const cleanArea = normalizeInventoryArea(area);
+  if (!cleanArea) return false;
+  return hasPanelPermission(user, "*")
+    || hasPanelPermission(user, "stock:write")
+    || hasPanelPermission(user, "purchases:write")
+    || hasPanelPermission(user, `stock:${cleanArea}:write`);
+}
+
+function getAllowedInventoryAreas(user, mode = "read") {
+  const checker = mode === "write" ? canWriteInventoryArea : canReadInventoryArea;
+  return INVENTORY_AREAS.filter((area) => checker(user, area));
+}
+
+function hasAnyInventoryAreaPermission(user, mode = "read") {
+  return getAllowedInventoryAreas(user, mode).length > 0;
 }
 
 function requirePanelPermission(request, response, permission) {
@@ -6616,7 +6695,7 @@ function normalizeOperationalInventoryCategory(input = {}) {
 function normalizeOperationalInventoryItem(input = {}) {
   const categoryId = normalizeText(input.categoryId || input.category || "utensilios");
   const quantity = Math.max(0, parseDecimalNumber(input.quantity || input.totalQuantity || 1));
-  const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || inferInventoryDomainFromCategory(categoryId));
+  const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || "") || inferInventoryDomainFromCategory(categoryId, input);
   return {
     id: normalizeText(input.id || `opinv-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     name: normalizeText(input.name || input.productName || input.description || ""),
@@ -6651,15 +6730,41 @@ function normalizeOperationalInventoryItem(input = {}) {
 
 function inferInventoryDomainFromCategory(categoryId = "") {
   const key = normalizeSearchKey(categoryId);
-  if (["alimentos", "bebidas"].includes(key)) return "kitchen";
-  return "equipment";
+  if (["alimentos", "bebidas", "limpieza"].includes(key)) return "kitchen";
+  if (["utensilios", "artefactos", "herramientas", "ollas", "equipamiento_cocina", "equipamiento cocina"].includes(key)) return "kitchen_equipment";
+  if (["vajilla", "manteleria", "contenedores", "mobiliario", "transporte", "descartables", "cajas", "bins"].includes(key)) return "operations";
+  return "operations";
 }
 
 function normalizeInventoryDomain(value = "") {
   const key = normalizeSearchKey(value);
-  if (["kitchen", "cocina", "inventario cocina", "alimentos"].includes(key)) return "kitchen";
-  if (["equipment", "equipamiento", "equipamiento operativo", "operativo"].includes(key)) return "equipment";
-  return "equipment";
+  if (["kitchen", "cocina", "inventario cocina", "alimentos", "materia prima", "heladera", "freezer"].includes(key)) return "kitchen";
+  if (["kitchen_equipment", "equipamiento cocina", "equipamiento de cocina", "utensilios cocina", "herramientas cocina"].includes(key)) return "kitchen_equipment";
+  if (["operations", "operativo", "equipamiento operativo", "inventario operativo eventos", "eventos", "logistica", "logistica evento"].includes(key)) return "operations";
+  return "";
+}
+
+function getInventoryAreaForItem(item = {}) {
+  return normalizeInventoryDomain(item.inventoryDomain || "") || inferInventoryDomainFromCategory(item.categoryId || item.category || "", item);
+}
+
+function filterOperationalInventoryItemsForUser(items = [], user = null, mode = "read") {
+  return (Array.isArray(items) ? items : []).filter((item) => {
+    const area = getInventoryAreaForItem(item);
+    return mode === "write" ? canWriteInventoryArea(user, area) : canReadInventoryArea(user, area);
+  });
+}
+
+function filterOperationalInventoryCategoriesForItems(categories = [], items = []) {
+  const categoryIds = new Set((Array.isArray(items) ? items : []).map((item) => item.categoryId).filter(Boolean));
+  return (Array.isArray(categories) ? categories : []).filter((category) => categoryIds.has(category.id));
+}
+
+function filterOperationalInventoryCategoriesForUser(categories = [], user = null, mode = "read") {
+  return (Array.isArray(categories) ? categories : []).filter((category) => {
+    const area = inferInventoryDomainFromCategory(category.id);
+    return mode === "write" ? canWriteInventoryArea(user, area) : canReadInventoryArea(user, area);
+  });
 }
 
 function normalizeInventoryLocationType(value = "") {
@@ -6748,12 +6853,16 @@ function getOperationalInventoryStatusLabel(status) {
   }[normalizeOperationalInventoryStatus(status)] || "Disponible";
 }
 
-function getOperationalInventoryAdminView() {
+function getOperationalInventoryAdminView(user = null) {
   const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const visibleItems = filterOperationalInventoryItemsForUser(data.items, user, "read");
   return {
-    categories: data.categories,
-    items: data.items.map((item) => ({
+    areas: getAllowedInventoryAreas(user, "read"),
+    writableAreas: getAllowedInventoryAreas(user, "write"),
+    categories: filterOperationalInventoryCategoriesForUser(data.categories, user, "read"),
+    items: visibleItems.map((item) => ({
       ...item,
+      inventoryArea: getInventoryAreaForItem(item),
       statusLabel: getOperationalInventoryStatusLabel(item.status),
       reservedQuantity: getOperationalInventoryReservedQuantity(item, null),
       availableQuantity: Math.max(0, Number(item.quantity || 0) - getOperationalInventoryReservedQuantity(item, null)),
@@ -6895,7 +7004,7 @@ function saveOperationalInventoryRecord(input = {}, user = null) {
   erpOperationalInventory = { categories, items: data.items, updatedAt: now };
   saveErpOperationalInventory();
   recordAudit(user, input.id ? "update" : "create", "operational_inventory", nextItem.id, nextItem.name, before, nextItem);
-  return getOperationalInventoryAdminView();
+  return getOperationalInventoryAdminView(user);
 }
 
 function saveOperationalInventoryCategories(input = {}, user = null) {
@@ -6904,7 +7013,7 @@ function saveOperationalInventoryCategories(input = {}, user = null) {
   erpOperationalInventory = { ...data, categories, updatedAt: new Date().toISOString() };
   saveErpOperationalInventory();
   recordAudit(user, "update", "operational_inventory", "categories", "Categorias inventario operativo", data.categories, categories);
-  return getOperationalInventoryAdminView();
+  return getOperationalInventoryAdminView(user);
 }
 
 function deleteOperationalInventoryItem(id, user = null) {
@@ -6918,7 +7027,7 @@ function deleteOperationalInventoryItem(id, user = null) {
   };
   saveErpOperationalInventory();
   recordAudit(user, "delete", "operational_inventory", cleanId, before?.name || cleanId, before, null);
-  return getOperationalInventoryAdminView();
+  return getOperationalInventoryAdminView(user);
 }
 
 function archiveOperationalInventoryItem(id, reason, user = null) {
@@ -7029,6 +7138,7 @@ function closeInventarioSesion(user) {
   data.items = data.items.map((item) => {
     const count = sesion.counts[item.id];
     if (!count || !count.counted) return item;
+    if (!canWriteInventoryArea(user, getInventoryAreaForItem(item))) return item;
     updated++;
     return { ...item, quantity: count.qty, location: sesion.location, updatedAt: now };
   });
@@ -7045,23 +7155,36 @@ function cancelInventarioSesion(user) {
   recordAudit(user, "delete", "inventario_sesion", "sesion", "Inventario general cancelado");
 }
 
-function getInventarioSesionView() {
+function getInventarioSesionView(user = null) {
   const sesion = loadInventarioSesion();
   const data = normalizeOperationalInventoryData(erpOperationalInventory);
-  const activeItems = data.items.filter((item) => normalizeOperationalInventoryStatus(item.status) !== "inactive");
+  const visibleItems = filterOperationalInventoryItemsForUser(data.items, user, "read");
+  const activeItems = visibleItems.filter((item) => normalizeOperationalInventoryStatus(item.status) !== "inactive");
   const total = activeItems.length;
   const activeIds = new Set(activeItems.map((item) => item.id));
   const counted = Object.entries(sesion.counts || {}).filter(([itemId, count]) => activeIds.has(itemId) && count.counted).length;
-  return { sesion, items: activeItems, categories: data.categories, total, counted };
+  return {
+    sesion,
+    items: activeItems.map((item) => ({ ...item, inventoryArea: getInventoryAreaForItem(item) })),
+    categories: filterOperationalInventoryCategoriesForUser(data.categories, user, "read"),
+    areas: getAllowedInventoryAreas(user, "read"),
+    writableAreas: getAllowedInventoryAreas(user, "write"),
+    total,
+    counted,
+  };
 }
 
-function getEstadoInventarioView() {
+function getEstadoInventarioView(user = null) {
   const data = normalizeOperationalInventoryData(erpOperationalInventory);
   const CONDITION_LABELS = { ok: "Ok", roto: "Roto", sucio: "Sucio", desoldado: "Desoldado", falta_pieza: "Falta pieza", otro: "Otro" };
+  const visibleItems = filterOperationalInventoryItemsForUser(data.items, user, "read");
   return {
-    categories: data.categories,
-    items: data.items.map((item) => ({
+    categories: filterOperationalInventoryCategoriesForUser(data.categories, user, "read"),
+    areas: getAllowedInventoryAreas(user, "read"),
+    writableAreas: getAllowedInventoryAreas(user, "write"),
+    items: visibleItems.map((item) => ({
       ...item,
+      inventoryArea: getInventoryAreaForItem(item),
       conditionLabel: CONDITION_LABELS[item.condition] || null,
     })),
   };
