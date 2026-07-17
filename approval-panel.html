@@ -3044,20 +3044,34 @@
     .purchase-item {
       align-items: start;
       background: var(--surface, #fff);
-      border: 1px solid var(--border);
+      border: 1px solid color-mix(in srgb, var(--border) 78%, var(--primary) 22%);
       border-radius: 12px;
       display: grid;
-      gap: 10px;
-      grid-template-columns: minmax(0, 1.4fr) 92px 130px 118px 44px;
-      padding: 12px;
+      gap: 12px;
+      grid-template-columns: minmax(220px, 1.55fr) 96px 136px 120px 82px;
+      padding: 13px;
       min-width: 0;
+      position: relative;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, .04);
+    }
+
+    .purchase-item::before {
+      background: color-mix(in srgb, var(--primary) 45%, transparent);
+      border-radius: 12px 0 0 12px;
+      bottom: 10px;
+      content: "";
+      left: 0;
+      position: absolute;
+      top: 10px;
+      width: 3px;
     }
 
     .purchase-item .icon-action {
       align-self: end;
       height: 38px;
       justify-self: end;
-      width: 38px;
+      padding-inline: 10px;
+      width: auto;
     }
     .purchase-item-unit-wrap {
       display: flex;
@@ -3073,6 +3087,19 @@
 
     .purchase-item input {
       min-height: 38px;
+    }
+
+    .purchase-item .form-field label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    #purchase .inline-control .icon-action {
+      min-width: 68px;
+      padding-inline: 10px;
+      width: auto;
     }
 
     #purchase .detail-panel {
@@ -3111,16 +3138,26 @@
       display: grid;
       gap: 16px;
       overflow-y: auto;
+      overscroll-behavior: contain;
       padding: 18px 20px 120px;
     }
 
     .purchase-section {
-      border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+      border: 1px solid rgba(214, 222, 230, .82);
       border-radius: 14px;
       display: grid;
       gap: 14px;
       padding: 16px;
-      background: color-mix(in srgb, var(--surface) 96%, var(--bg) 4%);
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .035);
+    }
+
+    .purchase-section.purchase-products-section {
+      background: linear-gradient(180deg, #fff 0%, color-mix(in srgb, var(--surface) 94%, var(--bg) 6%) 100%);
+    }
+
+    .purchase-section.purchase-payment-section {
+      border-color: color-mix(in srgb, var(--border) 70%, var(--primary) 30%);
     }
 
     .purchase-section-head {
@@ -3131,7 +3168,7 @@
     }
 
     .purchase-section-head h3 {
-      font-size: 15px;
+      font-size: 16px;
       margin: 0;
     }
 
@@ -3200,8 +3237,8 @@
     }
 
     .purchase-summary-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 94%, var(--primary) 6%);
+      border: 1px solid color-mix(in srgb, var(--border) 76%, var(--primary) 24%);
       border-radius: 12px;
       display: grid;
       gap: 10px;
@@ -3211,7 +3248,7 @@
     .purchase-summary-grid {
       display: grid;
       gap: 8px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .purchase-summary-grid div,
@@ -3259,6 +3296,39 @@
       font-size: 12px;
       font-weight: 700;
       padding: 9px 10px;
+    }
+
+    .purchase-payment-chip {
+      align-items: center;
+      background: #fff7e0;
+      border: 1px solid #f3d28a;
+      border-radius: 999px;
+      color: #7a4a00;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 800;
+      gap: 6px;
+      min-height: 30px;
+      padding: 5px 10px;
+      white-space: nowrap;
+    }
+
+    .purchase-payment-chip.paid {
+      background: #ecfdf5;
+      border-color: #bbf7d0;
+      color: #047857;
+    }
+
+    .purchase-payment-chip.partial {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+    }
+
+    .purchase-payment-chip.pending {
+      background: #fff7e0;
+      border-color: #f3d28a;
+      color: #7a4a00;
     }
 
     .purchase-form-footer {
@@ -3318,6 +3388,11 @@
       transform: translate(-50%, -50%);
       width: min(520px, calc(100vw - 28px));
       z-index: 80;
+    }
+
+    .purchase-option-dialog.purchase-floating-dialog > strong {
+      color: var(--text);
+      font-size: 18px;
     }
 
     .purchase-option-dialog.purchase-floating-dialog:not(.open) {
@@ -3382,10 +3457,22 @@
       }
 
       .purchase-item {
-        grid-template-columns: 1fr;
+        border-radius: 14px;
+        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+        padding: 13px;
+      }
+
+      .purchase-item .form-field:first-child {
+        grid-column: 1 / -1;
+      }
+
+      .purchase-item .purchase-item-unit-wrap {
+        grid-column: 1 / -1;
       }
 
       .purchase-item .icon-action {
+        grid-column: 1 / -1;
         justify-self: stretch;
         width: 100%;
       }
@@ -11307,11 +11394,11 @@
       <form id="purchase-form" class="purchase-manual-form">
         <input type="hidden" name="id">
         <div class="purchase-manual-scroll">
-          <section class="purchase-section">
+          <section class="purchase-section purchase-header-section">
             <div class="purchase-section-head">
               <div>
-                <h3>Comprobante</h3>
-                <p>Datos base del proveedor y documento.</p>
+                <h3>Encabezado de compra</h3>
+                <p>Proveedor, fecha, comprobante e imputación inicial.</p>
               </div>
             </div>
             <div id="purchase-draft-tools" class="purchase-option-dialog"></div>
@@ -11330,7 +11417,7 @@
                     <input name="provider" id="purchase-provider" autocomplete="off" required>
                     <div id="purchase-provider-suggestions" class="autocomplete-list"></div>
                   </div>
-                  <button class="filter icon-action" type="button" onclick="addPurchaseOptionFromPrompt('provider')">+</button>
+                  <button class="filter icon-action" type="button" onclick="addPurchaseOptionFromPrompt('provider')" aria-label="Nuevo proveedor">Nuevo</button>
                 </div>
               </div>
               <div class="form-field">
@@ -11361,20 +11448,21 @@
             </div>
           </section>
 
-          <section class="purchase-section">
+          <section class="purchase-section purchase-products-section">
             <div class="purchase-section-head">
               <div>
                 <h3>Productos</h3>
-                <p>Cargá cada producto con cantidad, unitario sin IVA e IVA correspondiente.</p>
+                <p>Cargá ítems con cantidad, unitario sin IVA e IVA correspondiente.</p>
               </div>
             </div>
             <div id="purchase-items" class="purchase-items"></div>
             <div class="actions">
               <button class="filter" type="button" onclick="addPurchaseItemRow()">Agregar producto</button>
-              <button class="filter" type="button" onclick="addPurchaseOptionFromPrompt('product')">Cargar producto nuevo</button>
+              <button class="filter" type="button" onclick="addPurchaseOptionFromPrompt('product')">Nuevo producto</button>
             </div>
             <div class="purchase-summary-card">
               <div class="purchase-summary-grid">
+                <div><span>Productos</span><strong id="purchase-summary-count">0</strong></div>
                 <div><span>Neto</span><strong id="purchase-summary-net">$0</strong></div>
                 <div><span>IVA estimado</span><strong id="purchase-summary-iva">$0</strong></div>
                 <div><span>Total final</span><strong id="purchase-summary-total">$0</strong></div>
@@ -11401,12 +11489,13 @@
             </div>
           </section>
 
-          <section class="purchase-section" id="purchase-payment-section">
+          <section class="purchase-section purchase-payment-section" id="purchase-payment-section">
             <div class="purchase-section-head">
               <div>
                 <h3>Pago</h3>
                 <p>Estado, medio y origen de fondos.</p>
               </div>
+              <span id="purchase-payment-chip" class="purchase-payment-chip pending">Pendiente</span>
             </div>
             <div class="purchase-section-grid">
               <div class="form-field">
@@ -26016,7 +26105,7 @@
             <option value="0.27" ${Number(itemIvaRate || 0) === 0.27 ? "selected" : ""}>IVA 27%</option>
           </select>
         </div>
-        <button class="reject icon-action" type="button" onclick="removePurchaseItemRow(this)">X</button>
+        <button class="reject icon-action" type="button" onclick="removePurchaseItemRow(this)" aria-label="Eliminar producto">Eliminar</button>
       `;
       container.appendChild(row);
 
@@ -26042,6 +26131,10 @@
       row.querySelector(".purchase-item-iva").addEventListener("change", () => {
         syncPurchaseDefaultIvaFromFirstItem();
         updateRowTotal();
+      });
+      row.querySelector(".purchase-item-description").addEventListener("input", () => {
+        savePurchaseDraft();
+        updatePurchaseSummary();
       });
       row.querySelector(".purchase-item-quantity").addEventListener("input", updateRowTotal);
       row.querySelector(".purchase-item-unit").addEventListener("input", updateRowTotal);
@@ -26123,6 +26216,7 @@
       setText("purchase-summary-net", formatCurrency(totals.net || 0));
       setText("purchase-summary-iva", formatCurrency(totals.iva || 0));
       setText("purchase-summary-total", formatCurrency(totals.total || 0));
+      setText("purchase-summary-count", String(totals.items || 0));
       setText("purchase-footer-total", formatCurrency(totals.total || 0));
       setText("purchase-review-provider", provider || "Sin proveedor");
       const purchaseDate = getPurchaseDateInput()?.value || "";
@@ -26156,7 +26250,15 @@
       const section = document.getElementById("purchase-payment-section");
       if (!form || !section) return;
       const status = form.elements.paymentStatus?.value || "Pendiente";
+      const chip = document.getElementById("purchase-payment-chip");
       section.classList.toggle("payment-active", status !== "Pendiente");
+      if (chip) {
+        const normalized = normalizeSearch(status);
+        chip.textContent = status || "Pendiente";
+        chip.classList.toggle("paid", normalized === "pagado");
+        chip.classList.toggle("partial", normalized === "parcial");
+        chip.classList.toggle("pending", normalized !== "pagado" && normalized !== "parcial");
+      }
     }
 
     async function previewInvoicePhoto(event) {
