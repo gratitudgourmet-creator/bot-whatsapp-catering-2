@@ -5011,6 +5011,105 @@
       grid-template-columns: minmax(0, 1fr) minmax(280px, 0.75fr);
     }
 
+    .timesheet-shell {
+      display: grid;
+      gap: 14px;
+    }
+
+    .timesheet-head {
+      align-items: end;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 150px minmax(180px, 1fr) 150px minmax(220px, 1fr) auto auto;
+      min-width: 0;
+    }
+
+    .timesheet-person-picker {
+      align-items: end;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      min-width: 0;
+    }
+
+    .timesheet-staff-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timesheet-card {
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      min-width: 0;
+      padding: 12px;
+    }
+
+    .timesheet-meta {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      min-width: 0;
+    }
+
+    .timesheet-editor {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+      padding: 14px;
+    }
+
+    .month-day-grid {
+      display: grid;
+      gap: 6px;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .month-day {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      min-height: 36px;
+      font-weight: 700;
+    }
+
+    .month-day.selected {
+      background: #0f513f;
+      border-color: #0f513f;
+      color: #fff;
+    }
+
+    .timesheet-day-row {
+      align-items: end;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 110px 120px 120px 120px minmax(140px, 1fr) auto;
+      min-width: 0;
+      padding: 10px;
+    }
+
+    @media (max-width: 760px) {
+      .timesheet-head,
+      .timesheet-person-picker,
+      .timesheet-card,
+      .timesheet-day-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .timesheet-card .filter,
+      .timesheet-person-picker .filter,
+      .timesheet-head .approve {
+        width: 100%;
+      }
+    }
+
     .compact-list {
       display: grid;
       gap: 10px;
@@ -9420,9 +9519,10 @@
       <div class="workspace-menu" data-menu-view="hr">
         <button class="workspace-tab" data-view="hr">Personal/RRHH</button>
         <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="hr" data-anchor="hr-staff-section">Legajos</button>
-          <button class="workspace-subitem" data-view="hr" data-anchor="hr-shifts-section">Asistencia y horarios</button>
-          <button class="workspace-subitem" data-view="hr" data-anchor="hr-payroll-section">Sueldos y horas</button>
+          <button class="workspace-subitem" data-view="hr" data-anchor="hr-timesheet-section" data-permission="staff:timesheets:read">Carga de horas</button>
+          <button class="workspace-subitem" data-view="hr" data-anchor="hr-staff-section" data-permission="hr:read">Legajos</button>
+          <button class="workspace-subitem" data-view="hr" data-anchor="hr-shifts-section" data-permission="hr:read">Asistencia y horarios</button>
+          <button class="workspace-subitem" data-view="hr" data-anchor="hr-payroll-section" data-permission="payroll:read">Sueldos y horas</button>
         </div>
       </div>
       <div class="workspace-menu" data-menu-view="sanitation">
@@ -10287,7 +10387,7 @@
       </section>
     </section>
 
-    <section id="view-hr" class="workspace-view" data-permission="hr:read">
+    <section id="view-hr" class="workspace-view" data-permission="hr:any">
       <section id="hr-main-section" class="erp-section">
         <div class="section-header">
           <div>
@@ -10296,7 +10396,7 @@
           </div>
           <div class="actions section-actions">
             <button class="filter action-secondary" type="button" onclick="refreshWorkspaceView('hr')">Actualizar</button>
-            <button class="approve action-primary" type="button" onclick="resetHrStaffForm(); document.getElementById('hr-staff-form')?.scrollIntoView({behavior:'smooth'})">Nuevo legajo</button>
+            <button class="approve action-primary ${can("hr:write") ? "" : "hidden"}" type="button" onclick="resetHrStaffForm(); document.getElementById('hr-staff-form')?.scrollIntoView({behavior:'smooth'})">Nuevo legajo</button>
           </div>
         </div>
         <div id="hr-dashboard"></div>
@@ -11856,6 +11956,14 @@
     let logisticsSaveTimer = null;
     let pendingQuoteImport = null;
     const guidedFormState = {};
+    const hrTimesheetState = {
+      period: new Date().toISOString().slice(0, 7),
+      eventId: "",
+      staffId: "",
+      staffName: "",
+      exportDate: "",
+      days: {},
+    };
     const operationalCategoryDefaults = [
       ["personal", "Personal"],
       ["transporte", "Transporte"],
@@ -11970,9 +12078,10 @@
         title: "Personal/RRHH",
         subtitle: "Legajos, asistencia, horas y sueldos.",
         items: [
-          { label: "Legajos", description: "Datos del personal, rol, teléfono y disponibilidad.", anchor: "hr-staff-section" },
-          { label: "Asistencia y horarios", description: "Turnos, horas reales y novedades por evento.", anchor: "hr-shifts-section" },
-          { label: "Sueldos y horas", description: "Liquidaciones, adicionales, descuentos y pagos.", anchor: "hr-payroll-section" },
+          { label: "Carga de horas", description: "Carga mensual operativa por persona.", anchor: "hr-timesheet-section", permission: "staff:timesheets:read" },
+          { label: "Legajos", description: "Datos del personal, rol, teléfono y disponibilidad.", anchor: "hr-staff-section", permission: "hr:read" },
+          { label: "Asistencia y horarios", description: "Turnos, horas reales y novedades por evento.", anchor: "hr-shifts-section", permission: "hr:read" },
+          { label: "Sueldos y horas", description: "Liquidaciones, adicionales, descuentos y pagos.", anchor: "hr-payroll-section", permission: "payroll:read" },
         ],
       },
       sanitation: {
@@ -12090,6 +12199,7 @@
         "production-kitchen-checklists-section": ["production-kitchen-checklists-section"],
       },
       hr: {
+        "hr-timesheet-section": ["hr-timesheet-section"],
         "hr-staff-section": ["hr-staff-section"],
         "hr-shifts-section": ["hr-shifts-section"],
         "hr-payroll-section": ["hr-payroll-section"],
@@ -12143,7 +12253,7 @@
       buyer_purchases: "buyer-orders-section",
       finance: "finance-summary-section",
       production: "production-home-section",
-      hr: "hr-staff-section",
+      hr: "hr-timesheet-section",
       sanitation: "sanitation-records-section",
       payment_orders: "payment-order-list-section",
       customers: "customer-list-section",
@@ -12536,7 +12646,7 @@
 
     function can(permission) {
       if (!currentUser) return false;
-      const permissions = currentUser.permissions || [];
+      const permissions = getCurrentUserEffectivePermissions();
       if (permission === "stock:any") {
         return permissions.includes("*") || permissions.includes("stock:read") || permissions.includes("stock:write") || permissions.includes("purchases:write")
           || permissions.includes("stock:kitchen:read") || permissions.includes("stock:kitchen_equipment:read") || permissions.includes("stock:operations:read");
@@ -12545,7 +12655,33 @@
         return permissions.includes("*") || permissions.includes("stock:write") || permissions.includes("purchases:write")
           || permissions.includes("stock:kitchen:write") || permissions.includes("stock:kitchen_equipment:write") || permissions.includes("stock:operations:write");
       }
+      if (permission === "hr:any") {
+        return permissions.includes("*") || permissions.includes("hr:read") || permissions.includes("hr:write")
+          || permissions.includes("payroll:read") || permissions.includes("payroll:write")
+          || permissions.includes("staff:timesheets:read") || permissions.includes("staff:timesheets:write") || permissions.includes("staff:timesheets:export");
+      }
       return permissions.includes("*") || permissions.includes(permission) || permission === "view";
+    }
+
+    function getCurrentUserEffectivePermissions() {
+      const permissions = Array.isArray(currentUser?.permissions) ? [...currentUser.permissions] : [];
+      if (currentUser?.role === "logistica_evento") {
+        ["staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"].forEach((permission) => {
+          if (!permissions.includes(permission)) permissions.push(permission);
+        });
+      }
+      return permissions;
+    }
+
+    function getCurrentUserEffectiveTabs() {
+      const tabs = Array.isArray(currentUser?.tabs) ? [...currentUser.tabs] : [];
+      const permissions = getCurrentUserEffectivePermissions();
+      if (currentUser?.role === "logistica_evento"
+        && (permissions.includes("staff:timesheets:read") || permissions.includes("staff:timesheets:write") || permissions.includes("staff:timesheets:export"))
+        && !tabs.includes("hr")) {
+        tabs.push("hr");
+      }
+      return tabs;
     }
 
     function canSeeRecipeCosts() {
@@ -12573,7 +12709,7 @@
             </div>
             <div class="module-home-grid">
               ${(config.items || []).map((item) => `
-                <button class="module-home-action" type="button" data-view="${escapeAttribute(item.view || view)}" data-anchor="${escapeAttribute(item.anchor || "")}" data-action="${escapeAttribute(item.action || "")}">
+                <button class="module-home-action" type="button" data-view="${escapeAttribute(item.view || view)}" data-anchor="${escapeAttribute(item.anchor || "")}" data-action="${escapeAttribute(item.action || "")}" data-permission="${escapeAttribute(item.permission || "")}">
                   <strong>${escapeHtml(item.label)}</strong>
                   <span>${escapeHtml(item.description || "")}</span>
                 </button>
@@ -12703,7 +12839,9 @@
 
     function applyPermissionVisibility() {
       document.querySelectorAll("[data-permission]").forEach((element) => {
-        element.classList.toggle("hidden", !can(element.dataset.permission));
+        const permission = element.dataset.permission || "";
+        if (!permission) return;
+        element.classList.toggle("hidden", !can(permission));
       });
       applyTabVisibility();
       applyRecipeCostVisibility();
@@ -12728,17 +12866,21 @@
     }
 
     function applyTabVisibility() {
-      const visibleTabs = new Set(currentUser?.tabs?.length ? currentUser.tabs : ["erp", "commercial"]);
+      syncHrNavigationCopy();
+      const effectiveTabs = getCurrentUserEffectiveTabs();
+      const visibleTabs = new Set(effectiveTabs.length ? effectiveTabs : ["erp", "commercial"]);
       document.querySelectorAll(".workspace-tab").forEach((button) => {
         button.classList.toggle("hidden", !visibleTabs.has(button.dataset.view) || !canAccessTab(button.dataset.view));
       });
       document.querySelectorAll(".workspace-subitem").forEach((button) => {
         const view = button.dataset.view;
-        button.classList.toggle("hidden", !visibleTabs.has(view) || !canAccessTab(view));
+        const allowedByPermission = !button.dataset.permission || can(button.dataset.permission);
+        button.classList.toggle("hidden", !visibleTabs.has(view) || !canAccessTab(view) || !allowedByPermission);
       });
       document.querySelectorAll(".module-home-action").forEach((button) => {
         const view = button.dataset.view;
-        button.classList.toggle("hidden", !visibleTabs.has(view) || !canAccessTab(view));
+        const allowedByPermission = !button.dataset.permission || can(button.dataset.permission);
+        button.classList.toggle("hidden", !visibleTabs.has(view) || !canAccessTab(view) || !allowedByPermission);
       });
       document.querySelectorAll(".workspace-menu").forEach((menu) => {
         const tab = menu.querySelector(".workspace-tab");
@@ -12759,9 +12901,14 @@
       updateShellContext(activeButton?.dataset.view || document.querySelector(".workspace-tab.active:not(.hidden)")?.dataset.view || "");
     }
 
+    function syncHrNavigationCopy() {
+      const hrTab = document.querySelector('.workspace-tab[data-view="hr"]');
+      if (hrTab) hrTab.textContent = isHrTimesheetOnlyUser() ? "Carga de horas" : "Personal/RRHH";
+    }
+
     function canAccessTab(tabId) {
       if (!currentUser) return false;
-      const permissions = currentUser.permissions || [];
+      const permissions = getCurrentUserEffectivePermissions();
       if (permissions.includes("*")) return true;
       const tab = (tabCatalog || []).find((item) => item.id === tabId) || getFallbackTabDefinition(tabId);
       return (tab.requiredAny || ["view"]).some((permission) => permission === "view" || permissions.includes(permission));
@@ -12962,7 +13109,7 @@
         finance: { requiredAny: ["finance:read", "finance:write"] },
         production: { requiredAny: ["production:read", "recipes:read", "recipes:write"] },
         stock: { requiredAny: ["stock:read", "stock:write", "stock:kitchen:read", "stock:kitchen_equipment:read", "stock:operations:read", "purchases:write"] },
-        hr: { requiredAny: ["hr:read", "hr:write", "payroll:read", "payroll:write"] },
+        hr: { requiredAny: ["hr:read", "hr:write", "payroll:read", "payroll:write", "staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"] },
         sanitation: { requiredAny: ["sanitation:read", "sanitation:write", "sanitation:approve"] },
         payment_orders: { requiredAny: ["payment_orders:read", "payment_orders:write", "payment_orders:approve"] },
         customers: { requiredAny: ["customers:write"] },
@@ -15829,6 +15976,24 @@
       if (!container) return;
       const hr = erpData.hrDashboard || { summary: {}, staff: [], shifts: [], payroll: [] };
       const summary = hr.summary || {};
+      const timesheetOnly = isHrTimesheetOnlyUser();
+      const header = document.querySelector("#hr-main-section .section-header");
+      if (header) {
+        const title = header.querySelector(".section-title");
+        const subtitle = header.querySelector(".section-subtitle");
+        const newStaffButton = header.querySelector(".action-primary");
+        if (title) title.textContent = timesheetOnly ? "Carga de horas" : "Personal / RRHH";
+        if (subtitle) subtitle.textContent = timesheetOnly ? "Registro operativo de asistencia y horarios." : "Legajos, disponibilidad, asistencia, horas, sueldos y pagos pendientes.";
+        newStaffButton?.classList.toggle("hidden", timesheetOnly || !can("hr:write"));
+      }
+      if (timesheetOnly) {
+        container.innerHTML = `
+          <section id="hr-timesheet-section" class="panel-box">
+            ${renderHrTimesheetSection(hr)}
+          </section>
+        `;
+        return;
+      }
       container.innerHTML = `
         <section class="rank-modal-summary metric-grid">
           <div><span>Personal activo</span><strong>${escapeHtml(summary.activeStaff || 0)}</strong></div>
@@ -15836,7 +16001,10 @@
           <div><span>Sueldos pendientes</span><strong>${formatCurrency(summary.pendingPayrollAmount || 0)}</strong></div>
           <div><span>Liquidaciones pendientes</span><strong>${escapeHtml(summary.pendingPayrollCount || 0)}</strong></div>
         </section>
-        <section id="hr-staff-section" class="panel-box">
+        <section id="hr-timesheet-section" class="panel-box">
+          ${renderHrTimesheetSection(hr)}
+        </section>
+        <section id="hr-staff-section" class="panel-box ${can("hr:read") || can("hr:write") ? "" : "hidden"}">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
             <div>
               <h2 style="margin:0;font-size:20px;">Legajos</h2>
@@ -15864,7 +16032,7 @@
           </div>
         </section>
 
-        <section id="hr-shifts-section" class="panel-box">
+        <section id="hr-shifts-section" class="panel-box ${can("hr:read") || can("hr:write") ? "" : "hidden"}">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
             <div>
               <h2 style="margin:0;font-size:20px;">Asistencia y horarios</h2>
@@ -15897,7 +16065,7 @@
           </div>
         </section>
 
-        <section id="hr-payroll-section" class="panel-box">
+        <section id="hr-payroll-section" class="panel-box ${can("payroll:read") || can("payroll:write") ? "" : "hidden"}">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
             <div>
               <h2 style="margin:0;font-size:20px;">Sueldos y horas</h2>
@@ -15931,6 +16099,201 @@
       updateHrShiftPreview();
       hydratePayrollFromShifts(false);
       updatePayrollPreview();
+    }
+
+    function isHrTimesheetOnlyUser() {
+      return (can("staff:timesheets:read") || can("staff:timesheets:write"))
+        && !can("hr:read")
+        && !can("hr:write")
+        && !can("payroll:read")
+        && !can("payroll:write");
+    }
+
+    function renderHrTimesheetSection(hr = {}) {
+      const staff = (hr.staff || []).filter((item) => item.status !== "inactive");
+      const selectedStaff = staff.find((item) => item.id === hrTimesheetState.staffId);
+      const shifts = hr.shifts || [];
+      const knownPeople = getHrTimesheetKnownPeople(hr);
+      const freePeople = knownPeople.filter((person) => !person.staffId);
+      const selectedPerson = selectedStaff || (hrTimesheetState.staffName ? {
+        id: "",
+        fullName: hrTimesheetState.staffName,
+        phone: "",
+        role: "Sin legajo",
+      } : null);
+      return `
+        <div class="timesheet-shell">
+          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:2px;">
+            <div>
+              <h2 style="margin:0;font-size:20px;">Carga de horas</h2>
+              <p class="subtitle" style="margin:4px 0 0;">Registro operativo de asistencia y horarios.</p>
+            </div>
+            <span class="badge">${escapeHtml(getHrTimesheetGeneralStatus())}</span>
+          </div>
+          <div class="timesheet-head">
+            <div class="form-field"><label>Mes</label><input id="hr-timesheet-period" type="month" value="${escapeAttribute(hrTimesheetState.period)}" onchange="setHrTimesheetPeriod(this.value)"></div>
+            <div class="form-field"><label>Evento</label><select id="hr-timesheet-event" onchange="setHrTimesheetEvent(this.value)">${renderHrTimesheetEventOptions(erpData.events || [])}</select></div>
+            <div class="form-field"><label>Día</label><input id="hr-timesheet-export-date" type="date" value="${escapeAttribute(hrTimesheetState.exportDate || "")}" onchange="setHrTimesheetExportDate(this.value)"></div>
+            <div class="timesheet-person-picker">
+              <div class="form-field">
+                <label>Persona</label>
+                <input id="hr-timesheet-free-name" list="hr-timesheet-known-people" value="${escapeAttribute(hrTimesheetState.staffId ? "" : hrTimesheetState.staffName || "")}" placeholder="Escribir nombre sin legajo" oninput="setHrTimesheetFreeName(this.value)">
+                <datalist id="hr-timesheet-known-people">
+                  ${knownPeople.map((person) => `<option value="${escapeAttribute(person.fullName)}"></option>`).join("")}
+                </datalist>
+              </div>
+              <button class="filter" type="button" onclick="openHrTimesheetFreeName()">Cargar nombre</button>
+            </div>
+            <button class="filter" type="button" onclick="exportHrTimesheetXlsx()" ${can("staff:timesheets:export") || can("hr:read") || can("hr:write") ? "" : "disabled"}>Exportar XLSX</button>
+            <button class="approve" type="button" onclick="saveHrTimesheet()" ${can("staff:timesheets:write") || can("hr:write") ? "" : "disabled"}>Guardar carga</button>
+          </div>
+          <div class="timesheet-staff-list">
+            ${staff.length || freePeople.length ? [
+              ...staff.map((item) => renderHrTimesheetStaffCard(item, shifts)),
+              ...freePeople.map((item) => renderHrTimesheetFreePersonCard(item, shifts)),
+            ].join("") : `<div class="empty compact-empty">No hay personas cargadas todavia. Escribi un nombre para cargar horas sin legajo.</div>`}
+          </div>
+          ${selectedPerson ? renderHrTimesheetEditor(selectedPerson) : `<div class="empty compact-empty">Elegí una persona o escribí un nombre para cargar sus horarios del mes.</div>`}
+        </div>
+      `;
+    }
+
+    function getHrTimesheetKnownPeople(hr = {}) {
+      const people = new Map();
+      (hr.staff || []).filter((item) => item.status !== "inactive").forEach((item) => {
+        const fullName = String(item.fullName || "").trim();
+        if (!fullName) return;
+        people.set(normalizeSearch(fullName), {
+          staffId: item.id || "",
+          fullName,
+          phone: item.phone || "",
+          role: item.role || "",
+        });
+      });
+      (hr.shifts || []).forEach((shift) => {
+        const fullName = String(shift.staffName || "").trim();
+        if (!fullName) return;
+        const key = normalizeSearch(fullName);
+        if (people.has(key)) return;
+        people.set(key, {
+          staffId: shift.staffId || "",
+          fullName,
+          phone: "",
+          role: shift.role || "",
+        });
+      });
+      return Array.from(people.values()).sort((a, b) => normalizeSearch(a.fullName).localeCompare(normalizeSearch(b.fullName)));
+    }
+
+    function renderHrTimesheetEventOptions(events = []) {
+      return `<option value="" ${!hrTimesheetState.eventId ? "selected" : ""}>Sin evento</option>${events.map((item) => `<option value="${escapeAttribute(item.id)}" ${item.id === hrTimesheetState.eventId ? "selected" : ""}>${escapeHtml(item.name || "Evento")} · ${escapeHtml(formatShortDate(item.eventDate) || "")}</option>`).join("")}`;
+    }
+
+    function renderHrTimesheetStaffCard(staff = {}, shifts = []) {
+      const rows = getHrTimesheetStaffShifts(staff.id, shifts, staff.fullName || "");
+      const total = rows.reduce((sum, item) => sum + Number(item.hours || 0), 0);
+      const draftDays = hrTimesheetState.staffId === staff.id ? Object.keys(hrTimesheetState.days || {}).length : 0;
+      const isSelected = hrTimesheetState.staffId === staff.id;
+      const status = draftDays ? "Borrador" : rows.length ? "Cargado" : "Sin cargar";
+      return `
+        <article class="timesheet-card">
+          <div>
+            <strong>${escapeHtml(staff.fullName || "")}</strong>
+            <div class="timesheet-meta">${escapeHtml([staff.phone || "Sin telefono", staff.role || "Sin rol"].join(" · "))}</div>
+          </div>
+          <div>
+            <span class="badge">${escapeHtml(status)}</span>
+            <div class="timesheet-meta">${escapeHtml(rows.length)} dia(s) · ${escapeHtml(formatNumber(total))} hs</div>
+          </div>
+          <button class="filter" type="button" onclick="openHrTimesheetEditor('${escapeAttribute(staff.id)}')">${isSelected ? "Editar" : "Cargar horarios"}</button>
+        </article>
+      `;
+    }
+
+    function renderHrTimesheetFreePersonCard(person = {}, shifts = []) {
+      const rows = getHrTimesheetStaffShifts("", shifts, person.fullName || "");
+      const total = rows.reduce((sum, item) => sum + Number(item.hours || 0), 0);
+      const isSelected = !hrTimesheetState.staffId && normalizeSearch(hrTimesheetState.staffName || "") === normalizeSearch(person.fullName || "");
+      const draftDays = isSelected ? Object.keys(hrTimesheetState.days || {}).length : 0;
+      const status = draftDays ? "Borrador" : rows.length ? "Cargado" : "Sin cargar";
+      const encodedName = encodeURIComponent(person.fullName || "");
+      return `
+        <article class="timesheet-card">
+          <div>
+            <strong>${escapeHtml(person.fullName || "")}</strong>
+            <div class="timesheet-meta">${escapeHtml(person.role || "Sin legajo")}</div>
+          </div>
+          <div>
+            <span class="badge">${escapeHtml(status)}</span>
+            <div class="timesheet-meta">${escapeHtml(rows.length)} dia(s) · ${escapeHtml(formatNumber(total))} hs</div>
+          </div>
+          <button class="filter" type="button" onclick="openHrTimesheetFreeName('${escapeAttribute(encodedName)}')">${isSelected ? "Editar" : "Cargar horarios"}</button>
+        </article>
+      `;
+    }
+
+    function getHrTimesheetStaffShifts(staffId, shifts = [], staffName = "") {
+      const nameKey = normalizeSearch(staffName || hrTimesheetState.staffName || "");
+      return shifts.filter((shift) => {
+        if (staffId) {
+          if (shift.staffId !== staffId) return false;
+        } else if (normalizeSearch(shift.staffName || "") !== nameKey) {
+          return false;
+        }
+        if (!String(shift.date || "").startsWith(`${hrTimesheetState.period}-`)) return false;
+        return (shift.eventId || "") === (hrTimesheetState.eventId || "");
+      });
+    }
+
+    function renderHrTimesheetEditor(staff = {}) {
+      const days = getDaysInPeriod(hrTimesheetState.period);
+      const selected = hrTimesheetState.days || {};
+      return `
+        <div class="timesheet-editor">
+          <div class="toolbar-actions" style="justify-content:space-between;">
+            <div>
+              <strong>${escapeHtml(staff.fullName || "")}</strong>
+              <div class="timesheet-meta">${escapeHtml(staff.phone || "Sin telefono")} · ${escapeHtml(staff.role || "Sin rol")}</div>
+            </div>
+            <span class="badge">${escapeHtml(Object.keys(selected).length ? "Parcial" : "Sin cargar")}</span>
+          </div>
+          <div class="month-day-grid">
+            ${days.map((date) => `<button class="month-day ${selected[date] ? "selected" : ""}" type="button" onclick="toggleHrTimesheetDay('${escapeAttribute(date)}')">${escapeHtml(Number(date.slice(-2)))}</button>`).join("")}
+          </div>
+          <div class="form-grid">
+            <div class="form-field"><label>Entrada</label><input id="timesheet-bulk-start" type="time"></div>
+            <div class="form-field"><label>Salida</label><input id="timesheet-bulk-end" type="time"></div>
+            <div class="form-field"><label>Descanso min.</label><input id="timesheet-bulk-break" inputmode="numeric" value="0"></div>
+            <div class="actions"><button class="filter" type="button" onclick="applyHrTimesheetBulkHours()">Aplicar horario a todos</button></div>
+          </div>
+          <div class="compact-list">
+            ${Object.keys(selected).sort().length ? Object.keys(selected).sort().map((date) => renderHrTimesheetDayRow(date, selected[date])).join("") : `<div class="empty compact-empty">Seleccioná los días trabajados en el mes.</div>`}
+          </div>
+          <div class="recipe-summary">
+            <div><span>Días</span><strong>${escapeHtml(Object.keys(selected).length)}</strong></div>
+            <div><span>Total</span><strong>${escapeHtml(formatNumber(getHrTimesheetDraftTotal()))} hs</strong></div>
+            <div><span>Estado</span><strong>${escapeHtml(Object.keys(selected).length ? "Borrador" : "Sin cargar")}</strong></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHrTimesheetDayRow(date, day = {}) {
+      const hours = calculateUiHoursWithBreak(day.startTime || "", day.endTime || "", day.breakMinutes || 0);
+      return `
+        <div class="timesheet-day-row">
+          <strong>${escapeHtml(formatShortDate(date) || date)}</strong>
+          <div class="form-field"><label>Entrada</label><input type="time" value="${escapeAttribute(day.startTime || "")}" onchange="updateHrTimesheetDay('${escapeAttribute(date)}','startTime',this.value)"></div>
+          <div class="form-field"><label>Salida</label><input type="time" value="${escapeAttribute(day.endTime || "")}" onchange="updateHrTimesheetDay('${escapeAttribute(date)}','endTime',this.value)"></div>
+          <div class="form-field"><label>Descanso</label><input inputmode="numeric" value="${escapeAttribute(day.breakMinutes || 0)}" onchange="updateHrTimesheetDay('${escapeAttribute(date)}','breakMinutes',this.value)"></div>
+          <div class="form-field"><label>Nota</label><input value="${escapeAttribute(day.notes || "")}" onchange="updateHrTimesheetDay('${escapeAttribute(date)}','notes',this.value)"></div>
+          <div class="actions">
+            <button class="filter" type="button" onclick="copyPreviousHrTimesheetDay('${escapeAttribute(date)}')">Copiar anterior</button>
+            <button class="reject" type="button" onclick="toggleHrTimesheetDay('${escapeAttribute(date)}')">Quitar</button>
+          </div>
+          <div class="timesheet-meta">Calculado: ${escapeHtml(formatNumber(hours))} hs</div>
+        </div>
+      `;
     }
 
     function renderStaffOptions(staff = []) {
@@ -16025,6 +16388,184 @@
       const end = parse(endTime);
       if (!start || !end) return 0;
       return Math.round((end >= start ? end - start : end + 24 - start) * 100) / 100;
+    }
+
+    function calculateUiHoursWithBreak(startTime, endTime, breakMinutes = 0) {
+      return Math.max(0, Math.round((calculateUiHoursBetween(startTime, endTime) - (parseDecimal(breakMinutes || 0) / 60)) * 100) / 100);
+    }
+
+    function getDaysInPeriod(period = "") {
+      const [year, month] = String(period || new Date().toISOString().slice(0, 7)).split("-").map(Number);
+      if (!year || !month) return [];
+      const count = new Date(year, month, 0).getDate();
+      return Array.from({ length: count }, (_, index) => `${year}-${String(month).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`);
+    }
+
+    function getHrTimesheetGeneralStatus() {
+      if (Object.keys(hrTimesheetState.days || {}).length) return "Borrador";
+      return "Carga operativa";
+    }
+
+    function setHrTimesheetPeriod(value) {
+      hrTimesheetState.period = value || new Date().toISOString().slice(0, 7);
+      if (hrTimesheetState.exportDate && !hrTimesheetState.exportDate.startsWith(`${hrTimesheetState.period}-`)) {
+        hrTimesheetState.exportDate = "";
+      }
+      hrTimesheetState.days = {};
+      renderHrDashboard();
+    }
+
+    function setHrTimesheetEvent(value) {
+      hrTimesheetState.eventId = value || "";
+      hrTimesheetState.days = {};
+      renderHrDashboard();
+    }
+
+    function setHrTimesheetExportDate(value) {
+      hrTimesheetState.exportDate = value || "";
+    }
+
+    function setHrTimesheetFreeName(value) {
+      hrTimesheetState.staffName = String(value || "").trim();
+    }
+
+    function openHrTimesheetEditor(staffId) {
+      const staff = (erpData.hrDashboard?.staff || []).find((item) => item.id === staffId);
+      hrTimesheetState.staffId = staffId;
+      hrTimesheetState.staffName = staff?.fullName || "";
+      hrTimesheetState.days = {};
+      const shifts = getHrTimesheetStaffShifts(staffId, erpData.hrDashboard?.shifts || [], hrTimesheetState.staffName);
+      shifts.forEach((shift) => {
+        hrTimesheetState.days[shift.date] = {
+          startTime: shift.startTime || "",
+          endTime: shift.endTime || "",
+          breakMinutes: shift.breakMinutes || extractBreakMinutesFromNotes(shift.notes || ""),
+          notes: stripBreakNote(shift.notes || ""),
+        };
+      });
+      renderHrDashboard();
+      document.getElementById("hr-timesheet-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function openHrTimesheetFreeName(encodedName = "") {
+      const typedName = encodedName ? decodeURIComponent(encodedName) : document.getElementById("hr-timesheet-free-name")?.value;
+      const staffName = String(typedName || hrTimesheetState.staffName || "").trim();
+      if (!staffName) return showNotice("Escribi un nombre para cargar horas.", "error");
+      const matchingStaff = (erpData.hrDashboard?.staff || []).find((item) => normalizeSearch(item.fullName || "") === normalizeSearch(staffName));
+      if (matchingStaff?.id) return openHrTimesheetEditor(matchingStaff.id);
+      hrTimesheetState.staffId = "";
+      hrTimesheetState.staffName = staffName;
+      hrTimesheetState.days = {};
+      const shifts = getHrTimesheetStaffShifts("", erpData.hrDashboard?.shifts || [], staffName);
+      shifts.forEach((shift) => {
+        hrTimesheetState.days[shift.date] = {
+          startTime: shift.startTime || "",
+          endTime: shift.endTime || "",
+          breakMinutes: shift.breakMinutes || extractBreakMinutesFromNotes(shift.notes || ""),
+          notes: stripBreakNote(shift.notes || ""),
+        };
+      });
+      renderHrDashboard();
+      document.getElementById("hr-timesheet-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function extractBreakMinutesFromNotes(notes = "") {
+      const match = String(notes || "").match(/Descanso\s+(\d+(?:[.,]\d+)?)\s*min/i);
+      return match ? parseDecimal(match[1]) : 0;
+    }
+
+    function stripBreakNote(notes = "") {
+      return String(notes || "").split("|").map((item) => item.trim()).filter((item) => item && !/^Descanso\s+/i.test(item) && !/^Carga mensual/i.test(item)).join(" | ");
+    }
+
+    function toggleHrTimesheetDay(date) {
+      if (hrTimesheetState.days[date]) delete hrTimesheetState.days[date];
+      else hrTimesheetState.days[date] = { startTime: "", endTime: "", breakMinutes: 0, notes: "" };
+      renderHrDashboard();
+    }
+
+    function updateHrTimesheetDay(date, field, value) {
+      if (!hrTimesheetState.days[date]) hrTimesheetState.days[date] = { startTime: "", endTime: "", breakMinutes: 0, notes: "" };
+      hrTimesheetState.days[date][field] = field === "breakMinutes" ? Math.max(0, parseDecimal(value || 0)) : value;
+      renderHrDashboard();
+    }
+
+    function applyHrTimesheetBulkHours() {
+      const start = document.getElementById("timesheet-bulk-start")?.value || "";
+      const end = document.getElementById("timesheet-bulk-end")?.value || "";
+      const breakMinutes = Math.max(0, parseDecimal(document.getElementById("timesheet-bulk-break")?.value || 0));
+      Object.keys(hrTimesheetState.days || {}).forEach((date) => {
+        hrTimesheetState.days[date] = { ...(hrTimesheetState.days[date] || {}), startTime: start, endTime: end, breakMinutes };
+      });
+      renderHrDashboard();
+    }
+
+    function copyPreviousHrTimesheetDay(date) {
+      const dates = Object.keys(hrTimesheetState.days || {}).sort();
+      const index = dates.indexOf(date);
+      if (index <= 0) return showNotice("No hay un dia anterior seleccionado para copiar.", "error");
+      const previous = hrTimesheetState.days[dates[index - 1]];
+      hrTimesheetState.days[date] = { ...hrTimesheetState.days[date], ...previous };
+      renderHrDashboard();
+    }
+
+    function getHrTimesheetDraftTotal() {
+      return Object.values(hrTimesheetState.days || {}).reduce((sum, day) => sum + calculateUiHoursWithBreak(day.startTime || "", day.endTime || "", day.breakMinutes || 0), 0);
+    }
+
+    async function saveHrTimesheet() {
+      const staffName = String(hrTimesheetState.staffName || "").trim();
+      if (!hrTimesheetState.staffId && !staffName) return showNotice("Elegi una persona o escribi un nombre para cargar horas.", "error");
+      const days = Object.entries(hrTimesheetState.days || {}).map(([date, day]) => ({ date, ...day }));
+      if (!days.length) return showNotice("Selecciona al menos un dia trabajado.", "error");
+      const result = await postJson("/api/hr-timesheet", {
+        staffId: hrTimesheetState.staffId,
+        staffName,
+        period: hrTimesheetState.period,
+        eventId: hrTimesheetState.eventId,
+        days,
+      });
+      if (!result.ok) return showNotice(result.error || "No se pudo guardar la carga de horas.", "error");
+      erpData.hrDashboard = result.hrDashboard;
+      hrTimesheetState.days = {};
+      renderHrDashboard();
+      showNotice("Carga de horas guardada.", "success");
+    }
+
+    async function exportHrTimesheetXlsx() {
+      if (!(can("staff:timesheets:export") || can("hr:read") || can("hr:write"))) {
+        return showNotice("No tenes permiso para exportar horas.", "error");
+      }
+      const params = new URLSearchParams();
+      params.set("period", hrTimesheetState.period || new Date().toISOString().slice(0, 7));
+      if (hrTimesheetState.eventId) params.set("eventId", hrTimesheetState.eventId);
+      if (hrTimesheetState.staffId) params.set("staffId", hrTimesheetState.staffId);
+      else if (hrTimesheetState.staffName) params.set("staffName", hrTimesheetState.staffName);
+      if (hrTimesheetState.exportDate) params.set("date", hrTimesheetState.exportDate);
+      const response = await fetch(`/api/hr-timesheet-export.xlsx?${params.toString()}`);
+      const contentType = response.headers.get("content-type") || "";
+      if (!response.ok || contentType.includes("application/json")) {
+        let payload = {};
+        try {
+          payload = await response.json();
+        } catch (error) {
+          payload = {};
+        }
+        return showNotice(payload.error || "No hay horas para exportar con estos filtros.", "error");
+      }
+      const blob = await response.blob();
+      const disposition = response.headers.get("content-disposition") || "";
+      const match = disposition.match(/filename="([^"]+)"/i);
+      const fileName = match?.[1] || `horas-operativas-${hrTimesheetState.period || "mes"}.xlsx`;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showNotice("Exportacion generada.", "success");
     }
 
     function formatNumber(value) {
