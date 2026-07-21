@@ -26,6 +26,7 @@ const {
   buildAttendanceShiftsFromBiometricEvents,
   createZktecoService,
   ensureZktecoSchema,
+  handleBiometricSyncRequest,
   loadZktecoConfig,
 } = require("./lib/zkteco-adms");
 let DatabaseSync = null;
@@ -943,6 +944,14 @@ function startApprovalPanelServer() {
         response.setHeader("Set-Cookie", buildSessionCookie("", 0));
         recordAudit(user, "logout", "session", user?.id || "", "Cierre de sesion");
         return sendJson(response, { ok: true });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/biometric-sync/events") {
+        return handleBiometricSyncRequest(request, response, {
+          service: getZktecoService(),
+          config: ZKTECO_CONFIG,
+          logger: console,
+        });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/purchase-sync") {

@@ -12,35 +12,74 @@ La integracion recibe marcaciones del reloj ZKTeco MB20-VL por HTTP PUSH/ADMS si
 
 El receptor ADMS no debe publicarse por Nginx. Debe escuchar en una interfaz alcanzable desde la LAN del terminal.
 
+Para produccion en VPS, no se publica `/iclock/*`. La arquitectura segura es:
+
+```text
+MB20-VL -> receptor local ADMS -> SQLite local -> worker HTTPS -> ERP produccion
+```
+
+El reloj nunca se expone a Internet y el puerto 4370 no debe abrirse fuera de la LAN.
+
 ## Variables de entorno
 
 ```env
 ZKTECO_ENABLED=false
 ZKTECO_BIND_HOST=0.0.0.0
 ZKTECO_PORT=8080
-ZKTECO_ALLOWED_IPS=192.168.1.201
+ZKTECO_ALLOWED_IPS=192.168.100.33
 ZKTECO_ALLOWED_SERIALS=CO8G230760214
 ZKTECO_TIMEZONE=America/Argentina/Buenos_Aires
 ZKTECO_DEBOUNCE_SECONDS=180
 ZKTECO_LOG_RAW_PAYLOADS=true
 ZKTECO_MAX_BODY_BYTES=1048576
 ZKTECO_BODY_TIMEOUT_MS=5000
+ZKTECO_SYNC_ENABLED=false
+ZKTECO_SYNC_TOKEN=
+ZKTECO_SYNC_URL=
+ZKTECO_SYNC_INTERVAL_SECONDS=30
+ZKTECO_SYNC_BATCH_SIZE=100
+ZKTECO_SYNC_REQUEST_TIMEOUT_MS=10000
 ```
 
 `ZKTECO_ENABLED` queda apagado por defecto. Las listas de IPs y seriales aceptan valores separados por coma.
+`ZKTECO_SYNC_TOKEN` debe ser un secreto fuerte y no debe commitearse.
+
+En produccion/VPS:
+
+```env
+ZKTECO_ENABLED=false
+ZKTECO_SYNC_ENABLED=true
+ZKTECO_SYNC_TOKEN=generar-un-token-largo-y-secreto
+ZKTECO_ALLOWED_SERIALS=CO8G230760214
+```
+
+En el receptor local:
+
+```env
+ZKTECO_ENABLED=true
+ZKTECO_BIND_HOST=0.0.0.0
+ZKTECO_PORT=8080
+ZKTECO_ALLOWED_IPS=192.168.100.33
+ZKTECO_ALLOWED_SERIALS=CO8G230760214
+ZKTECO_SYNC_ENABLED=true
+ZKTECO_SYNC_URL=https://sistema.gratitudgourmet.com/api/biometric-sync/events
+ZKTECO_SYNC_TOKEN=el-mismo-token-fuerte-de-produccion
+ZKTECO_SYNC_INTERVAL_SECONDS=30
+ZKTECO_SYNC_BATCH_SIZE=100
+```
 
 ## Configuracion del MB20-VL
 
 Datos confirmados:
 
-- IP terminal: `192.168.1.201`.
-- Servidor ADMS: `192.168.1.200`.
+- IP terminal: `192.168.100.33`.
+- Servidor ADMS local: `192.168.100.200`.
 - Puerto: `8080`.
 - Serial: `CO8G230760214`.
 - Push Protocol: `2.4.1`.
 - Firmware: `ZMM510-NF-Ver1.0.21`.
 
-El servidor receptor debe correr en una maquina con conectividad directa a `192.168.1.201`. Si el ERP productivo esta en un VPS fuera de esa LAN, el receptor debe correr localmente o mediante una red privada/relay propio posterior. No abrir el puerto 4370 ni el ADMS a Internet.
+El servidor receptor debe correr en una maquina con conectividad directa a `192.168.100.33`. Si el ERP productivo esta en un VPS fuera de esa LAN, el receptor debe correr localmente y sincronizar por HTTPS con el endpoint productivo. No abrir el puerto 4370 ni el ADMS a Internet.
 
 ## Endpoints ADMS
 
@@ -81,6 +120,15 @@ Tablas creadas en SQLite:
 - `biometric_staff_links`: vinculos activos/inactivos entre PIN del reloj y empleado ERP.
 - `biometric_device_status`: ultima comunicacion y metadatos seguros del terminal.
 
+`biometric_events` tambien guarda estado de sincronizacion local:
+
+- `sync_status`: `pending`, `synced` o `error`.
+- `sync_attempts`: cantidad de intentos fallidos.
+- `sync_last_error`: error resumido.
+- `synced_at`: fecha/hora en que el conector local lo marco como sincronizado.
+
+Los eventos nuevos quedan `pending`. Si produccion responde `accepted` o `duplicate`, quedan `synced`. Si hay red caida, token invalido o error del servidor, quedan `error` y se reintentan en el siguiente ciclo.
+
 La clave de idempotencia es SHA-256 de:
 
 ```text
@@ -98,11 +146,15 @@ Los duplicados no se insertan ni se auditan como errores.
 - Sin fotos, huellas ni plantillas faciales.
 - Sin confianza en `X-Forwarded-For`.
 - Receptor separado del Nginx publico.
+- Endpoint productivo de sync: `POST /api/biometric-sync/events`.
+- El endpoint de sync queda fuera del login del panel, pero exige `ZKTECO_SYNC_ENABLED=true` y token por `Authorization: Bearer ...` o `X-ZKTeco-Sync-Token`.
+- Produccion no debe servir `/iclock/*`; solo recibe lotes HTTPS del conector local.
+- No se loguean tokens ni payloads completos de sync.
 
 Regla recomendada de firewall:
 
 ```text
-Permitir TCP 8080 unicamente desde 192.168.1.201
+Permitir TCP 8080 unicamente desde 192.168.100.33
 ```
 
 ## Vinculacion y reprocesamiento
@@ -155,7 +207,7 @@ $env:DATA_DIR="$env:TEMP\gratitud-zkteco-real"
 $env:ZKTECO_ENABLED="true"
 $env:ZKTECO_BIND_HOST="0.0.0.0"
 $env:ZKTECO_PORT="8080"
-$env:ZKTECO_ALLOWED_IPS="192.168.1.201"
+$env:ZKTECO_ALLOWED_IPS="192.168.100.33"
 $env:ZKTECO_ALLOWED_SERIALS="CO8G230760214"
 node .\zkteco-adms-receiver.js
 ```
@@ -171,6 +223,35 @@ node .\whatsapp-catering-bot.js
 ```
 
 Si la carpeta temporal ya contiene `usuarios-erp.json`, cambiar `PANEL_AUTH_PASSWORD` no cambia la clave del usuario existente. En ese caso usar la clave ya creada para ese `DATA_DIR` o iniciar con una carpeta nueva de prueba.
+
+### Sync local a produccion
+
+Ejemplo `.env.zkteco.local` para la PC del receptor:
+
+```env
+DATA_DIR=data/zkteco-local
+ZKTECO_ENABLED=true
+ZKTECO_BIND_HOST=0.0.0.0
+ZKTECO_PORT=8080
+ZKTECO_ALLOWED_IPS=192.168.100.33
+ZKTECO_ALLOWED_SERIALS=CO8G230760214
+ZKTECO_SYNC_ENABLED=true
+ZKTECO_SYNC_URL=https://sistema.gratitudgourmet.com/api/biometric-sync/events
+ZKTECO_SYNC_TOKEN=usar-token-fuerte-compartido-con-produccion
+ZKTECO_SYNC_INTERVAL_SECONDS=30
+ZKTECO_SYNC_BATCH_SIZE=100
+```
+
+Cuando se activa el worker, el receptor sigue guardando primero en SQLite local. El envio a produccion es no bloqueante: si el VPS esta caido o el token falla, la cola local queda disponible para reintento.
+
+Prueba manual del endpoint productivo/simulado:
+
+```bash
+curl -X POST "https://sistema.gratitudgourmet.com/api/biometric-sync/events" \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Content-Type: application/json" \
+  --data '{"source":"gratitud-local-zkteco","sentAt":"2026-07-21T18:00:00.000Z","events":[{"id":"bio-local-test","deviceSerial":"CO8G230760214","deviceEmployeeId":"2","deviceTimestamp":"2026-07-21 13:15:09","attendanceStatus":"255","verifyMethod":"15","verifyMethodName":"face","rawLine":"2\t2026-07-21 13:15:09\t255\t15\t0\t0\t0\t0\t0\t0","idempotencyKey":"<KEY>","receivedAt":"2026-07-21T16:15:09.000Z","data":{"remoteIp":"192.168.100.33","timezone":"America/Argentina/Buenos_Aires","source":"local-adms"}}]}'
+```
 
 ## systemd
 
