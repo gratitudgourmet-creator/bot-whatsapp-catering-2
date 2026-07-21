@@ -21,6 +21,42 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-21] Codex (ZKTeco Fase 1 local validada + arranque automatico Windows)
+
+**De que se hablo:** integracion directa del reloj biometrico ZKTeco MB20-VL por PUSH/ADMS, pruebas reales con el dispositivo, ajuste de red local y cierre operativo para que el receptor arranque solo en Windows.
+
+**Decisiones tomadas:**
+- La recepcion ADMS debe correr localmente en la PC de Gratitud, no en el VPS, porque el reloj esta en la LAN.
+- No se expone `/iclock/*` por Nginx ni por internet.
+- Produccion/VPS todavia no muestra fichadas locales; queda para Fase 2 mediante sincronizacion local -> produccion por HTTPS.
+- La PC quedo con IP fija `192.168.100.200`.
+- El reloj esta llegando realmente desde `192.168.100.33` con serial `CO8G230760214`.
+- Se aceptan temporalmente IPs `192.168.100.33,192.168.100.201` en allowlist.
+- El receptor local guarda en base estable dentro del repo local ignorado por Git: `data/zkteco-local/catering.db`.
+- El receptor arranca solo al iniciar sesion de Windows mediante acceso en carpeta Inicio: `Gratitud ZKTeco ADMS.vbs`, que llama `.runtime/start-zkteco-adms.cmd`.
+- `.env.zkteco.local`, `.runtime/` y `data/` son locales/ignorados y no deben subirse.
+
+**Cambios en el codigo:**
+- Commit `b5a5e69` (`ZKTeco: integrar receptor ADMS y fichadas biometricas`): receptor ADMS separado, modulo `lib/zkteco-adms.js`, persistencia SQLite, endpoints admin `/api/biometric/*`, UI basica, tests, docs y systemd.
+- Commit `bb0fe53` (`ZKTeco: mejorar lectura de fichadas biometricas`): micro-ajuste UX de `Personal/RRHH > Biometrico` para mostrar PIN, fecha/hora, metodo, serial y estado separados; copy mas claro; reproceso como accion secundaria con confirmacion; mobile sin overflow.
+- Ambos commits fueron pusheados a `origin/main`. No se deployaron al VPS.
+- Cambios locales no relacionados siguen pendientes sin commitear en `approval-panel.html` y `whatsapp-catering-bot.js`; no mezclarlos con ZKTeco.
+
+**Validacion realizada:**
+- Reloj real envio ATTLOG desde `192.168.100.33` al receptor local `192.168.100.200:8080`.
+- Fichadas recibidas reales incluyen PIN `2` y PIN `36652951`; quedan en `biometric_events` y se procesan/vinculan desde RRHH.
+- Tras reiniciar la PC, el receptor arranco solo: puerto `8080` escuchando, log `.runtime/zkteco-adms.log` actualizado, ultima comunicacion del reloj registrada.
+- PC mantiene IP fija `192.168.100.200`, gateway `192.168.100.1`.
+- Tests de repo pasaron durante cierre de commits: `npm.cmd test` con 13 tests OK.
+
+**Pendiente para la proxima sesion:**
+- Hacer una prueba final operativa: fichar desde pantalla principal del reloj y confirmar en `Personal/RRHH > Biometrico` usando base local `data/zkteco-local`.
+- Implementar Fase 2: conector local sincroniza fichadas a ERP produccion por HTTPS con token, cola local, idempotencia, reintentos y estado visible.
+- Documentar/automatizar mejor instalacion local si se replica en otra PC.
+- No deployar ZKTeco al VPS como receptor ADMS; el VPS solo debe recibir eventos sincronizados por endpoint autenticado en Fase 2.
+
+---
+
 ## [2026-07-10] Claude (sesion — modal evento rediseño + exportar Excel costos de menú)
 
 **De que se hablo:** prueba local de los cambios acumulados en approval-panel.html (guided event modal compact redesign + mcExportExcel). Fix de sticky en modal. Deploy a prod.
