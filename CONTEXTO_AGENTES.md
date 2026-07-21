@@ -21,6 +21,49 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-21] Codex (ZKTeco Fase 2 sincronizacion local -> produccion validada)
+
+**De que se hablo:** cierre operativo de la integracion biometrica ZKTeco MB20-VL para que las fichadas tomadas por el reloj en la LAN se reciban en la PC local y se sincronicen al ERP productivo por HTTPS.
+
+**Decisiones tomadas:**
+- El receptor ADMS sigue corriendo localmente en la PC de Gratitud, porque el reloj solo llega por LAN.
+- Produccion no expone `/iclock/*`; solo recibe fichadas por endpoint autenticado `POST /api/biometric-sync/events`.
+- La PC local quedo como receptor estable en `192.168.100.200:8080`.
+- El reloj esta comunicando desde `192.168.100.33` con serial `CO8G230760214`.
+- El sync local usa token compartido contra `https://sistema.gratitudgourmet.com/api/biometric-sync/events`.
+- El token y la configuracion local viven en `.env.zkteco.local`; no deben subirse al repo.
+- El arranque automatico local queda por carpeta Inicio de Windows con `Gratitud ZKTeco ADMS.vbs`, que llama `.runtime/start-zkteco-adms.cmd`.
+- `.env.zkteco.local`, `.runtime/`, `data/zkteco-local/` y la base local son operativos/ignorados por Git.
+
+**Cambios en el codigo:**
+- Commit `174b76d` (`ZKTeco: sincronizar fichadas locales con produccion`) subido a `origin/main` y deployado en VPS.
+- Produccion quedo en hash `174b76d` y `/health` respondio OK.
+- Se agrego/valido cola local de sincronizacion con `sync_status`, `sync_attempts`, `sync_last_error` y `synced_at`.
+- Se agrego endpoint productivo seguro para recibir lotes sincronizados, con token obligatorio, batch limitado e idempotencia.
+- Se mantuvieron separados los cambios no relacionados que siguen pendientes localmente en `approval-panel.html` y `whatsapp-catering-bot.js`.
+
+**Validacion realizada:**
+- Login productivo con `admin` funciono correctamente.
+- Produccion sirve HTML actualizado con marcadores `Fichadas biometricas`, `purchase-summary-count` y `setupShellControls`.
+- Estado productivo de biometrico: `syncEnabled=true`, `syncTotals.synced=8`.
+- Fichada real nueva recibida localmente y sincronizada a produccion:
+  - PIN `2`
+  - timestamp del reloj `2026-07-21 15:52:31`
+  - serial `CO8G230760214`
+  - metodo `face`
+  - estado productivo `processed`
+  - legajo `JOAQUIN BERRIOS`
+- Vinculo activo confirmado: PIN `2` -> `JOAQUIN BERRIOS`.
+- Quedaba un PIN sin vincular (`36652951`); el usuario indico luego que ya lo vinculo.
+
+**Pendiente para la proxima sesion:**
+- Confirmar despues del vinculo de PIN `36652951` que `Reprocesar vinculadas` deja todos los eventos esperados como `processed`.
+- Si se quiere cerrar 100%, probar una fichada nueva despues del vinculo y verificar que aparezca en `Asistencia admin` o `Revision de horas`.
+- No mezclar cambios RRHH/locales pendientes con commits ZKTeco ya cerrados.
+- No abrir puertos ADMS a internet ni exponer `/iclock/*` por Nginx.
+
+---
+
 ## [2026-07-21] Codex (ZKTeco Fase 1 local validada + arranque automatico Windows)
 
 **De que se hablo:** integracion directa del reloj biometrico ZKTeco MB20-VL por PUSH/ADMS, pruebas reales con el dispositivo, ajuste de red local y cierre operativo para que el receptor arranque solo en Windows.
