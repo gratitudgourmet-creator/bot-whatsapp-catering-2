@@ -2554,7 +2554,7 @@ function sendHrTimesheetXlsxExport(response, searchParams = new URLSearchParams(
 
   const rows = buildHrTimesheetExportRows(searchParams);
   if (!rows.length) {
-    return sendJson(response, { ok: false, error: "No hay horas para exportar con estos filtros." }, 404);
+    return sendJson(response, { ok: false, error: "No hay horas guardadas para exportar con estos filtros." });
   }
 
   const columns = [
@@ -5817,17 +5817,23 @@ function buildHrTimesheetExportRows(searchParams = new URLSearchParams()) {
   const staffId = normalizeText(searchParams.get("staffId") || "");
   const staffName = normalizeText(searchParams.get("staffName") || "");
   const date = normalizePanelDate(searchParams.get("date") || "");
+  const status = normalizeText(searchParams.get("status") || "");
   const staffNameKey = normalizeSearchKey(staffName);
   const staffById = new Map(erpStaff.map((staff) => [staff.id, staff]));
   const eventById = new Map(erpEvents.map((event) => [event.id, event]));
 
   return normalizeStaffShiftList(erpStaffShifts)
-    .filter((shift) => (shift.source || "") === "timesheet")
     .filter((shift) => !period || String(shift.date || "").startsWith(`${period}-`))
     .filter((shift) => !eventId || (shift.eventId || "") === eventId)
     .filter((shift) => !staffId || (shift.staffId || "") === staffId)
-    .filter((shift) => !staffNameKey || normalizeSearchKey(shift.staffName || "") === staffNameKey)
+    .filter((shift) => {
+      if (!staffNameKey) return true;
+      const staff = staffById.get(shift.staffId) || {};
+      const exportedNameKey = normalizeSearchKey(shift.staffName || staff.fullName || "");
+      return exportedNameKey === staffNameKey || exportedNameKey.includes(staffNameKey);
+    })
     .filter((shift) => !date || (shift.date || "") === date)
+    .filter((shift) => !status || getHrShiftExportStatus(shift) === status || (status === "complete" && getHrShiftExportStatus(shift) === "approved") || (status === "partial" && getHrShiftExportStatus(shift) === "unreviewed"))
     .sort((a, b) => {
       const byDate = String(a.date || "").localeCompare(String(b.date || ""));
       if (byDate) return byDate;
@@ -5851,11 +5857,39 @@ function buildHrTimesheetExportRows(searchParams = new URLSearchParams()) {
         Descanso: shift.breakMinutes ? `${shift.breakMinutes} min` : "",
         "Horas calculadas": roundMoney(shift.hours || 0),
         Nota: cleanTimesheetExportNote(shift.notes || ""),
-        Estado: getAttendanceStatusLabel(shift.attendanceStatus),
+        Estado: getHrShiftExportStatusLabel(getHrShiftExportStatus(shift)),
         "Cargado por": shift.loadedBy || "",
         "Fecha de carga/actualizacion": shift.updatedAt || shift.createdAt || "",
       };
     });
+}
+
+function getHrShiftExportAlerts(shift = {}) {
+  const alerts = [];
+  if (shift.startTime && !shift.endTime) alerts.push("entrada_sin_salida");
+  if (!Number(shift.hours || 0)) alerts.push("horas_0");
+  if (Number(shift.hours || 0) > 12) alerts.push("jornada_larga");
+  if (!shift.staffId && !shift.staffName) alerts.push("falta_persona");
+  if (!shift.eventId && !shift.eventName) alerts.push("sin_evento_labor");
+  if (shift.startTime && shift.endTime && shift.endTime < shift.startTime) alerts.push("turno_nocturno");
+  return alerts;
+}
+
+function getHrShiftExportStatus(shift = {}) {
+  const notes = normalizeSearchKey(shift.notes || "");
+  if (notes.includes("exportado")) return "exported";
+  if (notes.includes("observado") || getHrShiftExportAlerts(shift).length) return "observed";
+  if (shift.attendanceStatus === "present" && Number(shift.hours || 0) > 0) return "approved";
+  return "unreviewed";
+}
+
+function getHrShiftExportStatusLabel(status = "") {
+  return {
+    unreviewed: "Sin revisar",
+    observed: "Observado",
+    approved: "Aprobado",
+    exported: "Exportado",
+  }[status] || "Sin revisar";
 }
 
 function getSpanishWeekdayName(date = "") {
