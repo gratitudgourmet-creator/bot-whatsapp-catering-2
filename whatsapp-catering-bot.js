@@ -22,6 +22,12 @@ const os = require("os");
 const path = require("path");
 const crypto = require("crypto");
 const zlib = require("zlib");
+const {
+  buildAttendanceShiftsFromBiometricEvents,
+  createZktecoService,
+  ensureZktecoSchema,
+  loadZktecoConfig,
+} = require("./lib/zkteco-adms");
 let DatabaseSync = null;
 try {
   ({ DatabaseSync } = require("node:sqlite"));
@@ -76,6 +82,12 @@ const ERP_ROLES_FILE = dataPath("roles-erp.json");
 const ERP_INVENTARIO_SESION_FILE = dataPath("inventario-sesion.json");
 const ERP_CONFORMITIES_DIR = dataPath("conformidades-eventos");
 const CATERING_DB_FILE = dataPath(process.env.CATERING_DB_FILE || BOT_CONFIG.cateringDbFile || "catering.db");
+const ZKTECO_CONFIG = loadZktecoConfig(process.env, {
+  botConfig: BOT_CONFIG,
+  dataDir: DATA_DIR,
+  dbFileName: process.env.CATERING_DB_FILE || BOT_CONFIG.cateringDbFile || "catering.db",
+  baseDir: __dirname,
+});
 const CATERING_BACKUP_DIR = path.resolve(
   process.env.CATERING_BACKUP_DIR ||
   BOT_CONFIG.cateringBackupDir ||
@@ -1504,6 +1516,65 @@ function startApprovalPanelServer() {
           const result = saveStaffTimesheet(body, user);
           recordAudit(user, "update", "staff_timesheet", result.staffId || body.staffId, `${result.staffName || "Personal"} - ${result.period}`, null, result);
           return sendJson(response, { ok: true, result, hrDashboard: getHrDashboard() });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/biometric/status") {
+        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "staff:timesheets:read", "staff:timesheets:write"]);
+        if (!user) return;
+        try {
+          return sendJson(response, { ok: true, biometric: getBiometricDashboard(requestUrl.searchParams) });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 500);
+        }
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/biometric/events") {
+        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "staff:timesheets:read", "staff:timesheets:write"]);
+        if (!user) return;
+        try {
+          const biometric = getBiometricDashboard(requestUrl.searchParams);
+          return sendJson(response, { ok: true, biometric, events: biometric.events });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 500);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/biometric/link") {
+        const user = requireAnyPanelPermission(request, response, ["hr:write", "staff:timesheets:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const link = getZktecoService().upsertStaffLink(body, erpStaff);
+          recordAudit(user, "upsert", "biometric_staff_link", link.id, `${link.deviceSerial} / PIN ${link.deviceEmployeeId}`, null, link);
+          return sendJson(response, { ok: true, link, biometric: getBiometricDashboard(new URLSearchParams()) });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/biometric/link/deactivate") {
+        const user = requireAnyPanelPermission(request, response, ["hr:write", "staff:timesheets:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const link = getZktecoService().deactivateStaffLink(body);
+          recordAudit(user, "deactivate", "biometric_staff_link", link.id, `${link.deviceSerial} / PIN ${link.deviceEmployeeId}`, link, null);
+          return sendJson(response, { ok: true, link, biometric: getBiometricDashboard(new URLSearchParams()) });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/biometric/reprocess") {
+        const user = requireAnyPanelPermission(request, response, ["hr:write", "staff:timesheets:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const result = reprocessBiometricEvents(body, user);
+          return sendJson(response, { ok: true, result, hrDashboard: getHrDashboard(), biometric: getBiometricDashboard(new URLSearchParams()) });
         } catch (error) {
           return sendJson(response, { ok: false, error: error.message }, 400);
         }
@@ -3153,6 +3224,7 @@ function initCateringDatabase() {
 
       CREATE INDEX IF NOT EXISTS idx_comandas_ventas_fecha ON comandas_ventas(fecha);
     `);
+    ensureZktecoSchema(cateringDb);
     return true;
   } catch (error) {
     cateringDb = null;
@@ -3608,6 +3680,19 @@ function saveAuditRecords(record) {
 
 function savePanelRoles() {
   writeJsonFile(ERP_ROLES_FILE, panelRoleDefinitions);
+}
+
+let zktecoService = null;
+
+function getZktecoService() {
+  if (!zktecoService) {
+    zktecoService = createZktecoService({
+      config: ZKTECO_CONFIG,
+      db: cateringDb || null,
+      logger: console,
+    });
+  }
+  return zktecoService;
 }
 
 function getRoleDefinitions() {
@@ -5864,6 +5949,101 @@ function saveStaffTimesheet(input = {}, user = null) {
     eventName: event.name || "",
     days: saved.length,
     totalHours: roundMoney(saved.reduce((sum, shift) => sum + Number(shift.hours || 0), 0)),
+  };
+}
+
+function getBiometricDashboard(searchParams = new URLSearchParams()) {
+  const service = getZktecoService();
+  const filters = {
+    limit: Number(searchParams.get?.("limit") || 100),
+    deviceSerial: searchParams.get?.("deviceSerial") || "",
+    deviceEmployeeId: searchParams.get?.("deviceEmployeeId") || "",
+    staffId: searchParams.get?.("staffId") || "",
+    status: searchParams.get?.("status") || "",
+    from: searchParams.get?.("from") || "",
+    to: searchParams.get?.("to") || "",
+  };
+  const staffById = new Map(erpStaff.map((staff) => [staff.id, staff]));
+  const status = service.getStatus();
+  const links = service.listLinks().map((link) => ({
+    ...link,
+    staffName: staffById.get(link.staffId)?.fullName || link.data?.staffName || "",
+  }));
+  const events = service.listEvents(filters).map((event) => ({
+    ...event,
+    staffName: staffById.get(event.linkedStaffId)?.fullName || "",
+  }));
+  return {
+    status,
+    links,
+    events,
+    unlinked: service.listUnlinkedEvents(50).map((event) => ({
+      ...event,
+      staffName: "",
+    })),
+  };
+}
+
+function reprocessBiometricEvents(input = {}, user = null) {
+  const service = getZktecoService();
+  const eventIds = Array.isArray(input.eventIds) ? input.eventIds.map(normalizeText).filter(Boolean) : [];
+  const filters = eventIds.length ? { limit: 500 } : { status: input.includeProcessed ? "" : "received", limit: 500 };
+  let events = service.listEvents(filters).filter((event) => event.linkedStaffId);
+  if (eventIds.length) {
+    const wanted = new Set(eventIds);
+    events = events.filter((event) => wanted.has(event.id));
+  }
+  if (!events.length) {
+    return { processedEvents: 0, savedShifts: 0, skipped: [], message: "No hay fichadas vinculadas pendientes." };
+  }
+  const built = buildAttendanceShiftsFromBiometricEvents({
+    events,
+    staff: erpStaff,
+    existingShifts: erpStaffShifts,
+    debounceSeconds: ZKTECO_CONFIG.debounceSeconds,
+    timezone: ZKTECO_CONFIG.timezone,
+  });
+  const savedShifts = [];
+  built.shifts.forEach((shift) => {
+    const previousIndex = erpStaffShifts.findIndex((item) => item.id === shift.id);
+    const previous = previousIndex >= 0 ? erpStaffShifts[previousIndex] : null;
+    if (previous && previous.source && previous.source !== "zkteco") {
+      built.skipped.push({ shiftId: shift.id, reason: "MANUAL_SHIFT_EXISTS" });
+      return;
+    }
+    const normalized = normalizeStaffShiftRecord({
+      ...previous,
+      ...shift,
+      createdAt: previous?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+    if (previousIndex >= 0) erpStaffShifts[previousIndex] = normalized;
+    else erpStaffShifts.push(normalized);
+    savedShifts.push(normalized);
+  });
+  if (savedShifts.length) saveErpStaffShifts();
+  const debouncedEventIds = built.skipped
+    .filter((item) => item.eventId && item.reason === "DEBOUNCE")
+    .map((item) => item.eventId);
+  const processedEventIds = Array.from(new Set([...built.processedEventIds, ...debouncedEventIds]));
+  if (processedEventIds.length) service.markEventsProcessed(processedEventIds, "processed");
+  const skippedManualEventIds = built.skipped
+    .filter((item) => item.eventId && item.reason === "MANUAL_SHIFT_EXISTS")
+    .map((item) => item.eventId);
+  if (skippedManualEventIds.length) service.markEventsProcessed(skippedManualEventIds, "error", "Existe asistencia manual para ese empleado y fecha.");
+  recordAudit(
+    user,
+    "reprocess",
+    "biometric_events",
+    `lote-${Date.now()}`,
+    "Reprocesamiento ZKTeco",
+    null,
+    { processedEvents: processedEventIds.length, savedShifts: savedShifts.length, skipped: built.skipped.length }
+  );
+  return {
+    processedEvents: processedEventIds.length,
+    savedShifts: savedShifts.length,
+    skipped: built.skipped,
   };
 }
 

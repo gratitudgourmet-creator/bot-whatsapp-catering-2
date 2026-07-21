@@ -9523,6 +9523,7 @@
           <button class="workspace-subitem" data-view="hr" data-anchor="hr-staff-section" data-permission="hr:read">Legajos</button>
           <button class="workspace-subitem" data-view="hr" data-anchor="hr-shifts-section" data-permission="hr:read">Asistencia y horarios</button>
           <button class="workspace-subitem" data-view="hr" data-anchor="hr-payroll-section" data-permission="payroll:read">Sueldos y horas</button>
+          <button class="workspace-subitem" data-view="hr" data-anchor="hr-biometric-section" data-permission="hr:read">Biometrico</button>
         </div>
       </div>
       <div class="workspace-menu" data-menu-view="sanitation">
@@ -11963,6 +11964,8 @@
       staffName: "",
       exportDate: "",
       days: {},
+      biometricStatus: "",
+      biometricPin: "",
     };
     const operationalCategoryDefaults = [
       ["personal", "Personal"],
@@ -12082,6 +12085,7 @@
           { label: "Legajos", description: "Datos del personal, rol, teléfono y disponibilidad.", anchor: "hr-staff-section", permission: "hr:read" },
           { label: "Asistencia y horarios", description: "Turnos, horas reales y novedades por evento.", anchor: "hr-shifts-section", permission: "hr:read" },
           { label: "Sueldos y horas", description: "Liquidaciones, adicionales, descuentos y pagos.", anchor: "hr-payroll-section", permission: "payroll:read" },
+            { label: "Biometrico", description: "Fichadas del reloj, PINs y vinculacion con legajos.", anchor: "hr-biometric-section", permission: "hr:read" },
         ],
       },
       sanitation: {
@@ -12203,6 +12207,7 @@
         "hr-staff-section": ["hr-staff-section"],
         "hr-shifts-section": ["hr-shifts-section"],
         "hr-payroll-section": ["hr-payroll-section"],
+        "hr-biometric-section": ["hr-biometric-section"],
       },
       sanitation: {
         "sanitation-form-section": ["sanitation-main-section"],
@@ -16095,11 +16100,142 @@
             </div>
           </div>
         </section>
+
+        ${can("hr:read") || can("hr:write") ? renderHrBiometricSection() : ""}
       `;
+      if (!erpData.biometricDashboard && (can("hr:read") || can("hr:write"))) {
+        setTimeout(() => loadBiometricDashboard({ silent: true }), 0);
+      }
       updateHrShiftPreview();
       hydratePayrollFromShifts(false);
       updatePayrollPreview();
     }
+    function renderHrBiometricSection() {
+      const biometric = erpData.biometricDashboard || {};
+      const status = biometric.status || {};
+      const devices = status.devices || [];
+      const events = biometric.events || [];
+      const unlinked = biometric.unlinked || [];
+      const links = biometric.links || [];
+      const staff = erpData.hrDashboard?.staff || [];
+      const activeDevice = devices[0] || {};
+      const totals = status.totals || {};
+      return `
+        <div class="panel-box hr-internal-view" id="hr-biometric-section" data-hr-anchor="hr-biometric-section">
+          <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+            <div><h2 style="margin:0;font-size:20px;">Control biometrico</h2><p class="subtitle" style="margin:4px 0 0;">Estado del MB20-VL, fichadas recientes y vinculacion con legajos.</p></div>
+            <div class="toolbar-actions">
+              <button class="filter" type="button" onclick="loadBiometricDashboard()">Actualizar</button>
+              <button class="approve" type="button" onclick="reprocessBiometricEvents()">Reprocesar vinculadas</button>
+            </div>
+          </div>
+          <section class="rank-modal-summary metric-grid">
+            <div><span>Receptor</span><strong>${status.enabled ? "Activo" : "Desactivado"}</strong></div>
+            <div><span>Ultima conexion</span><strong>${escapeHtml(activeDevice.lastSeenAt ? formatDateTime(activeDevice.lastSeenAt) : "Sin datos")}</strong></div>
+            <div><span>Sin vincular</span><strong>${escapeHtml(totals.unlinked || 0)}</strong></div>
+            <div><span>Pendientes</span><strong>${escapeHtml(totals.received || 0)}</strong></div>
+          </section>
+          <div class="hr-filter-row">
+            <div class="form-field"><label>Estado</label><select onchange="hrTimesheetState.biometricStatus = this.value; loadBiometricDashboard({ silent: true });"><option value="" ${!hrTimesheetState.biometricStatus ? "selected" : ""}>Todos</option><option value="unlinked" ${hrTimesheetState.biometricStatus === "unlinked" ? "selected" : ""}>Sin vincular</option><option value="received" ${hrTimesheetState.biometricStatus === "received" ? "selected" : ""}>Pendiente</option><option value="processed" ${hrTimesheetState.biometricStatus === "processed" ? "selected" : ""}>Procesado</option><option value="error" ${hrTimesheetState.biometricStatus === "error" ? "selected" : ""}>Con error</option></select></div>
+            <div class="form-field"><label>PIN del reloj</label><input value="${escapeAttribute(hrTimesheetState.biometricPin || "")}" placeholder="Ej. 2" oninput="hrTimesheetState.biometricPin = this.value"></div>
+            <button class="filter" type="button" onclick="loadBiometricDashboard({ silent: true })">Filtrar</button>
+          </div>
+          <div class="panel-grid">
+            <section class="panel-box soft-panel">
+              <h3 style="margin-top:0;">PINs sin vincular</h3>
+              <div class="compact-list">${unlinked.length ? unlinked.slice(0, 8).map((event) => renderBiometricUnlinkedRow(event, staff)).join("") : `<div class="empty compact-empty">No hay fichadas sin vincular.</div>`}</div>
+            </section>
+            <section class="panel-box soft-panel">
+              <h3 style="margin-top:0;">Vinculos activos</h3>
+              <div class="compact-list">${links.filter((link) => link.active).length ? links.filter((link) => link.active).map(renderBiometricLinkRow).join("") : `<div class="empty compact-empty">No hay vinculos activos.</div>`}</div>
+            </section>
+          </div>
+          <section class="panel-box soft-panel" style="margin-top:12px;">
+            <h3 style="margin-top:0;">Eventos recientes</h3>
+            <div class="compact-list compact-scroll">${events.length ? events.map(renderBiometricEventRow).join("") : `<div class="empty compact-empty">Todavia no hay fichadas recibidas.</div>`}</div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderBiometricUnlinkedRow(event = {}, staff = []) {
+      return `
+        <div class="summary-row">
+          <div><strong>PIN ${escapeHtml(event.deviceEmployeeId || "")}</strong><span>${escapeHtml(event.deviceTimestamp || "")} · ${escapeHtml(event.verifyMethodName || "unknown")}</span></div>
+          <div class="toolbar-actions">
+            <select id="biometric-staff-${escapeAttribute(event.id)}" aria-label="Empleado ERP"><option value="">Elegir legajo</option>${staff.map((item) => `<option value="${escapeAttribute(item.id)}">${escapeHtml(item.fullName || "Sin nombre")}</option>`).join("")}</select>
+            <button class="filter" type="button" onclick="linkBiometricEvent('${escapeAttribute(event.id)}', '${escapeAttribute(event.deviceSerial || "")}', '${escapeAttribute(event.deviceEmployeeId || "")}')">Vincular</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBiometricLinkRow(link = {}) {
+      return `
+        <div class="summary-row">
+          <div><strong>${escapeHtml(link.staffName || link.staffId || "Legajo")}</strong><span>${escapeHtml(link.deviceSerial || "")} · PIN ${escapeHtml(link.deviceEmployeeId || "")}</span></div>
+          <button class="filter" type="button" onclick="deactivateBiometricLink('${escapeAttribute(link.id)}')">Desactivar</button>
+        </div>
+      `;
+    }
+
+    function renderBiometricEventRow(event = {}) {
+      const statusLabels = { unlinked: "Sin vincular", received: "Pendiente", processed: "Procesado", error: "Con error" };
+      return `
+        <div class="summary-row">
+          <div><strong>${escapeHtml(event.staffName || `PIN ${event.deviceEmployeeId || ""}`)}</strong><span>${escapeHtml(event.deviceTimestamp || "")} · ${escapeHtml(event.verifyMethodName || "unknown")} · ${escapeHtml(event.deviceSerial || "")}</span>${event.processingError ? `<small class="muted">${escapeHtml(event.processingError)}</small>` : ""}</div>
+          <span class="badge ${event.processingStatus === "error" ? "cancelled" : event.processingStatus === "processed" ? "confirmed" : "draft"}">${escapeHtml(statusLabels[event.processingStatus] || event.processingStatus || "Recibido")}</span>
+        </div>
+      `;
+    }
+
+    async function loadBiometricDashboard(options = {}) {
+      const params = new URLSearchParams();
+      if (hrTimesheetState.biometricStatus) params.set("status", hrTimesheetState.biometricStatus);
+      if (hrTimesheetState.biometricPin) params.set("deviceEmployeeId", hrTimesheetState.biometricPin);
+      params.set("limit", "120");
+      const response = await fetch(`/api/biometric/status?${params.toString()}`);
+      const result = await readJsonResponse(response);
+      if (!result.ok) {
+        if (!options.silent) showNotice(result.error || "No se pudo cargar el control biometrico.", "error");
+        return;
+      }
+      erpData.biometricDashboard = result.biometric || {};
+      renderHrDashboard();
+      if (!options.silent) showNotice("Control biometrico actualizado.", "success");
+    }
+
+    async function linkBiometricEvent(eventId, deviceSerial, deviceEmployeeId) {
+      const staffId = document.getElementById(`biometric-staff-${eventId}`)?.value || "";
+      if (!staffId) return showNotice("Elegí un legajo para vincular el PIN.", "error");
+      const staff = (erpData.hrDashboard?.staff || []).find((item) => item.id === staffId);
+      if (!confirm(`Vincular PIN ${deviceEmployeeId} con ${staff?.fullName || "este legajo"}?`)) return;
+      const result = await postJson("/api/biometric/link", { deviceSerial, deviceEmployeeId, staffId });
+      if (!result.ok) return showNotice(result.error || "No se pudo vincular el PIN.", "error");
+      erpData.biometricDashboard = result.biometric || erpData.biometricDashboard;
+      renderHrDashboard();
+      showNotice("PIN vinculado al legajo.", "success");
+    }
+
+    async function deactivateBiometricLink(id) {
+      if (!confirm("Desactivar este vinculo biometrico?")) return;
+      const result = await postJson("/api/biometric/link/deactivate", { id });
+      if (!result.ok) return showNotice(result.error || "No se pudo desactivar el vinculo.", "error");
+      erpData.biometricDashboard = result.biometric || erpData.biometricDashboard;
+      renderHrDashboard();
+      showNotice("Vinculo desactivado.", "success");
+    }
+
+    async function reprocessBiometricEvents() {
+      const result = await postJson("/api/biometric/reprocess", {});
+      if (!result.ok) return showNotice(result.error || "No se pudieron reprocesar las fichadas.", "error");
+      erpData.hrDashboard = result.hrDashboard || erpData.hrDashboard;
+      erpData.biometricDashboard = result.biometric || erpData.biometricDashboard;
+      renderHrDashboard();
+      showNotice(`Fichadas procesadas: ${result.result?.processedEvents || 0}. Asistencias guardadas: ${result.result?.savedShifts || 0}.`, "success");
+    }
+
+
 
     function isHrTimesheetOnlyUser() {
       return (can("staff:timesheets:read") || can("staff:timesheets:write"))

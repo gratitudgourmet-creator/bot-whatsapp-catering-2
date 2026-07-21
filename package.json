@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node whatsapp-catering-bot.js",
     "check": "node --check whatsapp-catering-bot.js",
-    "test": "npm run check"
+    "test": "npm run check && node --test tests/*.test.js"
   },
   "keywords": [],
   "author": "",
