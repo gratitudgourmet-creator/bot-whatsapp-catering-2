@@ -5031,6 +5031,19 @@
       min-width: 0;
     }
 
+    .hr-primary-tabs {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 6px;
+    }
+
+    .hr-hours-tabs {
+      background: transparent;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+
     .hr-internal-tab {
       background: #fff;
       border: 1px solid var(--line);
@@ -5046,6 +5059,50 @@
       background: #0f513f;
       border-color: #0f513f;
       color: #fff;
+    }
+
+    .hr-primary-tabs .hr-internal-tab {
+      border-color: transparent;
+    }
+
+    .hr-hours-tabs .hr-internal-tab.active {
+      background: #f7faf7;
+      border-color: rgba(198, 140, 52, .45);
+      color: #0b1b2a;
+    }
+
+    .hr-context-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .hr-advanced-actions {
+      border-top: 1px solid var(--line);
+      margin-top: 12px;
+      padding-top: 10px;
+    }
+
+    .hr-advanced-actions summary {
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 800;
+      list-style: none;
+    }
+
+    .hr-advanced-actions summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .hr-advanced-actions summary::after {
+      content: " +";
+      color: var(--gold);
+    }
+
+    .hr-advanced-actions[open] summary::after {
+      content: " -";
     }
 
     .hr-drawer {
@@ -5077,36 +5134,6 @@
       gap: 10px;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       min-width: 0;
-    }
-
-    .hr-flow-strip {
-      display: grid;
-      gap: 8px;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      min-width: 0;
-    }
-
-    .hr-flow-step {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      min-width: 0;
-      padding: 12px;
-    }
-
-    .hr-flow-step span {
-      color: var(--muted);
-      display: block;
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .hr-flow-step strong {
-      display: block;
-      font-size: 15px;
-      margin-top: 4px;
-      overflow-wrap: anywhere;
     }
 
     .timesheet-head {
@@ -5308,7 +5335,6 @@
       .timesheet-person-picker,
       .timesheet-card,
       .timesheet-day-row,
-      .hr-flow-strip,
       .hr-review-row,
       .hr-filter-row {
         grid-template-columns: minmax(0, 1fr);
@@ -5317,6 +5343,11 @@
       .hr-internal-tabs {
         overflow-x: auto;
         padding-bottom: 2px;
+      }
+
+      .hr-primary-tabs,
+      .hr-hours-tabs {
+        flex-wrap: nowrap;
       }
 
       .hr-internal-tab {
@@ -9769,11 +9800,10 @@
       <div class="workspace-menu" data-menu-view="hr">
         <button class="workspace-tab" data-view="hr">Personal/RRHH</button>
         <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="hr" data-anchor="hr-timesheet-section" data-permission="staff:timesheets:read">Carga de horas</button>
-          <button class="workspace-subitem" data-view="hr" data-anchor="hr-review-section" data-permission="hr:read">Revision de horas</button>
+          <button class="workspace-subitem" data-view="hr" data-anchor="hr-review-section">Horas</button>
           <button class="workspace-subitem" data-view="hr" data-anchor="hr-staff-section" data-permission="hr:read">Personal</button>
-          <button class="workspace-subitem" data-view="hr" data-anchor="hr-shifts-section" data-permission="hr:read">Asistencia admin</button>
           <button class="workspace-subitem" data-view="hr" data-anchor="hr-payroll-section" data-permission="payroll:read">Liquidaciones</button>
+          <button class="workspace-subitem" data-view="hr" data-anchor="hr-reports-section" data-permission="hr:read">Reportes</button>
         </div>
       </div>
       <div class="workspace-menu" data-menu-view="sanitation">
@@ -12217,7 +12247,7 @@
       days: {},
     };
     const hrWorkspaceState = {
-      activeView: "timesheet",
+      activeView: "review",
       staffSearch: "",
       staffStatus: "",
       staffRole: "",
@@ -12227,6 +12257,7 @@
       reviewStaffName: "",
       reviewDate: "",
       reviewStatus: "",
+      reviewSource: "",
       timesheetStatus: "",
       payrollPeriod: new Date().toISOString().slice(0, 7),
       biometricStatus: "",
@@ -12343,14 +12374,13 @@
         ],
       },
       hr: {
-        title: "Personal/RRHH",
-        subtitle: "Capturar horas, revisar, exportar y liquidar.",
+        title: "Centro de horas y personal",
+        subtitle: "Detectar problemas de horas, corregirlos, exportarlos y liquidarlos.",
         items: [
-          { label: "Carga de horas", description: "Carga mensual operativa por persona.", anchor: "hr-timesheet-section", permission: "staff:timesheets:read" },
-          { label: "Revision de horas", description: "Controlar observaciones, aprobar y exportar.", anchor: "hr-review-section", permission: "hr:read" },
+          { label: "Horas", description: "Carga manual, revisión operativa y biométrico.", anchor: "hr-review-section" },
           { label: "Personal", description: "Legajos, contacto, rol y disponibilidad.", anchor: "hr-staff-section", permission: "hr:read" },
-          { label: "Asistencia admin", description: "Turnos y correcciones puntuales por evento.", anchor: "hr-shifts-section", permission: "hr:read" },
           { label: "Liquidaciones", description: "Horas aprobadas, montos y pagos.", anchor: "hr-payroll-section", permission: "payroll:read" },
+          { label: "Reportes", description: "Exportación operativa de horas, sin datos salariales.", anchor: "hr-reports-section", permission: "hr:read" },
         ],
       },
       sanitation: {
@@ -12524,7 +12554,7 @@
       buyer_purchases: "buyer-orders-section",
       finance: "finance-summary-section",
       production: "production-home-section",
-      hr: "hr-timesheet-section",
+      hr: "hr-review-section",
       sanitation: "sanitation-records-section",
       payment_orders: "payment-order-list-section",
       customers: "customer-list-section",
@@ -13093,7 +13123,7 @@
       const container = document.getElementById(`view-${view}`);
       if (!container || !anchor) return;
       if (view === "hr") {
-        const hrView = getHrAvailableViews().find((item) => item.anchor === anchor)?.id;
+        const hrView = getHrViewForAnchor(anchor);
         if (hrView && hrWorkspaceState.activeView !== hrView) {
           hrWorkspaceState.activeView = hrView;
           renderHrDashboard();
@@ -16250,7 +16280,7 @@
     }
 
     function isHrTimesheetOnlyUser() {
-      return (can("staff:timesheets:read") || can("staff:timesheets:write"))
+      return (can("staff:timesheets:read") || can("staff:timesheets:write") || can("staff:timesheets:export"))
         && !can("hr:read")
         && !can("hr:write")
         && !can("payroll:read")
@@ -16279,13 +16309,54 @@
 
     function getHrAvailableViews(permissions = getHrPermissions()) {
       return [
-        permissions.canViewTimesheet ? { id: "timesheet", label: "Carga de horas", anchor: "hr-timesheet-section" } : null,
-        permissions.canViewHrAdmin ? { id: "review", label: "Revision de horas", anchor: "hr-review-section" } : null,
+        permissions.canViewHrAdmin ? { id: "review", label: "Revisión", anchor: "hr-review-section" } : null,
+        permissions.canViewTimesheet ? { id: "timesheet", label: "Carga manual", anchor: "hr-timesheet-section" } : null,
+        permissions.canViewHrAdmin ? { id: "biometric", label: "Biométrico", anchor: "hr-biometric-section" } : null,
         permissions.canViewHrAdmin ? { id: "staff", label: "Legajos", anchor: "hr-staff-section" } : null,
-        permissions.canViewHrAdmin ? { id: "shifts", label: "Asistencia admin", anchor: "hr-shifts-section" } : null,
-        permissions.canViewHrAdmin ? { id: "biometric", label: "Biometrico", anchor: "hr-biometric-section" } : null,
+        permissions.canViewHrAdmin ? { id: "shifts", label: "Corrección de asistencias", anchor: "hr-shifts-section", hidden: true } : null,
         permissions.canViewPayroll ? { id: "payroll", label: "Liquidaciones", anchor: "hr-payroll-section" } : null,
         permissions.canExportTimesheet && !permissions.isTimesheetOnly ? { id: "reports", label: "Reportes", anchor: "hr-reports-section" } : null,
+      ].filter(Boolean);
+    }
+
+    function getHrViewForAnchor(anchor = "", permissions = getHrPermissions()) {
+      const legacyMap = {
+        "hr-timesheet-section": "timesheet",
+        "hr-review-section": permissions.canViewHrAdmin ? "review" : "timesheet",
+        "hr-staff-section": "staff",
+        "hr-shifts-section": "shifts",
+        "hr-biometric-section": "biometric",
+        "hr-payroll-section": "payroll",
+        "hr-reports-section": "reports",
+      };
+      const view = legacyMap[anchor] || "";
+      return getHrAvailableViews(permissions).some((item) => item.id === view) ? view : "";
+    }
+
+    function getHrPrimaryTabForView(view = "") {
+      if (["timesheet", "review", "biometric", "shifts"].includes(view)) return "hours";
+      if (view === "staff") return "staff";
+      if (view === "payroll") return "payroll";
+      if (view === "reports") return "reports";
+      return "hours";
+    }
+
+    function getHrPrimaryTabs(permissions = getHrPermissions()) {
+      const tabs = [];
+      if (permissions.canViewTimesheet || permissions.canViewHrAdmin) {
+        tabs.push({ id: "hours", label: "Horas", view: permissions.canViewHrAdmin ? "review" : "timesheet" });
+      }
+      if (permissions.canViewHrAdmin) tabs.push({ id: "staff", label: "Personal", view: "staff" });
+      if (permissions.canViewPayroll) tabs.push({ id: "payroll", label: "Liquidaciones", view: "payroll" });
+      if (permissions.canExportTimesheet && !permissions.isTimesheetOnly) tabs.push({ id: "reports", label: "Reportes", view: "reports" });
+      return tabs;
+    }
+
+    function getHrHoursTabs(permissions = getHrPermissions()) {
+      return [
+        permissions.canViewHrAdmin ? { id: "review", label: "Revisión" } : null,
+        permissions.canViewTimesheet ? { id: "timesheet", label: "Carga manual" } : null,
+        permissions.canViewHrAdmin ? { id: "biometric", label: "Biométrico" } : null,
       ].filter(Boolean);
     }
 
@@ -16305,15 +16376,19 @@
       }
       const header = document.querySelector("#hr-main-section .section-header");
       if (header) {
-        header.querySelector(".section-title").textContent = permissions.isTimesheetOnly ? "Carga de horas" : "Personal / RRHH";
-        header.querySelector(".section-subtitle").textContent = permissions.isTimesheetOnly ? "Registro operativo de asistencia y horarios." : "Capturar horas, revisar, exportar y liquidar.";
+        const hrSubtitle = permissions.isTimesheetOnly
+          ? "Registro operativo de asistencia y horarios."
+          : permissions.canViewPayroll
+            ? "Detectar problemas, corregir horas, exportar y liquidar."
+            : "Detectar problemas, corregir horas y exportar reportes operativos.";
+        header.querySelector(".section-title").textContent = permissions.isTimesheetOnly ? "Carga de horas" : "Centro de horas y personal";
+        header.querySelector(".section-subtitle").textContent = hrSubtitle;
         header.querySelector(".action-primary")?.classList.add("hidden");
       }
       container.innerHTML = `
         <div class="hr-workspace">
-          ${permissions.isTimesheetOnly ? "" : renderHrFlowStrip(permissions)}
           ${permissions.isTimesheetOnly ? "" : renderHrAdminSummary(summary, permissions)}
-          ${renderHrInternalTabs(views)}
+          ${renderHrInternalTabs(views, permissions)}
           ${renderHrActiveView(hr, hrWorkspaceState.activeView, permissions)}
         </div>
       `;
@@ -16325,38 +16400,37 @@
       updatePayrollPreview();
     }
 
-    function renderHrFlowStrip(permissions = getHrPermissions()) {
-      return `
-        <section class="hr-flow-strip" aria-label="Flujo de Personal/RRHH">
-          <div class="hr-flow-step"><span>1. Capturar</span><strong>Carga de horas</strong></div>
-          <div class="hr-flow-step"><span>2. Revisar</span><strong>Observaciones y aprobación</strong></div>
-          <div class="hr-flow-step"><span>3. Exportar</span><strong>Reportes operativos</strong></div>
-          ${permissions.canViewPayroll ? `<div class="hr-flow-step"><span>4. Liquidar</span><strong>Liquidaciones</strong></div>` : `<div class="hr-flow-step"><span>4. Cerrar</span><strong>Sin datos salariales</strong></div>`}
-        </section>
-      `;
-    }
-
     function renderHrAdminSummary(summary = {}, permissions = getHrPermissions()) {
-      const reviewRows = getHrReviewRows(erpData.hrDashboard?.shifts || []);
-      const pendingCount = reviewRows.filter((row) => row.reviewStatus === "unreviewed" || row.alerts.length).length;
-      const approvedCount = reviewRows.filter((row) => row.reviewStatus === "approved").length;
+      const reviewRows = getHrReviewRows(erpData.hrDashboard?.shifts || [], { ignoreFilters: true });
+      const noExitCount = reviewRows.filter((row) => getHrShiftOperationalState(row).id === "no_exit").length;
+      const pendingCount = reviewRows.filter((row) => ["no_exit", "observed", "unreviewed"].includes(getHrShiftOperationalState(row).id)).length;
+      const readyToPayroll = reviewRows.filter((row) => ["approved", "exported"].includes(getHrShiftOperationalState(row).id)).length;
+      const readyLabel = permissions.canViewPayroll ? "Listas para liquidar" : "Listas para cierre";
       return `
         <section class="rank-modal-summary metric-grid">
-          <div><span>Personal activo</span><strong>${escapeHtml(summary.activeStaff || 0)}</strong></div>
+          <div><span>Personas activas</span><strong>${escapeHtml(summary.activeStaff || 0)}</strong></div>
           <div><span>Horas del mes</span><strong>${escapeHtml(formatNumber(reviewRows.reduce((sum, row) => sum + Number(row.hours || 0), 0)))} hs</strong></div>
+          <div><span>Sin salida</span><strong>${escapeHtml(noExitCount)}</strong></div>
           <div><span>Por revisar</span><strong>${escapeHtml(pendingCount)}</strong></div>
-          <div><span>Aprobadas</span><strong>${escapeHtml(approvedCount)}</strong></div>
-          ${permissions.canViewPayroll ? `<div><span>Sueldos pendientes</span><strong>${formatCurrency(summary.pendingPayrollAmount || 0)}</strong></div>` : ""}
+          <div><span>${escapeHtml(readyLabel)}</span><strong>${escapeHtml(readyToPayroll)}</strong></div>
         </section>
       `;
     }
 
-    function renderHrInternalTabs(views = []) {
-      if (views.length <= 1) return "";
+    function renderHrInternalTabs(views = [], permissions = getHrPermissions()) {
+      const primaryTabs = getHrPrimaryTabs(permissions);
+      const hoursTabs = getHrHoursTabs(permissions);
+      const activePrimary = getHrPrimaryTabForView(hrWorkspaceState.activeView);
       return `
-        <nav class="hr-internal-tabs" aria-label="Vistas de Personal/RRHH">
-          ${views.map((view) => `<button class="hr-internal-tab ${hrWorkspaceState.activeView === view.id ? "active" : ""}" type="button" onclick="setHrActiveView('${escapeAttribute(view.id)}')">${escapeHtml(view.label)}</button>`).join("")}
+        <nav class="hr-internal-tabs hr-primary-tabs" aria-label="Centro de horas y personal">
+          ${primaryTabs.map((tab) => `<button class="hr-internal-tab ${activePrimary === tab.id ? "active" : ""}" type="button" onclick="setHrActiveView('${escapeAttribute(tab.view)}')">${escapeHtml(tab.label)}</button>`).join("")}
         </nav>
+        ${activePrimary === "hours" && hoursTabs.length > 1 ? `
+          <nav class="hr-internal-tabs hr-hours-tabs" aria-label="Vistas de horas">
+            ${hoursTabs.map((tab) => `<button class="hr-internal-tab ${hrWorkspaceState.activeView === tab.id ? "active" : ""}" type="button" onclick="setHrActiveView('${escapeAttribute(tab.id)}')">${escapeHtml(tab.label)}</button>`).join("")}
+            ${hrWorkspaceState.activeView === "shifts" ? `<span class="hr-context-note">Corrección administrativa de asistencias</span>` : ""}
+          </nav>
+        ` : ""}
       `;
     }
 
@@ -16402,82 +16476,156 @@
 
     function getHrShiftReviewAlerts(shift = {}) {
       const alerts = [];
-      if (shift.startTime && !shift.endTime) alerts.push("Entrada sin salida");
+      if (shift.startTime && !shift.endTime) alerts.push("Sin salida");
       if (!Number(shift.hours || 0)) alerts.push("Horas 0");
-      if (Number(shift.hours || 0) > 12) alerts.push("Jornada larga");
-      if (!shift.staffId && !shift.staffName) alerts.push("Falta persona");
+      if (Number(shift.hours || 0) > 12) alerts.push("Jornada muy larga");
+      if (shift.possibleDuplicate) alerts.push("Posible duplicado");
+      if (!shift.staffId && !shift.staffName) alerts.push("Sin persona");
       if (!shift.eventId && !shift.eventName) alerts.push("Sin evento/labor");
       if (shift.startTime && shift.endTime && shift.endTime < shift.startTime) alerts.push("Turno nocturno");
       return alerts;
     }
 
-    function getHrReviewStatus(shift = {}) {
+    function getHrPayrollShiftStateMap() {
+      const map = new Map();
+      (erpData.hrDashboard?.payroll || []).forEach((payroll) => {
+        (payroll.shiftIds || []).forEach((shiftId) => {
+          if (!shiftId) return;
+          map.set(shiftId, payroll.paymentStatus === "paid" ? "liquidated" : "payroll");
+        });
+      });
+      return map;
+    }
+
+    function getHrShiftSourceKey(shift = {}) {
+      const source = String(shift.source || "").toLowerCase();
+      if (source === "zkteco") return "zkteco";
+      if (source === "timesheet") return "timesheet";
+      return "manual";
+    }
+
+    function getHrShiftSourceLabel(shift = {}) {
+      return {
+        zkteco: "Biométrico",
+        timesheet: "Carga manual",
+        manual: "Asistencia admin",
+      }[getHrShiftSourceKey(shift)] || "Asistencia admin";
+    }
+
+    function getHrShiftOperationalState(shift = {}, alerts = null) {
       const notes = normalizeSearch(shift.notes || "");
-      if (notes.includes("exportado")) return "exported";
-      if (notes.includes("observado") || getHrShiftReviewAlerts(shift).length) return "observed";
-      if (shift.attendanceStatus === "present" && Number(shift.hours || 0) > 0) return "approved";
-      return "unreviewed";
+      const payrollState = getHrPayrollShiftStateMap().get(shift.id);
+      const alertList = alerts || getHrShiftReviewAlerts(shift);
+      const status = String(shift.attendanceStatus || "").toLowerCase();
+      if (payrollState === "liquidated") return { id: "liquidated", label: "Liquidada", className: "status-success" };
+      if (notes.includes("exportado")) return { id: "exported", label: "Exportada", className: "status-success" };
+      if (notes.includes("aprobado")) return { id: "approved", label: "Aprobada", className: "status-success" };
+      if (shift.startTime && !shift.endTime) return { id: "no_exit", label: "Sin salida", className: "status-warning" };
+      if (notes.includes("observado") || alertList.length) return { id: "observed", label: "Observada", className: "status-warning" };
+      if (status === "absent") return { id: "absent", label: "Ausente", className: "status-danger" };
+      if (status === "cancelled") return { id: "cancelled", label: "Cancelada", className: "status-muted" };
+      if (Number(shift.hours || 0) > 0 || (shift.startTime && shift.endTime)) return { id: "complete", label: "Completa", className: "status-info" };
+      return { id: "unreviewed", label: "Por revisar", className: "status-muted" };
+    }
+
+    function getHrReviewStatus(shift = {}, alerts = null) {
+      return getHrShiftOperationalState(shift, alerts).id;
     }
 
     function getHrReviewStatusLabel(status = "") {
       return {
-        unreviewed: "Sin revisar",
-        observed: "Observado",
-        approved: "Aprobado",
-        exported: "Exportado",
-      }[status] || "Sin revisar";
+        unreviewed: "Por revisar",
+        no_exit: "Sin salida",
+        complete: "Completa",
+        observed: "Observada",
+        approved: "Aprobada",
+        exported: "Exportada",
+        liquidated: "Liquidada",
+        absent: "Ausente",
+        cancelled: "Cancelada",
+      }[status] || "Por revisar";
     }
 
-    function getHrReviewRows(shifts = []) {
+    function getHrShiftDuplicateKey(shift = {}) {
+      const person = shift.staffId || normalizeSearch(shift.staffName || "");
+      if (!person || !shift.date) return "";
+      return [person, shift.date, shift.eventId || normalizeSearch(shift.eventName || ""), shift.startTime || "", shift.endTime || ""].join("|");
+    }
+
+    function getHrReviewRows(shifts = [], options = {}) {
+      const ignoreFilters = !!options.ignoreFilters;
       const period = hrTimesheetState.period || new Date().toISOString().slice(0, 7);
-      const eventId = hrWorkspaceState.reviewEventId || "";
-      const staffKey = normalizeSearch(hrWorkspaceState.reviewStaffName || "");
-      const date = hrWorkspaceState.reviewDate || "";
-      const status = hrWorkspaceState.reviewStatus || "";
-      return (shifts || [])
+      const eventId = ignoreFilters ? "" : (hrWorkspaceState.reviewEventId || "");
+      const staffKey = ignoreFilters ? "" : normalizeSearch(hrWorkspaceState.reviewStaffName || "");
+      const date = ignoreFilters ? "" : (hrWorkspaceState.reviewDate || "");
+      const status = ignoreFilters ? "" : (hrWorkspaceState.reviewStatus || "");
+      const source = ignoreFilters ? "" : (hrWorkspaceState.reviewSource || "");
+      const baseRows = (shifts || [])
         .filter((shift) => !period || String(shift.date || "").startsWith(`${period}-`))
         .filter((shift) => !eventId || (shift.eventId || "") === eventId)
-        .filter((shift) => !date || (shift.date || "") === date)
-        .map((shift) => ({ ...shift, alerts: getHrShiftReviewAlerts(shift), reviewStatus: getHrReviewStatus(shift) }))
+        .filter((shift) => !date || (shift.date || "") === date);
+      const duplicateCounts = new Map();
+      baseRows.forEach((shift) => {
+        const key = getHrShiftDuplicateKey(shift);
+        if (key) duplicateCounts.set(key, (duplicateCounts.get(key) || 0) + 1);
+      });
+      return baseRows
+        .map((shift) => {
+          const possibleDuplicate = (duplicateCounts.get(getHrShiftDuplicateKey(shift)) || 0) > 1;
+          const enriched = { ...shift, possibleDuplicate };
+          const alerts = getHrShiftReviewAlerts(enriched);
+          const operationalState = getHrShiftOperationalState(enriched, alerts);
+          return { ...enriched, alerts, operationalState, reviewStatus: operationalState.id };
+        })
         .filter((shift) => !staffKey || normalizeSearch([shift.staffName, shift.role].join(" ")).includes(staffKey))
         .filter((shift) => !status || shift.reviewStatus === status)
+        .filter((shift) => !source || getHrShiftSourceKey(shift) === source)
         .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")) || String(a.eventName || "").localeCompare(String(b.eventName || "")) || String(a.staffName || "").localeCompare(String(b.staffName || "")));
     }
 
     function renderHrReviewSection(hr = {}, permissions = getHrPermissions()) {
       const rows = getHrReviewRows(hr.shifts || []);
-      const allRows = getHrReviewRows((hr.shifts || []).map((shift) => ({ ...shift })));
+      const allRows = getHrReviewRows((hr.shifts || []).map((shift) => ({ ...shift })), { ignoreFilters: true });
       const summary = {
         hours: rows.reduce((sum, row) => sum + Number(row.hours || 0), 0),
-        observed: rows.filter((row) => row.reviewStatus === "observed").length,
+        noExit: rows.filter((row) => row.reviewStatus === "no_exit").length,
+        observed: rows.filter((row) => ["no_exit", "observed"].includes(row.reviewStatus)).length,
         approved: rows.filter((row) => row.reviewStatus === "approved").length,
         ready: rows.filter((row) => row.reviewStatus === "approved" || row.reviewStatus === "exported").length,
       };
+      const readyLabel = permissions.canViewPayroll ? "Listas para liquidar" : "Listas para cierre";
+      const subtitle = permissions.canViewPayroll
+        ? "Controlar salidas, observaciones y horas listas antes de exportar o liquidar."
+        : "Controlar salidas, observaciones y horas listas antes de exportar.";
       return `
         <div class="panel-box hr-internal-view" data-hr-anchor="hr-review-section">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-            <div><h2 style="margin:0;font-size:20px;">Revision de horas</h2><p class="subtitle" style="margin:4px 0 0;">Control operativo antes de exportar o liquidar.</p></div>
+            <div><h2 style="margin:0;font-size:20px;">Revisión de horas</h2><p class="subtitle" style="margin:4px 0 0;">${escapeHtml(subtitle)}</p></div>
             <div class="actions">
-              <button class="filter" type="button" onclick="exportHrTimesheetXlsx('filters')">Exportar filtros</button>
-              <button class="approve" type="button" onclick="approveVisibleHrShifts()">Aprobar visibles</button>
+              ${permissions.canWriteHrAdmin ? `<button class="filter" type="button" onclick="resetHrShiftForm()">Corregir asistencia</button>` : ""}
+              ${permissions.canExportTimesheet ? `<button class="filter" type="button" onclick="exportApprovedHrShifts()">Exportar aprobadas</button>` : ""}
+              ${permissions.canWriteHrAdmin ? `<button class="approve" type="button" onclick="approveVisibleHrShifts()">Aprobar visibles</button>` : ""}
             </div>
           </div>
           <section class="rank-modal-summary metric-grid">
             <div><span>Horas filtradas</span><strong>${escapeHtml(formatNumber(summary.hours))} hs</strong></div>
-            <div><span>Observadas</span><strong>${escapeHtml(summary.observed)}</strong></div>
+            <div><span>Sin salida</span><strong>${escapeHtml(summary.noExit)}</strong></div>
+            <div><span>Por revisar</span><strong>${escapeHtml(summary.observed)}</strong></div>
             <div><span>Aprobadas</span><strong>${escapeHtml(summary.approved)}</strong></div>
-            <div><span>Listas para exportar</span><strong>${escapeHtml(summary.ready)}</strong></div>
+            <div><span>${escapeHtml(readyLabel)}</span><strong>${escapeHtml(summary.ready)}</strong></div>
           </section>
           <div class="hr-filter-row">
             <div class="form-field"><label>Mes</label><input type="month" value="${escapeAttribute(hrTimesheetState.period)}" onchange="setHrTimesheetPeriod(this.value)"></div>
             <div class="form-field"><label>Evento</label><select onchange="setHrStaffFilter('reviewEventId', this.value)">${renderHrReviewEventOptions(erpData.events || [])}</select></div>
             <div class="form-field"><label>Persona</label><input value="${escapeAttribute(hrWorkspaceState.reviewStaffName || "")}" placeholder="Nombre o rol" oninput="setHrStaffFilter('reviewStaffName', this.value)"></div>
             <div class="form-field"><label>Dia</label><input type="date" value="${escapeAttribute(hrWorkspaceState.reviewDate || "")}" onchange="setHrStaffFilter('reviewDate', this.value)"></div>
-            <div class="form-field"><label>Estado</label><select onchange="setHrStaffFilter('reviewStatus', this.value)">${renderHrReviewStatusOptions(hrWorkspaceState.reviewStatus || "")}</select></div>
+            <div class="form-field"><label>Estado</label><select onchange="setHrStaffFilter('reviewStatus', this.value)">${renderHrReviewStatusOptions(hrWorkspaceState.reviewStatus || "", permissions)}</select></div>
+            <div class="form-field"><label>Origen</label><select onchange="setHrStaffFilter('reviewSource', this.value)">${renderHrReviewSourceOptions(hrWorkspaceState.reviewSource || "")}</select></div>
           </div>
           <div class="hr-review-list" style="margin-top:12px;">
             ${rows.length ? rows.map((row) => renderHrReviewRow(row, permissions)).join("") : `<div class="empty compact-empty">${allRows.length ? "No hay registros con estos filtros." : "No hay horas cargadas para este mes."}</div>`}
           </div>
+          ${permissions.canWriteHrAdmin ? renderHrShiftDrawer(hr, permissions) : ""}
         </div>
       `;
     }
@@ -16486,17 +16634,31 @@
       return `<option value="" ${!hrWorkspaceState.reviewEventId ? "selected" : ""}>Todos</option>${events.map((item) => `<option value="${escapeAttribute(item.id)}" ${item.id === hrWorkspaceState.reviewEventId ? "selected" : ""}>${escapeHtml(item.name || "Evento")} · ${escapeHtml(formatShortDate(item.eventDate) || "")}</option>`).join("")}`;
     }
 
-    function renderHrReviewStatusOptions(selected = "") {
+    function renderHrReviewStatusOptions(selected = "", permissions = getHrPermissions()) {
+      const options = [
+        ["", "Todos"],
+        ["no_exit", "Sin salida"],
+        ["unreviewed", "Por revisar"],
+        ["complete", "Completa"],
+        ["observed", "Observada"],
+        ["approved", "Aprobada"],
+        ["exported", "Exportada"],
+      ];
+      if (permissions.canViewPayroll) options.push(["liquidated", "Liquidada"]);
+      return options.map(([value, label]) => `<option value="${escapeAttribute(value)}" ${selected === value ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");
+    }
+
+    function renderHrReviewSourceOptions(selected = "") {
       return [
         ["", "Todos"],
-        ["unreviewed", "Sin revisar"],
-        ["observed", "Observado"],
-        ["approved", "Aprobado"],
-        ["exported", "Exportado"],
+        ["timesheet", "Carga manual"],
+        ["zkteco", "Biométrico"],
+        ["manual", "Asistencia admin"],
       ].map(([value, label]) => `<option value="${escapeAttribute(value)}" ${selected === value ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");
     }
 
     function renderHrReviewRow(row = {}, permissions = getHrPermissions()) {
+      const state = row.operationalState || getHrShiftOperationalState(row, row.alerts || []);
       return `
         <article class="hr-review-row">
           <div>
@@ -16505,8 +16667,8 @@
             <div class="hr-review-alerts">${row.alerts.length ? row.alerts.map((alert) => `<span class="status-chip status-warning">${escapeHtml(alert)}</span>`).join("") : `<span class="status-chip status-success">Sin alertas</span>`}</div>
           </div>
           <div>
-            <span class="status-chip ${row.reviewStatus === "approved" || row.reviewStatus === "exported" ? "status-success" : row.reviewStatus === "observed" ? "status-warning" : "status-muted"}">${escapeHtml(getHrReviewStatusLabel(row.reviewStatus))}</span>
-            <div class="timesheet-meta">${escapeHtml(row.startTime || "--:--")} a ${escapeHtml(row.endTime || "--:--")} · ${escapeHtml(formatNumber(row.hours || 0))} hs</div>
+            <span class="status-chip ${escapeAttribute(state.className || "status-muted")}">${escapeHtml(state.label || getHrReviewStatusLabel(row.reviewStatus))}</span>
+            <div class="timesheet-meta">${escapeHtml(getHrShiftSourceLabel(row))} · ${escapeHtml(row.startTime || "--:--")} a ${escapeHtml(row.endTime || "--:--")} · ${escapeHtml(formatNumber(row.hours || 0))} hs</div>
           </div>
           <div class="hr-review-actions">
             ${permissions.canWriteHrAdmin ? `<button class="filter" type="button" onclick="editHrShift('${escapeAttribute(row.id)}')">Editar</button><button class="filter" type="button" onclick="approveHrShift('${escapeAttribute(row.id)}')">Aprobar</button><button class="filter" type="button" onclick="observeHrShift('${escapeAttribute(row.id)}')">Observar</button>` : ""}
@@ -16559,12 +16721,12 @@
       return `
         <div class="panel-box hr-internal-view" data-hr-anchor="hr-shifts-section">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-            <div><h2 style="margin:0;font-size:20px;">Asistencia</h2><p class="subtitle" style="margin:4px 0 0;">Revisión y corrección de asistencias puntuales.</p></div>
+            <div><h2 style="margin:0;font-size:20px;">Corrección de asistencias</h2><p class="subtitle" style="margin:4px 0 0;">Editar una carga, completar salida o registrar una asistencia puntual.</p></div>
             ${permissions.canWriteHrAdmin ? `<button class="filter" type="button" onclick="resetHrShiftForm()">Nueva asistencia</button>` : ""}
           </div>
           <div class="hr-filter-row">
             <div class="form-field"><label>Buscar</label><input value="${escapeAttribute(hrWorkspaceState.shiftSearch || "")}" placeholder="Persona, evento o nota" oninput="setHrStaffFilter('shiftSearch', this.value)"></div>
-            <div class="form-field"><label>Estado</label><select onchange="setHrStaffFilter('shiftStatus', this.value)"><option value="">Todos</option><option value="scheduled" ${hrWorkspaceState.shiftStatus === "scheduled" ? "selected" : ""}>Programado</option><option value="present" ${hrWorkspaceState.shiftStatus === "present" ? "selected" : ""}>Presente</option><option value="absent" ${hrWorkspaceState.shiftStatus === "absent" ? "selected" : ""}>Ausente</option><option value="cancelled" ${hrWorkspaceState.shiftStatus === "cancelled" ? "selected" : ""}>Cancelado</option></select></div>
+            <div class="form-field"><label>Estado</label><select onchange="setHrStaffFilter('shiftStatus', this.value)"><option value="">Todos</option><option value="scheduled" ${hrWorkspaceState.shiftStatus === "scheduled" ? "selected" : ""}>Por revisar</option><option value="present" ${hrWorkspaceState.shiftStatus === "present" ? "selected" : ""}>Presente</option><option value="absent" ${hrWorkspaceState.shiftStatus === "absent" ? "selected" : ""}>Ausente</option><option value="cancelled" ${hrWorkspaceState.shiftStatus === "cancelled" ? "selected" : ""}>Cancelado</option></select></div>
           </div>
           <div class="compact-list compact-scroll" style="margin-top:12px;">${renderHrShiftList(filterHrShiftList(hr.shifts || []), permissions)}</div>
           ${permissions.canWriteHrAdmin ? renderHrShiftDrawer(hr, permissions) : ""}
@@ -16585,13 +16747,21 @@
             <div class="form-field"><label>Salida</label><input name="endTime" type="time"></div>
             <div class="form-field"><label>Horas manuales</label><input name="hours" inputmode="decimal" placeholder="Solo si no usas entrada/salida"></div>
             ${permissions.canViewPayroll ? `<div class="form-field"><label>Adicionales $</label><input name="extrasAmount" inputmode="decimal" value="0"></div>` : ""}
-            <div class="form-field"><label>Estado</label><select name="attendanceStatus"><option value="scheduled">Programado</option><option value="present">Presente</option><option value="absent">Ausente</option><option value="cancelled">Cancelado</option></select></div>
+            <div class="form-field"><label>Estado</label><select name="attendanceStatus"><option value="scheduled">Por revisar</option><option value="present">Presente</option><option value="absent">Ausente</option><option value="cancelled">Cancelado</option></select></div>
             <div class="form-field full"><label>Novedad</label><textarea name="notes" placeholder="Ej: llego tarde, cubrio barra, se retiro antes, reemplazo a..."></textarea></div>
             <div id="hr-shift-preview" class="recipe-summary full"></div>
             <div class="actions full"><button class="approve" type="submit">Guardar asistencia</button><button class="filter" type="button" onclick="markHrShiftPresent()">Marcar presente</button></div>
           </form>
         </div>
       `;
+    }
+
+    function getHrNoExitRows(shifts = []) {
+      return getHrReviewRows(shifts, { ignoreFilters: true }).filter((row) => getHrShiftOperationalState(row, row.alerts || []).id === "no_exit");
+    }
+
+    function getBiometricLatestEvent(events = []) {
+      return (events || []).slice().sort((a, b) => String(b.deviceTimestamp || b.receivedAt || "").localeCompare(String(a.deviceTimestamp || a.receivedAt || "")))[0] || null;
     }
 
     function renderHrBiometricSection() {
@@ -16604,22 +16774,29 @@
       const staff = erpData.hrDashboard?.staff || [];
       const activeDevice = devices[0] || {};
       const totals = status.totals || {};
+      const syncTotals = status.syncTotals || {};
       const totalEvents = Object.values(totals).reduce((sum, value) => sum + Number(value || 0), 0);
+      const latestEvent = getBiometricLatestEvent(events);
+      const noExitRows = getHrNoExitRows(erpData.hrDashboard?.shifts || []);
+      const receptionLabel = status.syncEnabled ? "Por conector local" : (status.enabled ? "Receptor directo" : "Sin receptor directo");
+      const panelServiceLabel = status.enabled ? "Receptor ADMS activo" : "Sin receptor directo";
       return `
         <div class="panel-box hr-internal-view" id="hr-biometric-section" data-hr-anchor="hr-biometric-section">
           <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
-            <div><h2 style="margin:0;font-size:20px;">Fichadas biometricas</h2><p class="subtitle" style="margin:4px 0 0;">Lectura del MB20-VL, fichadas recibidas y asociacion con legajos.</p></div>
+            <div><h2 style="margin:0;font-size:20px;">Fichadas biométricas</h2><p class="subtitle" style="margin:4px 0 0;">Fichadas recibidas, vínculos con personal y salidas pendientes.</p></div>
             <div class="toolbar-actions">
               <button class="filter" type="button" onclick="loadBiometricDashboard()">Actualizar</button>
             </div>
           </div>
           <section class="rank-modal-summary metric-grid">
-            <div><span>Servicio local</span><strong>${status.enabled ? "Activo en este proceso" : "Inactivo en este proceso"}</strong></div>
-            <div><span>Ultima conexion del reloj</span><strong>${escapeHtml(activeDevice.lastSeenAt ? formatDateTime(activeDevice.lastSeenAt) : "Sin datos")}</strong></div>
-            <div><span>Fichadas recibidas</span><strong>${escapeHtml(totalEvents || events.length || 0)}</strong></div>
+            <div><span>Recepción</span><strong>${escapeHtml(receptionLabel)}</strong></div>
+            <div><span>Servicio del panel</span><strong>${escapeHtml(panelServiceLabel)}</strong></div>
+            <div><span>Última ficha recibida</span><strong>${escapeHtml(latestEvent ? formatBiometricDateTime(latestEvent.deviceTimestamp || latestEvent.receivedAt || "") : "Sin datos")}</strong></div>
+            <div><span>Total sincronizadas</span><strong>${escapeHtml(syncTotals.synced || totalEvents || events.length || 0)}</strong></div>
             <div><span>Sin asociar</span><strong>${escapeHtml(totals.unlinked || 0)}</strong></div>
-            <div><span>Pendientes</span><strong>${escapeHtml(totals.received || 0)}</strong></div>
+            <div><span>Personas sin salida</span><strong>${escapeHtml(noExitRows.length)}</strong></div>
           </section>
+          <p class="hr-context-note">Última conexión del reloj: ${escapeHtml(activeDevice.lastSeenAt ? formatDateTime(activeDevice.lastSeenAt) : "sin datos")}. En producción es normal que el panel no tenga receptor directo si las fichadas llegan por sync desde la PC local.</p>
           <div class="hr-filter-row">
             <div class="form-field"><label>Estado</label><select onchange="setHrStaffFilter('biometricStatus', this.value); loadBiometricDashboard({ silent: true });"><option value="" ${!hrWorkspaceState.biometricStatus ? "selected" : ""}>Todos</option><option value="unlinked" ${hrWorkspaceState.biometricStatus === "unlinked" ? "selected" : ""}>Sin vincular</option><option value="received" ${hrWorkspaceState.biometricStatus === "received" ? "selected" : ""}>Pendiente</option><option value="processed" ${hrWorkspaceState.biometricStatus === "processed" ? "selected" : ""}>Procesado</option><option value="error" ${hrWorkspaceState.biometricStatus === "error" ? "selected" : ""}>Con error</option></select></div>
             <div class="form-field"><label>PIN del reloj</label><input value="${escapeAttribute(hrWorkspaceState.biometricPin || "")}" placeholder="Ej. 2" oninput="hrWorkspaceState.biometricPin = this.value"></div>
@@ -16633,9 +16810,12 @@
             <section class="panel-box soft-panel">
               <h3 style="margin-top:0;">Vinculos activos</h3>
               <div class="compact-list">${links.filter((link) => link.active).length ? links.filter((link) => link.active).map(renderBiometricLinkRow).join("") : `<div class="empty compact-empty">No hay vinculos activos.</div>`}</div>
-              <div class="toolbar-actions" style="justify-content:flex-end;margin-top:12px;">
-                <button class="filter" type="button" onclick="reprocessBiometricEvents()">Reprocesar vinculadas</button>
-              </div>
+              <details class="hr-advanced-actions">
+                <summary>Acciones avanzadas</summary>
+                <div class="toolbar-actions" style="justify-content:flex-end;margin-top:10px;">
+                  <button class="filter" type="button" onclick="reprocessBiometricEvents()">Reprocesar vinculadas</button>
+                </div>
+              </details>
             </section>
           </div>
           <section class="panel-box soft-panel" style="margin-top:12px;">
@@ -16844,8 +17024,8 @@
         ["", "Todos"],
         ["empty", "Sin cargar"],
         ["partial", "Parcial"],
-        ["complete", "Completo"],
-        ["observed", "Observado"],
+        ["complete", "Completa"],
+        ["observed", "Observada"],
       ].map(([value, label]) => `<option value="${escapeAttribute(value)}" ${selected === value ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");
     }
 
@@ -16853,7 +17033,7 @@
       const rows = getHrTimesheetStaffShifts(person.staffId || person.id || "", shifts, person.fullName || "");
       const daysInMonth = getDaysInPeriod(hrTimesheetState.period).length || 1;
       const total = rows.reduce((sum, item) => sum + Number(item.hours || 0), 0);
-      const hasObservation = rows.some((row) => getHrReviewStatus(row) === "observed");
+      const hasObservation = rows.some((row) => ["no_exit", "observed"].includes(getHrReviewStatus(row)));
       const status = hasObservation ? "observed" : !rows.length ? "empty" : rows.length >= daysInMonth ? "complete" : "partial";
       return { rows, total, status };
     }
@@ -16862,8 +17042,8 @@
       return {
         empty: "Sin cargar",
         partial: "Parcial",
-        complete: "Completo",
-        observed: "Observado",
+        complete: "Completa",
+        observed: "Observada",
       }[status] || "Sin cargar";
     }
 
@@ -17008,7 +17188,7 @@
       return shifts.slice(0, 12).map((item) => `
         <article class="compact-row" onclick="editHrShift('${escapeAttribute(item.id)}')">
           <div><strong>${escapeHtml(item.staffName || "Sin persona")}</strong><div class="secondary">${escapeHtml(formatShortDate(item.date) || "")} · ${escapeHtml(item.eventName || "Sin evento")} · ${escapeHtml(item.hours || 0)} hs</div></div>
-          <div>${permissions.canViewPayroll ? `<strong>${formatCurrency(item.totalAmount || 0)}</strong>` : ""}<div class="secondary">${escapeHtml(item.attendanceStatusLabel || item.attendanceStatus || "")}</div></div>
+          <div>${permissions.canViewPayroll ? `<strong>${formatCurrency(item.totalAmount || 0)}</strong>` : ""}<div class="secondary">${escapeHtml(getHrShiftOperationalState(item).label)}</div></div>
         </article>
       `).join("");
     }
@@ -17055,6 +17235,12 @@
       const hourlyRate = parseDecimal(staff?.hourlyRate || 0);
       const extras = parseDecimal(form.elements.extrasAmount?.value || 0);
       const total = Math.max(0, hours * hourlyRate + extras);
+      if (!(can("payroll:read") || can("payroll:write"))) {
+        box.innerHTML = `
+          <div><span>Horas</span><strong>${escapeHtml(hours ? `${formatNumber(hours)} hs` : "Sin calcular")}</strong></div>
+        `;
+        return;
+      }
       box.innerHTML = `
         <div><span>Horas</span><strong>${escapeHtml(hours ? `${formatNumber(hours)} hs` : "Sin calcular")}</strong></div>
         <div><span>Valor hora</span><strong>${formatCurrency(hourlyRate || 0)}</strong></div>
@@ -17308,10 +17494,24 @@
       showNotice(`Fichadas procesadas: ${result.result?.processedEvents || 0}. Asistencias guardadas: ${result.result?.savedShifts || 0}.`, "success");
     }
 
+    function cleanHrReviewMarkers(notes = "") {
+      return String(notes || "")
+        .split("|")
+        .map((item) => item.trim())
+        .filter((item) => item && !/^Observado:/i.test(item) && !/^Aprobado:/i.test(item))
+        .join(" | ");
+    }
+
+    function appendHrReviewMarker(notes = "", marker = "") {
+      return [cleanHrReviewMarkers(notes), marker].filter(Boolean).join(" | ");
+    }
+
     async function approveHrShift(id) {
       const shift = (erpData.hrDashboard?.shifts || []).find((item) => item.id === id);
       if (!shift) return showNotice("No encontre ese registro.", "error");
-      const notes = String(shift.notes || "").replace(/\s*\|\s*Observado:[^|]+/gi, "").trim();
+      if (shift.startTime && !shift.endTime) return showNotice("Completa la salida antes de aprobar.", "error");
+      if (!Number(shift.hours || 0)) return showNotice("El registro no tiene horas calculadas.", "error");
+      const notes = appendHrReviewMarker(shift.notes || "", "Aprobado: revisión RRHH");
       const result = await postJson("/api/hr-shift", {
         ...shift,
         attendanceStatus: "present",
@@ -17326,7 +17526,7 @@
     async function observeHrShift(id) {
       const shift = (erpData.hrDashboard?.shifts || []).find((item) => item.id === id);
       if (!shift) return showNotice("No encontre ese registro.", "error");
-      const notes = [String(shift.notes || "").replace(/\s*\|\s*Observado:[^|]+/gi, "").trim(), "Observado: revisar registro"].filter(Boolean).join(" | ");
+      const notes = appendHrReviewMarker(shift.notes || "", "Observado: revisar registro");
       const result = await postJson("/api/hr-shift", {
         ...shift,
         attendanceStatus: shift.attendanceStatus || "scheduled",
@@ -17339,16 +17539,24 @@
     }
 
     async function approveVisibleHrShifts() {
-      const rows = getHrReviewRows(erpData.hrDashboard?.shifts || []).filter((row) => row.id && row.reviewStatus !== "approved" && row.reviewStatus !== "exported");
+      const rows = getHrReviewRows(erpData.hrDashboard?.shifts || []).filter((row) => row.id && row.reviewStatus === "complete");
       if (!rows.length) return showNotice("No hay registros visibles para aprobar.", "error");
       for (const row of rows) {
-        const notes = String(row.notes || "").replace(/\s*\|\s*Observado:[^|]+/gi, "").trim();
+        const notes = appendHrReviewMarker(row.notes || "", "Aprobado: revisión RRHH");
         const result = await postJson("/api/hr-shift", { ...row, attendanceStatus: "present", notes });
         if (!result.ok) return showNotice(result.error || "No se pudo aprobar todos los registros.", "error");
         erpData.hrDashboard = result.hrDashboard || erpData.hrDashboard;
       }
       renderHrDashboard();
       showNotice("Registros visibles aprobados.", "success");
+    }
+
+    async function exportApprovedHrShifts() {
+      const previousStatus = hrWorkspaceState.reviewStatus;
+      hrWorkspaceState.reviewStatus = "approved";
+      await exportHrTimesheetXlsx("filters");
+      hrWorkspaceState.reviewStatus = previousStatus;
+      renderHrDashboard();
     }
 
     async function exportHrTimesheetXlsx(mode = "filters") {
@@ -17365,11 +17573,12 @@
         const staffName = hrWorkspaceState.activeView === "review" || hrWorkspaceState.activeView === "reports" ? hrWorkspaceState.reviewStaffName : hrTimesheetState.staffName;
         const date = hrWorkspaceState.activeView === "review" || hrWorkspaceState.activeView === "reports" ? hrWorkspaceState.reviewDate : hrTimesheetState.exportDate;
         const status = hrWorkspaceState.activeView === "review" || hrWorkspaceState.activeView === "reports" ? hrWorkspaceState.reviewStatus : hrWorkspaceState.timesheetStatus;
+        const exportStatusMap = { no_exit: "observed", complete: "approved", observed: "observed", approved: "approved", exported: "exported", unreviewed: "unreviewed" };
         if (eventId) params.set("eventId", eventId);
         if (hrTimesheetState.staffId && hrWorkspaceState.activeView === "timesheet") params.set("staffId", hrTimesheetState.staffId);
         else if (staffName) params.set("staffName", staffName);
         if (date) params.set("date", date);
-        if (status) params.set("status", status);
+        if (status && exportStatusMap[status]) params.set("status", exportStatusMap[status]);
       }
       const response = await fetch(`/api/hr-timesheet-export.xlsx?${params.toString()}`);
       const contentType = response.headers.get("content-type") || "";
@@ -17419,13 +17628,19 @@
 
     function editHrShift(id) {
       const shift = (erpData.hrDashboard?.shifts || []).find((item) => item.id === id);
+      if (!shift) return showNotice("No encontre esa asistencia.", "error");
+      if (hrWorkspaceState.activeView !== "shifts") {
+        hrWorkspaceState.activeView = "shifts";
+        renderHrDashboard();
+        prepareModuleSections();
+      }
       const form = document.getElementById("hr-shift-form");
-      if (!shift || !form) return;
+      if (!form) return;
       ["id", "staffId", "eventId", "date", "startTime", "endTime", "hours", "extrasAmount", "attendanceStatus", "notes"]
         .forEach((field) => setFormValue(form, field, shift[field] || ""));
-      showModuleSection("hr", "hr-shifts-section");
       updateHrShiftPreview();
       document.getElementById("hr-shift-drawer")?.classList.add("open");
+      document.querySelector('[data-hr-anchor="hr-shifts-section"]')?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function getPayrollShiftSummary(staffId, period) {
