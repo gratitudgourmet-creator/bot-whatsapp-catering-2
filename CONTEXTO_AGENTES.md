@@ -21,6 +21,39 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-07-22] Codex (RRHH centro de horas deployado en produccion)
+
+**De que se hablo:** reorganizacion UX de `Personal/RRHH` para que deje de funcionar como una lista de tabs tecnicas y pase a operar como centro de horas y personal.
+
+**Decisiones tomadas:**
+- La navegacion principal de RRHH queda en `Horas`, `Personal`, `Liquidaciones` y `Reportes`.
+- Dentro de `Horas` quedan `Revision`, `Carga manual` y `Biometrico`.
+- Admin/RRHH entra primero a `Horas > Revision`.
+- Usuarios con permisos solo de carga de horas, como logistica evento si corresponde, entran a `Horas > Carga manual`.
+- `Asistencia admin` no desaparece: queda como correccion administrativa accesible desde acciones de revision.
+- Los estados `Sin salida`, `Completa`, `Observada`, `Aprobada`, `Exportada` y `Liquidada` son derivados visuales sobre datos existentes; no se agrego modelo persistente nuevo.
+- Biometrico comunica operacion y sync por conector local; no muestra `ZKTECO_ENABLED=false` como error de produccion.
+
+**Cambios en el codigo:**
+- Commit `ce18dbb` (`RRHH: reorganizar workspace de horas y asistencia`) deployado previamente.
+- Commit `eb07899` (`RRHH: reorganizar centro de horas y biometrico`) subido a `origin/main` y deployado en VPS.
+- `eb07899` toca solo `approval-panel.html`.
+- Produccion quedo en hash `eb07899`; `/health` respondio HTTP 200.
+
+**Validacion realizada:**
+- Deploy en VPS: `git pull --ff-only`, `node --check whatsapp-catering-bot.js`, restart de `gratitud-erp.service`, `/health` OK.
+- Validacion HTTP autenticada en produccion con admin: login OK, `/api/erp?view=hr` OK, `/api/biometric/status` OK.
+- HTML productivo contiene marcadores nuevos: `Centro de horas y personal`, `Vistas de horas`, `Acciones avanzadas`, `Por conector local`, `Sin salida` y `Fichadas biometricas`.
+- Biometrico productivo muestra `syncTotals.synced=10` y `totals.processed=10`.
+
+**Pendiente para la proxima sesion:**
+- QA visual manual en desktop/mobile de `https://sistema.gratitudgourmet.com/?view=hr` con `Ctrl+F5`.
+- Probar rol `logistica_evento` si tiene permisos `staff:timesheets:*` para confirmar que no ve liquidaciones ni datos salariales.
+- Limpiar ruido local en VPS: `package-lock.json` aparece modificado; si no hubo cambios manuales de dependencias, correr `git checkout -- package-lock.json` en `/opt/gratitud-erp` y verificar `git status --short`.
+- Siguiente frente recomendado: seguridad en commits separados (`MAX_JSON_BODY_BYTES`, auth server-side para `/inventario` y `/estado-inventario`, limpieza periodica de sesiones expiradas).
+
+---
+
 ## [2026-07-21] Codex (ZKTeco Fase 2 sincronizacion local -> produccion validada)
 
 **De que se hablo:** cierre operativo de la integracion biometrica ZKTeco MB20-VL para que las fichadas tomadas por el reloj en la LAN se reciban en la PC local y se sincronicen al ERP productivo por HTTPS.
