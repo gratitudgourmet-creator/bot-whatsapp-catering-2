@@ -484,6 +484,14 @@ const STATUS_MIGRATION = {
   budget_ready: "ready_to_quote",
 };
 
+const INVENTORY_AREAS = ["kitchen", "operations", "general_warehouse", "maintenance_technology"];
+const FUNCTIONAL_FAMILIES = [
+  "food", "beverages", "disposables", "tableware", "glassware", "linen_textiles", "utensils",
+  "tools", "kitchen_equipment", "event_equipment", "technology_communication",
+  "furniture_structures", "cleaning", "packaging_containers", "other",
+];
+const INVENTORY_CONTROL_TYPES = ["consumable", "reusable", "event_returnable", "asset_equipment", "perishable", "box_bundle", "loose_unit"];
+
 const QUESTIONS = {
   [STEPS.FULL_NAME]: BOT_MESSAGES.preguntas.nombre,
   [STEPS.EVENT_TYPE]: BOT_MESSAGES.preguntas.tipoEvento,
@@ -4101,14 +4109,6 @@ function hasPanelPermission(user, permission) {
   const permissions = getEffectiveRolePermissions(user?.role, role.permissions || []);
   return permissions.includes("*") || permissions.includes(permission);
 }
-
-const INVENTORY_AREAS = ["kitchen", "operations", "general_warehouse", "maintenance_technology"];
-const FUNCTIONAL_FAMILIES = [
-  "food", "beverages", "disposables", "tableware", "glassware", "linen_textiles", "utensils",
-  "tools", "kitchen_equipment", "event_equipment", "technology_communication",
-  "furniture_structures", "cleaning", "packaging_containers", "other",
-];
-const INVENTORY_CONTROL_TYPES = ["consumable", "reusable", "event_returnable", "asset_equipment", "perishable", "box_bundle", "loose_unit"];
 
 function normalizeInventoryArea(area = "") {
   const key = normalizeSearchKey(area);
