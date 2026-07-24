@@ -16501,6 +16501,7 @@
       const source = String(shift.source || "").toLowerCase();
       if (source === "zkteco") return "zkteco";
       if (source === "timesheet") return "timesheet";
+      if (source === "employee_portal") return "employee_portal";
       return "manual";
     }
 
@@ -16508,6 +16509,7 @@
       return {
         zkteco: "Biométrico",
         timesheet: "Carga manual",
+        employee_portal: "Empleado",
         manual: "Asistencia admin",
       }[getHrShiftSourceKey(shift)] || "Asistencia admin";
     }
@@ -16652,6 +16654,7 @@
       return [
         ["", "Todos"],
         ["timesheet", "Carga manual"],
+        ["employee_portal", "Empleado"],
         ["zkteco", "Biométrico"],
         ["manual", "Asistencia admin"],
       ].map(([value, label]) => `<option value="${escapeAttribute(value)}" ${selected === value ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");

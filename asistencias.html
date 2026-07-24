@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f513f">
+  <title>Asistencias Gratitud</title>
+  <style>
+    :root {
+      --green: #0f513f;
+      --green-soft: #eaf4ef;
+      --gold: #d8a84f;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #d8e1ea;
+      --bg: #f6f8f7;
+      --card: #ffffff;
+      --danger: #9f1239;
+      --warn: #8a5a00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    .shell {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: var(--green);
+      color: white;
+      padding: 18px 18px 22px;
+    }
+    .brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+    .brand span {
+      display: block;
+      margin-top: 3px;
+      color: rgba(255,255,255,.78);
+      font-size: 13px;
+    }
+    .logout {
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.08);
+      color: white;
+      border-radius: 8px;
+      padding: 9px 11px;
+      font-weight: 700;
+      display: none;
+    }
+    main {
+      width: 100%;
+      max-width: 720px;
+      margin: -12px auto 0;
+      padding: 0 14px 28px;
+      flex: 1;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .06);
+      margin-bottom: 12px;
+    }
+    .login-card {
+      margin-top: 28px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #52637a;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid #cad6e2;
+      border-radius: 8px;
+      min-height: 46px;
+      padding: 11px 12px;
+      font-size: 16px;
+      background: white;
+    }
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+    .field { margin-bottom: 12px; }
+    button {
+      border: 0;
+      border-radius: 8px;
+      min-height: 46px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .primary {
+      background: var(--green);
+      color: white;
+      width: 100%;
+    }
+    .secondary {
+      background: #edf3f1;
+      color: var(--green);
+      border: 1px solid #cbdcd6;
+      width: 100%;
+    }
+    .danger {
+      background: #fff1f2;
+      color: var(--danger);
+      border: 1px solid #fecdd3;
+      width: 100%;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .actions.single {
+      grid-template-columns: 1fr;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .metric strong {
+      font-size: 19px;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      margin-top: 8px;
+    }
+    .status.warn {
+      background: #fff7ed;
+      color: var(--warn);
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 4px 0 0;
+    }
+    .person {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .person strong {
+      font-size: 18px;
+    }
+    .list {
+      display: grid;
+      gap: 8px;
+    }
+    .row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfd;
+    }
+    .row strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+    .hidden { display: none !important; }
+    .notice {
+      margin: 0 0 12px;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #bbf7d0;
+      display: none;
+    }
+    .notice.error {
+      background: #fff1f2;
+      color: #9f1239;
+      border-color: #fecdd3;
+    }
+    @media (max-width: 420px) {
+      main { padding-inline: 10px; }
+      .summary, .actions { grid-template-columns: 1fr; }
+      .brand { align-items: flex-start; }
+      .logout { padding-inline: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div>
+          <h1>Asistencias</h1>
+          <span>Gratitud Gourmet</span>
+        </div>
+        <button id="logout-button" class="logout" type="button">Salir</button>
+      </div>
+    </header>
+    <main>
+      <div id="notice" class="notice"></div>
+
+      <section id="login-view" class="card login-card">
+        <h2 style="margin:0 0 6px;">Ingresar</h2>
+        <p class="muted" style="margin-bottom:16px;">Usá tu usuario para registrar entrada y salida.</p>
+        <form id="login-form">
+          <div class="field">
+            <label>Usuario</label>
+            <input name="username" autocomplete="username" required>
+          </div>
+          <div class="field">
+            <label>Clave</label>
+            <input name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <button class="primary" type="submit">Entrar</button>
+        </form>
+      </section>
+
+      <section id="app-view" class="hidden">
+        <section class="card">
+          <div class="person">
+            <div>
+              <strong id="person-name">Empleado</strong>
+              <p id="person-role" class="muted">Jornada laboral</p>
+              <span id="link-status" class="status">Legajo asociado</span>
+            </div>
+          </div>
+          <div class="summary">
+            <div class="metric"><span>Entrada</span><strong id="start-time">--:--</strong></div>
+            <div class="metric"><span>Salida</span><strong id="end-time">--:--</strong></div>
+            <div class="metric"><span>Horas</span><strong id="hours-total">0</strong></div>
+            <div class="metric"><span>Estado</span><strong id="shift-state">Sin cargar</strong></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="field">
+            <label>Nota opcional</label>
+            <textarea id="attendance-notes" placeholder="Ej: salí a comprar insumos, turno partido, etc."></textarea>
+          </div>
+          <div class="actions">
+            <button id="clock-in" class="primary" type="button">Marcar entrada</button>
+            <button id="clock-out" class="secondary" type="button">Marcar salida</button>
+          </div>
+          <p class="muted">RRHH/admin revisa y aprueba los registros antes de liquidar.</p>
+        </section>
+
+        <section class="card">
+          <h2 style="font-size:18px;margin:0 0 10px;">Mis últimos registros</h2>
+          <div id="recent-list" class="list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const state = { portal: null };
+    const $ = (id) => document.getElementById(id);
+
+    function showNotice(message, type = "success") {
+      const box = $("notice");
+      box.textContent = message;
+      box.className = `notice ${type === "error" ? "error" : ""}`;
+      box.style.display = "block";
+      clearTimeout(showNotice.timer);
+      showNotice.timer = setTimeout(() => { box.style.display = "none"; }, 4500);
+    }
+
+    async function requestJson(url, options = {}) {
+      const response = await fetch(url, {
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+        credentials: "same-origin",
+        ...options,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.ok === false) {
+        const error = new Error(data.error || "No se pudo completar la acción.");
+        error.data = data;
+        throw error;
+      }
+      return data;
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const [year, month, day] = String(value).split("-");
+      return day && month && year ? `${day}/${month}/${year}` : value;
+    }
+
+    function formatHours(value) {
+      return Number(value || 0).toLocaleString("es-AR", { maximumFractionDigits: 2 });
+    }
+
+    function getShiftState(shift) {
+      if (!shift) return "Sin cargar";
+      if (shift.startTime && !shift.endTime) return "Entrada abierta";
+      if (shift.startTime && shift.endTime) return "Por revisar";
+      return "Sin cargar";
+    }
+
+    function renderPortal() {
+      const portal = state.portal || {};
+      const staff = portal.staff || {};
+      const shift = portal.todayShift || {};
+      $("login-view").classList.add("hidden");
+      $("app-view").classList.remove("hidden");
+      $("logout-button").style.display = "inline-flex";
+      $("person-name").textContent = staff.fullName || portal.user?.displayName || portal.user?.username || "Empleado";
+      $("person-role").textContent = staff.role || portal.user?.area || "Jornada laboral";
+      $("link-status").textContent = portal.linked ? "Legajo asociado" : "Sin legajo asociado";
+      $("link-status").className = `status ${portal.linked ? "" : "warn"}`;
+      $("start-time").textContent = shift.startTime || "--:--";
+      $("end-time").textContent = shift.endTime || "--:--";
+      $("hours-total").textContent = formatHours(shift.hours || 0);
+      $("shift-state").textContent = getShiftState(portal.todayShift);
+      $("clock-in").disabled = Boolean(shift.startTime && !shift.endTime);
+      $("clock-out").disabled = !shift.startTime || Boolean(shift.endTime);
+      const rows = portal.recentShifts || [];
+      $("recent-list").innerHTML = rows.length ? rows.map((item) => `
+        <div class="row">
+          <strong>${formatDate(item.date)} · ${item.startTime || "--:--"} a ${item.endTime || "--:--"}</strong>
+          <div class="muted">${formatHours(item.hours || 0)} hs · ${getShiftState(item)}</div>
+        </div>
+      `).join("") : `<div class="row"><span class="muted">Todavía no hay registros.</span></div>`;
+    }
+
+    async function loadPortal() {
+      try {
+        const result = await requestJson("/api/asistencias/me");
+        state.portal = result.portal;
+        renderPortal();
+      } catch (error) {
+        $("login-view").classList.remove("hidden");
+        $("app-view").classList.add("hidden");
+        $("logout-button").style.display = "none";
+      }
+    }
+
+    async function mark(action) {
+      const label = action === "entrada" ? "entrada" : "salida";
+      try {
+        const result = await requestJson("/api/asistencias/me", {
+          method: "POST",
+          body: JSON.stringify({ action, notes: $("attendance-notes").value || "" }),
+        });
+        state.portal = result.portal;
+        $("attendance-notes").value = "";
+        renderPortal();
+        showNotice(`Registro de ${label} guardado.`);
+      } catch (error) {
+        showNotice(error.message, "error");
+      }
+    }
+
+    $("login-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      try {
+        await requestJson("/api/login", { method: "POST", body: JSON.stringify(payload) });
+        await loadPortal();
+        showNotice("Sesión iniciada.");
+      } catch (error) {
+        showNotice(error.message, "error");
+      }
+    });
+
+    $("logout-button").addEventListener("click", async () => {
+      await requestJson("/api/logout", { method: "POST", body: "{}" }).catch(() => {});
+      state.portal = null;
+      $("login-view").classList.remove("hidden");
+      $("app-view").classList.add("hidden");
+      $("logout-button").style.display = "none";
+    });
+
+    $("clock-in").addEventListener("click", () => mark("entrada"));
+    $("clock-out").addEventListener("click", () => mark("salida"));
+    loadPortal();
+  </script>
+</body>
+</html>

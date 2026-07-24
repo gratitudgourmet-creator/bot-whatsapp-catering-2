@@ -855,6 +855,10 @@ function startApprovalPanelServer() {
         return servePanelHtml(response);
       }
 
+      if (request.method === "GET" && requestUrl.pathname === "/asistencias") {
+        return serveAttendancePortalHtml(response);
+      }
+
       if (request.method === "GET" && requestUrl.pathname.startsWith("/assets/")) {
         return serveStaticAsset(response, requestUrl.pathname);
       }
@@ -1481,6 +1485,25 @@ function startApprovalPanelServer() {
         const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "payroll:read", "payroll:write", "staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"]);
         if (!user) return;
         return sendJson(response, { ok: true, hrDashboard: getHrDashboard() });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/asistencias/me") {
+        const user = getPanelSessionUser(request);
+        if (!user) return sendJson(response, { ok: false, error: "Necesita iniciar sesion.", authRequired: true }, 401);
+        return sendJson(response, { ok: true, portal: getEmployeeAttendancePortal(user) });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/asistencias/me") {
+        const user = getPanelSessionUser(request);
+        if (!user) return sendJson(response, { ok: false, error: "Necesita iniciar sesion.", authRequired: true }, 401);
+        const body = await readJsonBody(request);
+        try {
+          const result = saveEmployeeAttendanceFromPortal(user, body);
+          recordAudit(user, "create", "staff_shift", result.shift.id, `${result.shift.staffName} - ${result.shift.date}`, null, result.shift, { source: "employee_portal" });
+          return sendJson(response, { ok: true, result, portal: getEmployeeAttendancePortal(user) });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/hr-timesheet-export.xlsx") {
@@ -2385,6 +2408,19 @@ function serveStaticAsset(response, pathname) {
 
 function servePanelHtml(response) {
   const panelPath = path.join(__dirname, "approval-panel.html");
+  const html = fs.readFileSync(panelPath, "utf8");
+
+  response.writeHead(200, {
+    "Content-Type": "text/html; charset=utf-8",
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+  response.end(html);
+}
+
+function serveAttendancePortalHtml(response) {
+  const panelPath = path.join(__dirname, "asistencias.html");
   const html = fs.readFileSync(panelPath, "utf8");
 
   response.writeHead(200, {
@@ -5993,6 +6029,150 @@ function saveStaffTimesheet(input = {}, user = null) {
     days: saved.length,
     totalHours: roundMoney(saved.reduce((sum, shift) => sum + Number(shift.hours || 0), 0)),
   };
+}
+
+function getDigitsOnly(value = "") {
+  return String(value || "").replace(/\D+/g, "");
+}
+
+function findStaffForPanelUser(user = {}) {
+  const explicitStaffId = normalizeText(user.staffId || user.hrStaffId || "");
+  if (explicitStaffId) {
+    const explicit = erpStaff.find((staff) => staff.id === explicitStaffId);
+    if (explicit) return explicit;
+  }
+
+  const userPhone = getDigitsOnly(user.phone || "");
+  if (userPhone) {
+    const byPhone = erpStaff.find((staff) => {
+      const staffPhone = getDigitsOnly(staff.phone || "");
+      return staffPhone && (staffPhone === userPhone || staffPhone.endsWith(userPhone) || userPhone.endsWith(staffPhone));
+    });
+    if (byPhone) return byPhone;
+  }
+
+  const candidates = [
+    user.displayName,
+    user.name,
+    user.username,
+  ].map(normalizeSearchKey).filter(Boolean);
+  if (candidates.length) {
+    return erpStaff.find((staff) => {
+      const staffName = normalizeSearchKey(staff.fullName || "");
+      return staffName && candidates.some((candidate) => staffName === candidate || staffName.includes(candidate) || candidate.includes(staffName));
+    }) || null;
+  }
+  return null;
+}
+
+function getEmployeeAttendanceIdentity(user = {}) {
+  const staff = findStaffForPanelUser(user);
+  const fallbackName = normalizeText(user.displayName || user.username || "Empleado");
+  return {
+    staff,
+    staffId: staff?.id || "",
+    staffName: staff?.fullName || fallbackName,
+    role: staff?.role || user.area || "",
+    linked: Boolean(staff?.id),
+  };
+}
+
+function getEmployeeAttendancePortal(user = {}) {
+  const identity = getEmployeeAttendanceIdentity(user);
+  const today = getDateOnly(new Date());
+  const visibleShifts = normalizeStaffShiftList(erpStaffShifts)
+    .filter((shift) => {
+      if (identity.staffId) return shift.staffId === identity.staffId;
+      return normalizeSearchKey(shift.staffName || "") === normalizeSearchKey(identity.staffName || "");
+    })
+    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.updatedAt || b.createdAt || "").localeCompare(String(a.updatedAt || a.createdAt || "")));
+  const todayShift = visibleShifts.find((shift) => shift.date === today) || null;
+  return {
+    user: getPublicUser(user),
+    staff: identity.staff ? {
+      id: identity.staff.id,
+      fullName: identity.staff.fullName,
+      role: identity.staff.role,
+      phone: identity.staff.phone,
+      status: identity.staff.status,
+    } : null,
+    linked: identity.linked,
+    today,
+    todayShift,
+    recentShifts: visibleShifts.slice(0, 12),
+  };
+}
+
+function getLocalTimeValue(date = new Date()) {
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+}
+
+function saveEmployeeAttendanceFromPortal(user = {}, input = {}) {
+  const identity = getEmployeeAttendanceIdentity(user);
+  if (!identity.staffName) throw new Error("No se pudo identificar el usuario.");
+
+  const action = normalizeSearchKey(input.action || "");
+  if (!["entrada", "salida", "clock_in", "clock_out"].includes(action)) {
+    throw new Error("Accion no valida.");
+  }
+
+  const now = new Date();
+  const today = getDateOnly(now);
+  const currentTime = getLocalTimeValue(now);
+  const note = normalizeText(input.notes || "");
+  const existingIndex = erpStaffShifts.findIndex((shift) => {
+    if (shift.date !== today) return false;
+    if (identity.staffId) return shift.staffId === identity.staffId && ["employee_portal", "timesheet", ""].includes(shift.source || "");
+    return normalizeSearchKey(shift.staffName || "") === normalizeSearchKey(identity.staffName || "") && ["employee_portal", "timesheet", ""].includes(shift.source || "");
+  });
+  const previous = existingIndex >= 0 ? erpStaffShifts[existingIndex] : {};
+  const isExit = action === "salida" || action === "clock_out";
+  const startTime = isExit ? (previous.startTime || "") : currentTime;
+  const endTime = isExit ? currentTime : (previous.endTime || "");
+  if (isExit && !startTime) throw new Error("Primero registre la entrada.");
+  if (!isExit && previous.startTime && !previous.endTime) throw new Error("Ya hay una entrada abierta para hoy.");
+
+  const notes = [
+    cleanEmployeeAttendanceNote(previous.notes || ""),
+    note,
+    `Carga empleado: ${user.username || user.displayName || "usuario"}`,
+    identity.linked ? "" : "Sin legajo asociado",
+  ].filter(Boolean).join(" | ");
+
+  const shift = normalizeStaffShiftRecord({
+    ...previous,
+    id: previous.id || `asistencia-empleado-${identity.staffId || normalizeSearchKey(identity.staffName).replace(/[^a-z0-9]+/g, "-")}-${today}`,
+    staffId: identity.staffId,
+    staffName: identity.staffName,
+    eventName: previous.eventName || "Jornada laboral",
+    date: today,
+    role: identity.role || previous.role || "",
+    startTime,
+    endTime,
+    attendanceStatus: "present",
+    notes,
+    source: "employee_portal",
+    period: today.slice(0, 7),
+    loadedBy: normalizeText(user.username || ""),
+    createdAt: previous.createdAt || now.toISOString(),
+    updatedAt: now.toISOString(),
+  });
+  if (existingIndex >= 0) erpStaffShifts[existingIndex] = shift;
+  else erpStaffShifts.push(shift);
+  saveErpStaffShifts();
+  return {
+    action: isExit ? "salida" : "entrada",
+    linked: identity.linked,
+    shift,
+  };
+}
+
+function cleanEmployeeAttendanceNote(notes = "") {
+  return String(notes || "")
+    .split("|")
+    .map((item) => item.trim())
+    .filter((item) => item && !/^Carga empleado:/i.test(item) && !/^Sin legajo asociado$/i.test(item))
+    .join(" | ");
 }
 
 function getBiometricDashboard(searchParams = new URLSearchParams()) {
