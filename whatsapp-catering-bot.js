@@ -6079,7 +6079,7 @@ function getEmployeeAttendanceIdentity(user = {}) {
 
 function getEmployeeAttendancePortal(user = {}) {
   const identity = getEmployeeAttendanceIdentity(user);
-  const today = getDateOnly(new Date());
+  const today = getArgentinaDateOnly(new Date());
   const visibleShifts = normalizeStaffShiftList(erpStaffShifts)
     .filter((shift) => {
       if (identity.staffId) return shift.staffId === identity.staffId;
@@ -6103,8 +6103,31 @@ function getEmployeeAttendancePortal(user = {}) {
   };
 }
 
-function getLocalTimeValue(date = new Date()) {
-  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+function getArgentinaDateTimeParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(date).reduce((acc, part) => {
+    if (part.type !== "literal") acc[part.type] = part.value;
+    return acc;
+  }, {});
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    time: `${parts.hour}:${parts.minute}`,
+  };
+}
+
+function getArgentinaDateOnly(date = new Date()) {
+  return getArgentinaDateTimeParts(date).date;
+}
+
+function getArgentinaTimeValue(date = new Date()) {
+  return getArgentinaDateTimeParts(date).time;
 }
 
 function saveEmployeeAttendanceFromPortal(user = {}, input = {}) {
@@ -6117,8 +6140,8 @@ function saveEmployeeAttendanceFromPortal(user = {}, input = {}) {
   }
 
   const now = new Date();
-  const today = getDateOnly(now);
-  const currentTime = getLocalTimeValue(now);
+  const today = getArgentinaDateOnly(now);
+  const currentTime = getArgentinaTimeValue(now);
   const note = normalizeText(input.notes || "");
   const existingIndex = erpStaffShifts.findIndex((shift) => {
     if (shift.date !== today) return false;
