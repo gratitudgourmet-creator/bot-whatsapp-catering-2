@@ -22193,6 +22193,8 @@
             <form id="operational-inventory-form" class="form-grid" onsubmit="saveOperationalInventoryItem(event)">
               <input type="hidden" name="id">
               <div class="form-field full"><label>Nombre</label><input name="name" required placeholder="Ej: Conservadora grande, pinza, anafe"></div>
+              <div class="form-field"><label>Codigo principal</label><input name="barcode" inputmode="numeric" autocomplete="off" placeholder="Escaneá o escribí el codigo"></div>
+              <div class="form-field"><label>Codigos proveedores</label><textarea name="barcodeAliases" rows="2" placeholder="Uno por linea o separados por coma"></textarea></div>
               <div class="form-field"><label>Área operativa</label><select name="inventoryArea" onchange="renderOperationalCategoryOptionsForArea()">${renderOperationalInventoryAreaOptions()}</select></div>
               <input type="hidden" name="inventoryDomain">
               <div class="form-field"><label>Familia</label><select name="functionalFamily" onchange="syncOperationalInventoryControlType()">${renderOperationalFunctionalFamilyOptions()}</select></div>
@@ -22232,8 +22234,17 @@
             </details>
           </div>
           <div>
+            <div class="panel-box soft-panel" style="margin-bottom:10px;">
+              <h3 style="margin-top:0;">Escaneo rapido</h3>
+              <div class="toolbar-actions">
+                <input id="operational-inventory-barcode-scan" class="search" placeholder="Escanear codigo de barras" autocomplete="off" onkeydown="handleOperationalInventoryBarcodeKey(event)">
+                <button class="approve" type="button" onclick="scanOperationalInventoryBarcode()">Buscar codigo</button>
+                ${can("stock:write:any") ? `<button class="filter" type="button" onclick="attachScannedBarcodeToCurrentItem()">Asociar al item abierto</button>` : ""}
+              </div>
+              <div id="operational-inventory-scan-status" class="secondary" style="margin-top:8px;">Escaneá un producto y presioná Enter.</div>
+            </div>
             <div class="toolbar-actions" style="margin-bottom:10px;">
-              <input id="operational-inventory-search" class="search" placeholder="Buscar por nombre, estado, categoria o ubicacion" oninput="renderOperationalInventoryRows()">
+              <input id="operational-inventory-search" class="search" placeholder="Buscar por nombre, codigo, estado, categoria o ubicacion" oninput="renderOperationalInventoryRows()">
             </div>
             <div id="operational-inventory-list">${renderOperationalInventoryGroups(data.items || [], categories, true)}</div>
           </div>
@@ -22484,7 +22495,7 @@
       const data = erpData.operationalInventory || { items: [] };
       const items = (data.items || []).filter((item) => {
         const category = getOperationalInventoryCategories().find((entry) => entry.id === item.categoryId);
-        return !term || normalizeSearch([item.name, item.subcategory, item.statusLabel, item.location, category?.label].join(" ")).includes(term);
+        return !term || normalizeSearch([item.name, item.barcode, ...(item.barcodeAliases || []), item.subcategory, item.statusLabel, item.location, category?.label].join(" ")).includes(term);
       });
       const container = document.getElementById("operational-inventory-list");
       if (container) container.innerHTML = renderOperationalInventoryGroups(items, getOperationalInventoryCategories(), true);
@@ -22517,6 +22528,7 @@
               <span class="badge info">${escapeHtml(getOperationalInventoryAreaLabel(item.inventoryArea || item.inventoryDomain || inferOperationalInventoryAreaFromCategory(item.categoryId)))}</span>
               <span class="badge">${escapeHtml(getOperationalFunctionalFamilyLabel(item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId)))}</span>
               <span class="badge">${escapeHtml(getOperationalControlTypeLabel(item.controlType || inferOperationalControlType(item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId))))}</span>
+              ${getOperationalInventoryBarcodes(item).length ? `<span class="badge">Codigo ${escapeHtml(getOperationalInventoryBarcodes(item)[0])}</span>` : ""}
               <span class="badge ${unavailable ? "missing_info" : "confirmed"}">${escapeHtml(item.statusLabel || item.status || "")}</span>
               ${item.notes ? `<span class="secondary">${escapeHtml(item.notes)}</span>` : ""}
             </div>
@@ -22538,7 +22550,8 @@
       setFormValue(form, "inventoryArea", area);
       setFormValue(form, "inventoryDomain", area);
       if (form.elements.categoryId) form.elements.categoryId.innerHTML = renderOperationalCategoryOptions(item.categoryId || "", area);
-      ["id", "name", "categoryId", "quantity", "unit", "status", "location", "notes"].forEach((field) => setFormValue(form, field, item[field] || ""));
+      ["id", "name", "barcode", "categoryId", "quantity", "unit", "status", "location", "notes"].forEach((field) => setFormValue(form, field, item[field] || ""));
+      setFormValue(form, "barcodeAliases", (item.barcodeAliases || []).join("\n"));
       setFormValue(form, "functionalFamily", item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId));
       setFormValue(form, "controlType", item.controlType || inferOperationalControlType(item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId)));
       document.getElementById("operational-inventory-delete")?.classList.remove("hidden");
@@ -22553,6 +22566,8 @@
       setFormValue(form, "quantity", "1");
       setFormValue(form, "unit", "unidad");
       setFormValue(form, "status", "available");
+      setFormValue(form, "barcode", "");
+      setFormValue(form, "barcodeAliases", "");
       const area = getDefaultOperationalInventoryFormArea();
       setFormValue(form, "inventoryArea", area);
       setFormValue(form, "inventoryDomain", area);
@@ -22570,6 +22585,79 @@
       renderOperationalInventoryManager();
       await refreshAfterMutation("inventory", "stock");
       showNotice("Item operativo guardado.", "success");
+    }
+
+    function normalizeOperationalBarcode(value = "") {
+      return String(value || "").trim().replace(/\s+/g, "");
+    }
+
+    function getOperationalInventoryBarcodes(item = {}) {
+      return Array.from(new Set([
+        normalizeOperationalBarcode(item.barcode || ""),
+        ...(Array.isArray(item.barcodeAliases) ? item.barcodeAliases : String(item.barcodeAliases || "").split(/[\n,;]+/)).map(normalizeOperationalBarcode),
+      ].filter(Boolean)));
+    }
+
+    function findOperationalInventoryByBarcode(code = "") {
+      const clean = normalizeOperationalBarcode(code);
+      if (!clean) return null;
+      return (erpData.operationalInventory?.items || []).find((item) => getOperationalInventoryBarcodes(item).includes(clean)) || null;
+    }
+
+    function setOperationalInventoryScanStatus(message = "") {
+      const box = document.getElementById("operational-inventory-scan-status");
+      if (box) box.textContent = message || "Escaneá un producto y presioná Enter.";
+    }
+
+    function handleOperationalInventoryBarcodeKey(event) {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      scanOperationalInventoryBarcode();
+    }
+
+    function scanOperationalInventoryBarcode() {
+      const input = document.getElementById("operational-inventory-barcode-scan");
+      const code = normalizeOperationalBarcode(input?.value || "");
+      if (!code) return setOperationalInventoryScanStatus("Ingresá o escaneá un codigo.");
+      const item = findOperationalInventoryByBarcode(code);
+      if (item) {
+        editOperationalInventoryItem(item.id);
+        setOperationalInventoryScanStatus(`Codigo encontrado: ${item.name || code}.`);
+        document.getElementById("operational-inventory-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if (!can("stock:write:any")) {
+        setOperationalInventoryScanStatus(`Codigo ${code} no registrado. Un usuario con permiso de stock puede asociarlo.`);
+        return;
+      }
+      resetOperationalInventoryForm();
+      const form = document.getElementById("operational-inventory-form");
+      setFormValue(form, "barcode", code);
+      setOperationalInventoryScanStatus(`Codigo ${code} no registrado. Completá el item y guardalo.`);
+      form?.elements.name?.focus();
+    }
+
+    async function attachScannedBarcodeToCurrentItem() {
+      const input = document.getElementById("operational-inventory-barcode-scan");
+      const code = normalizeOperationalBarcode(input?.value || "");
+      const form = document.getElementById("operational-inventory-form");
+      if (!code) return setOperationalInventoryScanStatus("Escaneá un codigo para asociarlo.");
+      if (!form?.elements.id?.value) return scanOperationalInventoryBarcode();
+      const conflict = findOperationalInventoryByBarcode(code);
+      if (conflict && conflict.id !== form.elements.id.value) {
+        return setOperationalInventoryScanStatus(`Ese codigo ya esta asociado a ${conflict.name || "otro item"}.`);
+      }
+      const currentPrimary = normalizeOperationalBarcode(form.elements.barcode?.value || "");
+      const aliases = String(form.elements.barcodeAliases?.value || "").split(/[\n,;]+/).map(normalizeOperationalBarcode).filter(Boolean);
+      if (!currentPrimary) setFormValue(form, "barcode", code);
+      else if (currentPrimary !== code && !aliases.includes(code)) setFormValue(form, "barcodeAliases", [...aliases, code].join("\n"));
+      const payload = Object.fromEntries(new FormData(form).entries());
+      const result = await postJson("/api/operational-inventory", payload);
+      if (!result.ok) return showNotice(result.error || "No se pudo asociar el codigo.", "error");
+      erpData.operationalInventory = result.operationalInventory;
+      renderOperationalInventoryManager();
+      setOperationalInventoryScanStatus(`Codigo ${code} asociado correctamente.`);
+      showNotice("Codigo asociado al item.", "success");
     }
 
     function fillOperationalCategoryForm(id) {

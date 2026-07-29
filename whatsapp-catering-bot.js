@@ -1841,16 +1841,20 @@ function startApprovalPanelServer() {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "events:write", "logistics:write"]);
         if (!user) return;
         const body = await readJsonBody(request);
-        const item = normalizeOperationalInventoryItem(body.item || body);
-        const categoryArea = inferInventoryDomainFromCategory(item.categoryId);
-        if (item.inventoryDomain && categoryArea && item.inventoryDomain !== categoryArea) {
-          return sendJson(response, { ok: false, error: "El area no coincide con la categoria seleccionada." }, 400);
+        try {
+          const item = normalizeOperationalInventoryItem(body.item || body);
+          const categoryArea = inferInventoryDomainFromCategory(item.categoryId);
+          if (item.inventoryDomain && categoryArea && item.inventoryDomain !== categoryArea) {
+            return sendJson(response, { ok: false, error: "El area no coincide con la categoria seleccionada." }, 400);
+          }
+          const existing = item.id ? findOperationalInventoryItem(item.id) : null;
+          if (existing && !canWriteInventoryItem(user, existing)) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
+          if (!canWriteInventoryItem(user, item)) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
+          const operationalInventory = saveOperationalInventoryRecord(body, user);
+          return sendJson(response, { ok: true, operationalInventory });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
         }
-        const existing = item.id ? findOperationalInventoryItem(item.id) : null;
-        if (existing && !canWriteInventoryItem(user, existing)) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
-        if (!canWriteInventoryItem(user, item)) return sendJson(response, { ok: false, error: "Su usuario no puede modificar esta area de inventario." }, 403);
-        const operationalInventory = saveOperationalInventoryRecord(body, user);
-        return sendJson(response, { ok: true, operationalInventory });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-categories") {
@@ -7622,6 +7626,26 @@ function normalizeOperationalInventoryCategory(input = {}) {
   };
 }
 
+function normalizeInventoryBarcode(value = "") {
+  return normalizeText(value || "").replace(/\s+/g, "");
+}
+
+function normalizeInventoryBarcodeAliases(input = [], primaryBarcode = "") {
+  const source = Array.isArray(input)
+    ? input
+    : String(input || "").split(/[\n,;]+/);
+  const primary = normalizeInventoryBarcode(primaryBarcode);
+  return Array.from(new Set(source.map(normalizeInventoryBarcode).filter(Boolean)))
+    .filter((code) => code !== primary);
+}
+
+function getInventoryBarcodesForItem(item = {}) {
+  return Array.from(new Set([
+    normalizeInventoryBarcode(item.barcode || ""),
+    ...normalizeInventoryBarcodeAliases(item.barcodeAliases || item.barcodes || item.providerBarcodes || [], item.barcode || ""),
+  ].filter(Boolean)));
+}
+
 function normalizeOperationalInventoryItem(input = {}) {
   const categoryId = normalizeText(input.categoryId || input.category || "utensilios");
   const quantity = Math.max(0, parseDecimalNumber(input.quantity || input.totalQuantity || 1));
@@ -7629,9 +7653,12 @@ function normalizeOperationalInventoryItem(input = {}) {
   const inventoryArea = normalizeInventoryArea(input.inventoryArea || "") || normalizeInventoryDomain(input.inventoryDomain || "") || inferInventoryAreaFromFamily(functionalFamily, categoryId);
   const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || "") || inventoryArea;
   const controlType = normalizeInventoryControlType(input.controlType || "") || inferInventoryControlType(input, functionalFamily, categoryId);
+  const barcode = normalizeInventoryBarcode(input.barcode || input.ean || input.sku || "");
   return {
     id: normalizeText(input.id || `opinv-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     name: normalizeText(input.name || input.productName || input.description || ""),
+    barcode,
+    barcodeAliases: normalizeInventoryBarcodeAliases(input.barcodeAliases || input.barcodes || input.providerBarcodes || [], barcode),
     categoryId,
     subcategory: normalizeText(input.subcategory || ""),
     inventoryDomain,
@@ -7982,6 +8009,17 @@ function saveOperationalInventoryRecord(input = {}, user = null) {
   if (!categories.some((category) => category.id === item.categoryId)) categories.push(normalizeOperationalInventoryCategory({ id: item.categoryId, label: item.categoryId }));
   const index = data.items.findIndex((entry) => entry.id === item.id);
   const before = index >= 0 ? data.items[index] : null;
+  const nextCodes = getInventoryBarcodesForItem(item);
+  if (nextCodes.length) {
+    const conflict = data.items.find((entry) => {
+      if (entry.id === item.id) return false;
+      const codes = getInventoryBarcodesForItem(entry);
+      return nextCodes.some((code) => codes.includes(code));
+    });
+    if (conflict) {
+      throw new Error(`El codigo ya esta asociado a ${conflict.name || "otro articulo"}.`);
+    }
+  }
   const now = new Date().toISOString();
   const nextItem = { ...(index >= 0 ? data.items[index] : {}), ...item, updatedAt: now };
   if (index >= 0) data.items[index] = nextItem;
