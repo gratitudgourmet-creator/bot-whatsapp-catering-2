@@ -1164,7 +1164,7 @@ function startApprovalPanelServer() {
             customers: _has("customers") ? [] : undefined,
             venues: _has("venues") ? [] : undefined,
             productAlerts: _has("productAlerts") ? [] : undefined,
-            hrDashboard: _has("hrDashboard") && canSeeHr ? getHrDashboard() : undefined,
+            hrDashboard: _has("hrDashboard") && canSeeHr ? getHrDashboardForUser(sessionUser) : undefined,
             sanitationDashboard: _has("sanitationDashboard") ? undefined : undefined,
             paymentOrdersDashboard: _has("paymentOrdersDashboard") ? undefined : undefined,
           });
@@ -1226,7 +1226,7 @@ function startApprovalPanelServer() {
           venues: _has("venues") ? (canSeeVenues || canSeeCommercial ? getVenueList() : []) : undefined,
           productAlerts: _has("productAlerts") ? (canSeePurchases || canSeeStock || canSeeRecipes || canSeeEverything ? getProductPriceAlerts() : []) : undefined,
           financeDashboard: _has("financeDashboard") ? (canSeeFinance ? getFinanceDashboard() : undefined) : undefined,
-          hrDashboard: _has("hrDashboard") ? (canSeeHr ? getHrDashboard() : undefined) : undefined,
+          hrDashboard: _has("hrDashboard") ? (canSeeHr ? getHrDashboardForUser(sessionUser) : undefined) : undefined,
           sanitationDashboard: _has("sanitationDashboard") ? (canSeeSanitation ? getSanitationDashboard() : undefined) : undefined,
           paymentOrdersDashboard: _has("paymentOrdersDashboard") ? (canSeePaymentOrders ? getPaymentOrdersDashboard() : undefined) : undefined,
         };
@@ -1492,7 +1492,7 @@ function startApprovalPanelServer() {
       if (request.method === "GET" && requestUrl.pathname === "/api/hr") {
         const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "payroll:read", "payroll:write", "staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"]);
         if (!user) return;
-        return sendJson(response, { ok: true, hrDashboard: getHrDashboard() });
+        return sendJson(response, { ok: true, hrDashboard: getHrDashboardForUser(user) });
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/asistencias/me") {
@@ -1539,10 +1539,34 @@ function startApprovalPanelServer() {
         if (!user) return;
         const body = await readJsonBody(request);
         try {
-          const before = erpStaffShifts.find((item) => item.id === body.id);
-          const shift = saveStaffShiftRecord(body);
+          const canManageHr = hasPanelPermission(user, "hr:write");
+          const shiftInput = canManageHr ? body : getOperationalShiftInput(body, user);
+          const before = erpStaffShifts.find((item) => item.id === shiftInput.id);
+          if (!canManageHr && before && ["approved", "exported", "liquidated", "voided"].includes(getHrShiftExportStatus(before))) {
+            throw new Error("Ese horario ya fue aprobado, exportado, liquidado o anulado. Debe corregirlo RRHH.");
+          }
+          const shift = saveStaffShiftRecord(shiftInput);
           recordAudit(user, body.id ? "update" : "create", "staff_shift", shift.id, `${shift.staffName} - ${shift.eventName || shift.date}`, before, shift);
-          return sendJson(response, { ok: true, shift, hrDashboard: getHrDashboard() });
+          return sendJson(response, {
+            ok: true,
+            shift: canManageHr ? shift : getHrTimesheetShiftView(shift),
+            hrDashboard: getHrDashboardForUser(user),
+          });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/hr-shift/delete") {
+        const user = requirePanelPermission(request, response, "hr:write");
+        if (!user) return;
+        if (!requireSensitivePermission(user, response, "sensitive:delete", "eliminar horarios de personal")) return;
+        const body = await readJsonBody(request);
+        try {
+          const before = erpStaffShifts.find((item) => item.id === body.id);
+          const result = deleteStaffShiftRecord(body, user);
+          recordAudit(user, "delete", "staff_shift", result.shift.id, `${result.shift.staffName} - ${result.shift.date}`, before, result.shift, { softDelete: true, reason: result.shift.deletedReason });
+          return sendJson(response, { ok: true, result, hrDashboard: getHrDashboard() });
         } catch (error) {
           return sendJson(response, { ok: false, error: error.message }, 400);
         }
@@ -1555,14 +1579,14 @@ function startApprovalPanelServer() {
         try {
           const result = saveStaffTimesheet(body, user);
           recordAudit(user, "update", "staff_timesheet", result.staffId || body.staffId, `${result.staffName || "Personal"} - ${result.period}`, null, result);
-          return sendJson(response, { ok: true, result, hrDashboard: getHrDashboard() });
+          return sendJson(response, { ok: true, result, hrDashboard: getHrDashboardForUser(user) });
         } catch (error) {
           return sendJson(response, { ok: false, error: error.message }, 400);
         }
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/biometric/status") {
-        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "staff:timesheets:read", "staff:timesheets:write"]);
+        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write"]);
         if (!user) return;
         try {
           return sendJson(response, { ok: true, biometric: getBiometricDashboard(requestUrl.searchParams) });
@@ -1572,7 +1596,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/api/biometric/events") {
-        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write", "staff:timesheets:read", "staff:timesheets:write"]);
+        const user = requireAnyPanelPermission(request, response, ["hr:read", "hr:write"]);
         if (!user) return;
         try {
           const biometric = getBiometricDashboard(requestUrl.searchParams);
@@ -1583,7 +1607,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/biometric/link") {
-        const user = requireAnyPanelPermission(request, response, ["hr:write", "staff:timesheets:write"]);
+        const user = requirePanelPermission(request, response, "hr:write");
         if (!user) return;
         const body = await readJsonBody(request);
         try {
@@ -1596,7 +1620,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/biometric/link/deactivate") {
-        const user = requireAnyPanelPermission(request, response, ["hr:write", "staff:timesheets:write"]);
+        const user = requirePanelPermission(request, response, "hr:write");
         if (!user) return;
         const body = await readJsonBody(request);
         try {
@@ -1609,7 +1633,7 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/biometric/reprocess") {
-        const user = requireAnyPanelPermission(request, response, ["hr:write", "staff:timesheets:write"]);
+        const user = requirePanelPermission(request, response, "hr:write");
         if (!user) return;
         const body = await readJsonBody(request);
         try {
@@ -2607,6 +2631,7 @@ function sendHrTimesheetXlsxExport(response, searchParams = new URLSearchParams(
     "Dia",
     "Evento",
     "Persona",
+    "DNI",
     "Telefono",
     "Rol/tarea",
     "Entrada",
@@ -3822,6 +3847,7 @@ function normalizePanelUser(user = {}) {
     role,
     area: normalizeText(user.area || ""),
     phone: normalizeText(user.phone || ""),
+    documentId: normalizeText(user.documentId || user.dni || user.cuil || ""),
     notes: normalizeText(user.notes || ""),
     status,
     active: status === "active" || status === "invited",
@@ -3887,6 +3913,7 @@ function getPublicUser(user) {
     roleLabel: role.label,
     area: user.area || "",
     phone: user.phone || "",
+    documentId: user.documentId || "",
     notes: user.notes || "",
     active: user.active !== false,
     status: user.status || (user.active === false ? "suspended" : "active"),
@@ -3908,13 +3935,7 @@ function getPublicUser(user) {
 }
 
 function getEffectiveRolePermissions(roleId = "", permissions = []) {
-  const list = Array.from(new Set(Array.isArray(permissions) ? permissions : []));
-  if (roleId === "logistica_evento") {
-    ["staff:timesheets:read", "staff:timesheets:write", "staff:timesheets:export"].forEach((permission) => {
-      if (!list.includes(permission)) list.push(permission);
-    });
-  }
-  return list;
+  return Array.from(new Set(Array.isArray(permissions) ? permissions : []));
 }
 
 function getEffectiveRoleTabs(roleId = "", tabs = [], permissions = []) {
@@ -5791,6 +5812,7 @@ function normalizeStaffShiftRecord(input = {}) {
     id: normalizeText(input.id || `asistencia-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     staffId: normalizeText(input.staffId || staff.id || ""),
     staffName: normalizeText(input.staffName || staff.fullName || ""),
+    documentId: normalizeText(input.documentId || input.dni || staff.documentId || ""),
     eventId: normalizeText(input.eventId || event.id || ""),
     eventName: normalizeText(input.eventName || event.name || ""),
     date: normalizePanelDate(input.date || event.eventDate || "") || getDateOnly(new Date()),
@@ -5807,9 +5829,29 @@ function normalizeStaffShiftRecord(input = {}) {
     period: normalizeText(input.period || ""),
     breakMinutes: Math.max(0, parseOptionalNumber(input.breakMinutes || 0)),
     loadedBy: normalizeText(input.loadedBy || ""),
+    administrativeStatus: normalizeHrAdministrativeStatus(input.administrativeStatus || input.reviewStatus || ""),
+    biometricEventIds: Array.isArray(input.biometricEventIds) ? input.biometricEventIds.map(normalizeText).filter(Boolean) : [],
+    deletedAt: normalizeText(input.deletedAt || input.voidedAt || ""),
+    deletedBy: normalizeText(input.deletedBy || input.voidedBy || ""),
+    deletedReason: normalizeText(input.deletedReason || input.voidReason || ""),
+    deletedNote: normalizeText(input.deletedNote || input.voidNote || ""),
     createdAt: input.createdAt || new Date().toISOString(),
     updatedAt: input.updatedAt || new Date().toISOString(),
   };
+}
+
+function normalizeHrAdministrativeStatus(status = "") {
+  const key = normalizeSearchKey(status || "");
+  if (["approved", "aprobada", "aprobado"].includes(key)) return "approved";
+  if (["exported", "exportada", "exportado"].includes(key)) return "exported";
+  if (["liquidated", "liquidada", "liquidado"].includes(key)) return "liquidated";
+  if (["voided", "anulada", "anulado", "deleted", "eliminada", "eliminado"].includes(key)) return "voided";
+  if (["observed", "observada", "observado"].includes(key)) return "observed";
+  return "";
+}
+
+function isStaffShiftDeleted(shift = {}) {
+  return Boolean(shift.deletedAt) || ["voided", "deleted"].includes(normalizeHrAdministrativeStatus(shift.administrativeStatus || ""));
 }
 
 function calculateHoursBetween(startTime, endTime) {
@@ -5843,6 +5885,7 @@ function getAttendanceStatusLabel(status) {
 
 function getStaffShiftList() {
   return normalizeStaffShiftList(erpStaffShifts)
+    .filter((shift) => !isStaffShiftDeleted(shift))
     .map((shift) => ({ ...shift, attendanceStatusLabel: getAttendanceStatusLabel(shift.attendanceStatus) }))
     .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 }
@@ -5854,11 +5897,14 @@ function buildHrTimesheetExportRows(searchParams = new URLSearchParams()) {
   const staffName = normalizeText(searchParams.get("staffName") || "");
   const date = normalizePanelDate(searchParams.get("date") || "");
   const status = normalizeText(searchParams.get("status") || "");
+  const source = normalizeText(searchParams.get("source") || "");
+  const missingStaff = normalizeText(searchParams.get("missingStaff") || "");
   const staffNameKey = normalizeSearchKey(staffName);
   const staffById = new Map(erpStaff.map((staff) => [staff.id, staff]));
   const eventById = new Map(erpEvents.map((event) => [event.id, event]));
 
   return normalizeStaffShiftList(erpStaffShifts)
+    .filter((shift) => !isStaffShiftDeleted(shift))
     .filter((shift) => !period || String(shift.date || "").startsWith(`${period}-`))
     .filter((shift) => !eventId || (shift.eventId || "") === eventId)
     .filter((shift) => !staffId || (shift.staffId || "") === staffId)
@@ -5869,6 +5915,8 @@ function buildHrTimesheetExportRows(searchParams = new URLSearchParams()) {
       return exportedNameKey === staffNameKey || exportedNameKey.includes(staffNameKey);
     })
     .filter((shift) => !date || (shift.date || "") === date)
+    .filter((shift) => !source || normalizeSearchKey(shift.source || "manual") === normalizeSearchKey(source))
+    .filter((shift) => !missingStaff || !shift.staffId)
     .filter((shift) => !status || getHrShiftExportStatus(shift) === status || (status === "complete" && getHrShiftExportStatus(shift) === "approved") || (status === "partial" && getHrShiftExportStatus(shift) === "unreviewed"))
     .sort((a, b) => {
       const byDate = String(a.date || "").localeCompare(String(b.date || ""));
@@ -5886,6 +5934,7 @@ function buildHrTimesheetExportRows(searchParams = new URLSearchParams()) {
         Dia: getSpanishWeekdayName(shift.date),
         Evento: shift.eventName || event.name || "",
         Persona: shift.staffName || staff.fullName || "",
+        DNI: shift.documentId || staff.documentId || "",
         Telefono: staff.phone || "",
         "Rol/tarea": shift.role || staff.role || "",
         Entrada: shift.startTime || "",
@@ -5902,16 +5951,25 @@ function buildHrTimesheetExportRows(searchParams = new URLSearchParams()) {
 
 function getHrShiftExportAlerts(shift = {}) {
   const alerts = [];
+  if (!shift.staffId) alerts.push("sin_legajo");
+  if (!shift.documentId) alerts.push("sin_dni");
+  if (!shift.startTime) alerts.push("sin_entrada");
   if (shift.startTime && !shift.endTime) alerts.push("entrada_sin_salida");
   if (!Number(shift.hours || 0)) alerts.push("horas_0");
   if (Number(shift.hours || 0) > 12) alerts.push("jornada_larga");
   if (!shift.staffId && !shift.staffName) alerts.push("falta_persona");
   if (!shift.eventId && !shift.eventName) alerts.push("sin_evento_labor");
-  if (shift.startTime && shift.endTime && shift.endTime < shift.startTime) alerts.push("turno_nocturno");
+  if (shift.startTime && shift.endTime && shift.endTime < shift.startTime) alerts.push("horario_inconsistente");
   return alerts;
 }
 
 function getHrShiftExportStatus(shift = {}) {
+  const adminStatus = normalizeHrAdministrativeStatus(shift.administrativeStatus || "");
+  if (adminStatus === "voided") return "voided";
+  if (adminStatus === "liquidated") return "liquidated";
+  if (adminStatus === "exported") return "exported";
+  if (adminStatus === "approved") return "approved";
+  if (adminStatus === "observed") return "observed";
   const notes = normalizeSearchKey(shift.notes || "");
   if (notes.includes("exportado")) return "exported";
   if (notes.includes("observado") || getHrShiftExportAlerts(shift).length) return "observed";
@@ -5925,6 +5983,8 @@ function getHrShiftExportStatusLabel(status = "") {
     observed: "Observado",
     approved: "Aprobado",
     exported: "Exportado",
+    liquidated: "Liquidado",
+    voided: "Anulado",
   }[status] || "Sin revisar";
 }
 
@@ -5961,6 +6021,32 @@ function saveStaffShiftRecord(input = {}) {
   return shift;
 }
 
+function deleteStaffShiftRecord(input = {}, user = null) {
+  const id = normalizeText(input.id || "");
+  if (!id) throw new Error("Falta el identificador del horario.");
+  const index = erpStaffShifts.findIndex((item) => item.id === id);
+  if (index < 0) throw new Error("No se encontro el horario.");
+  const previous = normalizeStaffShiftRecord(erpStaffShifts[index]);
+  if (isStaffShiftDeleted(previous)) throw new Error("Ese horario ya esta anulado.");
+  const payrollUses = normalizePayrollRecordList(erpPayrollRecords).filter((payroll) => (payroll.shiftIds || []).includes(id));
+  if (payrollUses.length) throw new Error("No se puede eliminar un horario incluido en una liquidacion. Primero corregi la liquidacion.");
+  const reason = normalizeText(input.reason || input.deletedReason || "");
+  if (!reason) throw new Error("Indique el motivo de eliminacion.");
+  const now = new Date().toISOString();
+  const deleted = normalizeStaffShiftRecord({
+    ...previous,
+    administrativeStatus: "voided",
+    deletedAt: now,
+    deletedBy: normalizeText(user?.username || user?.displayName || "sistema"),
+    deletedReason: reason,
+    deletedNote: normalizeText(input.note || input.deletedNote || ""),
+    updatedAt: now,
+  });
+  erpStaffShifts[index] = deleted;
+  saveErpStaffShifts();
+  return { shift: deleted, payrollUses: payrollUses.length };
+}
+
 function saveStaffTimesheet(input = {}, user = null) {
   const staffId = normalizeText(input.staffId || "");
   const staffNameInput = normalizeText(input.staffName || "");
@@ -5968,6 +6054,7 @@ function saveStaffTimesheet(input = {}, user = null) {
   const eventId = normalizeText(input.eventId || "");
   const staff = erpStaff.find((item) => item.id === staffId);
   const staffName = normalizeText(staff?.fullName || staffNameInput);
+  const documentId = normalizeText(input.documentId || staff?.documentId || "");
   const event = erpEvents.find((item) => item.id === eventId) || {};
   const days = Array.isArray(input.days) ? input.days : [];
   if (!staffId && !staffName) throw new Error("Ingrese o seleccione una persona.");
@@ -5983,7 +6070,22 @@ function saveStaffTimesheet(input = {}, user = null) {
     .filter((day) => day.date && day.date.startsWith(`${period}-`));
   if (!normalizedDays.length) throw new Error("Seleccione al menos un dia trabajado.");
 
+  if (!hasPanelPermission(user, "hr:write")) {
+    const protectedShift = normalizeStaffShiftList(erpStaffShifts).find((shift) => {
+      if (isStaffShiftDeleted(shift)) return false;
+      if (staffId ? shift.staffId !== staffId : normalizeSearchKey(shift.staffName) !== normalizeSearchKey(staffName)) return false;
+      if ((shift.source || "") !== "timesheet") return false;
+      if ((shift.period || "").slice(0, 7) !== period) return false;
+      if ((shift.eventId || "") !== eventId) return false;
+      return ["approved", "exported", "liquidated", "voided"].includes(getHrShiftExportStatus(shift));
+    });
+    if (protectedShift) {
+      throw new Error("La carga incluye horarios aprobados, exportados, liquidados o anulados. Debe corregirlos RRHH.");
+    }
+  }
+
   erpStaffShifts = normalizeStaffShiftList(erpStaffShifts).filter((shift) => {
+    if (isStaffShiftDeleted(shift)) return true;
     if (staffId ? shift.staffId !== staffId : normalizeSearchKey(shift.staffName) !== normalizeSearchKey(staffName)) return true;
     if ((shift.source || "") !== "timesheet") return true;
     if ((shift.period || "").slice(0, 7) !== period) return true;
@@ -5999,6 +6101,7 @@ function saveStaffTimesheet(input = {}, user = null) {
       id: `asistencia-${personKey}-${day.date}-${eventId || "sin-evento"}`,
       staffId,
       staffName,
+      documentId,
       eventId,
       eventName: event.name || normalizeText(input.eventName || ""),
       date: day.date,
@@ -6036,6 +6139,17 @@ function getDigitsOnly(value = "") {
 }
 
 function findStaffForPanelUser(user = {}) {
+  const userDocument = getDigitsOnly(user.documentId || user.dni || user.cuil || "");
+  const usernameDocument = getDigitsOnly(user.username || "");
+  const documentCandidates = [userDocument, usernameDocument].filter((value) => value && value.length >= 6);
+  if (documentCandidates.length) {
+    const byDocument = erpStaff.find((staff) => {
+      const staffDocument = getDigitsOnly(staff.documentId || "");
+      return staffDocument && documentCandidates.some((candidate) => staffDocument === candidate || staffDocument.endsWith(candidate) || candidate.endsWith(staffDocument));
+    });
+    if (byDocument) return byDocument;
+  }
+
   const explicitStaffId = normalizeText(user.staffId || user.hrStaffId || "");
   if (explicitStaffId) {
     const explicit = erpStaff.find((staff) => staff.id === explicitStaffId);
@@ -6068,10 +6182,12 @@ function findStaffForPanelUser(user = {}) {
 function getEmployeeAttendanceIdentity(user = {}) {
   const staff = findStaffForPanelUser(user);
   const fallbackName = normalizeText(user.displayName || user.username || "Empleado");
+  const fallbackDocument = getDigitsOnly(user.documentId || user.dni || user.cuil || user.username || "");
   return {
     staff,
     staffId: staff?.id || "",
     staffName: staff?.fullName || fallbackName,
+    documentId: staff?.documentId || fallbackDocument,
     role: staff?.role || user.area || "",
     linked: Boolean(staff?.id),
   };
@@ -6081,6 +6197,7 @@ function getEmployeeAttendancePortal(user = {}) {
   const identity = getEmployeeAttendanceIdentity(user);
   const today = getArgentinaDateOnly(new Date());
   const visibleShifts = normalizeStaffShiftList(erpStaffShifts)
+    .filter((shift) => !isStaffShiftDeleted(shift))
     .filter((shift) => {
       if (identity.staffId) return shift.staffId === identity.staffId;
       return normalizeSearchKey(shift.staffName || "") === normalizeSearchKey(identity.staffName || "");
@@ -6092,11 +6209,13 @@ function getEmployeeAttendancePortal(user = {}) {
     staff: identity.staff ? {
       id: identity.staff.id,
       fullName: identity.staff.fullName,
+      documentId: identity.staff.documentId,
       role: identity.staff.role,
       phone: identity.staff.phone,
       status: identity.staff.status,
     } : null,
     linked: identity.linked,
+    documentId: identity.documentId,
     today,
     todayShift,
     recentShifts: visibleShifts.slice(0, 12),
@@ -6144,6 +6263,7 @@ function saveEmployeeAttendanceFromPortal(user = {}, input = {}) {
   const currentTime = getArgentinaTimeValue(now);
   const note = normalizeText(input.notes || "");
   const existingIndex = erpStaffShifts.findIndex((shift) => {
+    if (isStaffShiftDeleted(shift)) return false;
     if (shift.date !== today) return false;
     if (identity.staffId) return shift.staffId === identity.staffId && ["employee_portal", "timesheet", ""].includes(shift.source || "");
     return normalizeSearchKey(shift.staffName || "") === normalizeSearchKey(identity.staffName || "") && ["employee_portal", "timesheet", ""].includes(shift.source || "");
@@ -6167,6 +6287,7 @@ function saveEmployeeAttendanceFromPortal(user = {}, input = {}) {
     id: previous.id || `asistencia-empleado-${identity.staffId || normalizeSearchKey(identity.staffName).replace(/[^a-z0-9]+/g, "-")}-${today}`,
     staffId: identity.staffId,
     staffName: identity.staffName,
+    documentId: identity.documentId,
     eventName: previous.eventName || "Jornada laboral",
     date: today,
     role: identity.role || previous.role || "",
@@ -6302,7 +6423,7 @@ function normalizePayrollRecordList(input = []) {
 function normalizePayrollRecord(input = {}) {
   const shiftIds = Array.isArray(input.shiftIds) ? input.shiftIds.map(normalizeText).filter(Boolean) : [];
   const linkedShifts = shiftIds.length
-    ? erpStaffShifts.filter((shift) => shiftIds.includes(shift.id))
+    ? erpStaffShifts.filter((shift) => shiftIds.includes(shift.id) && !isStaffShiftDeleted(shift))
     : [];
   const hours = input.hours !== undefined && input.hours !== ""
     ? parseOptionalNumber(input.hours)
@@ -6349,11 +6470,17 @@ function savePayrollRecord(input = {}) {
   const index = erpPayrollRecords.findIndex((item) => item.id === id);
   const previous = index >= 0 ? erpPayrollRecords[index] : {};
   const staff = erpStaff.find((item) => item.id === (input.staffId || previous.staffId)) || {};
+  const requestedShiftIds = Array.isArray(input.shiftIds) ? input.shiftIds.map(normalizeText).filter(Boolean) : [];
+  const allowedShiftIds = requestedShiftIds.filter((shiftId) => {
+    const shift = erpStaffShifts.find((item) => item.id === shiftId);
+    return shift && !isStaffShiftDeleted(shift) && ["approved", "exported"].includes(getHrShiftExportStatus(shift));
+  });
   const payroll = normalizePayrollRecord({
     ...previous,
     ...input,
     id: id || previous.id || `sueldo-${Date.now()}`,
     staffName: input.staffName || previous.staffName || staff.fullName || "",
+    shiftIds: requestedShiftIds.length ? allowedShiftIds : (input.shiftIds || previous.shiftIds || []),
     createdAt: previous.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
@@ -6379,6 +6506,90 @@ function getHrDashboard() {
     staff,
     shifts,
     payroll,
+  };
+}
+
+function hasFullHrDashboardAccess(user) {
+  return hasPanelPermission(user, "hr:read")
+    || hasPanelPermission(user, "hr:write")
+    || hasPanelPermission(user, "payroll:read")
+    || hasPanelPermission(user, "payroll:write");
+}
+
+function getHrTimesheetStaffView(staff = {}) {
+  return {
+    id: normalizeText(staff.id || ""),
+    fullName: normalizeText(staff.fullName || ""),
+    documentId: normalizeText(staff.documentId || ""),
+    phone: normalizeText(staff.phone || ""),
+    role: normalizeText(staff.role || ""),
+    status: normalizeStaffStatus(staff.status || "active"),
+  };
+}
+
+function getHrTimesheetShiftView(shift = {}) {
+  const normalized = normalizeStaffShiftRecord(shift);
+  return {
+    id: normalized.id,
+    staffId: normalized.staffId,
+    staffName: normalized.staffName,
+    documentId: normalized.documentId,
+    eventId: normalized.eventId,
+    eventName: normalized.eventName,
+    date: normalized.date,
+    role: normalized.role,
+    startTime: normalized.startTime,
+    endTime: normalized.endTime,
+    hours: normalized.hours,
+    breakMinutes: normalized.breakMinutes,
+    notes: normalized.notes,
+    source: normalized.source,
+    period: normalized.period,
+    attendanceStatus: normalized.attendanceStatus,
+    loadedBy: normalized.loadedBy,
+    createdAt: normalized.createdAt,
+    updatedAt: normalized.updatedAt,
+  };
+}
+
+function getHrTimesheetDashboard() {
+  const staff = getStaffList().map(getHrTimesheetStaffView);
+  const shifts = getStaffShiftList().map(getHrTimesheetShiftView);
+  return {
+    summary: {
+      activeStaff: staff.filter((item) => item.status === "active").length,
+      shiftsCount: shifts.length,
+    },
+    staff,
+    shifts,
+  };
+}
+
+function getHrDashboardForUser(user) {
+  return hasFullHrDashboardAccess(user) ? getHrDashboard() : getHrTimesheetDashboard();
+}
+
+function getOperationalShiftInput(input = {}, user = null) {
+  const requestedSource = normalizeText(input.source || "manual");
+  return {
+    id: normalizeText(input.id || ""),
+    staffId: normalizeText(input.staffId || ""),
+    staffName: normalizeText(input.staffName || ""),
+    documentId: normalizeText(input.documentId || input.dni || ""),
+    eventId: normalizeText(input.eventId || ""),
+    eventName: normalizeText(input.eventName || ""),
+    date: normalizeText(input.date || ""),
+    role: normalizeText(input.role || ""),
+    startTime: normalizeText(input.startTime || input.start || ""),
+    endTime: normalizeText(input.endTime || input.end || ""),
+    hours: input.hours,
+    breakMinutes: input.breakMinutes,
+    notes: normalizeText(input.notes || ""),
+    source: ["manual", "timesheet"].includes(requestedSource) ? requestedSource : "manual",
+    period: normalizeText(input.period || ""),
+    attendanceStatus: normalizeText(input.attendanceStatus || input.status || "present"),
+    administrativeStatus: "",
+    loadedBy: normalizeText(user?.username || user?.displayName || ""),
   };
 }
 
@@ -9456,6 +9667,7 @@ function getEventStaffShiftTotal(event = {}) {
   const eventId = normalizeText(event.id || "");
   const eventNameKey = normalizeSearchKey(event.name || event.eventName || "");
   return normalizeStaffShiftList(erpStaffShifts)
+    .filter((shift) => !isStaffShiftDeleted(shift))
     .filter((shift) => !["absent", "cancelled"].includes(shift.attendanceStatus))
     .filter((shift) => {
       if (eventId && shift.eventId === eventId) return true;

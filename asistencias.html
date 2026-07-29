@@ -175,6 +175,10 @@
       background: #fff7ed;
       color: var(--warn);
     }
+    .status.error {
+      background: #fff1f2;
+      color: var(--danger);
+    }
     .muted {
       color: var(--muted);
       font-size: 14px;
@@ -220,6 +224,21 @@
       color: #9f1239;
       border-color: #fecdd3;
     }
+    .portal-warning {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      color: #7c2d12;
+      font-size: 14px;
+      line-height: 1.35;
+      margin: 0 0 12px;
+      padding: 12px;
+    }
+    .main-action {
+      font-size: 17px;
+      margin-top: 12px;
+      min-height: 58px;
+    }
     @media (max-width: 420px) {
       main { padding-inline: 10px; }
       .summary, .actions { grid-template-columns: 1fr; }
@@ -264,9 +283,11 @@
             <div>
               <strong id="person-name">Empleado</strong>
               <p id="person-role" class="muted">Jornada laboral</p>
+              <p id="person-dni" class="muted">DNI sin cargar</p>
               <span id="link-status" class="status">Legajo asociado</span>
             </div>
           </div>
+          <div id="unlinked-warning" class="portal-warning hidden">Tu usuario no esta vinculado a un legajo. La marca se registrara, pero RRHH debera asociarla.</div>
           <div class="summary">
             <div class="metric"><span>Entrada</span><strong id="start-time">--:--</strong></div>
             <div class="metric"><span>Salida</span><strong id="end-time">--:--</strong></div>
@@ -280,10 +301,7 @@
             <label>Nota opcional</label>
             <textarea id="attendance-notes" placeholder="Ej: salí a comprar insumos, turno partido, etc."></textarea>
           </div>
-          <div class="actions">
-            <button id="clock-in" class="primary" type="button">Marcar entrada</button>
-            <button id="clock-out" class="secondary" type="button">Marcar salida</button>
-          </div>
+          <button id="attendance-action" class="primary main-action" type="button">Marcar entrada</button>
           <p class="muted">RRHH/admin revisa y aprueba los registros antes de liquidar.</p>
         </section>
 
@@ -334,10 +352,16 @@
     }
 
     function getShiftState(shift) {
-      if (!shift) return "Sin cargar";
-      if (shift.startTime && !shift.endTime) return "Entrada abierta";
-      if (shift.startTime && shift.endTime) return "Por revisar";
-      return "Sin cargar";
+      if (!shift || (!shift.startTime && !shift.endTime)) return "Sin entrada";
+      if (shift.startTime && !shift.endTime) return "Jornada abierta";
+      if (shift.startTime && shift.endTime) return Number(shift.hours || 0) > 0 ? "Jornada cerrada" : "Requiere revision";
+      return "Requiere revision";
+    }
+
+    function getNextAttendanceAction(shift) {
+      if (!shift || !shift.startTime) return "entrada";
+      if (shift.startTime && !shift.endTime) return "salida";
+      return "";
     }
 
     function renderPortal() {
@@ -349,14 +373,18 @@
       $("logout-button").style.display = "inline-flex";
       $("person-name").textContent = staff.fullName || portal.user?.displayName || portal.user?.username || "Empleado";
       $("person-role").textContent = staff.role || portal.user?.area || "Jornada laboral";
+      $("person-dni").textContent = `DNI ${staff.documentId || portal.documentId || "sin cargar"}`;
       $("link-status").textContent = portal.linked ? "Legajo asociado" : "Sin legajo asociado";
       $("link-status").className = `status ${portal.linked ? "" : "warn"}`;
+      $("unlinked-warning").classList.toggle("hidden", Boolean(portal.linked));
       $("start-time").textContent = shift.startTime || "--:--";
       $("end-time").textContent = shift.endTime || "--:--";
       $("hours-total").textContent = formatHours(shift.hours || 0);
       $("shift-state").textContent = getShiftState(portal.todayShift);
-      $("clock-in").disabled = Boolean(shift.startTime && !shift.endTime);
-      $("clock-out").disabled = !shift.startTime || Boolean(shift.endTime);
+      const nextAction = getNextAttendanceAction(portal.todayShift);
+      $("attendance-action").textContent = nextAction === "salida" ? "Marcar salida" : nextAction === "entrada" ? "Marcar entrada" : "Jornada cerrada";
+      $("attendance-action").dataset.action = nextAction;
+      $("attendance-action").disabled = !nextAction;
       const rows = portal.recentShifts || [];
       $("recent-list").innerHTML = rows.length ? rows.map((item) => `
         <div class="row">
@@ -414,8 +442,10 @@
       $("logout-button").style.display = "none";
     });
 
-    $("clock-in").addEventListener("click", () => mark("entrada"));
-    $("clock-out").addEventListener("click", () => mark("salida"));
+    $("attendance-action").addEventListener("click", () => {
+      const action = $("attendance-action").dataset.action;
+      if (action) mark(action);
+    });
     loadPortal();
   </script>
 </body>
