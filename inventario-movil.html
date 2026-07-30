@@ -208,7 +208,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .capture-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.capture-actions button{min-width:0;min-height:44px;border:1px solid var(--border);border-radius:11px;background:var(--surface);font-weight:800;padding:9px;white-space:normal}.capture-actions .primary{background:var(--accent);border-color:var(--accent);color:#fff}.capture-actions .full{grid-column:1/-1}
 .associate-results{display:flex;flex-direction:column;gap:7px;margin:10px 0;max-height:42dvh;overflow-y:auto}.associate-row{width:100%;text-align:left;border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:11px}.associate-row strong{display:block}.associate-row span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
 .camera-frame{width:100%;aspect-ratio:4/3;background:#111;border-radius:14px;overflow:hidden;margin:12px 0}.camera-frame video{width:100%;height:100%;object-fit:cover}
-.label-preview{border:2px solid #111;background:#fff;color:#111;border-radius:6px;padding:16px;text-align:center;line-height:1.45}.label-preview strong{display:block;font-size:16px}.label-preview .label-code{font-size:22px;font-weight:900;letter-spacing:.06em;margin:6px 0}
+.label-preview{border:2px solid #111;background:#fff;color:#111;border-radius:6px;padding:16px;text-align:center;line-height:1.45}.label-preview strong{display:block;font-size:16px}.label-preview .label-code{font-size:22px;font-weight:900;letter-spacing:.06em;margin:6px 0}.label-barcode{display:block;width:100%;max-width:280px;height:auto;margin:8px auto 4px}
 @media(max-width:390px){.barcode-actions{grid-template-columns:1fr 1fr}.barcode-actions .create-no-code{grid-column:1/-1}.capture-meta{grid-template-columns:1fr}.capture-actions{grid-template-columns:1fr 1fr}}
 
 /* CONFIRM CLOSE MODAL */
@@ -468,7 +468,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 <div class="modal-overlay" id="barcode-missing-overlay" onclick="closeBarcodeMissing(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Este código todavía no existe</h3><p>Podés crear un artículo nuevo o asociarlo a uno existente.</p><div class="capture-card"><strong id="missing-barcode-label"></strong><div class="capture-actions"><button id="missing-create-food" class="primary" onclick="createFromMissingBarcode('food')">Crear alimento</button><button id="missing-create-equipment" class="primary" onclick="createFromMissingBarcode('equipment')">Crear equipo / herramienta</button><button id="missing-associate" class="full" onclick="openAssociateBarcode()">Asociar a existente</button><button class="full" onclick="closeBarcodeMissing()">Cancelar</button></div><p id="missing-readonly-copy" style="display:none;margin-top:10px">Tu usuario puede buscar artículos, pero no crear ni asociar códigos.</p></div></div></div>
 <div class="modal-overlay" id="barcode-associate-overlay" onclick="closeAssociateBarcode(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Asociar código</h3><p>Elegí el artículo sin modificar su stock ni ubicación.</p><label>Tipo de código</label><select id="associate-code-type" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;margin:5px 0 8px"><option value="commercial">Comercial</option><option value="provider">Proveedor</option><option value="internal">Interno</option></select><input id="associate-search" type="search" placeholder="Buscar artículo" oninput="renderAssociateResults()" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px"><div class="associate-results" id="associate-results"></div><button class="btn-secondary" onclick="closeAssociateBarcode()">Cancelar</button></div></div>
 <div class="modal-overlay" id="barcode-camera-overlay"><div class="capture-sheet"><h3>Escanear código</h3><p id="barcode-camera-status">Apuntá la cámara al código.</p><div class="camera-frame"><video id="barcode-camera-video" playsinline muted></video></div><button class="btn-secondary" onclick="stopBarcodeCamera()">Cancelar</button></div></div>
-<div class="modal-overlay" id="label-preview-overlay" onclick="closeLabelPreview(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Etiqueta interna</h3><p>Vista textual. Todavía no contiene un código de barras gráfico.</p><div class="label-preview" id="label-preview-content"></div><div class="capture-actions"><button class="primary" onclick="printCurrentLabel()">Imprimir etiqueta</button><button onclick="copyCurrentInternalCode()">Copiar código</button><button class="full" onclick="closeLabelPreview()">Cerrar</button></div></div></div>
+<div class="modal-overlay" id="label-preview-overlay" onclick="closeLabelPreview(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Etiqueta interna</h3><p>Incluye código Code 128 para reescanear desde el inventario.</p><div class="label-preview" id="label-preview-content"></div><div class="capture-actions"><button class="primary" onclick="printCurrentLabel()">Imprimir etiqueta</button><button onclick="copyCurrentInternalCode()">Copiar código</button><button class="full" onclick="closeLabelPreview()">Cerrar</button></div></div></div>
 
 <!-- CONFIRM CERRAR -->
 <div id="confirm-overlay" onclick="closeConfirm(event)">
@@ -1974,11 +1974,49 @@ function previewItemLabel(itemId) {
   if (item) openLabelPreview(item);
 }
 
+const CODE128_PATTERNS = [
+  '212222','222122','222221','121223','121322','131222','122213','122312','132212','221213',
+  '221312','231212','112232','122132','122231','113222','123122','123221','223211','221132',
+  '221231','213212','223112','312131','311222','321122','321221','312212','322112','322211',
+  '212123','212321','232121','111323','131123','131321','112313','132113','132311','211313',
+  '231113','231311','112133','112331','132131','113123','113321','133121','313121','211331',
+  '231131','213113','213311','213131','311123','311321','331121','312113','312311','332111',
+  '314111','221411','431111','111224','111422','121124','121421','141122','141221','112214',
+  '112412','122114','122411','142112','142211','241211','221114','413111','241112','134111',
+  '111242','121142','121241','114212','124112','124211','411212','421112','421211','212141',
+  '214121','412121','111143','111341','131141','114113','114311','411113','411311','113141',
+  '114131','311141','411131','211412','211214','211232','2331112'
+];
+
+function buildCode128Svg(value = '') {
+  const text = normalizeBarcode(value).toUpperCase();
+  if (!text || /[^\x20-\x7E]/.test(text)) return '';
+  const codes = [104, ...Array.from(text).map((char) => char.charCodeAt(0) - 32)];
+  let checksum = codes[0];
+  for (let index = 1; index < codes.length; index += 1) checksum += codes[index] * index;
+  codes.push(checksum % 103, 106);
+  let x = 10;
+  const height = 72;
+  const bars = [];
+  codes.forEach((code) => {
+    const pattern = CODE128_PATTERNS[code];
+    if (!pattern) return;
+    Array.from(pattern).forEach((widthChar, index) => {
+      const width = Number(widthChar) * 2;
+      if (index % 2 === 0) bars.push(`<rect x="${x}" y="8" width="${width}" height="${height}" fill="#111"/>`);
+      x += width;
+    });
+  });
+  const totalWidth = x + 10;
+  return `<svg class="label-barcode" width="280" height="92" viewBox="0 0 ${totalWidth} 92" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Codigo de barras ${esc(text)}"><rect width="${totalWidth}" height="92" fill="#fff"/>${bars.join('')}</svg>`;
+}
+
 function openLabelPreview(item) {
   currentLabelItem = item;
   const location = [...new Set([locationTypeLabel(item.locationType), item.locationDetail || item.location].filter(Boolean))].join(' · ');
   const expiry = item.expiryDate ? `Vence: ${fmtDateOnly(item.expiryDate)}` : '';
   document.getElementById('label-preview-content').innerHTML = `<strong>GRATITUD GOURMET</strong><div>${esc(item.name || 'Artículo')}</div><div class="label-code">${esc(item.internalCode || '')}</div><div>${esc(location)}</div>${expiry ? `<div>${esc(expiry)}</div>` : ''}`;
+  document.querySelector('#label-preview-content .label-code')?.insertAdjacentHTML('afterend', buildCode128Svg(item.internalCode || ''));
   document.getElementById('label-preview-overlay').classList.add('open');
 }
 
@@ -1998,6 +2036,8 @@ function printCurrentLabel() {
   const printWindow = window.open('', '_blank', 'width=420,height=520');
   if (!printWindow) { toast('El navegador bloqueó la vista de impresión.'); return; }
   printWindow.document.write(`<!doctype html><html><head><title>Etiqueta ${esc(currentLabelItem.internalCode)}</title><style>body{font-family:Arial,sans-serif;margin:0;padding:24px}.label{width:320px;border:2px solid #111;padding:18px;text-align:center;line-height:1.5}.brand{font-size:16px;font-weight:800}.name{font-size:19px}.code{font-size:25px;font-weight:900;letter-spacing:.08em;margin:8px 0}.note{font-size:12px;margin-top:14px;color:#555}@media print{body{padding:0}.note{display:none}}</style></head><body><div class="label"><div class="brand">GRATITUD GOURMET</div><div class="name">${esc(currentLabelItem.name || 'Artículo')}</div><div class="code">${esc(currentLabelItem.internalCode)}</div><div>${esc(location)}</div><div>${esc(expiry)}</div><div class="note">Código textual. No es todavía un código de barras gráfico.</div></div><script>window.onload=()=>window.print()<\/script></body></html>`);
+  printWindow.document.querySelector('.code')?.insertAdjacentHTML('afterend', buildCode128Svg(currentLabelItem.internalCode));
+  printWindow.document.querySelector('.note')?.remove();
   printWindow.document.close();
 }
 
