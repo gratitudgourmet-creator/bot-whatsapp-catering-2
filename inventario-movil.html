@@ -46,52 +46,61 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .btn-danger{flex:1;padding:14px;background:var(--danger-bg);color:var(--danger);border:1px solid #f5c4b3;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer}
 
 /* MAIN */
-#main-screen{display:none;flex-direction:column;height:100%;overflow:hidden}
+#main-screen{display:none;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;min-width:0}
 
 /* HEADER */
-.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;flex-shrink:0}
-.header-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 12px;flex:0 0 auto;min-width:0}
+.header-top{display:grid;grid-template-columns:auto minmax(150px,1fr) minmax(170px,280px) auto auto;align-items:center;gap:10px}
 .back-btn{background:none;border:none;padding:4px;cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
-.header-title{flex:1}
+.header-title{min-width:0}
 .header-title h1{font-size:16px;font-weight:600}
 .header-title p{font-size:12px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.progress-wrap{margin-top:2px}
+.progress-wrap{min-width:0;margin:0}
 .progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
 .progress-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
 .progress-label{font-size:11px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between}
 
 /* SEARCH + FILTERS */
-.search-area{background:var(--surface);padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
-.domain-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.domain-tab{min-width:0;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:12px;padding:10px 8px;font-size:13px;font-weight:800;cursor:pointer;white-space:normal;line-height:1.2}
+.search-area{position:relative;background:var(--surface);padding:8px 12px 6px;border-bottom:1px solid var(--border);flex:0 0 auto;min-width:0}
+.operational-toolbar{display:grid;grid-template-columns:minmax(220px,310px) minmax(220px,1fr) auto auto auto;gap:8px;align-items:center;min-width:0}
+.domain-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:0}
+.domain-tab{min-width:0;border:1px solid var(--border);background:var(--bg);color:var(--muted);border-radius:10px;padding:8px 7px;font-size:12px;font-weight:800;cursor:pointer;white-space:normal;line-height:1.15}
 .domain-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.inventory-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
-.inventory-kpi{min-width:0;border:1px solid var(--border);border-radius:12px;padding:9px 10px;background:var(--bg)}
-.inventory-kpi strong{display:block;font-size:17px;line-height:1.1;color:var(--text)}
-.inventory-kpi span{display:block;margin-top:3px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}
-.search-input-wrap{position:relative;margin-bottom:8px}
+.inventory-kpis{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0}
+.inventory-kpi{min-width:0;display:flex;align-items:baseline;gap:4px;border-left:1px solid var(--border);padding-left:7px}
+.inventory-kpi:first-child{border-left:0;padding-left:0}
+.inventory-kpi strong{font-size:14px;line-height:1;color:var(--text)}
+.inventory-kpi span{font-size:10px;color:var(--muted);white-space:nowrap}
+.search-input-wrap{position:relative;min-width:0}
 .search-input-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
 .search-input-wrap input{width:100%;padding:10px 12px 10px 38px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg)}
 .search-input-wrap input:focus{outline:none;border-color:var(--accent)}
-.filter-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.toolbar-btn{min-height:40px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);padding:8px 12px;font-size:13px;font-weight:800;white-space:nowrap;cursor:pointer}
+.toolbar-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.filter-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:6px 0 1px}
 .filter-chips::-webkit-scrollbar{display:none}
-.chip{padding:6px 14px;border-radius:20px;font-size:13px;border:1px solid var(--border);cursor:pointer;white-space:nowrap;background:var(--surface);color:var(--muted);transition:all .15s}
+.chip{padding:5px 11px;border-radius:20px;font-size:12px;border:1px solid var(--border);cursor:pointer;white-space:nowrap;background:var(--surface);color:var(--muted);transition:all .15s}
 .chip.active{background:var(--accent-bg);border-color:var(--accent-text);color:var(--accent-text);font-weight:600}
-.inventory-filter-grid{margin-top:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.compact-panel-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:80}
+.compact-panel-backdrop.open{display:block}
+.compact-panel{display:none;position:fixed;right:12px;top:150px;z-index:81;width:min(420px,calc(100vw - 24px));max-height:calc(100dvh - 170px);overflow-y:auto;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--surface);box-shadow:0 16px 38px rgba(0,0,0,.16)}
+.compact-panel.open{display:block}
+.compact-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.compact-panel-head strong{font-size:15px}
+.compact-panel-close{border:0;background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer}
+.inventory-filter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.filter-panel-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.filter-panel-actions button{min-height:40px;border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:8px 12px;font-weight:700}
 .category-filter-wrap{min-width:0;display:flex;flex-direction:column;gap:4px}
 .category-filter-wrap label{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
 .category-filter-wrap select{min-width:0;width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text)}
-@media(max-width:420px){.inventory-filter-grid{grid-template-columns:1fr 1fr}.domain-tab{font-size:12px;padding:9px 6px}}
-.barcode-capture{border:1px solid var(--border);background:var(--bg);border-radius:14px;padding:10px;margin-bottom:10px;min-width:0}
-.barcode-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:8px}
-.barcode-action{min-width:0;border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:9px 6px;font-size:12px;font-weight:800;color:var(--text);white-space:normal;cursor:pointer}
-.barcode-action.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.barcode-capture{min-width:0}
 .barcode-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;min-width:0}
 .barcode-entry input{min-width:0;width:100%;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-size:15px;text-transform:uppercase}
 .barcode-entry button{border:0;border-radius:10px;padding:0 14px;background:var(--text);color:#fff;font-weight:800}
 
 /* ITEM LIST */
-.item-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px}
+.item-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
 .item{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid var(--border);background:var(--surface);transition:background .15s;min-width:0}
 .item.counted{background:#f0fbf6}
 .item-info{flex:1;min-width:0}
@@ -117,6 +126,13 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .item-actions::-webkit-scrollbar{display:none}
 .item-action{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
 .item-action.danger{background:var(--danger-bg);border-color:#f5c4b3;color:var(--danger)}
+@media(min-width:641px){
+  .item{padding:9px 12px;grid-template-columns:minmax(240px,1fr) auto auto auto minmax(280px,auto)}
+  .item-actions{grid-column:auto;max-width:360px;padding-top:0}
+  .item-meta-line{margin-top:4px}
+  .item-stock-line{margin-top:4px}
+  .diff-pill{margin-top:5px}
+}
 .qty-ctrl{display:flex;align-items:center;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface)}
 .qty-btn{width:40px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;color:var(--muted);font-weight:300;user-select:none;flex-shrink:0}
 .qty-btn:active{background:var(--bg)}
@@ -161,7 +177,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .empty-state p{font-size:15px}
 
 /* BOTTOM BAR */
-.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px 20px;display:flex;gap:10px;z-index:10}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;z-index:10}
 .btn-add{flex:0 0 auto;padding:14px 18px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px}
 .btn-add:active{background:var(--bg)}
 .btn-close{flex:1;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
@@ -209,7 +225,43 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .associate-results{display:flex;flex-direction:column;gap:7px;margin:10px 0;max-height:42dvh;overflow-y:auto}.associate-row{width:100%;text-align:left;border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:11px}.associate-row strong{display:block}.associate-row span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
 .camera-frame{width:100%;aspect-ratio:4/3;background:#111;border-radius:14px;overflow:hidden;margin:12px 0}.camera-frame video{width:100%;height:100%;object-fit:cover}
 .label-preview{border:2px solid #111;background:#fff;color:#111;border-radius:6px;padding:16px;text-align:center;line-height:1.45}.label-preview strong{display:block;font-size:16px}.label-preview .label-code{font-size:22px;font-weight:900;letter-spacing:.06em;margin:6px 0}.label-barcode{display:block;width:100%;max-width:280px;height:auto;margin:8px auto 4px}
-@media(max-width:390px){.barcode-actions{grid-template-columns:1fr 1fr}.barcode-actions .create-no-code{grid-column:1/-1}.capture-meta{grid-template-columns:1fr}.capture-actions{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){
+  .header-top{grid-template-columns:auto minmax(120px,1fr) minmax(150px,220px) auto}
+  .inventory-kpis{display:none}
+  .operational-toolbar{grid-template-columns:minmax(180px,250px) minmax(180px,1fr) auto auto auto}
+}
+@media(max-width:640px){
+  .header{padding:7px 10px}
+  .header-top{grid-template-columns:auto minmax(0,1fr) minmax(110px,145px)}
+  #btn-change-location{display:none!important}
+  .header-title h1{font-size:14px}
+  .header-title p{font-size:11px}
+  .progress-label{font-size:10px}
+  .search-area{padding:7px 10px 5px}
+  .operational-toolbar{grid-template-columns:minmax(0,1fr) auto auto auto}
+  .domain-tabs{grid-column:1/-1}
+  .search-input-wrap{grid-column:1}
+  .toolbar-btn{padding:8px 10px;min-height:40px}
+  .compact-panel{position:fixed;left:0;right:0;top:auto;bottom:0;width:100%;max-height:min(78dvh,620px);overflow-y:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+  .inventory-filter-grid{grid-template-columns:1fr}
+  .capture-meta{grid-template-columns:1fr}
+  .capture-actions{grid-template-columns:1fr 1fr}
+  .bottom-bar{padding-left:10px;padding-right:10px}
+  .btn-add{padding:12px}
+  .btn-close{padding:12px 10px;font-size:14px}
+}
+@media(max-height:750px){
+  .header{padding-top:6px;padding-bottom:6px}
+  .header-title p{display:none}
+  .progress-label{margin-top:2px}
+  .inventory-kpis{display:none}
+  .search-area{padding-top:6px;padding-bottom:4px}
+  .domain-tab{padding-top:7px;padding-bottom:7px}
+  .filter-chips{padding-top:4px}
+  .compact-panel{top:132px;max-height:calc(100dvh - 148px)}
+  .bottom-bar{padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+  .item-list{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+}
 
 /* CONFIRM CLOSE MODAL */
 #confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:24px}
@@ -281,38 +333,46 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
         <h1>Inventario general</h1>
         <p id="header-location">Salon Guaymallan</p>
       </div>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="progress-label"><span id="prog-label">0 contados</span><span id="prog-pct">0%</span></div>
+      </div>
+      <div class="inventory-kpis" id="inventory-kpis"></div>
+      <button class="item-action" id="btn-change-location" style="display:none" onclick="openLocationModal()">Cambiar ubicación</button>
     </div>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-      <div class="progress-label"><span id="prog-label">0 contados</span><span id="prog-pct">0%</span></div>
-    </div>
-    <button class="item-action" id="btn-change-location" style="display:none;margin-top:10px" onclick="openLocationModal()">Cambiar ubicación</button>
   </div>
 
   <div class="search-area">
-    <div class="domain-tabs" role="tablist" aria-label="Tipo de inventario">
-      <button class="domain-tab active" id="domain-tab-kitchen" type="button" onclick="setInventoryDomain('kitchen')">Inventario Cocina</button>
-      <button class="domain-tab" id="domain-tab-equipment" type="button" onclick="setInventoryDomain('equipment')">Equipamiento Operativo</button>
-    </div>
-    <div class="inventory-kpis" id="inventory-kpis"></div>
-    <div class="barcode-capture">
-      <div class="barcode-actions">
-        <button class="barcode-action primary" type="button" onclick="startBarcodeCamera()">Escanear código</button>
-        <button class="barcode-action" type="button" onclick="focusBarcodeInput()">Escribir código</button>
-        <button class="barcode-action create-no-code" type="button" onclick="openNewItemModal()">Crear sin código</button>
+    <div class="operational-toolbar">
+      <div class="domain-tabs" role="tablist" aria-label="Tipo de inventario">
+        <button class="domain-tab active" id="domain-tab-kitchen" type="button" onclick="setInventoryDomain('kitchen')">Cocina</button>
+        <button class="domain-tab" id="domain-tab-equipment" type="button" onclick="setInventoryDomain('equipment')">Operativo</button>
       </div>
+      <div class="search-input-wrap">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="search-input" placeholder="Buscar artículos" oninput="renderItems()">
+      </div>
+      <button class="toolbar-btn primary" type="button" onclick="startBarcodeCamera()">Escanear</button>
+      <button class="toolbar-btn toolbar-code" type="button" onclick="toggleCompactPanel('barcode-entry-panel')" aria-label="Escribir código">Código</button>
+      <button class="toolbar-btn" id="filters-button" type="button" onclick="toggleCompactPanel('inventory-filter-panel')">Filtros</button>
+    </div>
+    <div class="filter-chips" id="filter-chips">
+      <div class="chip active" data-filter="pending" onclick="setFilter(this)">Pendientes</div>
+    </div>
+  </div>
+
+  <div class="compact-panel-backdrop" id="compact-panel-backdrop" onclick="closeCompactPanels()"></div>
+  <div class="compact-panel" id="barcode-entry-panel" role="dialog" aria-label="Escribir código">
+    <div class="compact-panel-head"><strong>Buscar por código</strong><button class="compact-panel-close" type="button" onclick="closeCompactPanels()" aria-label="Cerrar">&times;</button></div>
+    <div class="barcode-capture">
       <div class="barcode-entry">
         <input id="barcode-input" autocomplete="off" autocapitalize="characters" placeholder="Código comercial o GG-..." onkeydown="handleBarcodeInputKey(event)">
         <button type="button" onclick="searchCapturedBarcode()">Buscar</button>
       </div>
     </div>
-    <div class="search-input-wrap">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="search" id="search-input" placeholder="Buscar..." oninput="renderItems()">
-    </div>
-    <div class="filter-chips" id="filter-chips">
-      <div class="chip active" data-filter="pending" onclick="setFilter(this)">Pendientes</div>
-    </div>
+  </div>
+  <div class="compact-panel" id="inventory-filter-panel" role="dialog" aria-label="Filtros avanzados">
+    <div class="compact-panel-head"><strong>Filtros avanzados</strong><button class="compact-panel-close" type="button" onclick="closeCompactPanels()" aria-label="Cerrar">&times;</button></div>
     <div class="inventory-filter-grid">
       <div class="category-filter-wrap">
         <label for="category-filter">Rubro</label>
@@ -339,6 +399,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
         </select>
       </div>
     </div>
+    <div class="filter-panel-actions"><button type="button" onclick="clearSecondaryFilters()">Limpiar filtros</button><button type="button" onclick="closeCompactPanels()">Ver resultados</button></div>
   </div>
 
   <div class="item-list" id="item-list"></div>
@@ -1234,21 +1295,58 @@ function buildUsageFilter() {
 
 function setCategoryFilter(value) {
   activeCategoryFilter = value || '';
+  updateFilterButton();
   renderItems();
 }
 
 function setSubcategoryFilter(value) {
   activeSubcategoryFilter = value || '';
+  updateFilterButton();
   renderItems();
 }
 
 function setLocationTypeFilter(value) {
   activeLocationTypeFilter = value || '';
+  updateFilterButton();
   renderItems();
 }
 
 function setUsageFilter(value) {
   activeUsageFilter = value || '';
+  updateFilterButton();
+  renderItems();
+}
+
+function updateFilterButton() {
+  const count = [activeCategoryFilter, activeSubcategoryFilter, activeLocationTypeFilter, activeUsageFilter].filter(Boolean).length;
+  const button = document.getElementById('filters-button');
+  if (button) button.textContent = count ? `Filtros (${count})` : 'Filtros';
+}
+
+function toggleCompactPanel(panelId) {
+  const panel = document.getElementById(panelId);
+  const shouldOpen = panel && !panel.classList.contains('open');
+  closeCompactPanels();
+  if (!shouldOpen) return;
+  panel.classList.add('open');
+  document.getElementById('compact-panel-backdrop')?.classList.add('open');
+  if (panelId === 'barcode-entry-panel') {
+    window.setTimeout(() => document.getElementById('barcode-input')?.focus(), 0);
+  }
+}
+
+function closeCompactPanels() {
+  document.querySelectorAll('.compact-panel.open').forEach(panel => panel.classList.remove('open'));
+  document.getElementById('compact-panel-backdrop')?.classList.remove('open');
+}
+
+function clearSecondaryFilters() {
+  activeCategoryFilter = '';
+  activeSubcategoryFilter = '';
+  activeLocationTypeFilter = '';
+  activeUsageFilter = '';
+  buildSecondaryFilters();
+  updateFilterButton();
   renderItems();
 }
 
@@ -1269,6 +1367,7 @@ function setInventoryDomain(domain) {
   syncDomainUi();
   buildFilterChips();
   buildSecondaryFilters();
+  updateFilterButton();
   renderItems();
 }
 
@@ -2033,11 +2132,22 @@ function printCurrentLabel() {
   if (!currentLabelItem?.internalCode) return;
   const location = [...new Set([locationTypeLabel(currentLabelItem.locationType), currentLabelItem.locationDetail || currentLabelItem.location].filter(Boolean))].join(' · ');
   const expiry = currentLabelItem.expiryDate ? `Vence: ${fmtDateOnly(currentLabelItem.expiryDate)}` : '';
-  const printWindow = window.open('', '_blank', 'width=420,height=520');
+  const printWindow = window.open('', '_blank', 'width=420,height=320');
   if (!printWindow) { toast('El navegador bloqueó la vista de impresión.'); return; }
   printWindow.document.write(`<!doctype html><html><head><title>Etiqueta ${esc(currentLabelItem.internalCode)}</title><style>body{font-family:Arial,sans-serif;margin:0;padding:24px}.label{width:320px;border:2px solid #111;padding:18px;text-align:center;line-height:1.5}.brand{font-size:16px;font-weight:800}.name{font-size:19px}.code{font-size:25px;font-weight:900;letter-spacing:.08em;margin:8px 0}.note{font-size:12px;margin-top:14px;color:#555}@media print{body{padding:0}.note{display:none}}</style></head><body><div class="label"><div class="brand">GRATITUD GOURMET</div><div class="name">${esc(currentLabelItem.name || 'Artículo')}</div><div class="code">${esc(currentLabelItem.internalCode)}</div><div>${esc(location)}</div><div>${esc(expiry)}</div><div class="note">Código textual. No es todavía un código de barras gráfico.</div></div><script>window.onload=()=>window.print()<\/script></body></html>`);
   printWindow.document.querySelector('.code')?.insertAdjacentHTML('afterend', buildCode128Svg(currentLabelItem.internalCode));
   printWindow.document.querySelector('.note')?.remove();
+  printWindow.document.close();
+}
+
+function printCurrentLabel() {
+  if (!currentLabelItem?.internalCode) return;
+  const location = [...new Set([locationTypeLabel(currentLabelItem.locationType), currentLabelItem.locationDetail || currentLabelItem.location].filter(Boolean))].join(' - ');
+  const expiry = currentLabelItem.expiryDate ? `Vence: ${fmtDateOnly(currentLabelItem.expiryDate)}` : '';
+  const barcodeSvg = buildCode128Svg(currentLabelItem.internalCode);
+  const printWindow = window.open('', '_blank', 'width=420,height=320');
+  if (!printWindow) { toast('El navegador bloqueo la vista de impresion.'); return; }
+  printWindow.document.write(`<!doctype html><html><head><title>Etiqueta ${esc(currentLabelItem.internalCode)}</title><style>@page{size:72.1mm 44mm;margin:0}*{box-sizing:border-box}html,body{width:72.1mm;height:44mm;margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif;overflow:hidden}.page{width:72.1mm;height:44mm;position:relative;overflow:hidden}.label{position:absolute;left:9mm;top:0;width:54mm;height:44mm;padding:2.5mm 2.5mm 2mm;text-align:center;overflow:hidden;line-height:1.15}.brand{font-size:8px;font-weight:900;letter-spacing:.02em}.name{font-size:11px;font-weight:700;min-height:8mm;max-height:8mm;overflow:hidden;display:flex;align-items:center;justify-content:center}.code{font-size:16px;font-weight:900;letter-spacing:.06em;margin:1mm 0 .5mm}.label-barcode{display:block;width:49mm;height:15mm;margin:0 auto .5mm}.meta{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}@media screen{body{padding:8px;width:auto;height:auto}.page{border:1px dashed #ccc}.label{border:1px solid #111}}</style></head><body><div class="page"><div class="label"><div class="brand">GRATITUD GOURMET</div><div class="name">${esc(currentLabelItem.name || 'Articulo')}</div><div class="code">${esc(currentLabelItem.internalCode)}</div>${barcodeSvg}<div class="meta">${esc(location)}</div>${expiry ? `<div class="meta">${esc(expiry)}</div>` : ''}</div></div><script>window.onload=()=>window.print()<\/script></body></html>`);
   printWindow.document.close();
 }
 
