@@ -241,6 +241,7 @@ let erpUsers = [];
 let auditRecords = [];
 let panelRoleDefinitions = {};
 const panelSessions = new Map();
+const inventoryInternalCodeReservations = new Map();
 const DEFAULT_ROLE_DEFINITIONS = {
   admin: {
     label: "Administracion general",
@@ -1857,6 +1858,46 @@ function startApprovalPanelServer() {
         }
       }
 
+      if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory/internal-code") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "events:write", "logistics:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const existing = body.itemId ? findOperationalInventoryItem(body.itemId) : null;
+          if (body.itemId && !existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+          const permissionItem = existing || normalizeOperationalInventoryItem({
+            inventoryArea: body.inventoryArea,
+            inventoryDomain: body.inventoryDomain,
+            functionalFamily: body.functionalFamily,
+            categoryId: body.categoryId,
+          });
+          if (!canWriteInventoryItem(user, permissionItem)) {
+            return sendJson(response, { ok: false, error: "Su usuario no puede generar codigos para esta area de inventario." }, 403);
+          }
+          const internalCode = generateInventoryInternalCode();
+          return sendJson(response, { ok: true, internalCode });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory/barcode") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "events:write", "logistics:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const existing = findOperationalInventoryItem(body.itemId);
+          if (!existing) return sendJson(response, { ok: false, error: "Articulo no encontrado." }, 400);
+          if (!canWriteInventoryItem(user, existing)) {
+            return sendJson(response, { ok: false, error: "Su usuario no puede asociar codigos a esta area de inventario." }, 403);
+          }
+          const item = associateOperationalInventoryBarcode(body, user);
+          return sendJson(response, { ok: true, item, operationalInventory: getOperationalInventoryAdminView(user) });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message }, 400);
+        }
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory-categories") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write"]);
         if (!user) return;
@@ -2381,7 +2422,7 @@ function applySecurityHeaders(response) {
   response.setHeader("X-Content-Type-Options", "nosniff");
   response.setHeader("X-Frame-Options", "DENY");
   response.setHeader("Referrer-Policy", "same-origin");
-  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
+  response.setHeader("Permissions-Policy", "camera=(self), microphone=(), geolocation=(self)");
   response.setHeader(
     "Content-Security-Policy",
     "default-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline' https://unpkg.com; script-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://unpkg.com;"
@@ -7630,6 +7671,15 @@ function normalizeInventoryBarcode(value = "") {
   return normalizeText(value || "").replace(/\s+/g, "");
 }
 
+function normalizeInventoryInternalCode(value = "") {
+  return normalizeInventoryBarcode(value).toUpperCase();
+}
+
+function isValidInventoryInternalCode(value = "") {
+  const code = normalizeInventoryInternalCode(value);
+  return /^GG-[0-9A-HJKMNP-TV-Z]{6}$/.test(code) && !/[ILOU]/.test(code);
+}
+
 function normalizeInventoryBarcodeAliases(input = [], primaryBarcode = "") {
   const source = Array.isArray(input)
     ? input
@@ -7643,7 +7693,39 @@ function getInventoryBarcodesForItem(item = {}) {
   return Array.from(new Set([
     normalizeInventoryBarcode(item.barcode || ""),
     ...normalizeInventoryBarcodeAliases(item.barcodeAliases || item.barcodes || item.providerBarcodes || [], item.barcode || ""),
+    normalizeInventoryInternalCode(item.internalCode || ""),
   ].filter(Boolean)));
+}
+
+function findOperationalInventoryItemByBarcode(code = "", excludeItemId = "") {
+  const clean = normalizeInventoryBarcode(code);
+  if (!clean) return null;
+  const cleanKey = clean.toUpperCase();
+  return normalizeOperationalInventoryData(erpOperationalInventory).items.find((item) => {
+    if (excludeItemId && item.id === excludeItemId) return false;
+    return getInventoryBarcodesForItem(item).some((itemCode) => itemCode.toUpperCase() === cleanKey);
+  }) || null;
+}
+
+function cleanupInventoryInternalCodeReservations(now = Date.now()) {
+  inventoryInternalCodeReservations.forEach((expiresAt, code) => {
+    if (expiresAt <= now) inventoryInternalCodeReservations.delete(code);
+  });
+}
+
+function generateInventoryInternalCode() {
+  cleanupInventoryInternalCodeReservations();
+  const alphabet = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    let suffix = "";
+    for (let index = 0; index < 6; index += 1) suffix += alphabet[crypto.randomInt(0, alphabet.length)];
+    const code = `GG-${suffix}`;
+    if (inventoryInternalCodeReservations.has(code)) continue;
+    if (findOperationalInventoryItemByBarcode(code)) continue;
+    inventoryInternalCodeReservations.set(code, Date.now() + 30 * 60 * 1000);
+    return code;
+  }
+  throw new Error("No se pudo generar un codigo interno unico. Intente nuevamente.");
 }
 
 function normalizeOperationalInventoryItem(input = {}) {
@@ -7654,11 +7736,14 @@ function normalizeOperationalInventoryItem(input = {}) {
   const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || "") || inventoryArea;
   const controlType = normalizeInventoryControlType(input.controlType || "") || inferInventoryControlType(input, functionalFamily, categoryId);
   const barcode = normalizeInventoryBarcode(input.barcode || input.ean || input.sku || "");
+  const internalCode = normalizeInventoryInternalCode(input.internalCode || "");
   return {
     id: normalizeText(input.id || `opinv-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     name: normalizeText(input.name || input.productName || input.description || ""),
     barcode,
-    barcodeAliases: normalizeInventoryBarcodeAliases(input.barcodeAliases || input.barcodes || input.providerBarcodes || [], barcode),
+    barcodeAliases: normalizeInventoryBarcodeAliases(input.barcodeAliases || input.barcodes || input.providerBarcodes || [], barcode)
+      .filter((code) => code.toUpperCase() !== internalCode),
+    internalCode,
     categoryId,
     subcategory: normalizeText(input.subcategory || ""),
     inventoryDomain,
@@ -8006,15 +8091,18 @@ function saveOperationalInventoryRecord(input = {}, user = null) {
   const itemInput = input.item || input;
   const item = normalizeOperationalInventoryItem(itemInput);
   if (!item.name) throw new Error("Ingrese el nombre del item de inventario.");
+  if (item.internalCode && !isValidInventoryInternalCode(item.internalCode)) throw new Error("El codigo interno debe usar el formato GG-XXXXXX.");
+  if (item.barcode && item.internalCode && item.barcode.toUpperCase() === item.internalCode) throw new Error("El codigo comercial y el codigo interno deben ser diferentes.");
   if (!categories.some((category) => category.id === item.categoryId)) categories.push(normalizeOperationalInventoryCategory({ id: item.categoryId, label: item.categoryId }));
   const index = data.items.findIndex((entry) => entry.id === item.id);
   const before = index >= 0 ? data.items[index] : null;
   const nextCodes = getInventoryBarcodesForItem(item);
   if (nextCodes.length) {
+    const nextCodeKeys = nextCodes.map((code) => code.toUpperCase());
     const conflict = data.items.find((entry) => {
       if (entry.id === item.id) return false;
-      const codes = getInventoryBarcodesForItem(entry);
-      return nextCodes.some((code) => codes.includes(code));
+      const codes = getInventoryBarcodesForItem(entry).map((code) => code.toUpperCase());
+      return nextCodeKeys.some((code) => codes.includes(code));
     });
     if (conflict) {
       throw new Error(`El codigo ya esta asociado a ${conflict.name || "otro articulo"}.`);
@@ -8026,8 +8114,55 @@ function saveOperationalInventoryRecord(input = {}, user = null) {
   else data.items.push(nextItem);
   erpOperationalInventory = { categories, items: data.items, updatedAt: now };
   saveErpOperationalInventory();
+  if (nextItem.internalCode) inventoryInternalCodeReservations.delete(nextItem.internalCode);
   recordAudit(user, input.id ? "update" : "create", "operational_inventory", nextItem.id, nextItem.name, before, nextItem);
   return getOperationalInventoryAdminView(user);
+}
+
+function associateOperationalInventoryBarcode(input = {}, user = null) {
+  const itemId = normalizeText(input.itemId || "");
+  const codeType = normalizeText(input.codeType || "").toLowerCase();
+  const code = codeType === "internal"
+    ? normalizeInventoryInternalCode(input.code || "")
+    : normalizeInventoryBarcode(input.code || "");
+  if (!itemId) throw new Error("itemId requerido.");
+  if (!code) throw new Error("Codigo requerido.");
+  if (!["commercial", "provider", "internal"].includes(codeType)) throw new Error("Tipo de codigo invalido.");
+  if (codeType === "internal" && !isValidInventoryInternalCode(code)) throw new Error("El codigo interno debe usar el formato GG-XXXXXX.");
+
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const index = data.items.findIndex((item) => item.id === itemId);
+  if (index < 0) throw new Error("Articulo no encontrado.");
+  const conflict = findOperationalInventoryItemByBarcode(code, itemId);
+  if (conflict) throw new Error(`El codigo ya esta asociado a ${conflict.name || "otro articulo"}.`);
+
+  const before = data.items[index];
+  const next = { ...before };
+  if (codeType === "commercial") {
+    if (next.barcode && normalizeInventoryBarcode(next.barcode) !== code) {
+      throw new Error("El articulo ya tiene un codigo comercial. Agreguelo como codigo de proveedor si corresponde.");
+    }
+    next.barcode = code;
+  } else if (codeType === "provider") {
+    const aliases = normalizeInventoryBarcodeAliases(next.barcodeAliases || [], next.barcode || "");
+    const codeKey = code.toUpperCase();
+    if (codeKey !== normalizeInventoryBarcode(next.barcode || "").toUpperCase() && codeKey !== normalizeInventoryInternalCode(next.internalCode || "") && !aliases.some((alias) => alias.toUpperCase() === codeKey)) aliases.push(code);
+    next.barcodeAliases = aliases;
+  } else {
+    if (next.internalCode && normalizeInventoryInternalCode(next.internalCode) !== code) {
+      throw new Error("El articulo ya tiene un codigo interno. No se reemplazo.");
+    }
+    if (code === normalizeInventoryBarcode(next.barcode || "").toUpperCase()) throw new Error("El codigo interno debe ser diferente del codigo comercial.");
+    next.internalCode = code;
+    next.barcodeAliases = normalizeInventoryBarcodeAliases(next.barcodeAliases || [], next.barcode || "").filter((alias) => alias !== code);
+  }
+  next.updatedAt = new Date().toISOString();
+  data.items[index] = normalizeOperationalInventoryItem(next);
+  erpOperationalInventory = { ...data, updatedAt: next.updatedAt };
+  saveErpOperationalInventory();
+  inventoryInternalCodeReservations.delete(code);
+  recordAudit(user, "update", "operational_inventory_barcode", itemId, before.name, before, data.items[index], { codeType });
+  return data.items[index];
 }
 
 function saveOperationalInventoryCategories(input = {}, user = null) {

@@ -82,6 +82,13 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .category-filter-wrap label{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;text-transform:uppercase;letter-spacing:.02em}
 .category-filter-wrap select{min-width:0;width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text)}
 @media(max-width:420px){.inventory-filter-grid{grid-template-columns:1fr 1fr}.domain-tab{font-size:12px;padding:9px 6px}}
+.barcode-capture{border:1px solid var(--border);background:var(--bg);border-radius:14px;padding:10px;margin-bottom:10px;min-width:0}
+.barcode-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:8px}
+.barcode-action{min-width:0;border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:9px 6px;font-size:12px;font-weight:800;color:var(--text);white-space:normal;cursor:pointer}
+.barcode-action.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.barcode-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;min-width:0}
+.barcode-entry input{min-width:0;width:100%;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-size:15px;text-transform:uppercase}
+.barcode-entry button{border:0;border-radius:10px;padding:0 14px;background:var(--text);color:#fff;font-weight:800}
 
 /* ITEM LIST */
 .item-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px}
@@ -181,6 +188,28 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 @media(max-width:420px){.new-item-grid{grid-template-columns:1fr}}
 .modal-form input:focus,.modal-form select:focus{outline:none;border-color:var(--accent)}
 .modal-btns{display:flex;gap:10px;margin-top:4px}
+#new-item-overlay .modal{padding:0;max-height:calc(100dvh - 10px);display:flex;flex-direction:column;overflow:hidden}
+.new-item-header{padding:18px 18px 10px;flex:0 0 auto}
+.new-item-header h3{margin:0 0 4px}
+.new-item-header p{font-size:13px;color:var(--muted)}
+#new-item-overlay .modal-form{padding:4px 16px 22px;overflow-y:auto;overscroll-behavior:contain;min-height:0;flex:1}
+#new-item-overlay .modal-btns{position:sticky;bottom:0;z-index:2;background:var(--surface);border-top:1px solid var(--border);padding:10px 16px calc(10px + env(safe-area-inset-bottom));margin:0;flex:0 0 auto}
+#new-item-overlay .modal-btns button{min-height:48px}
+.new-item-code-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.new-item-code-row button{height:43px;padding:0 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-weight:800;white-space:nowrap}
+.advanced-block{border:1px solid var(--border);border-radius:12px;background:var(--surface);padding:0}
+.advanced-block summary{padding:12px;font-size:14px;font-weight:800;cursor:pointer}
+.advanced-body{border-top:1px solid var(--border);padding:12px;display:flex;flex-direction:column;gap:12px}
+.capture-sheet{width:100%;max-width:560px;background:var(--surface);border-radius:20px 20px 0 0;padding:18px;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain}
+.capture-sheet h3{font-size:18px;margin-bottom:5px}.capture-sheet>p{font-size:13px;color:var(--muted);margin-bottom:14px}
+.capture-card{border:1px solid var(--border);border-radius:14px;padding:14px;background:var(--bg)}
+.capture-card h4{font-size:17px;margin-bottom:5px;overflow-wrap:anywhere}.capture-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.capture-meta div{min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px}.capture-meta span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:800}.capture-meta strong{display:block;font-size:13px;margin-top:3px;overflow-wrap:anywhere}
+.capture-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.capture-actions button{min-width:0;min-height:44px;border:1px solid var(--border);border-radius:11px;background:var(--surface);font-weight:800;padding:9px;white-space:normal}.capture-actions .primary{background:var(--accent);border-color:var(--accent);color:#fff}.capture-actions .full{grid-column:1/-1}
+.associate-results{display:flex;flex-direction:column;gap:7px;margin:10px 0;max-height:42dvh;overflow-y:auto}.associate-row{width:100%;text-align:left;border:1px solid var(--border);border-radius:11px;background:var(--surface);padding:11px}.associate-row strong{display:block}.associate-row span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.camera-frame{width:100%;aspect-ratio:4/3;background:#111;border-radius:14px;overflow:hidden;margin:12px 0}.camera-frame video{width:100%;height:100%;object-fit:cover}
+.label-preview{border:2px solid #111;background:#fff;color:#111;border-radius:6px;padding:16px;text-align:center;line-height:1.45}.label-preview strong{display:block;font-size:16px}.label-preview .label-code{font-size:22px;font-weight:900;letter-spacing:.06em;margin:6px 0}
+@media(max-width:390px){.barcode-actions{grid-template-columns:1fr 1fr}.barcode-actions .create-no-code{grid-column:1/-1}.capture-meta{grid-template-columns:1fr}.capture-actions{grid-template-columns:1fr 1fr}}
 
 /* CONFIRM CLOSE MODAL */
 #confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:24px}
@@ -266,6 +295,17 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
       <button class="domain-tab" id="domain-tab-equipment" type="button" onclick="setInventoryDomain('equipment')">Equipamiento Operativo</button>
     </div>
     <div class="inventory-kpis" id="inventory-kpis"></div>
+    <div class="barcode-capture">
+      <div class="barcode-actions">
+        <button class="barcode-action primary" type="button" onclick="startBarcodeCamera()">Escanear código</button>
+        <button class="barcode-action" type="button" onclick="focusBarcodeInput()">Escribir código</button>
+        <button class="barcode-action create-no-code" type="button" onclick="openNewItemModal()">Crear sin código</button>
+      </div>
+      <div class="barcode-entry">
+        <input id="barcode-input" autocomplete="off" autocapitalize="characters" placeholder="Código comercial o GG-..." onkeydown="handleBarcodeInputKey(event)">
+        <button type="button" onclick="searchCapturedBarcode()">Buscar</button>
+      </div>
+    </div>
     <div class="search-input-wrap">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="search" id="search-input" placeholder="Buscar..." oninput="renderItems()">
@@ -315,30 +355,30 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 <!-- MODAL NUEVO ITEM -->
 <div class="modal-overlay" id="new-item-overlay" onclick="closeNewItemModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
-    <h3>Agregar item</h3>
+    <div class="new-item-header"><h3>Nuevo artículo</h3><p>Cargá lo esencial. Los datos avanzados son opcionales.</p></div>
     <div class="modal-form">
       <div class="new-item-card">
         <div class="new-item-section">
-          <div class="new-item-section-title">Articulo</div>
+          <div class="new-item-section-title">Identificación</div>
           <div class="new-item-grid">
             <div class="full">
               <label>Nombre</label>
               <input type="text" id="ni-name" placeholder="Ej: Platos llanos">
             </div>
             <div>
-              <label>Inventario</label>
-              <select id="ni-inventory-domain" onchange="syncNewItemDomainFields()">
-                <option value="kitchen">Inventario Cocina</option>
-                <option value="equipment">Equipamiento Operativo</option>
+              <label>Código detectado</label>
+              <input type="text" id="ni-barcode" autocomplete="off" autocapitalize="characters" placeholder="Opcional">
+            </div>
+            <div class="new-item-code-row">
+              <div><label>Código interno</label><input type="text" id="ni-internal-code" readonly placeholder="Sin generar"></div>
+              <button type="button" onclick="generateNewItemInternalCode()">Generar y usar</button>
+            </div>
+            <div class="full" id="ni-internal-actions" style="display:none"><div class="capture-actions"><button type="button" onclick="copyNewItemInternalCode()">Copiar</button><button type="button" onclick="previewNewItemLabel()">Imprimir etiqueta</button></div></div>
+            <div>
+              <label>Tipo general</label>
+              <select id="ni-general-type" onchange="syncNewItemTypeFields()">
+                <option value="food">Alimento</option><option value="beverage">Bebida</option><option value="disposable">Descartable</option><option value="tableware">Vajilla</option><option value="equipment">Equipo</option><option value="tool">Herramienta</option><option value="other">Otro</option>
               </select>
-            </div>
-            <div>
-              <label>Categoria</label>
-              <select id="ni-category" onchange="fillSubcategorySelect('ni-subcategory', document.getElementById('ni-inventory-domain').value, this.value, document.getElementById('ni-subcategory').value)"></select>
-            </div>
-            <div>
-              <label>Subcategoria</label>
-              <select id="ni-subcategory"></select>
             </div>
             <div>
               <label>Unidad</label>
@@ -353,7 +393,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
             </div>
           </div>
         </div>
-        <div class="new-item-section">
+        <div class="new-item-section" id="ni-quantity-section">
           <div class="new-item-section-title">Cantidad</div>
           <div id="ni-units-wrap">
             <label>Cantidad total</label>
@@ -376,7 +416,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
           </div>
         </div>
         <div class="new-item-section">
-          <div class="new-item-section-title">Clasificacion operativa</div>
+          <div class="new-item-section-title">Dónde queda</div>
           <div class="new-item-grid">
             <div>
               <label>Ubicacion principal</label>
@@ -385,19 +425,6 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
             <div>
               <label>Ubicacion detalle</label>
               <input type="text" id="ni-location-detail" placeholder="Ej: Heladera 1, Estante B">
-            </div>
-            <div id="ni-usage-wrap">
-              <label>Uso</label>
-              <select id="ni-usage-type">
-                <option value="">Sin definir</option>
-                <option value="cocina_diaria">Cocina diaria</option>
-                <option value="eventos">Eventos</option>
-                <option value="mixto">Mixto</option>
-              </select>
-            </div>
-            <div>
-              <label>Stock minimo</label>
-              <input type="number" id="ni-min-stock" min="0" step="0.01" placeholder="Opcional">
             </div>
             <div>
               <label>Estado operativo</label>
@@ -409,7 +436,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
                 <option value="bloqueado">Bloqueado / no usar</option>
               </select>
             </div>
-            <div>
+            <div id="ni-expiry-status-wrap">
               <label>Vencimiento</label>
               <select id="ni-expiry-status">
                 <option value="">No cargar vencimiento</option>
@@ -417,45 +444,31 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
                 <option value="vencido">Vencido</option>
               </select>
             </div>
-            <div>
+            <div id="ni-expiry-date-wrap">
               <label>Fecha de vencimiento</label>
               <input type="date" id="ni-expiry-date">
             </div>
-            <div class="full">
-              <label>Notas</label>
-              <input type="text" id="ni-kitchen-notes" placeholder="Notas de cocina o del equipo">
-            </div>
           </div>
         </div>
-        <div class="new-item-section">
-          <div class="new-item-section-title">Ubicacion precisa opcional</div>
-          <div class="new-item-grid">
-            <div>
-              <label>Deposito / sector</label>
-              <input type="text" id="ni-loc-deposit" placeholder="Ej: Salon">
-            </div>
-            <div>
-              <label>Estanteria</label>
-              <input type="text" id="ni-loc-shelf" placeholder="Ej: A">
-            </div>
-            <div>
-              <label>Nivel</label>
-              <input type="text" id="ni-loc-level" placeholder="Ej: 2">
-            </div>
-            <div>
-              <label>Posicion</label>
-              <input type="text" id="ni-loc-position" placeholder="Ej: Frente">
-            </div>
-          </div>
-        </div>
+        <details class="advanced-block"><summary>Datos avanzados</summary><div class="advanced-body">
+          <input type="hidden" id="ni-inventory-domain">
+          <div class="new-item-grid"><div><label>Categoría</label><select id="ni-category" onchange="fillSubcategorySelect('ni-subcategory', document.getElementById('ni-inventory-domain').value, this.value, document.getElementById('ni-subcategory').value)"></select></div><div><label>Subcategoría</label><select id="ni-subcategory"></select></div><div id="ni-usage-wrap"><label>Uso</label><select id="ni-usage-type"><option value="">Sin definir</option><option value="cocina_diaria">Cocina diaria</option><option value="eventos">Eventos</option><option value="mixto">Mixto</option></select></div><div><label>Stock mínimo</label><input type="number" id="ni-min-stock" min="0" step="0.01" placeholder="Opcional"></div><div class="full"><label>Notas</label><input type="text" id="ni-kitchen-notes" placeholder="Observaciones opcionales"></div></div>
+        </div></details>
+        <details class="advanced-block"><summary>Ubicación precisa</summary><div class="advanced-body"><div class="new-item-grid"><div><label>Depósito / sector</label><input type="text" id="ni-loc-deposit" placeholder="Ej: Salón"></div><div><label>Estantería</label><input type="text" id="ni-loc-shelf" placeholder="Ej: A"></div><div><label>Nivel</label><input type="text" id="ni-loc-level" placeholder="Ej: 2"></div><div><label>Posición</label><input type="text" id="ni-loc-position" placeholder="Ej: Frente"></div></div></div></details>
       </div>
     </div>
-    <div class="modal-btns" style="margin-top:16px">
+    <div class="modal-btns">
       <button class="btn-secondary" onclick="closeNewItemModal()">Cancelar</button>
-      <button class="btn-primary" onclick="saveNewItem()">Agregar</button>
+      <button class="btn-primary" onclick="saveNewItem()">Guardar</button>
     </div>
   </div>
 </div>
+
+<div class="modal-overlay" id="barcode-result-overlay" onclick="closeBarcodeResult(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><div id="barcode-result-content"></div></div></div>
+<div class="modal-overlay" id="barcode-missing-overlay" onclick="closeBarcodeMissing(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Este código todavía no existe</h3><p>Podés crear un artículo nuevo o asociarlo a uno existente.</p><div class="capture-card"><strong id="missing-barcode-label"></strong><div class="capture-actions"><button id="missing-create-food" class="primary" onclick="createFromMissingBarcode('food')">Crear alimento</button><button id="missing-create-equipment" class="primary" onclick="createFromMissingBarcode('equipment')">Crear equipo / herramienta</button><button id="missing-associate" class="full" onclick="openAssociateBarcode()">Asociar a existente</button><button class="full" onclick="closeBarcodeMissing()">Cancelar</button></div><p id="missing-readonly-copy" style="display:none;margin-top:10px">Tu usuario puede buscar artículos, pero no crear ni asociar códigos.</p></div></div></div>
+<div class="modal-overlay" id="barcode-associate-overlay" onclick="closeAssociateBarcode(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Asociar código</h3><p>Elegí el artículo sin modificar su stock ni ubicación.</p><label>Tipo de código</label><select id="associate-code-type" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;margin:5px 0 8px"><option value="commercial">Comercial</option><option value="provider">Proveedor</option><option value="internal">Interno</option></select><input id="associate-search" type="search" placeholder="Buscar artículo" oninput="renderAssociateResults()" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px"><div class="associate-results" id="associate-results"></div><button class="btn-secondary" onclick="closeAssociateBarcode()">Cancelar</button></div></div>
+<div class="modal-overlay" id="barcode-camera-overlay"><div class="capture-sheet"><h3>Escanear código</h3><p id="barcode-camera-status">Apuntá la cámara al código.</p><div class="camera-frame"><video id="barcode-camera-video" playsinline muted></video></div><button class="btn-secondary" onclick="stopBarcodeCamera()">Cancelar</button></div></div>
+<div class="modal-overlay" id="label-preview-overlay" onclick="closeLabelPreview(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Etiqueta interna</h3><p>Vista textual. Todavía no contiene un código de barras gráfico.</p><div class="label-preview" id="label-preview-content"></div><div class="capture-actions"><button class="primary" onclick="printCurrentLabel()">Imprimir etiqueta</button><button onclick="copyCurrentInternalCode()">Copiar código</button><button class="full" onclick="closeLabelPreview()">Cerrar</button></div></div></div>
 
 <!-- CONFIRM CERRAR -->
 <div id="confirm-overlay" onclick="closeConfirm(event)">
@@ -683,6 +696,10 @@ let packageItemId = null;
 let metaItemId = null;
 let archiveItemId = null;
 let syncTimer = null;
+let capturedBarcode = '';
+let barcodeCameraStream = null;
+let barcodeCameraFrame = 0;
+let currentLabelItem = null;
 
 // --- AUTH ---
 function getGpsCoords() {
@@ -820,6 +837,210 @@ function fmtDateOnly(value) {
   if (!value) return '';
   const [y, m, d] = String(value).split('-');
   return y && m && d ? d + '/' + m + '/' + y : String(value);
+}
+
+function normalizeBarcode(value) {
+  return String(value || '').trim().replace(/\s+/g, '');
+}
+
+function itemBarcodes(item = {}) {
+  return [...new Set([
+    normalizeBarcode(item.barcode),
+    ...(Array.isArray(item.barcodeAliases) ? item.barcodeAliases : String(item.barcodeAliases || '').split(/[\n,;]+/)).map(normalizeBarcode),
+    normalizeBarcode(item.internalCode).toUpperCase(),
+  ].filter(Boolean))];
+}
+
+function findItemByBarcode(code) {
+  const clean = normalizeBarcode(code);
+  const upper = clean.toUpperCase();
+  return items.find(item => itemBarcodes(item).some(itemCode => itemCode === clean || itemCode.toUpperCase() === upper)) || null;
+}
+
+function currentPermissions() {
+  return Array.isArray(currentUser?.permissions) ? currentUser.permissions : [];
+}
+
+function hasMobilePermission(permission) {
+  const permissions = currentPermissions();
+  return permissions.includes('*') || permissions.includes(permission);
+}
+
+function canWriteMobileInventoryDomain(domain = activeDomain) {
+  if (hasMobilePermission('stock:write') || hasMobilePermission('purchases:write')) return true;
+  return domain === 'kitchen'
+    ? hasMobilePermission('stock:kitchen:write')
+    : hasMobilePermission('stock:operations:write');
+}
+
+function canWriteMobileInventoryItem(item = {}) {
+  if (hasMobilePermission('stock:write') || hasMobilePermission('purchases:write')) return true;
+  const area = searchKey(item.inventoryArea || item.inventoryDomain || '');
+  const family = searchKey(item.functionalFamily || '');
+  if (family === 'kitchen_equipment' && hasMobilePermission('stock:kitchen_equipment:write')) return true;
+  if (area === 'kitchen' || itemDomain(item) === 'kitchen') return hasMobilePermission('stock:kitchen:write');
+  return hasMobilePermission('stock:operations:write');
+}
+
+function focusBarcodeInput() {
+  const input = document.getElementById('barcode-input');
+  input?.focus();
+  input?.select();
+}
+
+function handleBarcodeInputKey(event) {
+  if (event.key !== 'Enter') return;
+  event.preventDefault();
+  searchCapturedBarcode();
+}
+
+function searchCapturedBarcode(codeValue = '') {
+  const input = document.getElementById('barcode-input');
+  const code = normalizeBarcode(codeValue || input?.value || '');
+  if (!code) { toast('Escribí o escaneá un código.'); return; }
+  capturedBarcode = code;
+  if (input) input.value = code;
+  const item = findItemByBarcode(code);
+  if (item) openBarcodeResult(item, code);
+  else {
+    document.getElementById('missing-barcode-label').textContent = code;
+    const canCreateFood = canWriteMobileInventoryDomain('kitchen');
+    const canCreateEquipment = canWriteMobileInventoryDomain('equipment');
+    document.getElementById('missing-create-food').style.display = canCreateFood ? '' : 'none';
+    document.getElementById('missing-create-equipment').style.display = canCreateEquipment ? '' : 'none';
+    document.getElementById('missing-associate').style.display = canCreateFood || canCreateEquipment ? '' : 'none';
+    document.getElementById('missing-readonly-copy').style.display = canCreateFood || canCreateEquipment ? 'none' : '';
+    document.getElementById('barcode-missing-overlay').classList.add('open');
+  }
+}
+
+function openBarcodeResult(item, matchedCode = '') {
+  const expiry = expiryBadge(item);
+  const location = [...new Set([locationTypeLabel(item.locationType), item.locationDetail || item.location, preciseLocationLabel(item)].filter(Boolean))].join(' · ') || 'Sin ubicación';
+  const canWrite = canWriteMobileInventoryItem(item);
+  document.getElementById('barcode-result-content').innerHTML = `
+    <h3>${esc(item.name)}</h3><p>Código encontrado: ${esc(matchedCode || item.internalCode || item.barcode || '')}</p>
+    <div class="capture-card"><div class="capture-meta">
+      <div><span>Stock actual</span><strong>${fmtQty(countedQty(item))} ${esc(item.unit || '')}</strong></div>
+      <div><span>Ubicación</span><strong>${esc(location)}</strong></div>
+      <div><span>Estado</span><strong>${esc(item.statusLabel || operationalStatusLabel(item.operationalStatus) || 'Disponible')}</strong></div>
+      <div><span>Vencimiento</span><strong>${esc(expiry?.label || 'No cargado')}</strong></div>
+    </div><div class="capture-actions">
+      ${canWrite ? `<button class="primary" onclick="openBarcodeItemInCount('${esc(item.id)}', true)">Actualizar cantidad</button><button onclick="openBarcodeItemMeta('${esc(item.id)}')">Cambiar ubicación</button><button onclick="openBarcodeItemCondition('${esc(item.id)}')">Cambiar estado</button><button onclick="openBarcodeItemMeta('${esc(item.id)}')">Ver ficha completa</button>` : `<button class="full" onclick="closeBarcodeResult()">Cerrar</button>`}
+      ${item.internalCode ? `<button class="full" onclick="previewItemLabel('${esc(item.id)}')">Imprimir etiqueta</button>` : ''}
+    </div></div>`;
+  document.getElementById('barcode-result-overlay').classList.add('open');
+}
+
+function closeBarcodeResult(event) {
+  if (!event || event.target === document.getElementById('barcode-result-overlay')) document.getElementById('barcode-result-overlay').classList.remove('open');
+}
+
+function closeBarcodeMissing(event) {
+  if (!event || event.target === document.getElementById('barcode-missing-overlay')) document.getElementById('barcode-missing-overlay').classList.remove('open');
+}
+
+function createFromMissingBarcode(type) {
+  closeBarcodeMissing();
+  openNewItemModal(type, capturedBarcode);
+}
+
+function openBarcodeItemInCount(itemId, focusQuantity = false) {
+  const item = items.find(entry => entry.id === itemId);
+  if (!item) return;
+  closeBarcodeResult();
+  setInventoryDomain(itemDomain(item));
+  activeFilter = 'all';
+  activeCategoryFilter = '';
+  activeSubcategoryFilter = '';
+  activeLocationTypeFilter = '';
+  activeUsageFilter = '';
+  document.getElementById('search-input').value = item.name;
+  renderItems();
+  const row = document.getElementById('inventory-item-' + itemId);
+  row?.scrollIntoView({ behavior:'smooth', block:'center' });
+  if (focusQuantity) setTimeout(() => document.getElementById('qty-' + itemId)?.focus(), 250);
+}
+
+function openBarcodeItemMeta(itemId) { closeBarcodeResult(); openMetaModal(itemId); }
+function openBarcodeItemCondition(itemId) { closeBarcodeResult(); openCondModal(itemId); }
+
+function openAssociateBarcode() {
+  closeBarcodeMissing();
+  document.getElementById('associate-code-type').value = /^GG-/i.test(capturedBarcode) ? 'internal' : 'commercial';
+  document.getElementById('associate-search').value = '';
+  renderAssociateResults();
+  document.getElementById('barcode-associate-overlay').classList.add('open');
+}
+
+function closeAssociateBarcode(event) {
+  if (!event || event.target === document.getElementById('barcode-associate-overlay')) document.getElementById('barcode-associate-overlay').classList.remove('open');
+}
+
+function renderAssociateResults() {
+  const term = searchKey(document.getElementById('associate-search')?.value || '');
+  const target = document.getElementById('associate-results');
+  const matches = items.filter(canWriteMobileInventoryItem).filter(item => !term || searchKey([item.name, item.categoryId, item.subcategory, item.locationDetail].join(' ')).includes(term)).slice(0, 30);
+  target.innerHTML = matches.length ? matches.map(item => `<button class="associate-row" type="button" onclick="associateCapturedBarcode('${esc(item.id)}')"><strong>${esc(item.name)}</strong><span>${esc(item.categoryId || '')} · ${esc(item.locationDetail || item.location || 'Sin ubicación')}</span></button>`).join('') : '<div class="empty-state"><p>Sin artículos para asociar.</p></div>';
+}
+
+async function associateCapturedBarcode(itemId) {
+  const codeType = document.getElementById('associate-code-type').value;
+  try {
+    const res = await fetch('/api/operational-inventory/barcode', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ itemId, code:capturedBarcode, codeType }) });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'No se pudo asociar el código.'); return; }
+    items = data.operationalInventory?.items || items;
+    categories = data.operationalInventory?.categories || categories;
+    closeAssociateBarcode();
+    toast('Código asociado sin modificar el stock.');
+    openBarcodeResult(data.item, capturedBarcode);
+  } catch { toast('No se pudo asociar el código.'); }
+}
+
+async function startBarcodeCamera() {
+  if (!('BarcodeDetector' in window) || !navigator.mediaDevices?.getUserMedia) {
+    toast('La cámara no está disponible en este navegador. Podés escribir el código.');
+    focusBarcodeInput();
+    return;
+  }
+  const overlay = document.getElementById('barcode-camera-overlay');
+  overlay.classList.add('open');
+  try {
+    const detector = new BarcodeDetector({ formats:['ean_13','ean_8','code_128','upc_a','upc_e','qr_code'] });
+    barcodeCameraStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:'environment' } }, audio:false });
+    const video = document.getElementById('barcode-camera-video');
+    video.srcObject = barcodeCameraStream;
+    await video.play();
+    const detectFrame = async () => {
+      if (!barcodeCameraStream) return;
+      try {
+        const codes = await detector.detect(video);
+        if (codes[0]?.rawValue) {
+          const value = codes[0].rawValue;
+          stopBarcodeCamera();
+          searchCapturedBarcode(value);
+          return;
+        }
+      } catch {}
+      barcodeCameraFrame = requestAnimationFrame(detectFrame);
+    };
+    detectFrame();
+  } catch {
+    stopBarcodeCamera();
+    toast('No se pudo abrir la cámara. Podés escribir el código.');
+    focusBarcodeInput();
+  }
+}
+
+function stopBarcodeCamera() {
+  if (barcodeCameraFrame) cancelAnimationFrame(barcodeCameraFrame);
+  barcodeCameraFrame = 0;
+  barcodeCameraStream?.getTracks().forEach(track => track.stop());
+  barcodeCameraStream = null;
+  const video = document.getElementById('barcode-camera-video');
+  if (video) video.srcObject = null;
+  document.getElementById('barcode-camera-overlay').classList.remove('open');
 }
 
 function inventorySummary(sourceItems = items) {
@@ -1128,7 +1349,7 @@ function renderItems() {
     if (activeSubcategoryFilter && item.subcategory !== activeSubcategoryFilter) return false;
     if (activeLocationTypeFilter && item.locationType !== activeLocationTypeFilter) return false;
     if (activeUsageFilter && item.usageType !== activeUsageFilter) return false;
-    const searchable = [item.name, catMap[item.categoryId], item.subcategory, item.location, item.locationType, item.locationDetail, item.usageType, item.kitchenNotes, item.notes].join(' ').toLowerCase();
+    const searchable = [item.name, ...itemBarcodes(item), catMap[item.categoryId], item.subcategory, item.location, item.locationType, item.locationDetail, item.usageType, item.kitchenNotes, item.notes].join(' ').toLowerCase();
     if (term && !searchable.includes(term)) return false;
     return true;
   });
@@ -1159,6 +1380,7 @@ function renderItems() {
 
     const div = document.createElement('div');
     div.className = 'item' + (isCounted ? ' counted' : '');
+    div.id = 'inventory-item-' + item.id;
     div.innerHTML = `
       <div class="item-info">
         <div class="item-name">${esc(item.name)}${isNew ? '<span class="new-pill">Nuevo</span>' : ''}</div>
@@ -1553,13 +1775,58 @@ function syncNewItemDomainFields() {
   if (usageWrap) usageWrap.style.display = domain === 'equipment' ? '' : 'none';
 }
 
-function openNewItemModal() {
-  document.getElementById('ni-inventory-domain').value = activeDomain;
-  fillCategorySelect('ni-category', activeDomain);
-  fillLocationTypeSelect('ni-location-type', activeDomain);
+function getNewItemTypeConfig(type = '') {
+  return {
+    food: { domain:'kitchen', category:'alimentos', unit:'kg' },
+    beverage: { domain:'kitchen', category:'bebidas', unit:'l' },
+    disposable: { domain:'equipment', category:'descartables', unit:'unidad' },
+    tableware: { domain:'equipment', category:'vajilla', unit:'unidad' },
+    equipment: { domain:'equipment', category:'equipamiento_evento', unit:'unidad' },
+    tool: { domain:'kitchen', category:'herramientas', unit:'unidad' },
+    other: { domain:activeDomain, category:'otros', unit:activeDomain === 'kitchen' ? 'kg' : 'unidad' },
+  }[type] || { domain:activeDomain, category:activeDomain === 'kitchen' ? 'alimentos' : 'otros', unit:activeDomain === 'kitchen' ? 'kg' : 'unidad' };
+}
+
+function syncNewItemTypeFields() {
+  const type = document.getElementById('ni-general-type')?.value || 'other';
+  const config = getNewItemTypeConfig(type);
+  document.getElementById('ni-inventory-domain').value = config.domain;
+  fillCategorySelect('ni-category', config.domain, config.category);
+  if (![...document.getElementById('ni-category').options].some(option => option.value === config.category)) {
+    const option = document.createElement('option');
+    option.value = config.category;
+    option.textContent = config.category === 'equipamiento_evento' ? 'Equipamiento de evento' : config.category;
+    document.getElementById('ni-category').appendChild(option);
+  }
+  if ([...document.getElementById('ni-category').options].some(option => option.value === config.category)) document.getElementById('ni-category').value = config.category;
+  fillSubcategorySelect('ni-subcategory', config.domain, document.getElementById('ni-category').value || config.category, '');
+  fillUnitSelect('ni-unit', config.domain, config.unit);
+  fillLocationTypeSelect('ni-location-type', config.domain, document.getElementById('ni-location-type')?.value || '');
+  const perishable = type === 'food' || type === 'beverage';
+  document.getElementById('ni-expiry-status-wrap').style.display = perishable ? '' : 'none';
+  document.getElementById('ni-expiry-date-wrap').style.display = perishable ? '' : 'none';
+  if (!perishable) {
+    document.getElementById('ni-expiry-status').value = '';
+    document.getElementById('ni-expiry-date').value = '';
+  }
+  document.getElementById('ni-usage-wrap').style.display = ['equipment','tool','tableware'].includes(type) ? '' : 'none';
+  if (type === 'disposable') {
+    document.getElementById('ni-count-mode').value = 'packages';
+    toggleNewItemCountMode();
+  }
+}
+
+function inferNewItemTypeFromDomain(domain = activeDomain) {
+  return domain === 'kitchen' ? 'food' : 'equipment';
+}
+
+function openNewItemModal(presetType = '', detectedCode = '') {
+  const type = presetType || inferNewItemTypeFromDomain(activeDomain);
+  document.getElementById('ni-general-type').value = type;
   document.getElementById('ni-name').value = '';
-  fillSubcategorySelect('ni-subcategory', activeDomain, document.getElementById('ni-category').value || '');
-  fillUnitSelect('ni-unit', activeDomain);
+  document.getElementById('ni-barcode').value = normalizeBarcode(detectedCode || '');
+  document.getElementById('ni-internal-code').value = '';
+  document.getElementById('ni-internal-actions').style.display = 'none';
   document.getElementById('ni-qty').value = '1';
   document.getElementById('ni-count-mode').value = 'units';
   document.getElementById('ni-location-detail').value = '';
@@ -1576,7 +1843,7 @@ function openNewItemModal() {
   document.getElementById('ni-loc-shelf').value = '';
   document.getElementById('ni-loc-level').value = '';
   document.getElementById('ni-loc-position').value = '';
-  syncNewItemDomainFields();
+  syncNewItemTypeFields();
   toggleNewItemCountMode();
   updateNewItemPackageTotal();
   document.getElementById('new-item-overlay').classList.add('open');
@@ -1603,6 +1870,8 @@ async function saveNewItem() {
   if (expiryStatus && !expiryDate) { toast('Carga la fecha de vencimiento.'); return; }
   const itemPayload = {
     name,
+    barcode: normalizeBarcode(document.getElementById('ni-barcode').value),
+    internalCode: normalizeBarcode(document.getElementById('ni-internal-code').value).toUpperCase(),
     inventoryDomain,
     categoryId,
     subcategory: document.getElementById('ni-subcategory').value,
@@ -1636,7 +1905,10 @@ async function saveNewItem() {
     buildSecondaryFilters();
     renderItems();
     // marcar como contado automaticamente
-    const newItem = (data.operationalInventory?.items || []).find(i => i.name.toLowerCase() === name.toLowerCase());
+    const savedItems = data.operationalInventory?.items || [];
+    const newItem = savedItems.find(i => itemPayload.internalCode && i.internalCode === itemPayload.internalCode)
+      || savedItems.find(i => itemPayload.barcode && itemBarcodes(i).includes(itemPayload.barcode))
+      || savedItems.find(i => i.name.toLowerCase() === name.toLowerCase());
     if (newItem) {
       newItemIds.add(newItem.id);
       await patchItem(newItem.id, qty, true, mode === 'packages' ? packageCount : undefined);
@@ -1648,6 +1920,85 @@ async function saveNewItem() {
     }
     renderItems();
   } catch { toast('Error al guardar el item.'); }
+}
+
+async function generateNewItemInternalCode() {
+  const body = {
+    inventoryDomain: document.getElementById('ni-inventory-domain').value,
+    categoryId: document.getElementById('ni-category').value,
+  };
+  try {
+    const res = await fetch('/api/operational-inventory/internal-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    const data = await res.json();
+    if (!data.ok) { toast(data.error || 'No se pudo generar el código.'); return; }
+    document.getElementById('ni-internal-code').value = data.internalCode;
+    document.getElementById('ni-internal-actions').style.display = '';
+    toast('Código interno listo para usar.');
+  } catch { toast('No se pudo generar el código.'); }
+}
+
+async function copyText(value) {
+  const text = String(value || '');
+  if (!text) return false;
+  try { await navigator.clipboard.writeText(text); return true; } catch {}
+  const input = document.createElement('textarea');
+  input.value = text; document.body.appendChild(input); input.select();
+  const copied = document.execCommand('copy'); input.remove(); return copied;
+}
+
+async function copyNewItemInternalCode() {
+  const copied = await copyText(document.getElementById('ni-internal-code').value);
+  toast(copied ? 'Código copiado.' : 'No se pudo copiar.');
+}
+
+function getNewItemLabelDraft() {
+  return {
+    name: document.getElementById('ni-name').value.trim() || 'Nuevo artículo',
+    internalCode: document.getElementById('ni-internal-code').value,
+    locationType: document.getElementById('ni-location-type').value,
+    locationDetail: document.getElementById('ni-location-detail').value.trim(),
+    expiryStatus: document.getElementById('ni-expiry-status').value,
+    expiryDate: document.getElementById('ni-expiry-date').value,
+  };
+}
+
+function previewNewItemLabel() {
+  const item = getNewItemLabelDraft();
+  if (!item.internalCode) { toast('Primero generá un código interno.'); return; }
+  openLabelPreview(item);
+}
+
+function previewItemLabel(itemId) {
+  const item = items.find(entry => entry.id === itemId);
+  closeBarcodeResult();
+  if (item) openLabelPreview(item);
+}
+
+function openLabelPreview(item) {
+  currentLabelItem = item;
+  const location = [...new Set([locationTypeLabel(item.locationType), item.locationDetail || item.location].filter(Boolean))].join(' · ');
+  const expiry = item.expiryDate ? `Vence: ${fmtDateOnly(item.expiryDate)}` : '';
+  document.getElementById('label-preview-content').innerHTML = `<strong>GRATITUD GOURMET</strong><div>${esc(item.name || 'Artículo')}</div><div class="label-code">${esc(item.internalCode || '')}</div><div>${esc(location)}</div>${expiry ? `<div>${esc(expiry)}</div>` : ''}`;
+  document.getElementById('label-preview-overlay').classList.add('open');
+}
+
+function closeLabelPreview(event) {
+  if (!event || event.target === document.getElementById('label-preview-overlay')) document.getElementById('label-preview-overlay').classList.remove('open');
+}
+
+async function copyCurrentInternalCode() {
+  const copied = await copyText(currentLabelItem?.internalCode || '');
+  toast(copied ? 'Código copiado.' : 'No se pudo copiar.');
+}
+
+function printCurrentLabel() {
+  if (!currentLabelItem?.internalCode) return;
+  const location = [...new Set([locationTypeLabel(currentLabelItem.locationType), currentLabelItem.locationDetail || currentLabelItem.location].filter(Boolean))].join(' · ');
+  const expiry = currentLabelItem.expiryDate ? `Vence: ${fmtDateOnly(currentLabelItem.expiryDate)}` : '';
+  const printWindow = window.open('', '_blank', 'width=420,height=520');
+  if (!printWindow) { toast('El navegador bloqueó la vista de impresión.'); return; }
+  printWindow.document.write(`<!doctype html><html><head><title>Etiqueta ${esc(currentLabelItem.internalCode)}</title><style>body{font-family:Arial,sans-serif;margin:0;padding:24px}.label{width:320px;border:2px solid #111;padding:18px;text-align:center;line-height:1.5}.brand{font-size:16px;font-weight:800}.name{font-size:19px}.code{font-size:25px;font-weight:900;letter-spacing:.08em;margin:8px 0}.note{font-size:12px;margin-top:14px;color:#555}@media print{body{padding:0}.note{display:none}}</style></head><body><div class="label"><div class="brand">GRATITUD GOURMET</div><div class="name">${esc(currentLabelItem.name || 'Artículo')}</div><div class="code">${esc(currentLabelItem.internalCode)}</div><div>${esc(location)}</div><div>${esc(expiry)}</div><div class="note">Código textual. No es todavía un código de barras gráfico.</div></div><script>window.onload=()=>window.print()<\/script></body></html>`);
+  printWindow.document.close();
 }
 
 function toggleNewItemCountMode() {

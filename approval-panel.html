@@ -22193,7 +22193,8 @@
             <form id="operational-inventory-form" class="form-grid" onsubmit="saveOperationalInventoryItem(event)">
               <input type="hidden" name="id">
               <div class="form-field full"><label>Nombre</label><input name="name" required placeholder="Ej: Conservadora grande, pinza, anafe"></div>
-              <div class="form-field"><label>Codigo principal</label><input name="barcode" inputmode="numeric" autocomplete="off" placeholder="Escaneá o escribí el codigo"></div>
+              <div class="form-field"><label>Codigo principal</label><input name="barcode" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="Escaneá o escribí el codigo"></div>
+              <div class="form-field"><label>Codigo interno</label><input name="internalCode" autocomplete="off" autocapitalize="characters" placeholder="GG-A7K42P"></div>
               <div class="form-field"><label>Codigos proveedores</label><textarea name="barcodeAliases" rows="2" placeholder="Uno por linea o separados por coma"></textarea></div>
               <div class="form-field"><label>Área operativa</label><select name="inventoryArea" onchange="renderOperationalCategoryOptionsForArea()">${renderOperationalInventoryAreaOptions()}</select></div>
               <input type="hidden" name="inventoryDomain">
@@ -22550,7 +22551,7 @@
       setFormValue(form, "inventoryArea", area);
       setFormValue(form, "inventoryDomain", area);
       if (form.elements.categoryId) form.elements.categoryId.innerHTML = renderOperationalCategoryOptions(item.categoryId || "", area);
-      ["id", "name", "barcode", "categoryId", "quantity", "unit", "status", "location", "notes"].forEach((field) => setFormValue(form, field, item[field] || ""));
+      ["id", "name", "barcode", "internalCode", "categoryId", "quantity", "unit", "status", "location", "notes"].forEach((field) => setFormValue(form, field, item[field] || ""));
       setFormValue(form, "barcodeAliases", (item.barcodeAliases || []).join("\n"));
       setFormValue(form, "functionalFamily", item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId));
       setFormValue(form, "controlType", item.controlType || inferOperationalControlType(item.functionalFamily || inferOperationalFunctionalFamilyFromCategory(item.categoryId)));
@@ -22567,6 +22568,7 @@
       setFormValue(form, "unit", "unidad");
       setFormValue(form, "status", "available");
       setFormValue(form, "barcode", "");
+      setFormValue(form, "internalCode", "");
       setFormValue(form, "barcodeAliases", "");
       const area = getDefaultOperationalInventoryFormArea();
       setFormValue(form, "inventoryArea", area);
@@ -22595,6 +22597,7 @@
       return Array.from(new Set([
         normalizeOperationalBarcode(item.barcode || ""),
         ...(Array.isArray(item.barcodeAliases) ? item.barcodeAliases : String(item.barcodeAliases || "").split(/[\n,;]+/)).map(normalizeOperationalBarcode),
+        normalizeOperationalBarcode(item.internalCode || "").toUpperCase(),
       ].filter(Boolean)));
     }
 
