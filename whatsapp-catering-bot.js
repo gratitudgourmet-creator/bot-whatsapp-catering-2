@@ -13018,11 +13018,12 @@ function parsePurchaseItems(input) {
   return items
     .map((item, index) => {
       const description = normalizeText(item.description || "");
-      const quantity = parsePositiveNumber(item.quantity || 1, `cantidad del producto ${index + 1}`);
-      const unitAmount = parsePositiveNumber(item.unitAmount, `monto unitario del producto ${index + 1}`);
-      const ivaRate = normalizeIvaRate(item.ivaRate ?? item.iva ?? defaultIvaRate);
-      const netTotal = roundMoney(quantity * unitAmount);
-      const ivaAmount = roundMoney(netTotal * ivaRate);
+      const quantity = parsePositivePurchaseDecimal(item.quantity || 1, `cantidad del producto ${index + 1}`);
+      const unitAmount = parsePositivePurchaseDecimal(item.unitAmount, `monto unitario del producto ${index + 1}`);
+      const rawIvaRate = parsePurchaseDecimal(item.ivaRate ?? item.iva ?? defaultIvaRate, 4, `IVA del producto ${index + 1}`);
+      const ivaRate = rawIvaRate > 1 ? rawIvaRate / 100 : rawIvaRate;
+      const netTotal = roundToDecimals(quantity * unitAmount, 8);
+      const ivaAmount = roundToDecimals(netTotal * ivaRate, 8);
 
       if (!description) {
         throw new Error(`Ingrese la descripcion del producto ${index + 1}.`);
@@ -13035,7 +13036,7 @@ function parsePurchaseItems(input) {
         ivaRate,
         netTotal,
         ivaAmount,
-        total: roundMoney(netTotal + ivaAmount),
+        total: roundToDecimals(netTotal + ivaAmount, 8),
       };
     });
 }
@@ -13057,6 +13058,48 @@ function parsePositiveNumber(value, label) {
     throw new Error(`Ingrese un valor valido para ${label}.`);
   }
 
+  return number;
+}
+
+function parsePurchaseDecimal(value, maxDecimals = 4, label = "valor") {
+  if (value === undefined || value === null || value === "") return 0;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new Error(`Ingrese un valor valido para ${label}.`);
+    const factor = 10 ** maxDecimals;
+    if (Math.abs(value * factor - Math.round(value * factor)) > 1e-6) {
+      throw new Error(`${label} admite hasta ${maxDecimals} decimales.`);
+    }
+    return value;
+  }
+
+  const raw = String(value).trim().replace(/\s/g, "");
+  const lastComma = raw.lastIndexOf(",");
+  const lastDot = raw.lastIndexOf(".");
+  let normalized = raw.replace(/[^\d,.-]/g, "");
+
+  if (lastComma >= 0 && lastDot >= 0) {
+    const decimalSeparator = lastComma > lastDot ? "," : ".";
+    const thousandsSeparator = decimalSeparator === "," ? /\./g : /,/g;
+    normalized = normalized.replace(thousandsSeparator, "").replace(decimalSeparator, ".");
+  } else if (lastComma >= 0) {
+    normalized = normalized.replace(",", ".");
+  }
+
+  if (!/^-?\d+(?:\.\d+)?$/.test(normalized)) {
+    throw new Error(`Ingrese un valor valido para ${label}.`);
+  }
+  const decimals = normalized.split(".")[1]?.length || 0;
+  if (decimals > maxDecimals) {
+    throw new Error(`${label} admite hasta ${maxDecimals} decimales.`);
+  }
+  const number = Number(normalized);
+  if (!Number.isFinite(number)) throw new Error(`Ingrese un valor valido para ${label}.`);
+  return number;
+}
+
+function parsePositivePurchaseDecimal(value, label, maxDecimals = 4) {
+  const number = parsePurchaseDecimal(value, maxDecimals, label);
+  if (number <= 0) throw new Error(`Ingrese un valor valido para ${label}.`);
   return number;
 }
 

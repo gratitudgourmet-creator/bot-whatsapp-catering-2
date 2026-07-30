@@ -28374,6 +28374,36 @@
       setPurchaseEventValue(form?.elements.eventName?.value || "");
     }
 
+    function parsePurchaseDecimal(value, maxDecimals = 4) {
+      if (typeof value === "number") return Number.isFinite(value) ? value : NaN;
+      const raw = String(value ?? "").trim().replace(/\s/g, "");
+      if (!raw) return 0;
+      const lastComma = raw.lastIndexOf(",");
+      const lastDot = raw.lastIndexOf(".");
+      let normalized = raw.replace(/[^\d,.-]/g, "");
+
+      if (lastComma >= 0 && lastDot >= 0) {
+        const decimalSeparator = lastComma > lastDot ? "," : ".";
+        const thousandsSeparator = decimalSeparator === "," ? /\./g : /,/g;
+        normalized = normalized.replace(thousandsSeparator, "").replace(decimalSeparator, ".");
+      } else if (lastComma >= 0) {
+        normalized = normalized.replace(",", ".");
+      }
+
+      if (!/^-?\d+(?:\.\d+)?$/.test(normalized)) return NaN;
+      const decimals = normalized.split(".")[1]?.length || 0;
+      if (decimals > maxDecimals) return NaN;
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : NaN;
+    }
+
+    function formatPurchaseInputDecimal(value, maxDecimals = 4) {
+      if (value === undefined || value === null || value === "") return "";
+      const parsed = parsePurchaseDecimal(value, maxDecimals);
+      if (!Number.isFinite(parsed)) return String(value);
+      return parsed.toLocaleString("en-US", { useGrouping: false, maximumFractionDigits: maxDecimals });
+    }
+
     function addPurchaseItemRow(item = {}) {
       const id = `purchase-item-${++purchaseItemCounter}`;
       const container = document.getElementById("purchase-items");
@@ -28391,12 +28421,12 @@
         </div>
         <div class="form-field">
           <label>Cantidad</label>
-          <input class="purchase-item-quantity" type="number" min="0.01" step="0.01" placeholder="Cant." value="${escapeAttribute(item.quantity || 1)}" required>
+          <input class="purchase-item-quantity" type="text" inputmode="decimal" min="0.0001" step="0.0001" placeholder="Cant." value="${escapeAttribute(formatPurchaseInputDecimal(item.quantity || 1))}" required>
         </div>
         <div class="form-field purchase-item-unit-wrap">
           <label>Unitario s/IVA</label>
-          <input class="purchase-item-unit" type="number" min="0.01" step="0.01" placeholder="0" value="${escapeAttribute(item.unitAmount || "")}" required>
-          <div class="purchase-item-total-hint">${item.unitAmount ? "= " + formatCurrency(Number(item.quantity || 1) * Number(item.unitAmount)) : ""}</div>
+          <input class="purchase-item-unit" type="text" inputmode="decimal" min="0.0001" step="0.0001" placeholder="0" value="${escapeAttribute(formatPurchaseInputDecimal(item.unitAmount || ""))}" required>
+          <div class="purchase-item-total-hint">${item.unitAmount ? "= " + formatCurrency(parsePurchaseDecimal(item.quantity || 1) * parsePurchaseDecimal(item.unitAmount)) : ""}</div>
         </div>
         <div class="form-field">
           <label>IVA</label>
@@ -28418,11 +28448,11 @@
       );
 
       function updateRowTotal() {
-        const qty = parseFloat(row.querySelector(".purchase-item-quantity").value) || 0;
-        const unit = parseFloat(row.querySelector(".purchase-item-unit").value) || 0;
-        const iva = parseFloat(row.querySelector(".purchase-item-iva").value) || 0;
+        const qty = parsePurchaseDecimal(row.querySelector(".purchase-item-quantity").value);
+        const unit = parsePurchaseDecimal(row.querySelector(".purchase-item-unit").value);
+        const iva = parsePurchaseDecimal(row.querySelector(".purchase-item-iva").value);
         const hint = row.querySelector(".purchase-item-total-hint");
-        if (qty > 0 && unit > 0) {
+        if (Number.isFinite(qty) && Number.isFinite(unit) && qty > 0 && unit > 0) {
           const net = qty * unit;
           hint.textContent = `Neto ${formatCurrency(net)} · Total ${formatCurrency(net * (1 + iva))}`;
         } else {
@@ -28475,8 +28505,8 @@
       return Array.from(document.querySelectorAll("#purchase-items .purchase-item"))
         .map((row) => ({
           description: row.querySelector(".purchase-item-description").value.trim(),
-          quantity: row.querySelector(".purchase-item-quantity").value,
-          unitAmount: row.querySelector(".purchase-item-unit").value,
+          quantity: formatPurchaseInputDecimal(row.querySelector(".purchase-item-quantity").value),
+          unitAmount: formatPurchaseInputDecimal(row.querySelector(".purchase-item-unit").value),
           ivaRate: row.querySelector(".purchase-item-iva").value,
         }))
         .filter((item) => item.description);
@@ -28486,10 +28516,10 @@
       return Array.from(document.querySelectorAll("#purchase-items .purchase-item"))
         .reduce((totals, row) => {
           const description = row.querySelector(".purchase-item-description")?.value?.trim() || "";
-          const quantity = parseFloat(row.querySelector(".purchase-item-quantity")?.value) || 0;
-          const unitAmount = parseFloat(row.querySelector(".purchase-item-unit")?.value) || 0;
-          const ivaRate = parseFloat(row.querySelector(".purchase-item-iva")?.value) || 0;
-          if (!description || quantity <= 0 || unitAmount <= 0) return totals;
+          const quantity = parsePurchaseDecimal(row.querySelector(".purchase-item-quantity")?.value);
+          const unitAmount = parsePurchaseDecimal(row.querySelector(".purchase-item-unit")?.value);
+          const ivaRate = parsePurchaseDecimal(row.querySelector(".purchase-item-iva")?.value);
+          if (!description || !Number.isFinite(quantity) || !Number.isFinite(unitAmount) || quantity <= 0 || unitAmount <= 0) return totals;
           const net = quantity * unitAmount;
           const iva = net * ivaRate;
           totals.net += net;
