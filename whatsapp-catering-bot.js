@@ -1858,6 +1858,23 @@ function startApprovalPanelServer() {
         }
       }
 
+      if (request.method === "PATCH" && /^\/api\/operational-inventory\/[^/]+$/.test(requestUrl.pathname)) {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write"]);
+        if (!user) return;
+        if (!requireSalonLocation(user, response, "editar articulo de inventario")) return;
+        const itemId = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+        const body = await readJsonBody(request);
+        try {
+          const item = patchOperationalInventoryItem(itemId, body.fields, body.expectedUpdatedAt, user);
+          return sendJson(response, { ok: true, item });
+        } catch (error) {
+          const status = error.code === "INVENTORY_CONFLICT" ? 409
+            : error.code === "INVENTORY_FORBIDDEN" ? 403
+              : 400;
+          return sendJson(response, { ok: false, error: error.message }, status);
+        }
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/operational-inventory/internal-code") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "events:write", "logistics:write"]);
         if (!user) return;
@@ -4242,18 +4259,20 @@ function canWriteInventoryArea(user, area) {
 }
 
 function canReadInventoryItem(user, item = {}) {
-  if (canReadInventoryArea(user, getInventoryAreaForItem(item))) return true;
+  const area = getInventoryAreaForItem(item);
+  if (canReadInventoryArea(user, area)) return true;
   const family = getFunctionalFamilyForItem(item);
-  return family === "kitchen_equipment" && (
+  return area === "kitchen" && family === "kitchen_equipment" && (
     hasPanelPermission(user, "stock:kitchen_equipment:read")
     || hasPanelPermission(user, "stock:kitchen_equipment:write")
   );
 }
 
 function canWriteInventoryItem(user, item = {}) {
-  if (canWriteInventoryArea(user, getInventoryAreaForItem(item))) return true;
+  const area = getInventoryAreaForItem(item);
+  if (canWriteInventoryArea(user, area)) return true;
   const family = getFunctionalFamilyForItem(item);
-  return family === "kitchen_equipment" && hasPanelPermission(user, "stock:kitchen_equipment:write");
+  return area === "kitchen" && family === "kitchen_equipment" && hasPanelPermission(user, "stock:kitchen_equipment:write");
 }
 
 function getAllowedInventoryAreas(user, mode = "read") {
@@ -7730,7 +7749,7 @@ function generateInventoryInternalCode() {
 
 function normalizeOperationalInventoryItem(input = {}) {
   const categoryId = normalizeText(input.categoryId || input.category || "utensilios");
-  const quantity = Math.max(0, parseDecimalNumber(input.quantity || input.totalQuantity || 1));
+  const quantity = Math.max(0, parseDecimalNumber(input.quantity ?? input.totalQuantity ?? 1));
   const functionalFamily = normalizeFunctionalFamily(input.functionalFamily || "") || inferFunctionalFamilyFromCategory(categoryId);
   const inventoryArea = normalizeInventoryArea(input.inventoryArea || "") || normalizeInventoryDomain(input.inventoryDomain || "") || inferInventoryAreaFromFamily(functionalFamily, categoryId);
   const inventoryDomain = normalizeInventoryDomain(input.inventoryDomain || "") || inventoryArea;
@@ -8210,6 +8229,88 @@ function archiveOperationalInventoryItem(id, reason, user = null) {
   saveErpOperationalInventory();
   recordAudit(user, "update", "operational_inventory_archive", cleanId, before.name, before, data.items[idx]);
   return data.items[idx];
+}
+
+const OPERATIONAL_INVENTORY_PATCH_FIELDS = new Set([
+  "name", "barcode", "internalCode", "inventoryDomain", "inventoryArea",
+  "functionalFamily", "controlType", "categoryId", "subcategory",
+  "quantity", "unit", "location", "locationType", "locationDetail",
+  "usageType", "minStock", "operationalStatus", "notes", "kitchenNotes",
+  "expiryStatus", "expiryDate", "preciseLocation",
+]);
+
+function patchOperationalInventoryItem(id, inputFields = {}, expectedUpdatedAt = "", user = null) {
+  const cleanId = normalizeText(id || "");
+  if (!cleanId) throw new Error("Articulo requerido.");
+  if (!inputFields || typeof inputFields !== "object" || Array.isArray(inputFields)) throw new Error("Campos a modificar requeridos.");
+  const fieldNames = Object.keys(inputFields);
+  if (!fieldNames.length) throw new Error("No hay cambios para guardar.");
+  const unsupported = fieldNames.filter((field) => !OPERATIONAL_INVENTORY_PATCH_FIELDS.has(field));
+  if (unsupported.length) throw new Error("Campos no permitidos: " + unsupported.join(", ") + ".");
+
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const index = data.items.findIndex((item) => item.id === cleanId);
+  if (index < 0) throw new Error("Articulo no encontrado.");
+  const before = data.items[index];
+  if (!expectedUpdatedAt) throw new Error("Falta la version esperada del articulo.");
+  if (String(before.updatedAt || "") !== String(expectedUpdatedAt)) {
+    const conflictError = new Error("Este articulo fue modificado por otra persona. Cerra la ficha y volve a abrirla.");
+    conflictError.code = "INVENTORY_CONFLICT";
+    throw conflictError;
+  }
+  if (!canWriteInventoryItem(user, before)) {
+    const forbiddenError = new Error("Su usuario no puede modificar esta area de inventario.");
+    forbiddenError.code = "INVENTORY_FORBIDDEN";
+    throw forbiddenError;
+  }
+
+  const activeSession = loadInventarioSesion();
+  const hasActiveCount = Boolean(activeSession.active && activeSession.counts && Object.prototype.hasOwnProperty.call(activeSession.counts, cleanId));
+  const countSensitiveFields = ["quantity", "unit", "controlType"];
+  if (hasActiveCount && countSensitiveFields.some((field) => Object.prototype.hasOwnProperty.call(inputFields, field))) {
+    throw new Error("El articulo tiene un conteo en curso. No se puede cambiar cantidad, unidad ni tipo de control desde la ficha.");
+  }
+
+  const merged = { ...before, ...inputFields, id: before.id, updatedAt: before.updatedAt };
+  const next = normalizeOperationalInventoryItem(merged);
+  if (!next.name) throw new Error("Ingrese el nombre del articulo.");
+  if (next.internalCode && !isValidInventoryInternalCode(next.internalCode)) throw new Error("El codigo interno debe usar el formato GG-XXXXXX.");
+  if (next.barcode && next.internalCode && next.barcode.toUpperCase() === next.internalCode.toUpperCase()) {
+    throw new Error("El codigo comercial y el codigo interno deben ser diferentes.");
+  }
+  if (next.expiryStatus && !next.expiryDate) throw new Error("Fecha de vencimiento requerida.");
+  if (next.expiryStatus && !/^\d{4}-\d{2}-\d{2}$/.test(next.expiryDate)) throw new Error("La fecha de vencimiento debe tener formato YYYY-MM-DD.");
+  if (!next.expiryStatus) next.expiryDate = "";
+
+  if (!canWriteInventoryItem(user, next)) {
+    const forbiddenError = new Error("Su usuario no puede mover el articulo al area seleccionada.");
+    forbiddenError.code = "INVENTORY_FORBIDDEN";
+    throw forbiddenError;
+  }
+
+  const nextCodes = getInventoryBarcodesForItem(next).map((code) => code.toUpperCase());
+  const codeConflict = data.items.find((item) => item.id !== cleanId
+    && getInventoryBarcodesForItem(item).some((code) => nextCodes.includes(code.toUpperCase())));
+  if (codeConflict) throw new Error("El codigo ya esta asociado a " + (codeConflict.name || "otro articulo") + ".");
+
+  const now = new Date().toISOString();
+  next.updatedAt = now;
+  data.items[index] = next;
+  erpOperationalInventory = { ...data, items: data.items, updatedAt: now };
+  saveErpOperationalInventory();
+  if (next.internalCode) inventoryInternalCodeReservations.delete(next.internalCode);
+
+  const beforeChanged = {};
+  const afterChanged = {};
+  fieldNames.forEach((field) => {
+    beforeChanged[field] = before[field] ?? null;
+    afterChanged[field] = next[field] ?? null;
+  });
+  recordAudit(user, "update", "operational_inventory", cleanId, next.name, beforeChanged, afterChanged, {
+    origin: "inventario_mobile",
+    fields: fieldNames,
+  });
+  return next;
 }
 
 function updateOperationalInventoryMeta(input = {}, user = null) {
