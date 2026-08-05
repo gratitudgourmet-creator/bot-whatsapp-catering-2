@@ -10907,7 +10907,7 @@
           <div class="actions section-actions">
             <button class="filter action-secondary" type="button" onclick="downloadProvidersXlsx()">Descargar Excel</button>
             <button class="filter action-secondary" type="button" onclick="loadProviders()">Actualizar</button>
-            <button class="approve action-primary" type="button" onclick="resetModalProviderForm(); document.getElementById('provider-form')?.scrollIntoView({behavior:'smooth'})">Nuevo proveedor</button>
+            <button class="approve action-primary" type="button" onclick="resetProviderForm(); document.getElementById('provider-form')?.scrollIntoView({behavior:'smooth', block:'start'})">Nuevo proveedor</button>
           </div>
         </div>
       </div>
@@ -25750,7 +25750,10 @@
               <div class="provider-meta">${escapeHtml(provider.legalName || "Razon social pendiente")}</div>
               <div class="provider-meta">${escapeHtml([provider.cuit, provider.ivaCondition].filter(Boolean).join(" · ") || "Datos fiscales pendientes")}</div>
             </div>
-            <button class="menu-dot" type="button" onclick="event.stopPropagation(); showProviderActions('${escapeAttribute(provider.id)}')">...</button>
+            <div class="actions" onclick="event.stopPropagation()">
+              <button class="filter" type="button" onclick="editProvider('${escapeAttribute(provider.id)}')">Editar</button>
+              <button class="menu-dot" type="button" onclick="showProviderActions('${escapeAttribute(provider.id)}')">...</button>
+            </div>
           </div>
           <div class="provider-stats">
             <div class="provider-stat"><span>Compras</span><strong>${escapeHtml(provider.purchaseCount || 0)}</strong></div>
@@ -25766,10 +25769,18 @@
 
     function editProvider(id) {
       const provider = allProviders.find((item) => item.id === id);
-      if (!provider) return;
+      if (!provider) {
+        showNotice("No se encontró el proveedor seleccionado.", "error");
+        return;
+      }
       const form = document.getElementById("provider-form");
+      if (!form) {
+        showNotice("No se encontró el formulario de proveedor.", "error");
+        return;
+      }
       fillProviderForm(form, provider);
       form?.scrollIntoView({ behavior: "smooth", block: "start" });
+      form.elements.name?.focus();
     }
 
     function showProviderActions(id) {
@@ -25810,6 +25821,7 @@
     }
 
     function fillProviderForm(form, provider) {
+      if (!form || !provider) return;
       [
         "id",
         "name",
