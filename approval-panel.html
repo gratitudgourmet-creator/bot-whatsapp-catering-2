@@ -10905,6 +10905,7 @@
             <p class="subtitle section-subtitle">Fichas fiscales, datos bancarios, condiciones de pago y deuda por proveedor.</p>
           </div>
           <div class="actions section-actions">
+            <button class="filter action-secondary" type="button" onclick="downloadProvidersXlsx()">Descargar Excel</button>
             <button class="filter action-secondary" type="button" onclick="loadProviders()">Actualizar</button>
             <button class="approve action-primary" type="button" onclick="resetModalProviderForm(); document.getElementById('provider-form')?.scrollIntoView({behavior:'smooth'})">Nuevo proveedor</button>
           </div>
@@ -15332,6 +15333,10 @@
 
     function downloadErpXlsx() {
       window.location.href = "/api/export.xlsx";
+    }
+
+    function downloadProvidersXlsx() {
+      window.location.href = "/api/providers.xlsx";
     }
 
     function getGuidedFormStep(formId) {

@@ -1376,6 +1376,11 @@ function startApprovalPanelServer() {
         return sendXlsxExport(response);
       }
 
+      if (request.method === "GET" && requestUrl.pathname === "/api/providers.xlsx") {
+        if (!requireAnyPanelPermission(request, response, ["providers:write", "purchases:write", "finance:read", "finance:write"])) return;
+        return sendProvidersXlsxExport(response);
+      }
+
       if (request.method === "POST" && requestUrl.pathname === "/api/approve") {
         if (!requirePanelPermission(request, response, "view")) return;
         const body = await readJsonBody(request);
@@ -2668,6 +2673,130 @@ function sendXlsxExport(response) {
     "Cache-Control": "no-store",
   });
   response.end(buffer);
+}
+
+function sendProvidersXlsxExport(response) {
+  if (!XLSX) {
+    return sendJson(
+      response,
+      {
+        ok: false,
+        error: "Falta instalar el modulo xlsx para exportar Excel en esta computadora.",
+      },
+      503
+    );
+  }
+
+  const workbook = XLSX.utils.book_new();
+  const { providers, locations } = buildProvidersExportModel();
+  const providersColumns = [
+    "ID",
+    "Nombre comercial",
+    "Razon social",
+    "CUIT",
+    "Condicion IVA",
+    "Contacto",
+    "Telefono",
+    "Email",
+    "Categoria",
+    "Direccion principal",
+    "Banco",
+    "Tipo de cuenta",
+    "Nro cuenta",
+    "Titular de cuenta",
+    "CBU/CVU",
+    "Alias",
+    "Condicion de pago",
+    "Compras",
+    "Total comprado",
+    "Ultima compra",
+    "Notas",
+    "Creado",
+    "Actualizado",
+  ];
+  const locationsColumns = [
+    "Proveedor ID",
+    "Proveedor",
+    "Ubicacion",
+    "Direccion",
+    "Telefono",
+    "Notas",
+    "Maps URL",
+    "Latitud",
+    "Longitud",
+    "Principal",
+  ];
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    XLSX.utils.json_to_sheet(providers, { header: providersColumns }),
+    "Proveedores"
+  );
+  XLSX.utils.book_append_sheet(
+    workbook,
+    XLSX.utils.json_to_sheet(locations, { header: locationsColumns }),
+    "Ubicaciones"
+  );
+
+  const buffer = XLSX.write(workbook, {
+    type: "buffer",
+    bookType: "xlsx",
+  });
+  const fileName = `proveedores-gratitud-${getDateOnly(new Date())}.xlsx`;
+
+  response.writeHead(200, {
+    "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "Content-Disposition": `attachment; filename="${fileName}"`,
+    "Cache-Control": "no-store",
+  });
+  response.end(buffer);
+}
+
+function buildProvidersExportModel() {
+  const providerList = getProviderList();
+  const providers = providerList.map((provider) => ({
+    "ID": provider.id || "",
+    "Nombre comercial": provider.name || "",
+    "Razon social": provider.legalName || "",
+    "CUIT": provider.cuit || "",
+    "Condicion IVA": provider.ivaCondition || "",
+    "Contacto": provider.contactName || "",
+    "Telefono": provider.phone || "",
+    "Email": provider.email || "",
+    "Categoria": provider.category || "",
+    "Direccion principal": provider.address || "",
+    "Banco": provider.bankName || "",
+    "Tipo de cuenta": provider.bankAccountType || "",
+    "Nro cuenta": provider.bankAccountNumber || "",
+    "Titular de cuenta": provider.bankAccountHolder || "",
+    "CBU/CVU": provider.cbu || "",
+    "Alias": provider.alias || "",
+    "Condicion de pago": provider.paymentTerms || "",
+    "Compras": Number(provider.purchaseCount || 0),
+    "Total comprado": Number(provider.totalPurchased || 0),
+    "Ultima compra": provider.lastPurchaseDate || "",
+    "Notas": provider.notes || "",
+    "Creado": provider.createdAt || "",
+    "Actualizado": provider.updatedAt || "",
+  }));
+  const locations = providerList.flatMap((provider) => {
+    const list = Array.isArray(provider.locations) && provider.locations.length
+      ? provider.locations
+      : normalizeProviderLocations([], provider.address || "");
+    return list.map((location) => ({
+      "Proveedor ID": provider.id || "",
+      "Proveedor": provider.name || "",
+      "Ubicacion": location.name || "",
+      "Direccion": location.address || "",
+      "Telefono": location.phone || "",
+      "Notas": location.notes || "",
+      "Maps URL": location.mapsUrl || "",
+      "Latitud": location.lat || "",
+      "Longitud": location.lng || "",
+      "Principal": location.isPrimary ? "Si" : "No",
+    }));
+  });
+  return { providers, locations };
 }
 
 function sendHrTimesheetXlsxExport(response, searchParams = new URLSearchParams()) {
