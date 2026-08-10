@@ -609,6 +609,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
         <input type="number" id="pkg-loose" min="0" step="1" value="0" oninput="updatePackageTotal()">
       </div>
       <div class="computed-total">Total contado: <span id="pkg-total">0</span></div>
+      <div id="pkg-calculation" style="font-size:12px;color:var(--muted);line-height:1.45"></div>
     </div>
     <div class="modal-btns" style="margin-top:16px">
       <button class="btn-secondary" onclick="closePackageModal()">Cancelar</button>
@@ -1446,6 +1447,9 @@ function renderInventoryKpis() {
 
 function itemMetaPills(item) {
   const pills = [];
+  if (item.countMode === 'packages' && num(item.unitsPerBundle) > 0) {
+    pills.push({ label: 'Presentación: Caja x ' + fmtQty(item.unitsPerBundle) + ' ' + (item.unit || 'un.') });
+  }
   if (activeDomain === 'kitchen') {
     if (item.locationType) pills.push({ label: locationTypeLabel(item.locationType) + (item.locationDetail ? ' · ' + item.locationDetail : '') });
     if (item.minStock) pills.push({ label: 'Min. ' + fmtQty(item.minStock), cls: isLowStock(item) ? 'warn' : '' });
@@ -1645,8 +1649,8 @@ function openPackageModal(itemId) {
   packageItemId = itemId;
   document.getElementById('package-item-name').textContent = item.name;
   document.getElementById('pkg-boxes').value = saved.bundles ?? '0';
-  document.getElementById('pkg-units').value = saved.unitsPerBundle ?? '';
-  document.getElementById('pkg-loose').value = saved.looseUnits ?? (countedQty(item) || '0');
+  document.getElementById('pkg-units').value = saved.unitsPerBundle ?? item.unitsPerBundle ?? '';
+  document.getElementById('pkg-loose').value = saved.looseUnits ?? '0';
   updatePackageTotal();
   document.getElementById('package-overlay').classList.add('open');
 }
@@ -1664,7 +1668,9 @@ function packageTotal() {
 }
 
 function updatePackageTotal() {
-  document.getElementById('pkg-total').textContent = fmtQty(packageTotal());
+  const count = currentPackageCount();
+  document.getElementById('pkg-total').textContent = fmtQty(count.totalUnits);
+  document.getElementById('pkg-calculation').textContent = `${fmtQty(count.bundles)} cajas × ${fmtQty(count.unitsPerBundle)} + ${fmtQty(count.looseUnits)} sueltas = ${fmtQty(count.totalUnits)} unidades`;
 }
 
 async function usePackageTotal() {
@@ -1990,7 +1996,10 @@ function collectItemFormPayload() {
   const inventoryDomain = document.getElementById('ni-inventory-domain').value === 'equipment' ? 'equipment' : 'kitchen';
   const mode = document.getElementById('ni-count-mode').value;
   const packageCount = mode === 'packages' ? newItemPackageCount() : null;
-  const quantity = mode === 'packages' ? packageCount.totalUnits : Math.max(0, Number(document.getElementById('ni-qty').value) || 0);
+  const editingItem = itemFormMode === 'edit' ? items.find(entry => entry.id === editingItemId) : null;
+  const quantity = editingItem
+    ? registeredQty(editingItem)
+    : mode === 'packages' ? packageCount.totalUnits : Math.max(0, Number(document.getElementById('ni-qty').value) || 0);
   const expiryDate = document.getElementById('ni-expiry-date').value;
   const selectedExpiryStatus = document.getElementById('ni-expiry-status').value;
   const notes = document.getElementById('ni-kitchen-notes').value.trim();
@@ -2009,6 +2018,8 @@ function collectItemFormPayload() {
       subcategory: document.getElementById('ni-subcategory').value,
       quantity,
       unit: document.getElementById('ni-unit').value || (inventoryDomain === 'kitchen' ? 'kg' : 'unidad'),
+      countMode: mode,
+      unitsPerBundle: mode === 'packages' ? packageCount.unitsPerBundle : 0,
       location: itemFormMode === 'edit' ? editingItemLocation : (sesion?.location || ''),
       locationType: document.getElementById('ni-location-type').value,
       locationDetail: document.getElementById('ni-location-detail').value.trim(),
@@ -2082,7 +2093,7 @@ function applySessionCountProtection(itemId) {
   const protectedCount = hasActiveItemCount(itemId);
   const warning = document.getElementById('item-form-session-warning');
   warning.textContent = protectedCount
-    ? 'Este artículo ya tiene un conteo en la sesión activa. La cantidad, unidad y modo de conteo se mantienen bloqueados para no alterar su interpretación.'
+    ? 'Este artículo ya tiene un conteo en la sesión activa. La cantidad, unidad y presentación se mantienen bloqueadas para no reinterpretar lo contado.'
     : '';
   warning.classList.toggle('show', protectedCount);
   ['ni-qty','ni-count-mode','ni-unit','ni-pkg-boxes','ni-pkg-units','ni-pkg-loose'].forEach(id => {
@@ -2110,9 +2121,10 @@ function populateItemForm(item) {
   document.getElementById('ni-internal-actions').style.display = item.internalCode ? '' : 'none';
   document.getElementById('ni-qty').value = fmtQty(item.quantity || 0);
   const savedPackages = sesion?.counts?.[item.id]?.packageCount || null;
-  document.getElementById('ni-count-mode').value = savedPackages ? 'packages' : 'units';
+  const countMode = item.countMode === 'packages' || (!item.countMode && savedPackages?.unitsPerBundle) ? 'packages' : 'units';
+  document.getElementById('ni-count-mode').value = countMode;
   document.getElementById('ni-pkg-boxes').value = savedPackages?.bundles || 0;
-  document.getElementById('ni-pkg-units').value = savedPackages?.unitsPerBundle || 0;
+  document.getElementById('ni-pkg-units').value = item.unitsPerBundle || savedPackages?.unitsPerBundle || 0;
   document.getElementById('ni-pkg-loose').value = savedPackages?.looseUnits || 0;
   document.getElementById('ni-location-detail').value = item.locationDetail || '';
   document.getElementById('ni-location-type').value = item.locationType || '';
@@ -2219,6 +2231,7 @@ async function saveNewItem() {
   const expiryStatus = expiryDate ? (selectedExpiryStatus || 'vence_el') : '';
   if (!name) { toast('Ingresa el nombre del item.'); return; }
   if (qty <= 0) { toast('Ingresa una cantidad mayor a cero.'); return; }
+  if (mode === 'packages' && packageCount.unitsPerBundle <= 0) { toast('Ingresa las unidades por caja o bulto.'); return; }
   if (expiryStatus && !expiryDate) { toast('Carga la fecha de vencimiento.'); return; }
   const itemPayload = {
     name,
@@ -2232,6 +2245,8 @@ async function saveNewItem() {
     subcategory: document.getElementById('ni-subcategory').value,
     quantity: qty,
     unit: document.getElementById('ni-unit').value || (inventoryDomain === 'kitchen' ? 'kg' : 'unidad'),
+    countMode: mode,
+    unitsPerBundle: mode === 'packages' ? packageCount.unitsPerBundle : 0,
     location: sesion?.location || '',
     locationType: document.getElementById('ni-location-type').value,
     locationDetail: document.getElementById('ni-location-detail').value.trim(),
@@ -2281,6 +2296,7 @@ async function saveEditedItem() {
   if (itemFormReadOnly || !editingItemId) return;
   const { item } = collectItemFormPayload();
   if (!item.name) { toast('Ingresa el nombre del item.'); return; }
+  if (item.countMode === 'packages' && item.unitsPerBundle <= 0) { toast('Ingresa las unidades por caja o bulto.'); return; }
   if (item.expiryStatus && !item.expiryDate) { toast('Carga la fecha de vencimiento.'); return; }
   const initial = JSON.parse(itemFormInitialState || '{}');
   const fields = {};

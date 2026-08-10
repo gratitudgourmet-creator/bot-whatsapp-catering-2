@@ -7885,6 +7885,10 @@ function normalizeOperationalInventoryItem(input = {}) {
   const controlType = normalizeInventoryControlType(input.controlType || "") || inferInventoryControlType(input, functionalFamily, categoryId);
   const barcode = normalizeInventoryBarcode(input.barcode || input.ean || input.sku || "");
   const internalCode = normalizeInventoryInternalCode(input.internalCode || "");
+  const countMode = input.countMode === "packages" ? "packages" : "units";
+  const unitsPerBundle = countMode === "packages"
+    ? Math.max(0, parseDecimalNumber(input.unitsPerBundle || 0))
+    : 0;
   return {
     id: normalizeText(input.id || `opinv-${Date.now()}-${Math.random().toString(16).slice(2)}`),
     name: normalizeText(input.name || input.productName || input.description || ""),
@@ -7900,6 +7904,8 @@ function normalizeOperationalInventoryItem(input = {}) {
     controlType,
     quantity,
     unit: normalizeText(input.unit || "unidad"),
+    countMode,
+    unitsPerBundle,
     minStock: Math.max(0, parseDecimalNumber(input.minStock || 0)),
     status: normalizeOperationalInventoryStatus(input.status || "available"),
     operationalStatus: normalizeInventoryOperationalStatus(input.operationalStatus || ""),
@@ -8237,8 +8243,10 @@ function saveOperationalInventoryRecord(input = {}, user = null) {
   const data = normalizeOperationalInventoryData(erpOperationalInventory);
   const categories = Array.isArray(input.categories) ? input.categories.map(normalizeOperationalInventoryCategory).filter((item) => item.label) : data.categories;
   const itemInput = input.item || input;
-  const item = normalizeOperationalInventoryItem(itemInput);
+  const existingIndex = data.items.findIndex((entry) => entry.id === normalizeText(itemInput.id || ""));
+  const item = normalizeOperationalInventoryItem({ ...(existingIndex >= 0 ? data.items[existingIndex] : {}), ...itemInput });
   if (!item.name) throw new Error("Ingrese el nombre del item de inventario.");
+  if (item.countMode === "packages" && item.unitsPerBundle <= 0) throw new Error("Ingrese cuantas unidades contiene cada caja o bulto.");
   if (item.internalCode && !isValidInventoryInternalCode(item.internalCode)) throw new Error("El codigo interno debe usar el formato GG-XXXXXX.");
   if (item.barcode && item.internalCode && item.barcode.toUpperCase() === item.internalCode) throw new Error("El codigo comercial y el codigo interno deben ser diferentes.");
   if (!categories.some((category) => category.id === item.categoryId)) categories.push(normalizeOperationalInventoryCategory({ id: item.categoryId, label: item.categoryId }));
@@ -8363,7 +8371,7 @@ function archiveOperationalInventoryItem(id, reason, user = null) {
 const OPERATIONAL_INVENTORY_PATCH_FIELDS = new Set([
   "name", "barcode", "internalCode", "inventoryDomain", "inventoryArea",
   "functionalFamily", "controlType", "categoryId", "subcategory",
-  "quantity", "unit", "location", "locationType", "locationDetail",
+  "quantity", "unit", "countMode", "unitsPerBundle", "location", "locationType", "locationDetail",
   "usageType", "minStock", "operationalStatus", "notes", "kitchenNotes",
   "expiryStatus", "expiryDate", "preciseLocation",
 ]);
@@ -8395,14 +8403,15 @@ function patchOperationalInventoryItem(id, inputFields = {}, expectedUpdatedAt =
 
   const activeSession = loadInventarioSesion();
   const hasActiveCount = Boolean(activeSession.active && activeSession.counts && Object.prototype.hasOwnProperty.call(activeSession.counts, cleanId));
-  const countSensitiveFields = ["quantity", "unit", "controlType"];
+  const countSensitiveFields = ["quantity", "unit", "countMode", "unitsPerBundle", "controlType"];
   if (hasActiveCount && countSensitiveFields.some((field) => Object.prototype.hasOwnProperty.call(inputFields, field))) {
-    throw new Error("El articulo tiene un conteo en curso. No se puede cambiar cantidad, unidad ni tipo de control desde la ficha.");
+    throw new Error("El articulo tiene un conteo en curso. No se puede cambiar cantidad, unidad ni presentacion desde la ficha.");
   }
 
   const merged = { ...before, ...inputFields, id: before.id, updatedAt: before.updatedAt };
   const next = normalizeOperationalInventoryItem(merged);
   if (!next.name) throw new Error("Ingrese el nombre del articulo.");
+  if (next.countMode === "packages" && next.unitsPerBundle <= 0) throw new Error("Ingrese cuantas unidades contiene cada caja o bulto.");
   if (next.internalCode && !isValidInventoryInternalCode(next.internalCode)) throw new Error("El codigo interno debe usar el formato GG-XXXXXX.");
   if (next.barcode && next.internalCode && next.barcode.toUpperCase() === next.internalCode.toUpperCase()) {
     throw new Error("El codigo comercial y el codigo interno deben ser diferentes.");
@@ -8523,17 +8532,44 @@ function closeInventarioSesion(user) {
   const data = normalizeOperationalInventoryData(erpOperationalInventory);
   const now = new Date().toISOString();
   let updated = 0;
+  const promotedPresentations = [];
   data.items = data.items.map((item) => {
     const count = sesion.counts[item.id];
     if (!count || !count.counted) return item;
     if (!canWriteInventoryItem(user, item)) return item;
     updated++;
-    return { ...item, quantity: count.qty, location: sesion.location, updatedAt: now };
+    const packageCount = count.packageCount && normalizeInventoryPackageCount(count.packageCount);
+    const canPromoteLegacyPresentation = item.countMode !== "packages"
+      && packageCount
+      && packageCount.unitsPerBundle > 0;
+    const next = {
+      ...item,
+      quantity: packageCount ? packageCount.totalUnits : count.qty,
+      location: sesion.location,
+      countMode: canPromoteLegacyPresentation ? "packages" : item.countMode,
+      unitsPerBundle: canPromoteLegacyPresentation ? packageCount.unitsPerBundle : item.unitsPerBundle,
+      updatedAt: now,
+    };
+    if (canPromoteLegacyPresentation) {
+      promotedPresentations.push({
+        itemId: item.id,
+        name: item.name,
+        before: { countMode: item.countMode, unitsPerBundle: item.unitsPerBundle },
+        after: { countMode: next.countMode, unitsPerBundle: next.unitsPerBundle },
+      });
+    }
+    return normalizeOperationalInventoryItem(next);
   });
   erpOperationalInventory = { ...data, updatedAt: now };
   saveErpOperationalInventory();
   saveInventarioSesion({ active: false, location: sesion.location, closedAt: now, closedBy: user?.username || null, counts: sesion.counts });
   recordAudit(user, "update", "inventario_sesion", "sesion", "Inventario general cerrado", null, { location: sesion.location, itemsUpdated: updated });
+  promotedPresentations.forEach((change) => {
+    recordAudit(user, "update", "operational_inventory", change.itemId, change.name, change.before, change.after, {
+      origin: "inventario_session_close",
+      reason: "legacy_package_presentation_promotion",
+    });
+  });
   return { updated, location: sesion.location };
 }
 
