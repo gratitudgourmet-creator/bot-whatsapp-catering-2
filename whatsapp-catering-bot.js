@@ -48,6 +48,9 @@ console.log("Iniciando bot de WhatsApp...");
 patchWhatsappClientInjection();
 
 const BOT_CONFIG = loadBotConfig();
+const DEFAULT_CONFIG_LISTS = {
+  purchaseFundsSources: ["Gustavo", "Eugenia"],
+};
 const BOT_MESSAGES = loadBotMessages();
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
@@ -776,9 +779,19 @@ function saveBotConfig() {
 }
 
 function getConfigList(key) {
-  return Array.isArray(BOT_CONFIG[key])
-    ? BOT_CONFIG[key].filter(Boolean).map(String).sort((a, b) => a.localeCompare(b))
+  const configured = Array.isArray(BOT_CONFIG[key])
+    ? BOT_CONFIG[key].filter(Boolean).map(String)
     : [];
+  const defaults = DEFAULT_CONFIG_LISTS[key] || [];
+  const seen = new Set();
+  return [...configured, ...defaults]
+    .filter((item) => {
+      const clean = normalizeSearchKey(item);
+      if (!clean || seen.has(clean)) return false;
+      seen.add(clean);
+      return true;
+    })
+    .sort((a, b) => a.localeCompare(b));
 }
 
 function addPurchaseOption(type, value) {
@@ -11094,7 +11107,12 @@ function isReimbursablePurchase(purchase = {}) {
 
 function isPersonalReimbursementPayer(value = "") {
   const payer = normalizeSearchKey(value || "");
-  return payer.includes("joaquin") || payer.includes("joaqu") || payer.includes("german") || payer.includes("germa");
+  return payer.includes("joaquin")
+    || payer.includes("joaqu")
+    || payer.includes("german")
+    || payer.includes("germa")
+    || payer.includes("gustavo")
+    || payer.includes("eugenia");
 }
 
 function rememberErpPurchase(purchase) {

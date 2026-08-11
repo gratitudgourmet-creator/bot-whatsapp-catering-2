@@ -16053,7 +16053,12 @@
 
     function isPersonalFundsSource(value) {
       const key = normalizeSearch(value || "");
-      return key.includes("joaquin") || key.includes("joaqu") || key.includes("german") || key.includes("germa");
+      return key.includes("joaquin")
+        || key.includes("joaqu")
+        || key.includes("german")
+        || key.includes("germa")
+        || key.includes("gustavo")
+        || key.includes("eugenia");
     }
 
     function buildReimbursementGroups(purchases = erpData.purchases || []) {
@@ -16159,7 +16164,7 @@
                 <div class="debt-amount">${Number(group.balanceAmount || 0) < 0 ? `A favor ${formatCurrency(Math.abs(Number(group.balanceAmount || 0)))}` : formatCurrency(group.pendingAmount || 0)}</div>
                 <button class="filter" type="button" onclick="showReimbursementDetail('${escapeAttribute(group.payer)}')">Ver / reintegrar</button>
               </article>
-            `).join("") : `<div class="empty">No hay reintegros cargados. Para usarlo, cargue la compra como pagada y ponga Origen de fondos = Joaquin o German.</div>`}
+            `).join("") : `<div class="empty">No hay reintegros cargados. Para usarlo, cargue la compra como pagada y ponga Origen de fondos = Joaquin, German, Gustavo o Eugenia.</div>`}
           </div>
         </section>
         <section class="debt-board" style="margin-top:14px;">
