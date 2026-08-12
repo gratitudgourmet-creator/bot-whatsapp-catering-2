@@ -1464,8 +1464,17 @@ function startApprovalPanelServer() {
         const user = requirePanelPermission(request, response, "purchases:write");
         if (!user) return;
         const body = await readJsonBody(request);
+        const before = body.id ? erpPurchases.find((purchase) => purchase.id === body.id) : null;
         const result = await submitPurchaseRecord(body);
-        recordAudit(user, body.id ? "update" : "create", "purchase", result.purchase?.id, result.purchase?.provider, null, result.purchase);
+        recordAudit(user, body.id ? "update" : "create", "purchase", result.purchase?.id, result.purchase?.provider, before, result.purchase, {
+          imputationType: result.purchase?.imputationType || "",
+          previousImputationType: before?.imputationType || "",
+          previousEventName: before?.eventName || before?.evento || "",
+          nextEventName: result.purchase?.eventName || result.purchase?.evento || "",
+          previousInternalArea: before?.internalArea || "",
+          nextInternalArea: result.purchase?.internalArea || "",
+          imputationNotes: result.purchase?.imputationNotes || "",
+        });
         return sendJson(response, { ok: true, result });
       }
 
@@ -7183,7 +7192,10 @@ function getPurchaseDashboard(purchases = getErpPurchaseList()) {
   const totalAmount = purchases.reduce((sum, purchase) => sum + Number(purchase.totalAmount || 0), 0);
   const pendingPurchases = purchases.filter((purchase) => Number(purchase.pendingAmount || 0) > 0);
   const byProvider = groupPurchaseAmount(purchases, "provider");
-  const byEvent = groupPurchaseAmount(purchases, "eventName");
+  const byEvent = groupPurchaseAmount(purchases.map((purchase) => ({
+    ...purchase,
+    imputationLabel: getPurchaseImputationLabel(purchase),
+  })), "imputationLabel");
   const byPaymentMethod = groupPurchaseAmount(purchases, "paymentMethod");
 
   return {
@@ -11040,6 +11052,10 @@ function _computeErpPurchaseList() {
       paidAmount,
       pendingAmount,
       paymentStatus,
+      imputationType: normalizePurchaseImputationType(purchase, purchase.eventName || purchase.evento || ""),
+      internalArea: purchase.internalArea || purchase.areaConsumo || "",
+      imputationNotes: purchase.imputationNotes || purchase.detalleImputacion || "",
+      imputationLabel: getPurchaseImputationLabel(purchase),
       reimbursementPaidAmount,
       reimbursementBalance,
       reimbursementPendingAmount,
@@ -11079,6 +11095,26 @@ function getPurchasePaidAmount(purchase = {}, totalAmount = 0) {
   if (explicitPaid > 0) return roundMoney(Math.min(explicitPaid, totalAmount));
   if (normalizeSearchKey(purchase.paymentStatus || purchase.estadoPago) === "pagado") return roundMoney(totalAmount);
   return 0;
+}
+
+function isMissingPurchaseEventName(value = "") {
+  const key = normalizeSearchKey(value || "");
+  return !key || ["sin evento", "compra general", "general", "sin definir"].includes(key);
+}
+
+function normalizePurchaseImputationType(input = {}, eventName = "") {
+  const rawType = normalizeSearchKey(input.imputationType || input.tipoImputacion || "");
+  if (["internal", "empresa", "consumo interno", "consumo_interno"].includes(rawType)) return "internal";
+  if (["event", "evento"].includes(rawType)) return "event";
+  if (!isMissingPurchaseEventName(eventName || input.eventName || input.evento || "")) return "event";
+  return "unassigned";
+}
+
+function getPurchaseImputationLabel(purchase = {}) {
+  const type = normalizePurchaseImputationType(purchase, purchase.eventName || purchase.evento || "");
+  if (type === "internal") return `Empresa · ${purchase.internalArea || purchase.areaConsumo || "Sin area"}`;
+  if (type === "event") return `Evento · ${purchase.eventName || purchase.evento || "Sin evento"}`;
+  return "Pendiente de imputacion";
 }
 
 function getPurchasePendingAmount(purchase = {}, totalAmount = 0) {
@@ -11141,6 +11177,11 @@ function rememberErpPurchase(purchase) {
     date: purchase.fecha || getDateOnly(new Date()),
     provider: purchase.proveedor || "",
     eventName: purchase.evento || "",
+    eventId: purchase.eventId || "",
+    imputationType: normalizePurchaseImputationType(purchase, purchase.evento || purchase.eventName || ""),
+    internalArea: purchase.internalArea || "",
+    imputationNotes: purchase.imputationNotes || "",
+    imputationLabel: getPurchaseImputationLabel(purchase),
     description: purchase.descripcion || "",
     source: purchase.source || previous.source || "panel_compras",
     sourceReceiptId: purchase.sourceReceiptId || previous.sourceReceiptId || "",
@@ -13214,6 +13255,16 @@ function buildPurchaseRecord(input, options = {}) {
   const ivaAmount = roundMoney(lineItems.reduce((sum, item) => sum + item.ivaAmount, 0));
   const totalAmount = roundMoney(lineItems.reduce((sum, item) => sum + item.total, 0));
   const ivaRate = getDominantIvaRate(lineItems);
+  const rawEventName = isMissingPurchaseEventName(input.eventName || input.evento || "") ? "" : normalizeText(input.eventName || input.evento || "");
+  const imputationType = normalizePurchaseImputationType(input, rawEventName);
+  const internalArea = imputationType === "internal" ? normalizeText(input.internalArea || input.areaConsumo || "") : "";
+  const imputationNotes = imputationType === "internal" ? normalizeText(input.imputationNotes || input.detalleImputacion || "") : "";
+  const eventName = imputationType === "event"
+    ? rawEventName || (requireEvent ? "" : normalizeText(options.defaultEvent || "Sin evento"))
+    : "";
+  const eventRecord = eventName
+    ? getErpEventList().find((event) => normalizeSearchKey(event.name || event.eventName || "") === normalizeSearchKey(eventName))
+    : null;
 
   const purchase = {
     id: cleanId || `compra-${Date.now()}`,
@@ -13229,7 +13280,11 @@ function buildPurchaseRecord(input, options = {}) {
     montoUnitario: firstItem.unitAmount,
     montoTotal: totalAmount,
     comprobante: normalizeText(input.invoiceType || ""),
-    evento: normalizeText(input.eventName || "") || (requireEvent ? "" : normalizeText(options.defaultEvent || "Sin evento")),
+    evento: eventName,
+    eventId: imputationType === "event" ? normalizeText(input.eventId || eventRecord?.id || "") : "",
+    imputationType,
+    internalArea,
+    imputationNotes,
     neto: netAmount,
     ivaPorcentaje: ivaRate,
     ivaCalculado: ivaAmount,
@@ -13252,7 +13307,12 @@ function buildPurchaseRecord(input, options = {}) {
     ivaRate: purchase.ivaPorcentaje,
     ivaAmount: purchase.ivaCalculado,
     invoiceType: purchase.comprobante,
+    eventId: purchase.eventId,
     eventName: purchase.evento,
+    imputationType: purchase.imputationType,
+    internalArea: purchase.internalArea,
+    imputationNotes: purchase.imputationNotes,
+    imputationLabel: getPurchaseImputationLabel(purchase),
     paymentStatus: purchase.estadoPago,
     paymentMethod: purchase.medioPago,
     fundsSource: purchase.origenFondos,
@@ -13272,8 +13332,16 @@ function buildPurchaseRecord(input, options = {}) {
     throw new Error("Ingrese la descripcion de la compra.");
   }
 
-  if (requireEvent && !purchase.evento) {
+  if (requireEvent && purchase.imputationType === "unassigned") {
+    throw new Error("Seleccione si la compra corresponde a un evento o a consumo interno.");
+  }
+
+  if (requireEvent && purchase.imputationType === "event" && !purchase.evento) {
     throw new Error("Ingrese el evento al que corresponde la compra.");
+  }
+
+  if (purchase.imputationType === "internal" && !purchase.internalArea) {
+    throw new Error("Seleccione el area de consumo interno.");
   }
 
   return purchase;

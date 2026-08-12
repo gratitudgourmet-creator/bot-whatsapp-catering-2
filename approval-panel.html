@@ -3236,6 +3236,48 @@
       transform: translateY(-50%);
     }
 
+    .purchase-imputation-toggle {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .purchase-imputation-toggle button {
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      font-weight: 800;
+      justify-content: center;
+      min-height: 42px;
+      padding: 9px 10px;
+      text-align: center;
+    }
+
+    .purchase-imputation-toggle button.active {
+      background: color-mix(in srgb, var(--primary) 12%, var(--bg));
+      border-color: color-mix(in srgb, var(--primary) 56%, var(--border));
+      color: var(--primary);
+    }
+
+    .purchase-imputation-panel.hidden,
+    .purchase-imputation-pending.hidden {
+      display: none;
+    }
+
+    .purchase-imputation-pending {
+      background: #fff7e0;
+      border: 1px solid #f3d28a;
+      border-radius: 10px;
+      color: #7a4a00;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 10px;
+    }
+
     .purchase-summary-card {
       background: color-mix(in srgb, var(--surface) 94%, var(--primary) 6%);
       border: 1px solid color-mix(in srgb, var(--border) 76%, var(--primary) 24%);
@@ -11977,12 +12019,41 @@
               </div>
             </div>
             <div class="purchase-section-grid">
+              <input name="imputationType" type="hidden" value="event">
               <div class="form-field full">
+                <label>Destino</label>
+                <div class="purchase-imputation-toggle" role="group" aria-label="Destino de la compra">
+                  <button id="purchase-imputation-event" class="active" type="button" onclick="setPurchaseImputationType('event', { confirmChange: true })">Evento</button>
+                  <button id="purchase-imputation-internal" type="button" onclick="setPurchaseImputationType('internal', { confirmChange: true })">Consumo interno / Empresa</button>
+                </div>
+                <div id="purchase-imputation-pending" class="purchase-imputation-pending hidden">Pendiente de imputación. Elegí Evento o Consumo interno / Empresa antes de guardar.</div>
+              </div>
+              <div id="purchase-event-imputation-panel" class="form-field full purchase-imputation-panel">
                 <label>Evento</label>
                 <input name="eventName" id="purchase-event" type="hidden">
                 <div class="purchase-search-select autocomplete">
-                  <input id="purchase-event-search" autocomplete="off" placeholder="Buscar evento" required>
+                  <input id="purchase-event-search" autocomplete="off" placeholder="Seleccionar evento" required>
                   <div id="purchase-event-suggestions" class="autocomplete-list"></div>
+                </div>
+              </div>
+              <div id="purchase-internal-imputation-panel" class="purchase-section-grid full purchase-imputation-panel hidden">
+                <div class="form-field">
+                  <label>Área de consumo</label>
+                  <select name="internalArea" id="purchase-internal-area">
+                    <option value="">Seleccionar área</option>
+                    <option>Cocina diaria</option>
+                    <option>Administración</option>
+                    <option>Limpieza</option>
+                    <option>Mantenimiento</option>
+                    <option>Personal</option>
+                    <option>Logística</option>
+                    <option>Marketing</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>Detalle</label>
+                  <input name="imputationNotes" id="purchase-imputation-notes" maxlength="140" placeholder="Ej: Insumos para pruebas de menú">
                 </div>
               </div>
             </div>
@@ -12026,7 +12097,7 @@
             <div class="purchase-review-grid">
               <div class="purchase-review-line"><span>Proveedor</span><strong id="purchase-review-provider">Sin proveedor</strong></div>
               <div class="purchase-review-line"><span>Fecha</span><strong id="purchase-review-date">Sin fecha</strong></div>
-              <div class="purchase-review-line"><span>Evento</span><strong id="purchase-review-event">Sin evento</strong></div>
+              <div class="purchase-review-line"><span>Destino</span><strong id="purchase-review-event">Sin destino</strong></div>
               <div class="purchase-review-line"><span>Productos</span><strong id="purchase-review-items">0</strong></div>
               <div class="purchase-review-line"><span>Pago</span><strong id="purchase-review-payment">Pendiente</strong></div>
               <div class="purchase-review-line"><span>Origen</span><strong id="purchase-review-funds">Sin definir</strong></div>
@@ -15552,7 +15623,7 @@
         body.innerHTML = `
           ${field("Que pasa", "Hay compras cargadas que todavia figuran pendientes de pago.")}
           ${field("Como solucionarlo", "Revisar el pago, actualizar la planilla si ya se pago, o cargar el medio/origen de fondos en la compra siguiente.")}
-          ${renderAlertList(purchases.map((purchase) => `${purchase.provider} | ${purchase.description} | ${formatCurrency(purchase.totalAmount)} | ${purchase.eventName || "Sin evento"}`))}
+          ${renderAlertList(purchases.map((purchase) => `${purchase.provider} | ${purchase.description} | ${formatCurrency(purchase.totalAmount)} | ${getPurchaseDestinationLabel(purchase)}`))}
           <div class="actions"><button class="approve" onclick="showPurchaseForm(); hideAlertDetail();">Cargar compra</button></div>
         `;
       } else if (title.includes("Recetas sin precio")) {
@@ -15855,7 +15926,7 @@
         ["partial", "Parciales", counts.partial],
         ["paid", "Pagadas", counts.paid],
         ["reimbursements", "Reintegros", counts.reimbursements],
-        ["withoutEvent", "Sin evento", counts.withoutEvent],
+        ["withoutEvent", "Pendiente imputación", counts.withoutEvent],
         ["latest", "Ultimas", counts.latest],
       ];
       return tabs.map(([id, label, count]) => `
@@ -15872,14 +15943,14 @@
         partial: purchases.filter((purchase) => purchase.paymentStatus === "Parcial").length,
         paid: purchases.filter((purchase) => purchase.paymentStatus === "Pagado").length,
         reimbursements: purchases.filter((purchase) => isPersonalFundsSource(purchase.fundsSource)).length,
-        withoutEvent: purchases.filter((purchase) => !purchase.eventName).length,
+        withoutEvent: purchases.filter((purchase) => normalizePurchaseImputationType(purchase) === "unassigned").length,
         latest: Math.min(10, purchases.length),
       };
     }
 
     function populatePurchaseWorkbenchFilters(purchases = []) {
       fillPurchaseWorkbenchSelect("purchase-dashboard-provider", purchases.map((purchase) => purchase.provider).filter(Boolean), "Todos los proveedores");
-      fillPurchaseWorkbenchSelect("purchase-dashboard-event", purchases.map((purchase) => purchase.eventName || "Sin evento"), "Todos los eventos");
+      fillPurchaseWorkbenchSelect("purchase-dashboard-event", purchases.map((purchase) => getPurchaseDestinationLabel(purchase)), "Todos los destinos");
       fillPurchaseWorkbenchSelect("purchase-dashboard-funds", purchases.map((purchase) => purchase.fundsSource || "Sin origen"), "Todos los origenes");
     }
 
@@ -15898,7 +15969,7 @@
       if (purchaseBoardFilter === "partial") rows = rows.filter((purchase) => purchase.paymentStatus === "Parcial");
       if (purchaseBoardFilter === "paid") rows = rows.filter((purchase) => purchase.paymentStatus === "Pagado");
       if (purchaseBoardFilter === "reimbursements") rows = rows.filter((purchase) => isPersonalFundsSource(purchase.fundsSource));
-      if (purchaseBoardFilter === "withoutEvent") rows = rows.filter((purchase) => !purchase.eventName);
+      if (purchaseBoardFilter === "withoutEvent") rows = rows.filter((purchase) => normalizePurchaseImputationType(purchase) === "unassigned");
       if (purchaseBoardFilter === "latest") rows = rows
         .sort((a, b) => (normalizePurchaseDate(b.date) || "").localeCompare(normalizePurchaseDate(a.date) || ""))
         .slice(0, 10);
@@ -16006,7 +16077,7 @@
         const provider = purchase.provider || "Sin proveedor";
         providers.add(provider);
         addPurchaseGroupTotal(providerTotals, provider, total);
-        addPurchaseGroupTotal(eventTotals, purchase.eventName || "Sin evento", total);
+        addPurchaseGroupTotal(eventTotals, getPurchaseDestinationLabel(purchase), total);
         addPurchaseGroupTotal(paymentTotals, purchase.paymentMethod || "Sin definir", total);
       });
 
@@ -19111,7 +19182,7 @@
                 <div>${escapeHtml(formatShortDate(purchase.date) || purchase.date || "")}</div>
                 <div>
                   <strong>${escapeHtml(purchase.description || "Compra")}</strong>
-                  <div class="secondary">${escapeHtml(purchase.provider || "Sin proveedor")} · ${escapeHtml(purchase.eventName || "Sin evento")}</div>
+                  <div class="secondary">${escapeHtml(purchase.provider || "Sin proveedor")} · ${escapeHtml(getPurchaseDestinationLabel(purchase))}</div>
                 </div>
                 <div>
                   <span class="secondary">${lineCredit > 0 ? "A favor" : "Pendiente"}</span>
@@ -19144,7 +19215,7 @@
             <strong>${escapeHtml(line.description || "Producto")}</strong>
             <div class="secondary">
               ${escapeHtml([
-                purchase.eventName || "Sin evento",
+                getPurchaseDestinationLabel(purchase),
                 line.quantity ? `Cantidad ${line.quantity}` : "",
                 index === 0 ? `Compra total ${formatCurrency(getPurchaseTotal(purchase))}` : "",
               ].filter(Boolean).join(" · "))}
@@ -19440,13 +19511,13 @@
       const fundsFilter = document.getElementById("purchase-dashboard-funds")?.value || "";
       const rows = applyPurchaseBoardFilter(getVisiblePurchasesByPeriod())
         .filter((purchase) => !providerFilter || purchase.provider === providerFilter)
-        .filter((purchase) => !eventFilter || (purchase.eventName || "Sin evento") === eventFilter)
+        .filter((purchase) => !eventFilter || getPurchaseDestinationLabel(purchase) === eventFilter)
         .filter((purchase) => !fundsFilter || (purchase.fundsSource || "Sin origen") === fundsFilter)
         .filter((purchase) => !term || normalizeSearch([
           purchase.date,
           purchase.provider,
           purchase.description,
-          purchase.eventName,
+          getPurchaseDestinationLabel(purchase),
           purchase.invoiceType,
           purchase.paymentStatus,
           purchase.paymentMethod,
@@ -19570,7 +19641,7 @@
       const statusClass = getPurchaseStatusClass(purchase.paymentStatus || "Pendiente");
       const note = [
         isPersonalFundsSource(purchase.fundsSource) ? "Origen personal: revisar reintegro" : "",
-        !purchase.eventName ? "Compra sin evento asociado" : "",
+        normalizePurchaseImputationType(purchase) === "unassigned" ? "Pendiente de imputación" : "",
       ].filter(Boolean).join(" · ");
       return `
         <article class="purchase-board-card">
@@ -19583,8 +19654,8 @@
               </div>
             </div>
             <div>
-              <div class="purchase-board-label">Evento</div>
-              <div class="purchase-board-value">${escapeHtml(purchase.eventName || "Compra general")}</div>
+              <div class="purchase-board-label">Destino</div>
+              <div class="purchase-board-value">${escapeHtml(getPurchaseDestinationLabel(purchase))}</div>
             </div>
             <div>
               <div class="purchase-board-label">Total</div>
@@ -19624,7 +19695,7 @@
           </div>
           <p>${escapeHtml(firstItem.description || purchase.description || "Sin descripcion")}${extraItems ? ` +${extraItems} item(s)` : ""}</p>
           <div class="purchase-mobile-meta">
-            <span>${escapeHtml(purchase.eventName || "Compra general")}</span>
+            <span>${escapeHtml(getPurchaseDestinationLabel(purchase))}</span>
             <strong>${formatCurrency(getPurchaseTotal(purchase) || 0)}</strong>
           </div>
           <div class="purchase-mobile-meta">
@@ -28098,7 +28169,10 @@
       document.getElementById("purchase-title").textContent = "Nueva compra";
       document.getElementById("purchase-subtitle").textContent = "Carga manual clara para registrar comprobantes, productos e imputación.";
       resetPurchaseItems();
-      setPurchaseEventValue("");
+      form.dataset.originalImputationType = "";
+      form.dataset.originalEventName = "";
+      form.dataset.originalInternalArea = "";
+      setPurchaseImputationType("event", { silent: true });
       document.getElementById("purchase").classList.add("open");
       renderPurchaseDraftTools();
       updatePurchaseSummary();
@@ -28121,12 +28195,19 @@
       setFormValue(form, "provider", purchase.provider || "");
       setFormValue(form, "invoiceType", purchase.invoiceType || "");
       setFormValue(form, "ivaRate", purchase.ivaRate || "");
-      setFormValue(form, "eventName", purchase.eventName || "");
+      setFormValue(form, "imputationType", normalizePurchaseImputationType(purchase));
+      setFormValue(form, "eventName", isMissingPurchaseEventName(purchase.eventName || "") ? "" : purchase.eventName || "");
+      setFormValue(form, "internalArea", purchase.internalArea || "");
+      setFormValue(form, "imputationNotes", purchase.imputationNotes || "");
       setFormValue(form, "paymentStatus", purchase.paymentStatus || "Pendiente");
       setFormValue(form, "paymentMethod", purchase.paymentMethod || "");
       setFormValue(form, "fundsSource", purchase.fundsSource || "");
       setFormValue(form, "notes", purchase.notes || "");
+      form.dataset.originalImputationType = normalizePurchaseImputationType(purchase);
+      form.dataset.originalEventName = isMissingPurchaseEventName(purchase.eventName || "") ? "" : purchase.eventName || "";
+      form.dataset.originalInternalArea = purchase.internalArea || "";
       syncPurchaseEventSearch();
+      setPurchaseImputationType(normalizePurchaseImputationType(purchase), { silent: true });
       resetPurchaseItems(purchase.lineItems || []);
       document.getElementById("purchase").classList.add("open");
       renderPurchaseDraftTools();
@@ -28181,7 +28262,8 @@
         </div>
 
         <!-- Campos de info -->
-        ${field("Evento", purchase.eventName || "Sin evento")}
+        ${field("Destino", getPurchaseDestinationLabel(purchase))}
+        ${normalizePurchaseImputationType(purchase) === "internal" && purchase.imputationNotes ? field("Detalle imputación", purchase.imputationNotes) : ""}
         ${purchase.description ? field("Descripción", purchase.description) : ""}
         ${field("Medio de pago", purchase.paymentMethod || "Sin definir")}
         ${field("Origen de fondos", purchase.fundsSource || "Sin definir")}
@@ -28240,7 +28322,7 @@
       document.getElementById("purchase-title").textContent = "Nueva compra";
       document.getElementById("purchase-subtitle").textContent = "Carga manual clara para registrar comprobantes, productos e imputación.";
       closePurchaseOptionDialog();
-      setPurchaseEventValue("");
+      setPurchaseImputationType("event", { silent: true });
       resetPurchaseItems();
       renderPurchaseDraftTools();
       updatePurchaseSummary();
@@ -28272,7 +28354,10 @@
         provider: form.elements.provider.value || "",
         invoiceType: form.elements.invoiceType.value || "",
         ivaRate: form.elements.ivaRate.value || "",
+        imputationType: form.elements.imputationType?.value || "event",
         eventName: form.elements.eventName.value || "",
+        internalArea: form.elements.internalArea?.value || "",
+        imputationNotes: form.elements.imputationNotes?.value || "",
         paymentStatus: form.elements.paymentStatus.value || "",
         paymentMethod: form.elements.paymentMethod.value || "",
         fundsSource: form.elements.fundsSource.value || "",
@@ -28285,6 +28370,8 @@
       return Boolean(
         payload?.provider ||
         payload?.eventName ||
+        payload?.internalArea ||
+        payload?.imputationNotes ||
         payload?.notes ||
         (payload?.items || []).some((item) => item.description || item.unitAmount)
       );
@@ -28355,12 +28442,20 @@
       setFormValue(form, "provider", data.provider || "");
       setFormValue(form, "invoiceType", data.invoiceType || "");
       setFormValue(form, "ivaRate", data.ivaRate || "0");
-      setFormValue(form, "eventName", data.eventName || "");
+      const imputationType = normalizePurchaseImputationType(data);
+      setFormValue(form, "imputationType", imputationType);
+      setFormValue(form, "eventName", isMissingPurchaseEventName(data.eventName || "") ? "" : data.eventName || "");
+      setFormValue(form, "internalArea", data.internalArea || "");
+      setFormValue(form, "imputationNotes", data.imputationNotes || "");
       setFormValue(form, "paymentStatus", data.paymentStatus || "Pendiente");
       setFormValue(form, "paymentMethod", data.paymentMethod || "");
       setFormValue(form, "fundsSource", data.fundsSource || "");
       setFormValue(form, "notes", data.notes || "");
+      form.dataset.originalImputationType = imputationType;
+      form.dataset.originalEventName = isMissingPurchaseEventName(data.eventName || "") ? "" : data.eventName || "";
+      form.dataset.originalInternalArea = data.internalArea || "";
       syncPurchaseEventSearch();
+      setPurchaseImputationType(imputationType, { silent: true });
       resetPurchaseItems(data.items || []);
       renderPurchaseDraftTools();
       updatePurchaseSummary();
@@ -28394,6 +28489,70 @@
     function syncPurchaseEventSearch() {
       const form = document.getElementById("purchase-form");
       setPurchaseEventValue(form?.elements.eventName?.value || "");
+    }
+
+    function normalizePurchaseImputationType(data = {}) {
+      const raw = normalizeSearch(data.imputationType || "");
+      if (raw === "internal" || raw.includes("empresa") || raw.includes("consumo")) return "internal";
+      if (raw === "event" || raw === "evento") return "event";
+      if (!isMissingPurchaseEventName(data.eventName || "")) return "event";
+      return "unassigned";
+    }
+
+    function isMissingPurchaseEventName(value = "") {
+      const key = normalizeSearch(value || "");
+      return !key || ["sin evento", "compra general", "general", "sin definir"].includes(key);
+    }
+
+    function setPurchaseImputationType(type = "event", options = {}) {
+      const form = document.getElementById("purchase-form");
+      if (!form) return;
+      const nextType = ["event", "internal", "unassigned"].includes(type) ? type : "event";
+      const currentType = form.elements.imputationType?.value || "event";
+      if (options.confirmChange && nextType !== currentType && purchaseImputationChangeNeedsConfirm(form, currentType, nextType)) {
+        const message = currentType === "event"
+          ? `Esta compra esta asociada al evento "${form.elements.eventName?.value || form.dataset.originalEventName || "seleccionado"}". Al cambiarla a Consumo interno se quitara esa asociacion. ¿Continuar?`
+          : "Esta compra esta marcada como consumo interno. Al cambiarla a Evento se quitara el area interna al guardar. ¿Continuar?";
+        if (!confirm(message)) return;
+      }
+
+      setFormValue(form, "imputationType", nextType);
+      const isEvent = nextType === "event";
+      const isInternal = nextType === "internal";
+      document.getElementById("purchase-imputation-event")?.classList.toggle("active", isEvent);
+      document.getElementById("purchase-imputation-internal")?.classList.toggle("active", isInternal);
+      document.getElementById("purchase-event-imputation-panel")?.classList.toggle("hidden", !isEvent);
+      document.getElementById("purchase-internal-imputation-panel")?.classList.toggle("hidden", !isInternal);
+      document.getElementById("purchase-imputation-pending")?.classList.toggle("hidden", nextType !== "unassigned");
+      document.getElementById("purchase-event-search")?.toggleAttribute("required", isEvent);
+      document.getElementById("purchase-internal-area")?.toggleAttribute("required", isInternal);
+
+      if (isEvent) {
+        setFormValue(form, "internalArea", "");
+        setFormValue(form, "imputationNotes", "");
+      }
+      if (isInternal) {
+        setPurchaseEventValue("");
+      }
+      if (!options.silent) {
+        savePurchaseDraft();
+        updatePurchaseSummary();
+      }
+    }
+
+    function purchaseImputationChangeNeedsConfirm(form, currentType, nextType) {
+      if (!form?.elements?.id?.value) return false;
+      if (currentType === nextType) return false;
+      if (currentType === "event" && (form.elements.eventName?.value || form.dataset.originalEventName)) return true;
+      if (currentType === "internal" && (form.elements.internalArea?.value || form.dataset.originalInternalArea)) return true;
+      return false;
+    }
+
+    function getPurchaseDestinationLabel(purchase = {}) {
+      const type = normalizePurchaseImputationType(purchase);
+      if (type === "internal") return `Empresa · ${purchase.internalArea || "Sin area"}`;
+      if (type === "event") return `Evento · ${purchase.eventName || "Sin evento"}`;
+      return "Pendiente de imputación";
     }
 
     function parsePurchaseDecimal(value, maxDecimals = 4) {
@@ -28557,7 +28716,10 @@
       if (!form) return;
       const totals = calculatePurchaseManualTotals();
       const provider = form.elements.provider?.value?.trim() || "";
+      const imputationType = form.elements.imputationType?.value || "event";
       const eventName = form.elements.eventName?.value || "";
+      const internalArea = form.elements.internalArea?.value || "";
+      const imputationNotes = form.elements.imputationNotes?.value || "";
       const paymentStatus = form.elements.paymentStatus?.value || "Pendiente";
       const fundsSource = form.elements.fundsSource?.value || "";
       const paymentMethod = form.elements.paymentMethod?.value || "";
@@ -28575,16 +28737,23 @@
       setText("purchase-review-provider", provider || "Sin proveedor");
       const purchaseDate = getPurchaseDateInput()?.value || "";
       setText("purchase-review-date", formatShortDate(purchaseDate) || purchaseDate || "Sin fecha");
-      setText("purchase-review-event", eventName || "Compra general / sin evento");
+      const destination = imputationType === "internal"
+        ? `Consumo interno / Empresa${internalArea ? ` · ${internalArea}` : ""}${imputationNotes ? ` · ${imputationNotes}` : ""}`
+        : imputationType === "event"
+          ? `Evento${eventName ? ` · ${eventName}` : ""}`
+          : "Pendiente de imputación";
+      setText("purchase-review-event", destination);
       setText("purchase-review-items", String(totals.items || 0));
       setText("purchase-review-payment", paymentStatus);
       setText("purchase-review-funds", fundsSource || "Sin definir");
 
-      const subtitleParts = [provider, eventName, totals.total ? formatCurrency(totals.total) : ""].filter(Boolean);
+      const subtitleParts = [provider, imputationType === "internal" ? internalArea : eventName, totals.total ? formatCurrency(totals.total) : ""].filter(Boolean);
       setText("purchase-subtitle", subtitleParts.length ? subtitleParts.join(" · ") : "Carga manual clara para registrar comprobantes, productos e imputación.");
 
       const alerts = [];
-      if (!eventName) alerts.push("Compra sin evento asociado.");
+      if (imputationType === "event" && !eventName) alerts.push("Falta seleccionar evento.");
+      if (imputationType === "internal" && !internalArea) alerts.push("Falta area de consumo interno.");
+      if (imputationType === "unassigned") alerts.push("Compra pendiente de imputación.");
       if (paymentStatus === "Pendiente") alerts.push("Pago pendiente.");
       if (paymentStatus !== "Pendiente" && !paymentMethod) alerts.push("Pago informado sin medio de pago definido.");
       if (paymentStatus !== "Pendiente" && !fundsSource) alerts.push("Pago informado sin origen de fondos.");
@@ -28725,6 +28894,7 @@
       const payload = Object.fromEntries(formData.entries());
       payload.updateExisting = Boolean(payload.id && document.getElementById("purchase-title")?.textContent === "Editar compra");
       payload.items = getPurchaseItems();
+      payload.imputationType = payload.imputationType || "event";
 
       if (!payload.date) {
         showNotice("Ingrese la fecha de la factura antes de guardar.", "error");
@@ -28735,6 +28905,31 @@
       if (!payload.items.length) {
         showNotice("Ingrese al menos un producto.", "error");
         return;
+      }
+
+      if (payload.imputationType === "event" && !payload.eventName) {
+        showNotice("Seleccione el evento de la compra.", "error");
+        document.getElementById("purchase-event-search")?.focus();
+        return;
+      }
+
+      if (payload.imputationType === "internal" && !payload.internalArea) {
+        showNotice("Seleccione el área de consumo interno.", "error");
+        document.getElementById("purchase-internal-area")?.focus();
+        return;
+      }
+
+      if (!["event", "internal"].includes(payload.imputationType)) {
+        showNotice("Seleccione si la compra corresponde a un evento o a consumo interno.", "error");
+        return;
+      }
+
+      if (payload.imputationType === "event") {
+        payload.internalArea = "";
+        payload.imputationNotes = "";
+      } else {
+        payload.eventName = "";
+        payload.eventId = "";
       }
 
       let response;
