@@ -1234,7 +1234,7 @@ function startApprovalPanelServer() {
           inventoryMovements: _has("inventoryMovements") ? (canSeePurchases || canSeeStock ? getInventoryMovementList() : []) : undefined,
           operationalInventory: _has("operationalInventory") ? (canSeePurchases || canSeeStock || canSeeEverything ? getOperationalInventoryAdminView(sessionUser) : undefined) : undefined,
           productMaster: _has("productMaster") ? (canSeePurchases || canSeeStock || canSeeRecipes || canSeeProduction || canSeeEverything ? getProductMasterListForUser(sessionUser) : []) : undefined,
-          providers: _has("providers") ? (canSeeProviders ? getProviderList() : []) : undefined,
+          providers: _has("providers") ? (canSeeProviders ? getProviderList() : canSeeCommercial ? getRentalProviderOptionList() : []) : undefined,
           recipes: _has("recipes") ? (canSeeRecipes ? getRecipeListForUser(sessionUser) : []) : undefined,
           customers: _has("customers") ? (canSeeCustomers || canSeeCommercial ? getCustomerInsights() : []) : undefined,
           venues: _has("venues") ? (canSeeVenues || canSeeCommercial ? getVenueList() : []) : undefined,
@@ -2145,6 +2145,7 @@ function startApprovalPanelServer() {
         const before = erpEvents.find((event) => event.id === body.id);
         const event = saveErpEventRecord(body, user);
         recordAudit(user, body.id ? "update" : "create", "event", event.id, event.name, before, event);
+        recordEventTablewareAudit(user, before || {}, event);
         return sendJson(response, { ok: true, event, dashboard: getErpDashboard() });
       }
 
@@ -5178,6 +5179,16 @@ function getProductMasterListForUser(user) {
     delete clone.totalStockValue;
     return clone;
   });
+}
+
+function getRentalProviderOptionList() {
+  return getProviderList().map((provider) => ({
+    id: provider.id,
+    name: provider.name,
+    category: provider.category,
+    phone: provider.phone,
+    email: provider.email,
+  }));
 }
 
 function getProductMasterList() {
@@ -9283,6 +9294,8 @@ function toLogisticsEventDetail(event) {
     tableware: event.tableware || "",
     tablewareQuantities: event.tablewareQuantities || "",
     tablewareDetail: event.tablewareDetail || "",
+    tablewareItems: event.tablewareItems || [],
+    tablewareRental: event.tablewareRental || {},
     largeContainers: event.largeContainers || "",
     smallContainers: event.smallContainers || "",
     staff: event.staff || "",
@@ -10029,6 +10042,8 @@ function normalizeErpEvent(event = {}) {
   const invoiceStatus = invoiceRequirement === "no_invoice"
     ? "not_applicable"
     : normalizeEventInvoiceStatus(event.invoiceStatus || "");
+  const tablewareItems = normalizeEventTablewareItems(event.tablewareItems || []);
+  const tablewareRental = normalizeEventTablewareRental(event.tablewareRental || {});
 
   return {
     id: event.id || `evento-${Date.now()}`,
@@ -10056,6 +10071,8 @@ function normalizeErpEvent(event = {}) {
     tableware: normalizeText(event.tableware || ""),
     tablewareQuantities: normalizeText(event.tablewareQuantities || ""),
     tablewareDetail: normalizeText(event.tablewareDetail || ""),
+    tablewareItems,
+    tablewareRental,
     largeContainers: normalizeText(event.largeContainers || ""),
     smallContainers: normalizeText(event.smallContainers || ""),
     staff: normalizeText(event.staff || ""),
@@ -11095,6 +11112,79 @@ function getPurchasePaidAmount(purchase = {}, totalAmount = 0) {
   if (explicitPaid > 0) return roundMoney(Math.min(explicitPaid, totalAmount));
   if (normalizeSearchKey(purchase.paymentStatus || purchase.estadoPago) === "pagado") return roundMoney(totalAmount);
   return 0;
+}
+
+function normalizeEventTablewareItems(input = []) {
+  if (!Array.isArray(input)) return [];
+  const inventory = normalizeOperationalInventoryData(erpOperationalInventory).items;
+  const providers = getProviderList();
+  const validModes = new Set(["stock", "rental", "mixed", "client", "venue", "pending"]);
+  const validRentalStatuses = new Set(["unassigned", "pending_quote", "quoted", "confirmed", "cancelled"]);
+  const seen = new Set();
+  return input.map((line, index) => {
+    const inventoryItemId = normalizeText(line.inventoryItemId || "");
+    if (!inventoryItemId || seen.has(inventoryItemId)) return null;
+    seen.add(inventoryItemId);
+    const inventoryItem = inventory.find((item) => item.id === inventoryItemId);
+    const requiredQuantity = Math.max(0, parseDecimalNumber(line.requiredQuantity || 0));
+    const sourcingMode = validModes.has(line.sourcingMode) ? line.sourcingMode : "pending";
+    const externalSupply = sourcingMode === "client" || sourcingMode === "venue" || sourcingMode === "pending";
+    const stockPlannedQuantity = externalSupply ? 0 : Math.max(0, parseDecimalNumber(line.stockPlannedQuantity || 0));
+    const rentalQuantity = externalSupply ? 0 : Math.max(0, parseDecimalNumber(line.rentalQuantity || 0));
+    const provider = providers.find((item) => item.id === normalizeText(line.rentalProviderId || ""));
+    return {
+      id: normalizeText(line.id || `event-tableware-${Date.now()}-${index}`),
+      inventoryItemId,
+      name: normalizeText(inventoryItem?.name || line.name || ""),
+      categoryId: normalizeText(inventoryItem?.categoryId || line.categoryId || ""),
+      functionalFamily: normalizeFunctionalFamily(inventoryItem?.functionalFamily || line.functionalFamily || ""),
+      unit: normalizeText(inventoryItem?.unit || line.unit || "unidad"),
+      requiredQuantity,
+      stockAvailableSnapshot: Math.max(0, parseDecimalNumber(line.stockAvailableSnapshot ?? inventoryItem?.quantity ?? 0)),
+      stockPlannedQuantity,
+      rentalQuantity,
+      sourcingMode,
+      rentalProviderId: normalizeText(provider?.id || line.rentalProviderId || ""),
+      rentalProviderName: normalizeText(provider?.name || line.rentalProviderName || ""),
+      rentalStatus: validRentalStatuses.has(line.rentalStatus) ? line.rentalStatus : (rentalQuantity > 0 ? "unassigned" : ""),
+      notes: normalizeText(line.notes || ""),
+    };
+  }).filter((line) => line && line.name);
+}
+
+function normalizeEventTablewareRental(input = {}) {
+  const providers = getProviderList();
+  const provider = providers.find((item) => item.id === normalizeText(input.defaultProviderId || ""));
+  const validStatuses = new Set(["unassigned", "pending_quote", "quoted", "confirmed", "cancelled"]);
+  return {
+    defaultProviderId: normalizeText(provider?.id || input.defaultProviderId || ""),
+    defaultProviderName: normalizeText(provider?.name || input.defaultProviderName || ""),
+    deliveryAt: normalizeText(input.deliveryAt || ""),
+    returnAt: normalizeText(input.returnAt || ""),
+    notes: normalizeText(input.notes || ""),
+    status: validStatuses.has(input.status) ? input.status : "pending_quote",
+  };
+}
+
+function recordEventTablewareAudit(user, beforeEvent = {}, afterEvent = {}) {
+  const beforeLines = new Map(normalizeEventTablewareItems(beforeEvent.tablewareItems || []).map((line) => [line.inventoryItemId, line]));
+  const afterLines = new Map(normalizeEventTablewareItems(afterEvent.tablewareItems || []).map((line) => [line.inventoryItemId, line]));
+  const ids = new Set([...beforeLines.keys(), ...afterLines.keys()]);
+  ids.forEach((inventoryItemId) => {
+    const before = beforeLines.get(inventoryItemId) || null;
+    const after = afterLines.get(inventoryItemId) || null;
+    if (JSON.stringify(before) === JSON.stringify(after)) return;
+    const action = !before ? "add" : !after ? "delete" : "update";
+    recordAudit(user, action, "event_tableware", afterEvent.id, after?.name || before?.name || "Vajilla", before, after, {
+      eventId: afterEvent.id,
+      inventoryItemId,
+    });
+  });
+  const beforeRental = normalizeEventTablewareRental(beforeEvent.tablewareRental || {});
+  const afterRental = normalizeEventTablewareRental(afterEvent.tablewareRental || {});
+  if (JSON.stringify(beforeRental) !== JSON.stringify(afterRental)) {
+    recordAudit(user, "update", "event_tableware_rental", afterEvent.id, afterEvent.name, beforeRental, afterRental);
+  }
 }
 
 function isMissingPurchaseEventName(value = "") {

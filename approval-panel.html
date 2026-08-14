@@ -9270,6 +9270,58 @@
       overflow: hidden;
     }
 
+    .tableware-planner {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+      padding: 14px;
+    }
+
+    .tableware-planner-head,
+    .tableware-line-head,
+    .tableware-planner-actions,
+    .tableware-rental-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .tableware-planner-head h4,
+    .tableware-line h5 { margin: 0; }
+
+    .tableware-summary-copy,
+    .tableware-line-meta { color: var(--muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+
+    .tableware-lines { display: grid; gap: 8px; }
+    .tableware-line { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 8px; display: grid; gap: 6px; min-width: 0; padding: 10px; }
+    .tableware-line button { flex: 0 0 auto; }
+    .tableware-legacy { border-top: 1px solid var(--line); padding-top: 10px; }
+    .tableware-legacy pre { margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+    .tableware-picker-list { display: grid; gap: 8px; max-height: 48vh; overflow-y: auto; overscroll-behavior: contain; }
+    .tableware-picker-item { align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; display: grid; gap: 3px; min-width: 0; padding: 10px; text-align: left; width: 100%; }
+    .tableware-picker-item:hover, .tableware-picker-item:focus-visible { border-color: var(--accent); outline: none; }
+    .tableware-coverage { background: var(--panel-soft); border-left: 3px solid var(--gold); display: grid; gap: 4px; padding: 10px; }
+    .tableware-line-form { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tableware-line-form .full { grid-column: 1 / -1; }
+    .tableware-rental-message { min-height: 260px; white-space: pre-wrap; }
+
+    @media (max-width: 700px) {
+      .tableware-planner { padding: 11px; }
+      .tableware-line-form { grid-template-columns: minmax(0, 1fr); }
+      .tableware-line-form .full { grid-column: auto; }
+      .tableware-planner-actions > button { flex: 1 1 auto; }
+      .tableware-picker-list { max-height: 50dvh; }
+      .event-context-panel .tableware-line-form input,
+      .event-context-panel .tableware-line-form select,
+      .event-context-panel .tableware-line-form textarea { max-width: 100%; min-width: 0; width: 100%; }
+    }
+
     body.modal-open {
       overflow: hidden;
       overscroll-behavior: none;
@@ -10307,19 +10359,11 @@
                 <div id="drink-options" class="chips-field"></div>
                 <datalist id="drink-option-suggestions"></datalist>
               </div>
-              <div class="form-field event-legacy-field">
-                <label>Vajilla</label>
-                <input name="tableware" placeholder="Cristaleria, manteleria, descartables">
-              </div>
-              <div class="form-field event-legacy-field">
-                <label>Cantidades de vajilla</label>
-                <input name="tablewareQuantities" placeholder="Platos x 30, copas x 60">
-              </div>
               <div class="form-field full">
-                <label>Detalle de vajilla / descartables</label>
-                <input class="event-legacy-input" name="tablewareDetail" list="tableware-product-options" placeholder="Ej: copas, platos, servilletas, conservadoras">
+                <input type="hidden" name="tableware">
+                <input type="hidden" name="tablewareQuantities">
+                <input type="hidden" name="tablewareDetail">
                 <div id="tableware-builder" class="operation-builder"></div>
-                <datalist id="tableware-product-options"></datalist>
               </div>
                 </div>
               </section>
@@ -12487,6 +12531,10 @@
     let costSettings = { laborHourlyCost: 0 };
     let purchaseItemCounter = 0;
     let purchaseOptionDialogType = "";
+    let eventTablewareState = { items: [], rental: {} };
+    let eventTablewareEditingId = "";
+    let eventTablewareSelectedInventoryId = "";
+    let eventTablewareProviderReturnDraft = null;
     let recipeItemCounter = 0;
     let recipeProcessCounter = 0;
     let budgetRecipeCounter = 0;
@@ -15500,6 +15548,8 @@
       if (!form.elements.guestCount?.value?.trim()) pending.push("Cantidad de invitados");
       if (!form.elements.venue?.value?.trim()) pending.push("Lugar");
       if (!getCheckedOptionText("serviceType")) pending.push("Servicio");
+      const tablewareSummary = getEventTablewareSummary();
+      if (tablewareSummary.pending) pending.push(`Vajilla: ${tablewareSummary.pending} pendiente(s)`);
       return pending;
     }
 
@@ -21191,6 +21241,17 @@
     }
 
     function renderLogisticsTableware(event) {
+      const plannedItems = Array.isArray(event.tablewareItems) ? event.tablewareItems : [];
+      if (plannedItems.length) {
+        const stock = plannedItems.reduce((sum, item) => sum + Number(item.stockPlannedQuantity || 0), 0);
+        const rental = plannedItems.reduce((sum, item) => sum + Number(item.rentalQuantity || 0), 0);
+        const pending = plannedItems.filter((item) => !item.requiredQuantity || item.sourcingMode === "pending" || (Number(item.rentalQuantity || 0) > 0 && !(item.rentalProviderId || event.tablewareRental?.defaultProviderId))).length;
+        const rows = plannedItems.map((item) => {
+          const provider = item.rentalProviderName || (item.rentalProviderId === event.tablewareRental?.defaultProviderId ? event.tablewareRental?.defaultProviderName : "") || event.tablewareRental?.defaultProviderName || "";
+          return `<div class="tableware-line"><div class="tableware-line-head"><h5>${escapeHtml(item.name || "Artículo")}</h5><span class="status-chip ${item.sourcingMode === "pending" ? "status-warning" : "status-info"}">${escapeHtml(getTablewareModeLabel(item.sourcingMode))}</span></div><div class="tableware-line-meta">Total ${formatTablewareQuantity(item.requiredQuantity)} ${escapeHtml(item.unit || "")} · Stock ${formatTablewareQuantity(item.stockPlannedQuantity)} · Alquiler ${formatTablewareQuantity(item.rentalQuantity)}</div><div class="tableware-line-meta">${Number(item.rentalQuantity || 0) ? escapeHtml(provider || "Proveedor pendiente") : "Sin alquiler"}${item.rentalStatus ? ` · ${escapeHtml(item.rentalStatus.replaceAll("_", " "))}` : ""}</div></div>`;
+        }).join("");
+        return `<div class="row logistics-tableware-card"><div class="tableware-line-head"><strong>Vajilla</strong><span class="badge">${plannedItems.length} ítems</span></div><div class="secondary">Stock: ${formatTablewareQuantity(stock)} · Alquiler: ${formatTablewareQuantity(rental)} · Pendientes: ${pending}</div><div class="tableware-lines">${rows}</div></div>`;
+      }
       const parts = [
         ["Vajilla", event.tableware],
         ["Cantidades", event.tablewareQuantities],
@@ -24325,7 +24386,7 @@
       renderCheckGroup("moment-options", "eventMoments", options.moments || [], eventData.eventMoments || "");
       renderDrinkChips(eventData.drinkType || "");
       renderDietaryRestrictionBuilder(eventData.dietaryRestrictions || document.getElementById("erp-event-form")?.elements.dietaryRestrictions?.value || "");
-      renderTablewareBuilder();
+      renderTablewareBuilder(eventData);
       document.getElementById("drink-option-suggestions").innerHTML = (options.drinks || [])
         .map((item) => `<option value="${escapeAttribute(item)}"></option>`)
         .join("");
@@ -24563,90 +24624,260 @@
       return getDrinkChips().join(", ");
     }
 
-    function renderTablewareBuilder() {
+    function renderTablewareBuilder(eventData = null) {
       const form = document.getElementById("erp-event-form");
       const container = document.getElementById("tableware-builder");
       if (!form || !container) return;
-      const initial = [form.elements.tablewareQuantities?.value, form.elements.tableware?.value, form.elements.tablewareDetail?.value]
-        .filter(Boolean)
-        .join("\n");
-      const rows = initial
-        ? initial.split(/\n|,/).map((item) => item.trim()).filter(Boolean).map((item) => ({ item }))
-        : [];
+      if (eventData && Object.prototype.hasOwnProperty.call(eventData, "tablewareItems")) {
+        eventTablewareState = {
+          items: Array.isArray(eventData.tablewareItems) ? eventData.tablewareItems.map((item) => ({ ...item })) : [],
+          rental: { status: "pending_quote", ...(eventData.tablewareRental || {}) },
+        };
+      }
+      const summary = getEventTablewareSummary();
+      const legacy = [form.elements.tableware?.value, form.elements.tablewareQuantities?.value, form.elements.tablewareDetail?.value].filter(Boolean).join("\n");
       container.innerHTML = `
-        <div class="operation-compact-row">
-          <input id="tableware-builder-qty" placeholder="Cantidad">
-          <input id="tableware-builder-item" list="tableware-product-options" placeholder="Agregar item de vajilla">
-          <button class="filter action-secondary" type="button" onclick="addTablewareBuilderItem()">Agregar</button>
-        </div>
-        <input id="tableware-builder-note" placeholder="Observación opcional">
-        <div id="tableware-builder-list" class="operation-list">
-          ${rows.map((row) => renderTablewareBuilderCard(row)).join("")}
-        </div>
-      `;
-      ["tableware-builder-qty", "tableware-builder-item", "tableware-builder-note"].forEach((id) => {
-        document.getElementById(id)?.addEventListener("keydown", (event) => {
-          if (event.key !== "Enter") return;
-          event.preventDefault();
-          addTablewareBuilderItem();
-        });
-      });
-      syncTablewareBuilderToFields();
-    }
-
-    function renderTablewareBuilderCard(row = {}) {
-      const label = [row.qty, row.item].filter(Boolean).join(" ") || row.item || "";
-      return `
-        <div class="operation-list-card" data-qty="${escapeAttribute(row.qty || "")}" data-item="${escapeAttribute(row.item || "")}" data-note="${escapeAttribute(row.note || "")}">
-          <div class="operation-list-main">
-            <span class="operation-list-title">${escapeHtml(label || "Item de vajilla")}</span>
-            ${row.note ? `<span class="secondary">${escapeHtml(row.note)}</span>` : ""}
-            <button class="filter action-secondary" type="button" onclick="editTablewareBuilderItem(this)">Editar</button>
-            <button class="reject action-danger" type="button" onclick="this.closest('.operation-list-card').remove(); syncTablewareBuilderToFields();">Eliminar</button>
+        <section class="tableware-planner">
+          <div class="tableware-planner-head">
+            <div><h4>Vajilla y alquiler</h4><div class="tableware-summary-copy">${summary.items} ítems · Stock: ${formatTablewareQuantity(summary.stock)} · Alquiler: ${formatTablewareQuantity(summary.rental)}<br>${summary.pending} pendiente(s) de resolver</div></div>
+            <button class="filter action-secondary" type="button" onclick="toggleTablewareLines()">Ver / editar</button>
           </div>
-        </div>
-      `;
+          <div class="tableware-planner-actions">
+            <button class="approve action-primary" type="button" onclick="openTablewareInventoryPicker()">Agregar artículo</button>
+            ${summary.rental > 0 ? `<button class="filter action-secondary" type="button" onclick="openTablewareRentalRequest()">Ver lista de alquiler</button>` : ""}
+          </div>
+          <div id="tableware-builder-list" class="tableware-lines" ${eventTablewareState.items.length ? "" : "hidden"}>${eventTablewareState.items.length ? eventTablewareState.items.map(renderEventTablewareLine).join("") : `<div class="empty">Todavía no hay artículos planificados.</div>`}</div>
+          ${renderTablewareRentalSettings()}
+          ${legacy ? `<details class="tableware-legacy"><summary>Información anterior</summary><p class="secondary">Datos históricos conservados. No se convierten automáticamente.</p><pre>${escapeHtml(legacy)}</pre></details>` : ""}
+        </section>`;
     }
 
-    function addTablewareBuilderItem() {
-      const qty = document.getElementById("tableware-builder-qty")?.value?.trim() || "";
-      const item = document.getElementById("tableware-builder-item")?.value?.trim() || "";
-      const note = document.getElementById("tableware-builder-note")?.value?.trim() || "";
-      if (!qty && !item && !note) return;
-      document.getElementById("tableware-builder-list")?.insertAdjacentHTML("beforeend", renderTablewareBuilderCard({ qty, item, note }));
-      ["tableware-builder-qty", "tableware-builder-item", "tableware-builder-note"].forEach((id) => {
-        const input = document.getElementById(id);
-        if (input) input.value = "";
-      });
-      syncTablewareBuilderToFields();
+    function formatTablewareQuantity(value) {
+      const number = Number(value || 0);
+      return Number.isInteger(number) ? String(number) : number.toFixed(2).replace(/\.?0+$/, "");
     }
 
-    function editTablewareBuilderItem(button) {
-      const card = button.closest(".operation-list-card");
-      if (!card) return;
-      document.getElementById("tableware-builder-qty").value = card.dataset.qty || "";
-      document.getElementById("tableware-builder-item").value = card.dataset.item || "";
-      document.getElementById("tableware-builder-note").value = card.dataset.note || "";
-      card.remove();
-      syncTablewareBuilderToFields();
+    function getEventTablewareSummary() {
+      const summary = (eventTablewareState.items || []).reduce((summary, item) => {
+        summary.items += 1;
+        summary.stock += Number(item.stockPlannedQuantity || 0);
+        summary.rental += Number(item.rentalQuantity || 0);
+        const providerId = item.rentalProviderId || eventTablewareState.rental?.defaultProviderId || "";
+        const invalidCoverage = !["client", "venue", "pending"].includes(item.sourcingMode)
+          && Math.abs(Number(item.requiredQuantity || 0) - Number(item.stockPlannedQuantity || 0) - Number(item.rentalQuantity || 0)) > 0.0001;
+        if (!item.requiredQuantity || item.sourcingMode === "pending" || invalidCoverage || (Number(item.rentalQuantity || 0) > 0 && !providerId)) summary.pending += 1;
+        return summary;
+      }, { items: 0, stock: 0, rental: 0, pending: 0 });
+      if (summary.rental > 0 && !eventTablewareState.rental?.deliveryAt) summary.pending += 1;
+      return summary;
     }
 
-    function getTablewareBuilderItems() {
-      return Array.from(document.querySelectorAll("#tableware-builder-list .operation-list-card")).map((card) => ({
-        qty: card.dataset.qty || "",
-        item: card.dataset.item || "",
-        note: card.dataset.note || "",
-      }));
+    function renderEventTablewareLine(item = {}) {
+      const provider = getEventTablewareProvider(item);
+      const mode = getTablewareModeLabel(item.sourcingMode);
+      const inventoryItem = (erpData.operationalInventory?.items || []).find((entry) => entry.id === item.inventoryItemId);
+      const currentStock = Number(inventoryItem?.availableQuantity ?? inventoryItem?.quantity ?? item.stockAvailableSnapshot ?? 0);
+      const stockWarning = Number(item.stockPlannedQuantity || 0) > currentStock;
+      return `<article class="tableware-line">
+        <div class="tableware-line-head"><h5>${escapeHtml(item.name || "Artículo")}</h5><button class="filter action-ghost" type="button" onclick="openTablewareLineEditor('${escapeAttribute(item.id)}')">Editar</button></div>
+        <div class="tableware-line-meta">Necesarias ${formatTablewareQuantity(item.requiredQuantity)} ${escapeHtml(item.unit || "un.")} · Stock disponible ${formatTablewareQuantity(currentStock)}</div>
+        <div class="tableware-line-meta">Stock planificado ${formatTablewareQuantity(item.stockPlannedQuantity)} · Alquiler ${formatTablewareQuantity(item.rentalQuantity)}</div>
+        <div class="tableware-line-meta">${escapeHtml(mode)} · ${escapeHtml(Number(item.rentalQuantity || 0) > 0 ? (provider || "Proveedor pendiente") : "Sin alquiler")}${stockWarning ? ` · <strong>Stock insuficiente: revisar</strong>` : ""}</div>
+      </article>`;
     }
 
-    function syncTablewareBuilderToFields() {
-      const form = document.getElementById("erp-event-form");
+    function renderTablewareRentalSettings() {
+      const rental = eventTablewareState.rental || {};
+      return `<details><summary>Datos generales del alquiler</summary><div class="tableware-line-form" style="margin-top:10px">
+        <div class="form-field full"><label>Proveedor principal</label><select onchange="updateTablewareRentalField('defaultProviderId', this.value)">${renderTablewareProviderOptions(rental.defaultProviderId, true)}</select></div>
+        <div class="form-field"><label>Entrega</label><input type="datetime-local" value="${escapeAttribute(rental.deliveryAt || "")}" onchange="updateTablewareRentalField('deliveryAt', this.value)"></div>
+        <div class="form-field"><label>Retiro / devolución</label><input type="datetime-local" value="${escapeAttribute(rental.returnAt || "")}" onchange="updateTablewareRentalField('returnAt', this.value)"></div>
+        <div class="form-field"><label>Estado</label><select onchange="updateTablewareRentalField('status', this.value)">${renderTablewareRentalStatusOptions(rental.status)}</select></div>
+        <div class="form-field full"><label>Observaciones</label><textarea onchange="updateTablewareRentalField('notes', this.value)">${escapeHtml(rental.notes || "")}</textarea></div>
+      </div></details>`;
+    }
+
+    function toggleTablewareLines() {
+      const list = document.getElementById("tableware-builder-list");
+      if (list) list.hidden = !list.hidden;
+    }
+
+    function getTablewareInventoryItems() {
+      const allowedFamilies = new Set(["tableware", "glassware", "linen_textiles", "disposables", "packaging_containers", "event_equipment"]);
+      return (erpData.operationalInventory?.items || []).filter((item) => allowedFamilies.has(item.functionalFamily) && item.status !== "inactive");
+    }
+
+    function openTablewareInventoryPicker() {
+      const items = getTablewareInventoryItems();
+      openEventContextPanel(`<div class="event-context-head"><div><h3>Agregar artículo</h3><p>Elegí un artículo del Inventario Operativo. No se descontará stock.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div>
+        <input id="tableware-inventory-search" type="search" placeholder="Buscar por nombre o categoría" oninput="filterTablewareInventoryPicker(this.value)">
+        <div id="tableware-inventory-picker-list" class="tableware-picker-list">${renderTablewareInventoryPickerItems(items)}</div>
+        <div id="tableware-picker-empty" class="empty" ${items.length ? "hidden" : ""}>No se encontró este artículo.${can("stock:write:any") ? ` <button class="filter action-secondary" type="button" onclick="showQuickTablewareInventoryForm()">Crear artículo</button>` : ""}</div>`);
+    }
+
+    function renderTablewareInventoryPickerItems(items) {
+      return items.map((item) => `<button class="tableware-picker-item" type="button" data-search="${escapeAttribute(normalizeSearch([item.name, item.categoryId, item.subcategory].join(" ")))}" onclick="selectTablewareInventoryItem('${escapeAttribute(item.id)}')"><strong>${escapeHtml(item.name)}</strong><span class="secondary">${escapeHtml([item.categoryId, item.unit].filter(Boolean).join(" · "))} · Stock ${formatTablewareQuantity(item.availableQuantity ?? item.quantity)}</span></button>`).join("");
+    }
+
+    function filterTablewareInventoryPicker(value) {
+      const term = normalizeSearch(value || "");
+      let visible = 0;
+      document.querySelectorAll("#tableware-inventory-picker-list .tableware-picker-item").forEach((item) => { item.hidden = term && !item.dataset.search.includes(term); if (!item.hidden) visible += 1; });
+      const empty = document.getElementById("tableware-picker-empty");
+      if (empty) { empty.hidden = visible > 0; empty.innerHTML = `No se encontró este artículo.${can("stock:write:any") ? ` <button class="filter action-secondary" type="button" onclick="showQuickTablewareInventoryForm()">Crear artículo</button>` : ""}`; }
+    }
+
+    function selectTablewareInventoryItem(inventoryItemId) {
+      const existing = eventTablewareState.items.find((item) => item.inventoryItemId === inventoryItemId);
+      if (existing) {
+        openEventContextPanel(`<div class="event-context-head"><div><h3>Artículo ya cargado</h3><p>¿Querés sumar la cantidad o reemplazarla?</p></div></div><div class="actions"><button class="approve" type="button" onclick="openTablewareLineEditor('${escapeAttribute(existing.id)}', 'sum')">Sumar</button><button class="filter" type="button" onclick="openTablewareLineEditor('${escapeAttribute(existing.id)}', 'replace')">Reemplazar</button><button class="filter action-ghost" type="button" onclick="closeEventContextPanel()">Cancelar</button></div>`);
+        return;
+      }
+      eventTablewareSelectedInventoryId = inventoryItemId;
+      eventTablewareEditingId = "";
+      openTablewareLineEditor("");
+    }
+
+    function openTablewareLineEditor(lineId = "", duplicateMode = "") {
+      const existing = eventTablewareState.items.find((item) => item.id === lineId) || null;
+      const inventoryItem = (erpData.operationalInventory?.items || []).find((item) => item.id === (existing?.inventoryItemId || eventTablewareSelectedInventoryId));
+      if (!inventoryItem && !existing) return;
+      eventTablewareEditingId = lineId;
+      eventTablewareSelectedInventoryId = existing?.inventoryItemId || inventoryItem.id;
+      const line = existing ? { ...existing } : { inventoryItemId: inventoryItem.id, name: inventoryItem.name, categoryId: inventoryItem.categoryId, functionalFamily: inventoryItem.functionalFamily, unit: inventoryItem.unit, requiredQuantity: 1, stockAvailableSnapshot: Number(inventoryItem.availableQuantity ?? inventoryItem.quantity ?? 0), sourcingMode: "stock", stockPlannedQuantity: 1, rentalQuantity: 0, rentalStatus: "" };
+      if (duplicateMode === "sum") { line.requiredQuantity = 1; line.stockPlannedQuantity = 0; line.rentalQuantity = 0; }
+      openEventContextPanel(`<div class="event-context-head"><div><h3>${existing ? "Editar" : "Agregar"} ${escapeHtml(line.name)}</h3><p>La disponibilidad es una referencia; no descuenta stock.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div>
+        <form class="tableware-line-form" onsubmit="saveTablewareLine(event, '${escapeAttribute(duplicateMode)}')">
+          <div class="form-field"><label>Cantidad necesaria</label><input name="requiredQuantity" inputmode="decimal" required value="${escapeAttribute(line.requiredQuantity)}" oninput="suggestTablewareCoverage(this.form)"></div>
+          <div class="form-field"><label>Modalidad</label><select name="sourcingMode" onchange="suggestTablewareCoverage(this.form, true)">${renderTablewareModeOptions(line.sourcingMode)}</select></div>
+          <div class="tableware-coverage full" data-coverage></div>
+          <div class="form-field"><label>Usar del stock</label><input name="stockPlannedQuantity" inputmode="decimal" value="${escapeAttribute(line.stockPlannedQuantity || 0)}"></div>
+          <div class="form-field"><label>A alquilar</label><input name="rentalQuantity" inputmode="decimal" value="${escapeAttribute(line.rentalQuantity || 0)}"></div>
+          <div class="form-field full"><label>Proveedor de alquiler</label><div class="inline-action-field"><select name="rentalProviderId">${renderTablewareProviderOptions(line.rentalProviderId, true)}</select>${can("providers:write") ? `<button class="filter action-secondary" type="button" onclick="showQuickTablewareProviderForm()">Nuevo</button>` : ""}</div></div>
+          <div class="form-field"><label>Estado del alquiler</label><select name="rentalStatus">${renderTablewareRentalStatusOptions(line.rentalStatus)}</select></div>
+          <div class="form-field full"><label>Nota</label><textarea name="notes">${escapeHtml(line.notes || "")}</textarea></div>
+          <input type="hidden" name="stockAvailableSnapshot" value="${escapeAttribute(line.stockAvailableSnapshot)}">
+          <div class="actions full"><button class="filter action-ghost" type="button" onclick="closeEventContextPanel()">Cancelar</button>${existing ? `<button class="reject action-danger" type="button" onclick="deleteTablewareLine('${escapeAttribute(existing.id)}')">Eliminar</button>` : ""}<button class="approve action-primary" type="submit">Guardar línea</button></div>
+        </form>`);
+      suggestTablewareCoverage(document.querySelector("#event-context-panel form"), false);
+    }
+
+    function suggestTablewareCoverage(form, apply = false) {
       if (!form) return;
-      const items = getTablewareBuilderItems();
-      if (form.elements.tableware) form.elements.tableware.value = items.map((item) => item.item).filter(Boolean).join(", ");
-      if (form.elements.tablewareQuantities) form.elements.tablewareQuantities.value = items.map((item) => [item.qty, item.item].filter(Boolean).join(" ")).filter(Boolean).join(", ");
-      if (form.elements.tablewareDetail) form.elements.tablewareDetail.value = items.map((item) => [item.qty, item.item, item.note].filter(Boolean).join(" - ")).filter(Boolean).join("\n");
+      const required = Math.max(0, parseDecimal(form.elements.requiredQuantity.value));
+      const available = Math.max(0, parseDecimal(form.elements.stockAvailableSnapshot.value));
+      const mode = form.elements.sourcingMode.value;
+      let stock = Math.min(required, available);
+      let rental = Math.max(0, required - stock);
+      let suggestion = rental > 0 && stock > 0 ? "Mixto" : rental > 0 ? "Alquilar" : "Usar stock";
+      if (mode === "rental") { stock = 0; rental = required; }
+      if (["client", "venue", "pending"].includes(mode)) { stock = 0; rental = 0; }
+      if (apply) {
+        form.elements.stockPlannedQuantity.value = formatTablewareQuantity(stock);
+        form.elements.rentalQuantity.value = formatTablewareQuantity(rental);
+        if (!["client", "venue", "pending"].includes(mode)) {
+          form.elements.sourcingMode.value = rental > 0 && stock > 0 ? "mixed" : rental > 0 ? "rental" : "stock";
+        }
+      }
+      form.querySelector("[data-coverage]").innerHTML = `<strong>Necesarias: ${formatTablewareQuantity(required)}</strong><span>Stock disponible: ${formatTablewareQuantity(available)}</span><span>Sugerencia: ${suggestion} · Stock ${formatTablewareQuantity(stock)} · Alquiler ${formatTablewareQuantity(rental)}</span><button class="filter action-secondary" type="button" onclick="applyTablewareCoverage(this.form)">Aplicar sugerencia</button>`;
     }
+
+    function applyTablewareCoverage(form) { suggestTablewareCoverage(form, true); }
+
+    function saveTablewareLine(event, duplicateMode = "") {
+      event.preventDefault();
+      const form = event.target;
+      const inventoryItem = (erpData.operationalInventory?.items || []).find((item) => item.id === eventTablewareSelectedInventoryId);
+      const existingIndex = eventTablewareState.items.findIndex((item) => item.id === eventTablewareEditingId);
+      const existing = existingIndex >= 0 ? eventTablewareState.items[existingIndex] : null;
+      const requiredQuantity = Math.max(0, parseDecimal(form.elements.requiredQuantity.value));
+      const sourcingMode = form.elements.sourcingMode.value;
+      let stockPlannedQuantity = Math.max(0, parseDecimal(form.elements.stockPlannedQuantity.value));
+      let rentalQuantity = Math.max(0, parseDecimal(form.elements.rentalQuantity.value));
+      if (["client", "venue", "pending"].includes(sourcingMode)) { stockPlannedQuantity = 0; rentalQuantity = 0; }
+      if (!requiredQuantity) { showNotice("Ingresá una cantidad necesaria.", "error"); return; }
+      if (!["client", "venue", "pending"].includes(sourcingMode) && Math.abs(requiredQuantity - stockPlannedQuantity - rentalQuantity) > 0.0001) { showNotice("La cantidad necesaria debe coincidir con stock + alquiler.", "error"); return; }
+      const provider = (erpData.providers || []).find((item) => item.id === form.elements.rentalProviderId.value);
+      const line = { id: existing?.id || `event-tableware-${Date.now()}`, inventoryItemId: inventoryItem?.id || existing.inventoryItemId, name: inventoryItem?.name || existing.name, categoryId: inventoryItem?.categoryId || existing.categoryId, functionalFamily: inventoryItem?.functionalFamily || existing.functionalFamily, unit: inventoryItem?.unit || existing.unit, requiredQuantity: duplicateMode === "sum" && existing ? Number(existing.requiredQuantity || 0) + requiredQuantity : requiredQuantity, stockAvailableSnapshot: Number(inventoryItem?.availableQuantity ?? inventoryItem?.quantity ?? existing?.stockAvailableSnapshot ?? 0), stockPlannedQuantity: duplicateMode === "sum" && existing ? Number(existing.stockPlannedQuantity || 0) + stockPlannedQuantity : stockPlannedQuantity, rentalQuantity: duplicateMode === "sum" && existing ? Number(existing.rentalQuantity || 0) + rentalQuantity : rentalQuantity, sourcingMode: duplicateMode === "sum" && existing && existing.sourcingMode !== sourcingMode ? "mixed" : sourcingMode, rentalProviderId: provider?.id || existing?.rentalProviderId || "", rentalProviderName: provider?.name || existing?.rentalProviderName || "", rentalStatus: rentalQuantity > 0 ? form.elements.rentalStatus.value || "unassigned" : existing?.rentalStatus || "", notes: form.elements.notes.value.trim() || existing?.notes || "" };
+      if (existingIndex >= 0) eventTablewareState.items[existingIndex] = line; else eventTablewareState.items.push(line);
+      closeEventContextPanel(); renderTablewareBuilder(); updateEventGuidedSummary();
+    }
+
+    function deleteTablewareLine(lineId) {
+      eventTablewareState.items = eventTablewareState.items.filter((item) => item.id !== lineId);
+      closeEventContextPanel(); renderTablewareBuilder();
+    }
+
+    function getTablewareModeLabel(mode) { return { stock: "Usar stock", rental: "Alquilar", mixed: "Mixto", client: "Lo aporta el cliente", venue: "Lo aporta el lugar", pending: "A definir" }[mode] || "A definir"; }
+    function renderTablewareModeOptions(value) { return [["stock","Usar stock"],["rental","Alquilar"],["mixed","Mixto: stock + alquiler"],["client","Lo aporta el cliente"],["venue","Lo aporta el lugar"],["pending","A definir"]].map(([id,label]) => `<option value="${id}" ${id === value ? "selected" : ""}>${label}</option>`).join(""); }
+    function renderTablewareRentalStatusOptions(value) { return [["unassigned","Sin proveedor"],["pending_quote","Pendiente de cotización"],["quoted","Cotización recibida"],["confirmed","Confirmado"],["cancelled","Cancelado"]].map(([id,label]) => `<option value="${id}" ${id === value ? "selected" : ""}>${label}</option>`).join(""); }
+    function renderTablewareProviderOptions(value, allowEmpty = false) { return `${allowEmpty ? `<option value="">Proveedor pendiente</option>` : ""}${(erpData.providers || []).map((provider) => `<option value="${escapeAttribute(provider.id)}" ${provider.id === value ? "selected" : ""}>${escapeHtml(provider.name)}</option>`).join("")}`; }
+    function getEventTablewareProvider(item) { const id = item.rentalProviderId || eventTablewareState.rental?.defaultProviderId; return (erpData.providers || []).find((provider) => provider.id === id)?.name || item.rentalProviderName || eventTablewareState.rental?.defaultProviderName || ""; }
+    function updateTablewareRentalField(field, value) { eventTablewareState.rental = { status: "pending_quote", ...(eventTablewareState.rental || {}), [field]: value }; if (field === "defaultProviderId") eventTablewareState.rental.defaultProviderName = (erpData.providers || []).find((provider) => provider.id === value)?.name || ""; }
+
+    function getTablewareBuilderItems() { return eventTablewareState.items.map((item) => ({ ...item })); }
+    function syncTablewareBuilderToFields() { /* Los campos legacy se conservan sin sobrescribir. */ }
+
+    function showQuickTablewareInventoryForm() {
+      const search = document.getElementById("tableware-inventory-search")?.value?.trim() || "";
+      openEventContextPanel(`<div class="event-context-head"><div><h3>Crear artículo</h3><p>Alta rápida en Inventario Operativo. El stock no se modifica después de esta carga.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div>
+        <form class="quick-form" onsubmit="saveQuickTablewareInventoryItem(event)"><div class="form-field full"><label>Nombre</label><input name="name" required value="${escapeAttribute(search)}"></div><div class="form-field"><label>Familia</label><select name="functionalFamily"><option value="tableware">Vajilla</option><option value="glassware">Cristalería</option><option value="linen_textiles">Mantelería</option><option value="disposables">Descartables</option><option value="packaging_containers">Contenedores</option><option value="event_equipment">Equipamiento de servicio</option></select></div><div class="form-field"><label>Cantidad actual</label><input name="quantity" inputmode="decimal" value="0"></div><div class="form-field"><label>Unidad</label><select name="unit"><option value="unidad">Unidad</option><option value="juego">Juego</option><option value="metro">Metro</option><option value="caja">Caja</option></select></div><div class="actions full"><button class="filter action-ghost" type="button" onclick="openTablewareInventoryPicker()">Cancelar</button><button class="approve action-primary" type="submit">Guardar artículo</button></div></form>`);
+    }
+
+    async function saveQuickTablewareInventoryItem(event) {
+      event.preventDefault();
+      const values = Object.fromEntries(new FormData(event.target).entries());
+      const familyToCategory = { tableware: "vajilla", glassware: "cristaleria", linen_textiles: "manteleria", disposables: "descartables", packaging_containers: "contenedores", event_equipment: "equipamiento_evento" };
+      const payload = { item: { name: values.name, quantity: parseDecimal(values.quantity), unit: values.unit, inventoryDomain: "equipment", inventoryArea: "operations", functionalFamily: values.functionalFamily, controlType: ["disposables"].includes(values.functionalFamily) ? "consumable" : "event_returnable", categoryId: familyToCategory[values.functionalFamily], status: "available" } };
+      const response = await fetch("/api/operational-inventory", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const result = await readJsonResponse(response);
+      if (!result.ok) { showNotice(result.error || "No se pudo crear el artículo.", "error"); return; }
+      erpData.operationalInventory = result.operationalInventory || erpData.operationalInventory;
+      const created = (erpData.operationalInventory?.items || []).find((item) => normalizeSearch(item.name) === normalizeSearch(values.name));
+      if (created) { eventTablewareSelectedInventoryId = created.id; openTablewareLineEditor(""); }
+    }
+
+    function showQuickTablewareProviderForm() {
+      const lineForm = document.querySelector("#event-context-panel .tableware-line-form");
+      eventTablewareProviderReturnDraft = lineForm ? Object.fromEntries(new FormData(lineForm).entries()) : null;
+      openEventContextPanel(`<div class="event-context-head"><div><h3>Nuevo proveedor de alquiler</h3><p>Podés guardar solo el nombre y completar sus datos después.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div><form class="quick-form" onsubmit="saveQuickTablewareProvider(event)"><div class="form-field full"><label>Nombre</label><input name="name" required></div><div class="form-field"><label>Teléfono</label><input name="phone"></div><div class="form-field"><label>Email</label><input name="email" type="email"></div><div class="form-field full"><label>Notas</label><textarea name="notes"></textarea></div><div class="actions full"><button class="filter action-ghost" type="button" onclick="openTablewareLineEditor(eventTablewareEditingId)">Cancelar</button><button class="approve action-primary" type="submit">Guardar proveedor</button></div></form>`);
+    }
+
+    async function saveQuickTablewareProvider(event) {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(event.target).entries());
+      payload.category = "Alquiler de vajilla";
+      const response = await fetch("/api/provider", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const result = await readJsonResponse(response);
+      if (!result.ok) { showNotice(result.error || "No se pudo crear el proveedor.", "error"); return; }
+      erpData.providers = result.providers || erpData.providers || [];
+      const line = eventTablewareState.items.find((item) => item.id === eventTablewareEditingId);
+      if (line) { line.rentalProviderId = result.provider.id; line.rentalProviderName = result.provider.name; }
+      openTablewareLineEditor(eventTablewareEditingId);
+      const restoredForm = document.querySelector("#event-context-panel .tableware-line-form");
+      if (restoredForm && eventTablewareProviderReturnDraft) {
+        Object.entries(eventTablewareProviderReturnDraft).forEach(([name, value]) => { if (restoredForm.elements[name]) restoredForm.elements[name].value = value; });
+        restoredForm.elements.rentalProviderId.value = result.provider.id;
+        suggestTablewareCoverage(restoredForm, false);
+      }
+      eventTablewareProviderReturnDraft = null;
+      showNotice("Proveedor creado y asociado.");
+    }
+
+    function buildTablewareRentalMessage() {
+      const form = document.getElementById("erp-event-form");
+      const venue = (erpData.venues || []).find((item) => normalizeSearch(item.name || item) === normalizeSearch(form.elements.venue.value));
+      const rentalLines = eventTablewareState.items.filter((item) => Number(item.rentalQuantity || 0) > 0 && ["rental", "mixed"].includes(item.sourcingMode));
+      const groups = new Map();
+      rentalLines.forEach((item) => { const provider = getEventTablewareProvider(item) || "Sin proveedor asignado"; if (!groups.has(provider)) groups.set(provider, []); groups.get(provider).push(`- ${formatTablewareQuantity(item.rentalQuantity)} ${item.name}`); });
+      const grouped = [...groups.entries()].map(([provider, lines]) => `${groups.size > 1 ? provider + "\n" : ""}${lines.join("\n")}`).join("\n\n");
+      const rental = eventTablewareState.rental || {};
+      return [`SOLICITUD DE ALQUILER DE VAJILLA`, ``, `Evento: ${form.elements.name.value || "A definir"}`, `Fecha: ${formatShortDate(form.elements.eventDate.value) || "A definir"}`, `Lugar: ${form.elements.venue.value || "A definir"}`, `Dirección: ${venue?.address || "A definir"}`, `Invitados: ${form.elements.guestCount.value || "A definir"}`, ``, `Solicitamos cotización y disponibilidad de:`, ``, grouped || "- Sin artículos para alquilar", ``, `Entrega solicitada:`, formatRentalDateTime(rental.deliveryAt), ``, `Retiro / devolución:`, formatRentalDateTime(rental.returnAt), ``, `Observaciones:`, rental.notes || "Sin observaciones.", ``, `Gracias.`, `Gratitud Gourmet`].join("\n");
+    }
+
+    function formatRentalDateTime(value) { if (!value) return "A definir"; const [date, time] = value.split("T"); return `${formatShortDate(date)}${time ? `, ${time}` : ""}`; }
+    function openTablewareRentalRequest() { openEventContextPanel(`<div class="event-context-head"><div><h3>Lista de alquiler</h3><p>Revisá el mensaje antes de copiarlo.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div><textarea id="tableware-rental-message" class="tableware-rental-message">${escapeHtml(buildTablewareRentalMessage())}</textarea><div class="tableware-rental-actions"><button class="filter action-ghost" type="button" onclick="closeEventContextPanel()">Cerrar</button><button class="approve action-primary" type="button" onclick="copyTablewareRentalMessage()">Copiar mensaje</button></div>`); }
+    async function copyTablewareRentalMessage() { const text = document.getElementById("tableware-rental-message")?.value || ""; try { await navigator.clipboard.writeText(text); } catch { const area = document.getElementById("tableware-rental-message"); area.select(); document.execCommand("copy"); } showNotice("Lista copiada", "success"); }
 
     function syncOperationBuildersToFields() {
       syncDietaryRestrictionsToField();
@@ -25059,6 +25290,8 @@
       payload.menuItems = collectEventMenuItemsFromForm();
       payload.selectedMenu = payload.menuItems.map((item) => [item.name, item.detail].filter(Boolean).join(" - ")).join(", ");
       payload.stockItems = getEventStockItems();
+      payload.tablewareItems = getTablewareBuilderItems();
+      payload.tablewareRental = { ...(eventTablewareState.rental || {}) };
       payload.operationalSheet = collectEventOperationalSheet();
       const response = await fetch("/api/erp-event", {
         method: "POST",
@@ -25169,6 +25402,7 @@
       document.getElementById("erp-event-form").elements.priceMode.value = "total";
       document.getElementById("erp-event-form").elements.invoiceRequirement.value = "invoice_required";
       toggleEventInvoiceFields(document.getElementById("erp-event-form"));
+      eventTablewareState = { items: [], rental: { status: "pending_quote" } };
       renderOperationalOptionInputs();
       renderEventMenuLines();
       renderEventStockLines();
