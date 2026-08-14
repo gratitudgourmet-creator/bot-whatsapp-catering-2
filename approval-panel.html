@@ -3096,6 +3096,49 @@
       text-transform: uppercase;
     }
 
+    .purchase-discounts {
+      border-top: 1px solid var(--border);
+      display: grid;
+      gap: 9px;
+      grid-column: 1 / -1;
+      min-width: 0;
+      padding-top: 10px;
+    }
+
+    .purchase-discount-head,
+    .purchase-discount-summary,
+    .purchase-discount-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .purchase-discount-head { justify-content: space-between; }
+    .purchase-discount-summary { color: var(--muted); font-size: 12px; }
+    .purchase-discount-summary strong { color: var(--text); }
+    .purchase-discount-editor { display: grid; gap: 8px; }
+    .purchase-discount-editor.hidden { display: none; }
+
+    .purchase-discount-row {
+      align-items: end;
+      background: var(--surface-alt, #f8faf9);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 150px 130px minmax(180px, 1fr) auto;
+      min-width: 0;
+      padding: 10px;
+    }
+
+    .purchase-discount-row .form-field { min-width: 0; }
+    .purchase-discount-row input,
+    .purchase-discount-row select { max-width: 100%; min-width: 0; width: 100%; }
+    .purchase-discount-error { color: var(--danger, #a52a2a); font-size: 12px; grid-column: 1 / -1; }
+    .purchase-discount-actions { flex-wrap: nowrap; }
+    .purchase-discount-actions button { min-height: 36px; min-width: 36px; padding: 0 9px; }
+
     #purchase .inline-control .icon-action {
       min-width: 68px;
       padding-inline: 10px;
@@ -3517,6 +3560,15 @@
         grid-column: 1 / -1;
         justify-self: stretch;
         width: 100%;
+      }
+
+      .purchase-discount-row {
+        align-items: stretch;
+        grid-template-columns: 1fr;
+      }
+
+      .purchase-discount-actions {
+        justify-content: flex-start;
       }
 
       .purchase-form-footer {
@@ -12048,6 +12100,8 @@
             <div class="purchase-summary-card">
               <div class="purchase-summary-grid">
                 <div><span>Productos</span><strong id="purchase-summary-count">0</strong></div>
+                <div id="purchase-summary-gross-wrap" class="hidden"><span>Subtotal bruto</span><strong id="purchase-summary-gross">$0</strong></div>
+                <div id="purchase-summary-discount-wrap" class="hidden"><span>Descuentos</span><strong id="purchase-summary-discount">-$0</strong></div>
                 <div><span>Neto</span><strong id="purchase-summary-net">$0</strong></div>
                 <div><span>IVA estimado</span><strong id="purchase-summary-iva">$0</strong></div>
                 <div><span>Total final</span><strong id="purchase-summary-total">$0</strong></div>
@@ -19658,6 +19712,13 @@
       return `${Number.isInteger(pct) ? pct : pct.toFixed(1)}%`;
     }
 
+    function formatPurchaseLineDiscountSummary(item = {}) {
+      const discounts = Array.isArray(item.discounts) ? item.discounts : [];
+      if (!discounts.length) return "";
+      const total = Number(item.discountTotal || 0);
+      return `<div class="secondary">${discounts.length} descuento${discounts.length === 1 ? "" : "s"}${total ? ` ? -${formatCurrency(total)}` : ""}</div>`;
+    }
+
     function renderPurchaseLinePanel(purchase = {}) {
       const items = getPurchaseItemsForDisplay(purchase);
       return `
@@ -19671,7 +19732,7 @@
           </div>
           ${items.map((item) => `
             <div class="purchase-line-row">
-              <div>${escapeHtml(item.description || purchase.description || "Sin descripcion")}</div>
+              <div>${escapeHtml(item.description || purchase.description || "Sin descripcion")}${formatPurchaseLineDiscountSummary(item)}</div>
               <div class="number">${escapeHtml(item.quantity || "")}</div>
               <div class="money">${formatCurrency(item.unitAmount || 0)}</div>
               <div class="number">${escapeHtml(formatIvaRate(item.ivaRate ?? purchase.ivaRate))}</div>
@@ -28826,6 +28887,7 @@
       const itemIvaRate = item.ivaRate ?? item.iva ?? defaultIvaRate;
       const row = document.createElement("div");
       row.className = "purchase-item";
+      row._purchaseDiscounts = normalizePurchaseDiscountsForForm(item.discounts);
       row.innerHTML = `
         <div class="form-field">
           <label>Producto</label>
@@ -28853,8 +28915,16 @@
           </select>
         </div>
         <button class="reject icon-action" type="button" onclick="removePurchaseItemRow(this)" aria-label="Eliminar producto">Eliminar</button>
+        <div class="purchase-discounts">
+          <div class="purchase-discount-head">
+            <div class="purchase-discount-summary" data-discount-summary></div>
+            <button class="filter action-secondary" type="button" onclick="togglePurchaseDiscountEditor(this)">Agregar descuento</button>
+          </div>
+          <div class="purchase-discount-editor hidden" data-discount-editor></div>
+        </div>
       `;
       container.appendChild(row);
+      renderPurchaseDiscountEditor(row);
 
       setupAutocompleteForElement(
         row.querySelector(".purchase-item-description"),
@@ -28868,13 +28938,19 @@
         const iva = parsePurchaseDecimal(row.querySelector(".purchase-item-iva").value);
         const hint = row.querySelector(".purchase-item-total-hint");
         if (Number.isFinite(qty) && Number.isFinite(unit) && qty > 0 && unit > 0) {
-          const net = qty * unit;
-          hint.textContent = `Neto ${formatCurrency(net)} · Total ${formatCurrency(net * (1 + iva))}`;
+          const gross = roundPurchaseCalculation(qty * unit);
+          const result = calculatePurchaseLineDiscountsForForm(gross, row._purchaseDiscounts);
+          const total = roundPurchaseCalculation(result.netSubtotal * (1 + iva));
+          hint.textContent = result.discountTotal > 0
+            ? `Bruto ${formatCurrency(gross)} · Desc. -${formatCurrency(result.discountTotal)} · Total ${formatCurrency(total)}`
+            : `Neto ${formatCurrency(gross)} · Total ${formatCurrency(total)}`;
         } else {
           hint.textContent = "";
         }
+        renderPurchaseDiscountSummary(row);
         updatePurchaseSummary();
       }
+      row._updatePurchaseTotal = updateRowTotal;
       row.querySelector(".purchase-item-iva").addEventListener("change", () => {
         syncPurchaseDefaultIvaFromFirstItem();
         updateRowTotal();
@@ -28888,6 +28964,155 @@
 
       savePurchaseDraft();
       updateRowTotal();
+    }
+
+    function normalizePurchaseDiscountsForForm(discounts = []) {
+      return (Array.isArray(discounts) ? discounts : [])
+        .map((discount, index) => ({
+          id: String(discount?.id || `purchase-discount-${Date.now()}-${index}`),
+          type: discount?.type === "fixed" ? "fixed" : "percentage",
+          value: formatPurchaseInputDecimal(discount?.value ?? ""),
+          label: String(discount?.label || ""),
+          order: Number(discount?.order || index + 1),
+        }))
+        .sort((left, right) => left.order - right.order)
+        .map((discount, index) => ({ ...discount, order: index + 1 }));
+    }
+
+    function getPurchaseDiscountsFromRow(row) {
+      return normalizePurchaseDiscountsForForm(row?._purchaseDiscounts || []).map((discount) => ({
+        ...discount,
+        value: formatPurchaseInputDecimal(discount.value),
+      }));
+    }
+
+    function roundPurchaseCalculation(value, decimals = 8) {
+      const factor = 10 ** decimals;
+      return Math.round((Number(value || 0) + Number.EPSILON) * factor) / factor;
+    }
+
+    function calculatePurchaseLineDiscountsForForm(grossSubtotal, discounts = []) {
+      let remaining = roundPurchaseCalculation(grossSubtotal);
+      let discountTotal = 0;
+      const errors = [];
+      const amounts = [];
+      normalizePurchaseDiscountsForForm(discounts).forEach((discount, index) => {
+        const value = parsePurchaseDecimal(discount.value);
+        let error = "";
+        if (!Number.isFinite(value) || value <= 0) error = "Ingresá un valor mayor que cero.";
+        if (!error && discount.type === "percentage" && value > 100) error = "El porcentaje no puede superar 100%.";
+        const amount = error ? 0 : discount.type === "percentage"
+          ? roundPurchaseCalculation(remaining * value / 100)
+          : roundPurchaseCalculation(value);
+        if (!error && amount > remaining) error = "El descuento supera el subtotal disponible.";
+        if (error) {
+          errors[index] = error;
+          amounts[index] = 0;
+          return;
+        }
+        remaining = roundPurchaseCalculation(remaining - amount);
+        discountTotal = roundPurchaseCalculation(discountTotal + amount);
+        amounts[index] = amount;
+      });
+      return { grossSubtotal: roundPurchaseCalculation(grossSubtotal), discountTotal, netSubtotal: remaining, errors, amounts };
+    }
+
+    function getPurchaseRowGrossSubtotal(row) {
+      const quantity = parsePurchaseDecimal(row?.querySelector(".purchase-item-quantity")?.value);
+      const unitAmount = parsePurchaseDecimal(row?.querySelector(".purchase-item-unit")?.value);
+      return Number.isFinite(quantity) && Number.isFinite(unitAmount) && quantity > 0 && unitAmount > 0
+        ? roundPurchaseCalculation(quantity * unitAmount)
+        : 0;
+    }
+
+    function togglePurchaseDiscountEditor(button) {
+      const row = button.closest(".purchase-item");
+      const editor = row.querySelector("[data-discount-editor]");
+      const willOpen = editor.classList.contains("hidden");
+      editor.classList.toggle("hidden", !willOpen);
+      button.textContent = willOpen ? "Cerrar descuentos" : (row._purchaseDiscounts.length ? "Editar descuentos" : "Agregar descuento");
+      if (willOpen && !row._purchaseDiscounts.length) addPurchaseDiscount(row);
+    }
+
+    function addPurchaseDiscount(rowOrButton) {
+      const row = rowOrButton?.classList?.contains("purchase-item") ? rowOrButton : rowOrButton.closest(".purchase-item");
+      row._purchaseDiscounts.push({ id: `purchase-discount-${Date.now()}-${row._purchaseDiscounts.length}`, type: "percentage", value: "", label: "", order: row._purchaseDiscounts.length + 1 });
+      renderPurchaseDiscountEditor(row, true);
+      row._updatePurchaseTotal?.();
+    }
+
+    function updatePurchaseDiscount(button, field, value) {
+      const row = button.closest(".purchase-item");
+      const discountRow = button.closest(".purchase-discount-row");
+      const index = Number(discountRow.dataset.discountIndex);
+      if (!row._purchaseDiscounts[index]) return;
+      row._purchaseDiscounts[index][field] = field === "value" ? value : String(value || "");
+      renderPurchaseDiscountValidation(row);
+      row._updatePurchaseTotal?.();
+      savePurchaseDraft();
+    }
+
+    function movePurchaseDiscount(button, direction) {
+      const row = button.closest(".purchase-item");
+      const index = Number(button.closest(".purchase-discount-row").dataset.discountIndex);
+      const target = index + direction;
+      if (target < 0 || target >= row._purchaseDiscounts.length) return;
+      [row._purchaseDiscounts[index], row._purchaseDiscounts[target]] = [row._purchaseDiscounts[target], row._purchaseDiscounts[index]];
+      row._purchaseDiscounts.forEach((discount, itemIndex) => { discount.order = itemIndex + 1; });
+      renderPurchaseDiscountEditor(row, true);
+      row._updatePurchaseTotal?.();
+      savePurchaseDraft();
+    }
+
+    function removePurchaseDiscount(button) {
+      const row = button.closest(".purchase-item");
+      const index = Number(button.closest(".purchase-discount-row").dataset.discountIndex);
+      row._purchaseDiscounts.splice(index, 1);
+      row._purchaseDiscounts.forEach((discount, itemIndex) => { discount.order = itemIndex + 1; });
+      renderPurchaseDiscountEditor(row, true);
+      row._updatePurchaseTotal?.();
+      savePurchaseDraft();
+    }
+
+    function renderPurchaseDiscountEditor(row, keepOpen = false) {
+      const editor = row.querySelector("[data-discount-editor]");
+      if (!editor) return;
+      const wasOpen = keepOpen || !editor.classList.contains("hidden");
+      const result = calculatePurchaseLineDiscountsForForm(getPurchaseRowGrossSubtotal(row), row._purchaseDiscounts);
+      editor.innerHTML = row._purchaseDiscounts.map((discount, index) => `
+        <div class="purchase-discount-row" data-discount-index="${index}">
+          <div class="form-field"><label>Tipo</label><select onchange="updatePurchaseDiscount(this, 'type', this.value)"><option value="percentage" ${discount.type === "percentage" ? "selected" : ""}>Porcentaje</option><option value="fixed" ${discount.type === "fixed" ? "selected" : ""}>Monto fijo</option></select></div>
+          <div class="form-field"><label>Valor</label><input type="text" inputmode="decimal" step="0.0001" value="${escapeAttribute(discount.value)}" oninput="updatePurchaseDiscount(this, 'value', this.value)"></div>
+          <div class="form-field"><label>Concepto (opcional)</label><input value="${escapeAttribute(discount.label)}" placeholder="Bonificación proveedor" oninput="updatePurchaseDiscount(this, 'label', this.value)"></div>
+          <div class="purchase-discount-actions"><button class="filter action-ghost" type="button" aria-label="Subir descuento" onclick="movePurchaseDiscount(this, -1)" ${index === 0 ? "disabled" : ""}>↑</button><button class="filter action-ghost" type="button" aria-label="Bajar descuento" onclick="movePurchaseDiscount(this, 1)" ${index === row._purchaseDiscounts.length - 1 ? "disabled" : ""}>↓</button><button class="reject action-danger" type="button" aria-label="Eliminar descuento" onclick="removePurchaseDiscount(this)">Eliminar</button></div>
+          <div class="purchase-discount-error ${result.errors[index] ? "" : "hidden"}" data-discount-error>${escapeHtml(result.errors[index] || "")}</div>
+        </div>`).join("");
+      editor.insertAdjacentHTML("beforeend", `<button class="filter action-secondary" type="button" onclick="addPurchaseDiscount(this)">Agregar otro descuento</button>`);
+      editor.classList.toggle("hidden", !wasOpen);
+      renderPurchaseDiscountSummary(row);
+    }
+
+    function renderPurchaseDiscountValidation(row) {
+      const result = calculatePurchaseLineDiscountsForForm(getPurchaseRowGrossSubtotal(row), row._purchaseDiscounts);
+      row.querySelectorAll(".purchase-discount-row").forEach((discountRow, index) => {
+        const error = discountRow.querySelector("[data-discount-error]");
+        if (!error) return;
+        error.textContent = result.errors[index] || "";
+        error.classList.toggle("hidden", !result.errors[index]);
+      });
+      renderPurchaseDiscountSummary(row);
+    }
+
+    function renderPurchaseDiscountSummary(row) {
+      const summary = row.querySelector("[data-discount-summary]");
+      const toggle = row.querySelector(".purchase-discount-head button");
+      if (!summary) return;
+      const discounts = row._purchaseDiscounts || [];
+      const result = calculatePurchaseLineDiscountsForForm(getPurchaseRowGrossSubtotal(row), discounts);
+      summary.innerHTML = discounts.length
+        ? `<strong>${discounts.length} descuento${discounts.length === 1 ? "" : "s"} · -${formatCurrency(result.discountTotal)}</strong><span>Bruto ${formatCurrency(result.grossSubtotal)} · Neto ${formatCurrency(result.netSubtotal)}</span>`
+        : `<span>Sin descuentos</span>`;
+      if (toggle && row.querySelector("[data-discount-editor]")?.classList.contains("hidden")) toggle.textContent = discounts.length ? "Editar descuentos" : "Agregar descuento";
     }
 
     function getDefaultPurchaseItemIvaRate() {
@@ -28923,6 +29148,7 @@
           quantity: formatPurchaseInputDecimal(row.querySelector(".purchase-item-quantity").value),
           unitAmount: formatPurchaseInputDecimal(row.querySelector(".purchase-item-unit").value),
           ivaRate: row.querySelector(".purchase-item-iva").value,
+          discounts: getPurchaseDiscountsFromRow(row),
         }))
         .filter((item) => item.description);
     }
@@ -28935,14 +29161,19 @@
           const unitAmount = parsePurchaseDecimal(row.querySelector(".purchase-item-unit")?.value);
           const ivaRate = parsePurchaseDecimal(row.querySelector(".purchase-item-iva")?.value);
           if (!description || !Number.isFinite(quantity) || !Number.isFinite(unitAmount) || quantity <= 0 || unitAmount <= 0) return totals;
-          const net = quantity * unitAmount;
-          const iva = net * ivaRate;
+          const gross = roundPurchaseCalculation(quantity * unitAmount);
+          const discountResult = calculatePurchaseLineDiscountsForForm(gross, row._purchaseDiscounts);
+          const net = discountResult.netSubtotal;
+          const iva = roundPurchaseCalculation(net * ivaRate);
+          totals.gross += gross;
+          totals.discounts += discountResult.discountTotal;
           totals.net += net;
           totals.iva += iva;
           totals.total += net + iva;
           totals.items += 1;
+          totals.hasErrors = totals.hasErrors || discountResult.errors.some(Boolean);
           return totals;
-        }, { net: 0, iva: 0, total: 0, items: 0 });
+        }, { gross: 0, discounts: 0, net: 0, iva: 0, total: 0, items: 0, hasErrors: false });
     }
 
     function updatePurchaseSummary() {
@@ -28963,6 +29194,8 @@
         if (el) el.textContent = value;
       };
 
+      setText("purchase-summary-gross", formatCurrency(totals.gross || 0));
+      setText("purchase-summary-discount", `-${formatCurrency(totals.discounts || 0)}`);
       setText("purchase-summary-net", formatCurrency(totals.net || 0));
       setText("purchase-summary-iva", formatCurrency(totals.iva || 0));
       setText("purchase-summary-total", formatCurrency(totals.total || 0));
@@ -28980,6 +29213,8 @@
       setText("purchase-review-items", String(totals.items || 0));
       setText("purchase-review-payment", paymentStatus);
       setText("purchase-review-funds", fundsSource || "Sin definir");
+      document.getElementById("purchase-summary-gross-wrap")?.classList.toggle("hidden", !(totals.discounts > 0));
+      document.getElementById("purchase-summary-discount-wrap")?.classList.toggle("hidden", !(totals.discounts > 0));
 
       const subtitleParts = [provider, imputationType === "internal" ? internalArea : eventName, totals.total ? formatCurrency(totals.total) : ""].filter(Boolean);
       setText("purchase-subtitle", subtitleParts.length ? subtitleParts.join(" · ") : "Carga manual clara para registrar comprobantes, productos e imputación.");
@@ -28994,6 +29229,7 @@
       if (fundsSource && isPersonalFundsSource(fundsSource)) alerts.push("Origen de fondos personal: genera reintegro pendiente.");
       if (!provider) alerts.push("Falta proveedor.");
       if (!totals.items) alerts.push("Falta cargar al menos un producto.");
+      if (totals.hasErrors) alerts.push("Revisá los descuentos con errores antes de guardar.");
 
       const alertBox = document.getElementById("purchase-review-alerts");
       if (alertBox) {
@@ -29124,6 +29360,15 @@
 
     async function createPurchase(event) {
       event.preventDefault();
+      const discountErrorRow = Array.from(document.querySelectorAll("#purchase-items .purchase-item"))
+        .find((row) => calculatePurchaseLineDiscountsForForm(getPurchaseRowGrossSubtotal(row), row._purchaseDiscounts).errors.some(Boolean));
+      if (discountErrorRow) {
+        discountErrorRow.querySelector("[data-discount-editor]")?.classList.remove("hidden");
+        renderPurchaseDiscountValidation(discountErrorRow);
+        discountErrorRow.querySelector(".purchase-discount-error:not(.hidden)")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        showNotice("Revisá los descuentos antes de guardar.", "error");
+        return;
+      }
       const formData = new FormData(event.target);
       const payload = Object.fromEntries(formData.entries());
       payload.updateExisting = Boolean(payload.id && document.getElementById("purchase-title")?.textContent === "Editar compra");

@@ -13464,7 +13464,9 @@ function parsePurchaseItems(input) {
       const unitAmount = parsePositivePurchaseDecimal(item.unitAmount, `monto unitario del producto ${index + 1}`);
       const rawIvaRate = parsePurchaseDecimal(item.ivaRate ?? item.iva ?? defaultIvaRate, 4, `IVA del producto ${index + 1}`);
       const ivaRate = rawIvaRate > 1 ? rawIvaRate / 100 : rawIvaRate;
-      const netTotal = roundToDecimals(quantity * unitAmount, 8);
+      const grossSubtotal = roundToDecimals(quantity * unitAmount, 8);
+      const discountResult = calculatePurchaseLineDiscounts(grossSubtotal, item.discounts, index);
+      const netTotal = discountResult.netSubtotal;
       const ivaAmount = roundToDecimals(netTotal * ivaRate, 8);
 
       if (!description) {
@@ -13476,11 +13478,59 @@ function parsePurchaseItems(input) {
         quantity,
         unitAmount,
         ivaRate,
+        discounts: discountResult.discounts,
+        grossSubtotal,
+        discountTotal: discountResult.discountTotal,
+        netSubtotal: netTotal,
         netTotal,
         ivaAmount,
         total: roundToDecimals(netTotal + ivaAmount, 8),
       };
     });
+}
+
+function calculatePurchaseLineDiscounts(grossSubtotal, inputDiscounts, itemIndex = 0) {
+  const source = Array.isArray(inputDiscounts) ? inputDiscounts : [];
+  const discounts = source
+    .map((discount, index) => ({
+      id: normalizeText(discount?.id || `purchase-discount-${Date.now()}-${index}`),
+      type: discount?.type === "fixed" ? "fixed" : "percentage",
+      value: parsePurchaseDecimal(discount?.value, 4, `descuento ${index + 1} del producto ${itemIndex + 1}`),
+      label: normalizeText(discount?.label || ""),
+      order: Number.isFinite(Number(discount?.order)) ? Number(discount.order) : index + 1,
+    }))
+    .sort((left, right) => left.order - right.order)
+    .map((discount, index) => ({ ...discount, order: index + 1 }));
+
+  let remaining = roundToDecimals(grossSubtotal, 8);
+  let discountTotal = 0;
+
+  discounts.forEach((discount, index) => {
+    if (discount.value <= 0) {
+      throw new Error(`El descuento ${index + 1} del producto ${itemIndex + 1} debe ser mayor que cero.`);
+    }
+    if (discount.type === "percentage" && discount.value > 100) {
+      throw new Error(`El porcentaje del descuento ${index + 1} del producto ${itemIndex + 1} no puede superar 100%.`);
+    }
+
+    const amount = discount.type === "percentage"
+      ? roundToDecimals(remaining * discount.value / 100, 8)
+      : roundToDecimals(discount.value, 8);
+    if (amount > remaining) {
+      throw new Error(`El descuento ${index + 1} del producto ${itemIndex + 1} supera el subtotal disponible.`);
+    }
+
+    remaining = roundToDecimals(remaining - amount, 8);
+    discountTotal = roundToDecimals(discountTotal + amount, 8);
+    discount.amount = amount;
+  });
+
+  return {
+    discounts,
+    grossSubtotal: roundToDecimals(grossSubtotal, 8),
+    discountTotal,
+    netSubtotal: remaining,
+  };
 }
 
 function normalizeIvaRate(value) {
