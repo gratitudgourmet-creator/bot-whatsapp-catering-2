@@ -2558,7 +2558,6 @@ function _printLabelFallback(item) {
 async function printCurrentLabel() {
   if (!currentLabelItem?.internalCode) return;
   const zpl = _buildZpl(currentLabelItem);
-  // Intentar relay server-side (funciona desde mobile porque va por HTTPS al servidor)
   try {
     const r = await fetch('/api/print-job', {
       method: 'POST',
@@ -2566,13 +2565,13 @@ async function printCurrentLabel() {
       body: JSON.stringify({ zpl, itemCode: currentLabelItem.internalCode })
     });
     if (r.ok) {
-      showToast('Etiqueta enviada a la impresora Zebra');
+      showToast('Etiqueta enviada a la impresora');
       return;
     }
-  } catch (_) {}
-  // Fallback: intentar Browser Print local (solo funciona si están en la misma PC)
-  const sent = await _tryZebraBrowserPrint(zpl);
-  if (!sent) _printLabelFallback(currentLabelItem);
+    showToast('Error al enviar etiqueta. ¿Está abierto /print-relay en la PC?');
+  } catch (_) {
+    showToast('Error al enviar etiqueta. ¿Hay conexión?');
+  }
 }
 // ────────────────────────────────────────────────────────────────────
 
