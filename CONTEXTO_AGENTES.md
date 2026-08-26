@@ -21,6 +21,49 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-08-26] Claude (Impresión Zebra ZD420 desde mobile + escaneo iPhone)
+
+**De que se hablo:** conectar la Zebra ZD420 para imprimir etiquetas desde el celular vía relay, y arreglar el escaneo de códigos en iPhone.
+
+**Decisiones tomadas:**
+- Relay de impresión: la PC deja abierta `/print-relay` (polling cada 2s al servidor), el celular manda el ZPL a `/api/print-job`, el relay lo reenvía a Browser Print en `localhost:9100`.
+- CSP del servidor ajustado solo para `/print-relay` para permitir `connect-src http://localhost:9100`.
+- Browser Print configurado con `sistema.gratitudgourmet.com` en Accepted Hosts (editado directamente en `C:\Users\Gratitud\AppData\Local\Zebra\BrowserPrint\settings.json`).
+- Escaneo iPhone: reemplazado ZXing (no funciona) por `html5-qrcode` con div contenedor propio; Chrome/Android sigue usando `BarcodeDetector` nativo.
+
+**Cambios en el codigo:**
+- `whatsapp-catering-bot.js`: endpoints `/api/print-job` y `/api/print-job/next` (auth corregida), `/print-relay` con CSP override.
+- `inventario-movil.html`: `printCurrentLabel()` usa relay HTTPS, `startBarcodeCamera()` con fallback html5-qrcode para iOS.
+- Commits: b5318fe, cf92ba9, 5bd7258, 9373122, 6dfb645
+
+**Pendiente para la proxima sesion:**
+- Otros mejoras de inventario pendientes: dashboard de estado diario, conteo parcial, panel de alertas.
+- Wizard de unificación de productos en Maestro de insumos.
+- Select de impuestos en carga de compras (UI no gusta).
+
+---
+
+## [2026-08-26] Claude (Análisis UX completo + mejoras inventario-movil.html)
+
+**De que se hablo:** análisis A-to-Z de toda la app ERP con foco en UX, y luego análisis específico de `/inventario` con implementación de quick wins.
+
+**Decisiones tomadas:**
+- Análisis completo de 23 módulos del ERP. Conclusiones: eliminar tab "Equipo" (mover a Logística), eliminar "Insumos con variación" duplicado en Compras, eliminar "Facturación" duplicado en home ERP, unificar paleta de apps mobile.
+- Quick wins implementados en `inventario-movil.html`:
+  - Botón `± Ajuste` en cada card de artículo → abre modal de ajuste rápido con nombre pre-cargado y foco en campo cantidad
+  - Estado vacío descriptivo cuando no hay pendientes: "¡Todo contado!"
+  - Enter en el search bar intenta búsqueda por código de barras primero, antes de filtrar por texto
+  - Loader "Cargando artículos…" al entrar a la pantalla principal
+
+**Cambios en el codigo:** `inventario-movil.html` — sin commit aún (pendiente aprobación).
+
+**Pendiente para la proxima sesion:**
+- Confirmar y commitear cambios de inventario-movil.html
+- Mejoras del formulario guiado de eventos (guided form en approval-panel.html): fix duplicate id="service-options", fix footer bottom:0, agregar display:flex, validación visual por step, mobile full-screen
+- Cleanup: git rm --cached en archivos de datos ya trackeados (catering.db*, config-bot.json, *-erp.json)
+- Auth faltante en rutas /inventario y /estado-inventario (solo sirven HTML estático sin verificar sesión)
+- Rotación de contraseña admin123 y root del VPS (pendiente hace tiempo)
+
 ## [2026-08-26] Claude (Ajuste rápido de stock + mejoras UI compras)
 
 **De que se hablo:** dos temas principales en sesiones compactadas.
