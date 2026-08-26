@@ -564,7 +564,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 <div class="modal-overlay" id="barcode-result-overlay" onclick="closeBarcodeResult(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><div id="barcode-result-content"></div></div></div>
 <div class="modal-overlay" id="barcode-missing-overlay" onclick="closeBarcodeMissing(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Este código todavía no existe</h3><p>Podés crear un artículo nuevo o asociarlo a uno existente.</p><div class="capture-card"><strong id="missing-barcode-label"></strong><div class="capture-actions"><button id="missing-create-food" class="primary" onclick="createFromMissingBarcode('food')">Crear alimento</button><button id="missing-create-equipment" class="primary" onclick="createFromMissingBarcode('equipment')">Crear equipo / herramienta</button><button id="missing-associate" class="full" onclick="openAssociateBarcode()">Asociar a existente</button><button class="full" onclick="closeBarcodeMissing()">Cancelar</button></div><p id="missing-readonly-copy" style="display:none;margin-top:10px">Tu usuario puede buscar artículos, pero no crear ni asociar códigos.</p></div></div></div>
 <div class="modal-overlay" id="barcode-associate-overlay" onclick="closeAssociateBarcode(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Asociar código</h3><p>Elegí el artículo sin modificar su stock ni ubicación.</p><label>Tipo de código</label><select id="associate-code-type" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;margin:5px 0 8px"><option value="commercial">Comercial</option><option value="provider">Proveedor</option><option value="internal">Interno</option></select><input id="associate-search" type="search" placeholder="Buscar artículo" oninput="renderAssociateResults()" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:10px"><div class="associate-results" id="associate-results"></div><button class="btn-secondary" onclick="closeAssociateBarcode()">Cancelar</button></div></div>
-<div class="modal-overlay" id="barcode-camera-overlay"><div class="capture-sheet"><h3>Escanear código</h3><p id="barcode-camera-status">Apuntá la cámara al código.</p><div class="camera-frame"><video id="barcode-camera-video" playsinline muted></video></div><button class="btn-secondary" onclick="stopBarcodeCamera()">Cancelar</button></div></div>
+<div class="modal-overlay" id="barcode-camera-overlay"><div class="capture-sheet"><h3>Escanear código</h3><p id="barcode-camera-status">Apuntá la cámara al código.</p><div class="camera-frame"><video id="barcode-camera-video" playsinline muted></video><div id="barcode-html5qr-container" style="width:100%;height:100%;"></div></div><button class="btn-secondary" onclick="stopBarcodeCamera()">Cancelar</button></div></div>
 <div class="modal-overlay" id="label-preview-overlay" onclick="closeLabelPreview(event)"><div class="capture-sheet" onclick="event.stopPropagation()"><h3>Etiqueta interna</h3><p>Incluye código Code 128 para reescanear desde el inventario.</p><div class="label-preview" id="label-preview-content"></div><div class="capture-actions"><button class="primary" onclick="printCurrentLabel()">Imprimir etiqueta</button><button onclick="copyCurrentInternalCode()">Copiar código</button><button class="full" onclick="closeLabelPreview()">Cerrar</button></div></div></div>
 
 <!-- CONFIRM CERRAR -->
@@ -1139,19 +1139,19 @@ async function startBarcodeCamera() {
     }
   }
 
-  // iPhone/Safari: usa html5-qrcode
+  // iPhone/Safari: usa html5-qrcode con su propio div contenedor
   if (typeof Html5Qrcode === 'undefined') {
     stopBarcodeCamera();
     toast('Escáner no disponible. Podés escribir el código.');
     focusBarcodeInput();
     return;
   }
-  // html5-qrcode necesita un div contenedor (reusamos el elemento video)
   const video = document.getElementById('barcode-camera-video');
-  video.style.display = 'none'; // html5-qrcode crea su propio elemento
-  const containerId = 'barcode-camera-video';
+  video.style.display = 'none';
+  const container = document.getElementById('barcode-html5qr-container');
+  container.style.display = 'block';
   try {
-    _html5Qr = new Html5Qrcode(containerId, { verbose: false });
+    _html5Qr = new Html5Qrcode('barcode-html5qr-container', { verbose: false });
     await _html5Qr.start(
       { facingMode: 'environment' },
       { fps: 10, qrbox: { width: 220, height: 120 } },
@@ -1171,17 +1171,16 @@ function stopBarcodeCamera() {
   if (barcodeCameraFrame) cancelAnimationFrame(barcodeCameraFrame);
   barcodeCameraFrame = 0;
   if (_html5Qr) {
-    _html5Qr.stop().catch(() => {}).finally(() => {
-      try { _html5Qr.clear(); } catch {}
-      _html5Qr = null;
-      const video = document.getElementById('barcode-camera-video');
-      if (video) { video.style.display = ''; video.srcObject = null; }
-    });
+    const qr = _html5Qr;
+    _html5Qr = null;
+    qr.stop().catch(() => {}).finally(() => { try { qr.clear(); } catch {} });
   }
+  const video = document.getElementById('barcode-camera-video');
+  if (video) { video.style.display = ''; video.srcObject = null; }
+  const container = document.getElementById('barcode-html5qr-container');
+  if (container) container.style.display = 'none';
   barcodeCameraStream?.getTracks().forEach(track => track.stop());
   barcodeCameraStream = null;
-  const video = document.getElementById('barcode-camera-video');
-  if (video && !_html5Qr) video.srcObject = null;
   document.getElementById('barcode-camera-overlay').classList.remove('open');
 }
 
