@@ -2497,29 +2497,27 @@ async function copyCurrentInternalCode() {
 // ── IMPRESIÓN DE ETIQUETAS (Zebra ZD420 · 54×44mm · 203dpi) ─────────
 
 function _buildZpl(item) {
-  // 54mm × 44mm a 203 dpi ≈ 431 × 352 dots
-  const name     = (item.name || 'Artículo').substring(0, 30).toUpperCase();
+  // 54mm × 44mm a 203 dpi = 431 × 352 dots
+  // Layout: marca (pequeño) → nombre (mediano) → CÓDIGO (grande) → barcode → ubicación
+  const name     = (item.name || 'Artículo').substring(0, 28);
   const code     = item.internalCode || '';
-  const location = [...new Set([locationTypeLabel(item.locationType), item.locationDetail || item.location].filter(Boolean))].join(' - ').substring(0, 35);
+  const location = [...new Set([locationTypeLabel(item.locationType), item.locationDetail || item.location].filter(Boolean))].join(' · ').substring(0, 35);
   const expiry   = item.expiryDate ? ('Vence: ' + fmtDateOnly(item.expiryDate)) : '';
   return [
     '^XA',
-    '^PW431',         // ancho 54mm
-    '^LL352',         // largo 44mm
-    '^CI28',          // UTF-8
-    '^LH0,0',
-    // Marca
-    '^FO15,8^ADN,14,8^FDGRATITUD GOURMET^FS',
-    // Nombre (hasta 2 líneas)
-    '^FO15,30^AFN,24,13^FD' + name + '^FS',
-    // Código de barras Code-128
-    '^FO15,75^BCN,70,N,N,N^FD' + code + '^FS',
-    // Código legible
-    '^FO15,152^ADN,18,10^FD' + code + '^FS',
-    // Ubicación
-    location ? '^FO15,178^ADN,14,8^FD' + location + '^FS' : '',
+    '^PW431^LL352^CI28^LH0,0',
+    // Marca — pequeño, centrado
+    '^FO0,8^FB431,1,0,C^A0N,18,10^FDGRATITUD GOURMET^FS',
+    // Nombre — mediano, centrado
+    '^FO0,30^FB431,1,0,C^A0N,24,13^FD' + name + '^FS',
+    // Código interno — GRANDE, centrado (elemento principal)
+    '^FO0,62^FB431,1,0,C^A0N,40,22^FD' + code + '^FS',
+    // Código de barras Code-128 — centrado aproximado
+    '^FO20,112^BCN,75,N,N,N^FD' + code + '^FS',
+    // Ubicación — pequeño, centrado
+    location ? '^FO0,202^FB431,1,0,C^A0N,18,10^FD' + location + '^FS' : '',
     // Vencimiento
-    expiry   ? '^FO15,200^ADN,14,8^FD' + expiry + '^FS' : '',
+    expiry   ? '^FO0,224^FB431,1,0,C^A0N,18,10^FD' + expiry + '^FS' : '',
     '^XZ',
   ].filter(Boolean).join('\n');
 }
