@@ -421,6 +421,10 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
       Nuevo
     </button>
+    <button class="btn-add" onclick="openQuickAdj()" style="background:var(--accent-bg);border-color:var(--accent-text);color:var(--accent-text);">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Ajuste
+    </button>
     <button class="btn-close" id="btn-close" onclick="openConfirm()">Finalizar y actualizar stock</button>
   </div>
 </div>
@@ -2717,6 +2721,146 @@ async function saveCondModal() {
     document.getElementById('login-user').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-pass').focus(); });
   }
 })();
+
+// ── AJUSTE RÁPIDO ────────────────────────────────────────────────────
+let _adjSign = 1;
+
+function openQuickAdj() {
+  const ov = document.getElementById('quick-adj-overlay');
+  if (!ov) return;
+  ov.style.display = 'flex';
+  _adjSign = 1;
+  document.getElementById('adj-search').value = '';
+  document.getElementById('adj-qty').value = '';
+  document.getElementById('adj-unit').value = '';
+  document.getElementById('adj-reason').value = 'ajuste_manual';
+  document.getElementById('adj-notes').value = '';
+  document.getElementById('adj-error').style.display = 'none';
+  document.getElementById('adj-ok').style.display = 'none';
+  _adjUpdateSign();
+  setTimeout(() => document.getElementById('adj-search').focus(), 80);
+}
+
+function closeQuickAdj() {
+  document.getElementById('quick-adj-overlay').style.display = 'none';
+}
+
+function _adjUpdateSign() {
+  const btnM = document.getElementById('adj-btn-minus');
+  const btnP = document.getElementById('adj-btn-plus');
+  const lbl  = document.getElementById('adj-sign-lbl');
+  if (_adjSign > 0) {
+    btnP.style.cssText = 'background:var(--accent);color:#fff;';
+    btnM.style.cssText = 'background:var(--bg);color:var(--text);';
+    lbl.textContent = 'Se sumará al stock actual';
+  } else {
+    btnM.style.cssText = 'background:var(--danger);color:#fff;';
+    btnP.style.cssText = 'background:var(--bg);color:var(--text);';
+    lbl.textContent = 'Se restará del stock actual';
+  }
+}
+
+function adjSetSign(s) { _adjSign = s; _adjUpdateSign(); }
+
+async function submitQuickAdj() {
+  const errEl = document.getElementById('adj-error');
+  const okEl  = document.getElementById('adj-ok');
+  const btn   = document.getElementById('adj-submit');
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
+
+  const productName = document.getElementById('adj-search').value.trim();
+  const qty         = parseFloat(document.getElementById('adj-qty').value) || 0;
+  const unit        = document.getElementById('adj-unit').value.trim();
+  const reason      = document.getElementById('adj-reason').value;
+  const notes       = document.getElementById('adj-notes').value.trim();
+
+  if (!productName) { errEl.textContent = 'Ingresá el nombre del producto.'; errEl.style.display = ''; return; }
+  if (!qty || qty <= 0) { errEl.textContent = 'Ingresá una cantidad mayor a cero.'; errEl.style.display = ''; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+  try {
+    const res = await fetch('/api/inventory-adjustment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productName, delta: qty * _adjSign, unit, reason, notes }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Error al guardar.');
+    okEl.textContent = '✓ Ajuste guardado correctamente.';
+    okEl.style.display = '';
+    setTimeout(() => closeQuickAdj(), 1500);
+  } catch (err) {
+    errEl.textContent = err.message || 'No se pudo guardar.';
+    errEl.style.display = '';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar';
+  }
+}
+// ────────────────────────────────────────────────────────────────────
 </script>
+
+<!-- MODAL: AJUSTE RÁPIDO -->
+<div id="quick-adj-overlay" onclick="closeQuickAdj()"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end;justify-content:center;">
+  <div onclick="event.stopPropagation()"
+    style="background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-height:90dvh;overflow-y:auto;padding:20px 20px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <strong style="font-size:17px;">Ajuste rápido de stock</strong>
+      <button onclick="closeQuickAdj()" style="background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer;line-height:1;">×</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:13px;font-weight:600;color:var(--muted);">Producto</label>
+      <input id="adj-search" type="search" placeholder="Nombre del producto..."
+        style="padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg);width:100%;">
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:13px;font-weight:600;color:var(--muted);">Ajuste</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;height:46px;">
+          <button id="adj-btn-minus" type="button" onclick="adjSetSign(-1)"
+            style="width:48px;border:none;font-size:24px;cursor:pointer;background:var(--bg);color:var(--text);">−</button>
+          <button id="adj-btn-plus" type="button" onclick="adjSetSign(1)"
+            style="width:48px;border:none;border-left:1px solid var(--border);font-size:24px;cursor:pointer;background:var(--accent);color:#fff;">+</button>
+        </div>
+        <input id="adj-qty" type="number" min="0" step="any" placeholder="Cantidad"
+          style="flex:1;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:var(--bg);">
+        <input id="adj-unit" type="text" placeholder="kg / L / u"
+          style="width:70px;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg);">
+      </div>
+      <div id="adj-sign-lbl" style="font-size:12px;color:var(--muted);margin-top:2px;">Se sumará al stock actual</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:13px;font-weight:600;color:var(--muted);">Motivo</label>
+      <select id="adj-reason"
+        style="padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg);width:100%;">
+        <option value="ajuste_manual">Ajuste manual</option>
+        <option value="recepcion_parcial">Recepción parcial sin compra</option>
+        <option value="merma">Merma / vencimiento</option>
+        <option value="consumo">Consumo interno</option>
+        <option value="devolucion">Devolución</option>
+        <option value="correccion">Corrección de error</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:13px;font-weight:600;color:var(--muted);">Notas (opcional)</label>
+      <input id="adj-notes" type="text" placeholder="Detalles adicionales..."
+        style="padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg);width:100%;">
+    </div>
+
+    <div id="adj-error" style="display:none;background:#faece7;border-radius:10px;color:var(--danger);font-size:13px;font-weight:600;padding:10px 12px;"></div>
+    <div id="adj-ok" style="display:none;background:var(--accent-bg);border-radius:10px;color:var(--accent-text);font-size:13px;font-weight:600;padding:10px 12px;"></div>
+
+    <button id="adj-submit" onclick="submitQuickAdj()" class="btn-primary" style="margin-top:4px;">Guardar</button>
+  </div>
+</div>
+
 </body>
 </html>
