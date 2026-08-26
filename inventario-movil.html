@@ -2506,18 +2506,18 @@ function _buildZpl(item) {
   return [
     '^XA',
     '^PW431^LL352^CI28^LH0,0',
-    // Marca — pequeño, centrado
-    '^FO0,8^FB431,1,0,C^A0N,18,10^FDGRATITUD GOURMET^FS',
+    // Marca — chico, centrado
+    '^FO0,6^FB431,1,0,C^A0N,20,11^FDGRATITUD GOURMET^FS',
     // Nombre — mediano, centrado
-    '^FO0,30^FB431,1,0,C^A0N,24,13^FD' + name + '^FS',
-    // Código interno — GRANDE, centrado (elemento principal)
-    '^FO0,62^FB431,1,0,C^A0N,40,22^FD' + code + '^FS',
-    // Código de barras Code-128 — centrado aproximado
-    '^FO20,112^BCN,75,N,N,N^FD' + code + '^FS',
-    // Ubicación — pequeño, centrado
-    location ? '^FO0,202^FB431,1,0,C^A0N,18,10^FD' + location + '^FS' : '',
+    '^FO0,30^FB431,1,0,C^A0N,32,17^FD' + name + '^FS',
+    // Código interno — MUY GRANDE, centrado (elemento principal)
+    '^FO0,68^FB431,1,0,C^A0N,52,28^FD' + code + '^FS',
+    // Código de barras Code-128 — alto y ancho, centrado aproximado
+    '^FO25,128^BCN,90,N,N,N^FD' + code + '^FS',
+    // Ubicación
+    location ? '^FO0,230^FB431,1,0,C^A0N,22,12^FD' + location + '^FS' : '',
     // Vencimiento
-    expiry   ? '^FO0,224^FB431,1,0,C^A0N,18,10^FD' + expiry + '^FS' : '',
+    expiry   ? '^FO0,255^FB431,1,0,C^A0N,20,11^FD' + expiry + '^FS' : '',
     '^XZ',
   ].filter(Boolean).join('\n');
 }
