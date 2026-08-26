@@ -1058,11 +1058,20 @@
       overflow-y: auto;
       overscroll-behavior: contain;
       padding: 16px;
-      position: absolute;
-      right: 20px;
-      top: 72px;
-      width: min(430px, calc(100% - 40px));
+      left: 50%;
+      position: fixed;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(520px, calc(100% - 40px));
       z-index: 24;
+    }
+
+    #erp-form-modal.event-context-active::after {
+      background: rgba(15, 27, 42, .24);
+      content: "";
+      inset: 0;
+      position: fixed;
+      z-index: 23;
     }
 
     .event-context-panel.hidden {
@@ -1174,6 +1183,7 @@
         max-height: min(82vh, 720px);
         right: 0;
         top: auto;
+        transform: none;
         width: 100%;
       }
       .event-context-panel .quick-form {
@@ -3321,6 +3331,124 @@
       padding: 10px;
     }
 
+    /* Multi-row imputation */
+    .imputation-row {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+    }
+    .imputation-row + .imputation-row { margin-top: 10px; }
+    .imputation-row-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px 0;
+    }
+    .imputation-row-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1;
+      padding: 2px 4px;
+      margin-left: auto;
+      opacity: .6;
+    }
+    .imputation-row-delete:hover { opacity: 1; color: #dc2626; }
+    .imputation-row-type-toggle {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      flex: 1;
+    }
+    .imputation-row-type-toggle button {
+      flex: 1;
+      background: var(--surface);
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 12px;
+      transition: background .12s, color .12s;
+    }
+    .imputation-row-type-toggle button + button { border-left: 1.5px solid var(--border); }
+    .imputation-row-type-toggle button.active {
+      background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+      color: var(--primary);
+    }
+    .imputation-dest-panel {
+      padding: 10px 12px 0;
+    }
+    .imputation-dest-panel.hidden { display: none; }
+    .imputation-dest-panel input,
+    .imputation-dest-panel select {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .imputation-products-picker {
+      margin: 10px 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .imputation-products-summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 11px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--surface-alt, #f8f9fb);
+      user-select: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      color: var(--text);
+    }
+    .imputation-products-summary:hover { background: color-mix(in srgb, var(--primary) 6%, var(--surface-alt, #f8f9fb)); }
+    .imputation-products-label { flex: 1; font-size: 12px; }
+    .imputation-products-summary svg { flex-shrink: 0; transition: transform .15s; color: var(--muted); }
+    .imputation-products-summary.open svg { transform: rotate(180deg); }
+    .imputation-products-list {
+      display: none;
+      border-top: 1px solid var(--border);
+      padding: 6px;
+      background: var(--surface);
+      flex-direction: column;
+      gap: 2px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .imputation-products-list.open { display: flex; }
+    .imputation-products-list label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .imputation-products-list label:hover { background: var(--surface-alt, #f8f9fb); }
+    .imputation-label-taken { opacity: .45; cursor: default; }
+    .imputation-products-list input[type="checkbox"] { width: 15px; height: 15px; flex-shrink: 0; accent-color: var(--primary); }
+    .imputation-product-name { flex: 1; }
+    .imputation-product-qty { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .imputation-product-taken { color: var(--muted); font-size: 11px; font-style: italic; white-space: nowrap; }
+    .imputation-validation-error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      color: #b91c1c;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 10px 12px;
+      margin-top: 8px;
+    }
+
     .purchase-summary-card {
       background: color-mix(in srgb, var(--surface) 94%, var(--primary) 6%);
       border: 1px solid color-mix(in srgb, var(--border) 76%, var(--primary) 24%);
@@ -3415,6 +3543,57 @@
       border-color: #f3d28a;
       color: #7a4a00;
     }
+
+    .purchase-charge-row {
+      background: var(--surface-alt, #f8f9fb);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .purchase-charge-row select,
+    .purchase-charge-row input[type="text"] {
+      padding: 5px 9px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13px;
+      height: 32px;
+      box-sizing: border-box;
+      min-height: unset;
+    }
+    .charge-type { flex: 1; min-width: 120px; max-width: 220px; }
+    .purchase-charge-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      height: 32px;
+      flex-shrink: 0;
+    }
+    .purchase-charge-toggle button {
+      padding: 0 7px;
+      font-size: 11px;
+      border: none;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      height: 32px;
+    }
+    .purchase-charge-toggle button:last-child { border-right: none; }
+    .purchase-charge-toggle button.active {
+      background: var(--primary, #1e40af);
+      color: #fff;
+    }
+    .charge-value { width: 64px; text-align: right; flex-shrink: 0; }
+    .purchase-charge-result { font-size: 12px; font-weight: 600; min-width: 80px; text-align: right; flex-shrink: 0; white-space: nowrap; color: var(--primary); }
+    .purchase-charge-delete { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 18px; padding: 0 2px; line-height: 1; flex-shrink: 0; margin-left: auto; }
 
     .purchase-form-footer {
       align-items: center;
@@ -9331,6 +9510,11 @@
       padding: 14px;
     }
 
+    .tableware-planner.empty { gap: 9px; padding: 12px 14px; }
+    .tableware-planner-copy { color: var(--muted); font-size: 12px; margin: 3px 0 0; }
+    .tableware-summary-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tableware-summary-chip { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 12px; padding: 5px 8px; }
+
     .tableware-planner-head,
     .tableware-line-head,
     .tableware-planner-actions,
@@ -9355,13 +9539,28 @@
     .tableware-legacy { border-top: 1px solid var(--line); padding-top: 10px; }
     .tableware-legacy pre { margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 
-    .tableware-picker-list { display: grid; gap: 8px; max-height: 48vh; overflow-y: auto; overscroll-behavior: contain; }
-    .tableware-picker-item { align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; display: grid; gap: 3px; min-width: 0; padding: 10px; text-align: left; width: 100%; }
+    .tableware-picker-sticky { background: #fff; display: grid; gap: 9px; position: sticky; top: -16px; z-index: 2; padding: 0 0 8px; }
+    .tableware-picker-categories { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 2px; scrollbar-width: none; }
+    .tableware-picker-categories::-webkit-scrollbar { display: none; }
+    .tableware-picker-category { flex: 0 0 auto; min-height: 34px; }
+    .tableware-picker-category.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .tableware-picker-list { display: grid; gap: 8px; min-height: 90px; overflow-y: auto; overscroll-behavior: contain; }
+    .tableware-picker-item { align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 8px; display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) auto; min-width: 0; padding: 10px; text-align: left; width: 100%; }
+    .tableware-picker-item-main { display: grid; gap: 3px; min-width: 0; }
+    .tableware-picker-item strong { overflow-wrap: anywhere; white-space: normal; }
     .tableware-picker-item:hover, .tableware-picker-item:focus-visible { border-color: var(--accent); outline: none; }
+    .tableware-picker-state { color: var(--muted); display: grid; font-size: 13px; gap: 8px; padding: 12px 4px; text-align: center; }
+    .tableware-picker-state[hidden] { display: none; }
+    .tableware-source-options { display: grid; gap: 7px; grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tableware-source-option { background: #fff; border: 1px solid var(--line); border-radius: 8px; color: var(--text); min-height: 40px; padding: 7px; }
+    .tableware-source-option.active { background: rgba(15, 77, 64, .08); border-color: var(--accent); color: var(--accent); }
+    .tableware-status { justify-self: start; }
     .tableware-coverage { background: var(--panel-soft); border-left: 3px solid var(--gold); display: grid; gap: 4px; padding: 10px; }
     .tableware-line-form { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .tableware-line-form .full { grid-column: 1 / -1; }
     .tableware-rental-message { min-height: 260px; white-space: pre-wrap; }
+    .tableware-review-summary { border-top: 1px solid var(--line); display: grid; gap: 8px; margin-top: 12px; padding-top: 12px; }
+    .tableware-review-summary .action-ghost { justify-self: start; }
 
     @media (max-width: 700px) {
       .tableware-planner { padding: 11px; }
@@ -9369,6 +9568,9 @@
       .tableware-line-form .full { grid-column: auto; }
       .tableware-planner-actions > button { flex: 1 1 auto; }
       .tableware-picker-list { max-height: 50dvh; }
+      .tableware-picker-categories { flex-wrap: nowrap; overflow-x: auto; }
+      .tableware-picker-item { grid-template-columns: minmax(0, 1fr) auto; }
+      .tableware-source-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .event-context-panel .tableware-line-form input,
       .event-context-panel .tableware-line-form select,
       .event-context-panel .tableware-line-form textarea { max-width: 100%; min-width: 0; width: 100%; }
@@ -9850,6 +10052,53 @@
         display: none;
       }
     }
+    .purchase-product-toolbar { display:grid; grid-template-columns:minmax(240px, 1fr) 180px; gap:10px; margin:14px 0; }
+    .purchase-product-list { display:grid; gap:8px; }
+    .purchase-product-row { width:100%; display:grid; grid-template-columns:minmax(220px, 1.4fr) repeat(4, minmax(110px, .75fr)) 22px; gap:14px; align-items:center; padding:13px 14px; border:1px solid var(--border); border-radius:8px; background:#fff; color:inherit; text-align:left; cursor:pointer; }
+    .purchase-product-row:hover { border-color:#b7c9c0; background:#fbfdfc; }
+    .purchase-product-name { min-width:0; }
+    .purchase-product-name strong { display:block; overflow-wrap:anywhere; }
+    .purchase-product-meta { color:var(--muted); font-size:12px; margin-top:3px; }
+    .purchase-product-cell { min-width:0; font-size:13px; overflow-wrap:anywhere; }
+    .purchase-product-cell span { display:block; color:var(--muted); font-size:10px; text-transform:uppercase; margin-bottom:3px; }
+    .purchase-product-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+    .purchase-product-chip { display:inline-flex; align-items:center; min-height:22px; padding:2px 7px; border-radius:999px; background:#edf5f1; color:#185b49; font-size:10px; font-weight:700; }
+    .purchase-product-chip.inactive { background:#f7e7e7; color:#8a3030; }
+    .purchase-product-chip.derived { background:#f2f3f5; color:#5e6875; }
+    .purchase-product-form { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px; }
+    .purchase-product-form .full { grid-column:1 / -1; }
+    .purchase-product-form-section { grid-column:1 / -1; padding-top:4px; }
+    .purchase-product-form-section h3 { margin:0 0 4px; font-size:15px; }
+    .purchase-product-readonly { grid-column:1 / -1; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
+    .purchase-product-stat { padding:11px; border:1px solid var(--border); border-radius:7px; background:#f8faf9; }
+    .purchase-product-stat span { display:block; color:var(--muted); font-size:11px; }
+    .purchase-product-stat strong { display:block; margin-top:3px; overflow-wrap:anywhere; }
+    .purchase-product-risk { grid-column:1 / -1; padding:13px; border-top:1px solid #ead4d4; }
+    .purchase-product-providers { grid-column:1 / -1; display:grid; gap:10px; }
+    .purchase-product-provider-add { display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(0, 1fr) 100px; gap:8px; align-items:end; }
+    .purchase-product-provider-add > * { min-width:0; }
+    .purchase-product-provider-add > .actions { grid-column:2 / -1; justify-content:flex-end; }
+    .purchase-product-provider-list { display:grid; gap:8px; }
+    .purchase-product-provider-row { display:grid; grid-template-columns:minmax(180px, 1fr) repeat(3, minmax(90px, .55fr)) auto; gap:10px; align-items:center; padding:11px 12px; border:1px solid var(--border); border-radius:8px; background:#fbfcfb; }
+    .purchase-product-provider-row > * { min-width:0; }
+    .purchase-product-provider-name strong { display:block; overflow-wrap:anywhere; }
+    .purchase-product-provider-reasons { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+    .purchase-product-provider-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; }
+    .purchase-product-provider-actions button { min-height:34px; }
+    .purchase-product-form-actions { position:sticky; bottom:0; grid-column:1 / -1; display:flex; justify-content:flex-end; gap:8px; padding:12px 0 2px; background:#fff; z-index:2; }
+    @media (max-width:720px) {
+      #product-master-dashboard .purchase-kpis { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+      .purchase-product-toolbar { grid-template-columns:1fr; }
+      .purchase-product-row { grid-template-columns:minmax(0, 1fr) 20px; gap:8px; padding:12px; }
+      .purchase-product-cell { display:none; }
+      .purchase-product-form, .purchase-product-readonly { grid-template-columns:1fr; }
+      .purchase-product-form .full, .purchase-product-form-section, .purchase-product-readonly, .purchase-product-risk, .purchase-product-form-actions { grid-column:1; }
+      .purchase-product-provider-add, .purchase-product-provider-row { grid-template-columns:1fr; }
+      .purchase-product-provider-add > .actions { grid-column:1; justify-content:flex-start; }
+      .purchase-product-provider-actions { justify-content:flex-start; }
+      .purchase-product-form-actions { padding-bottom:calc(8px + env(safe-area-inset-bottom)); }
+      .purchase-product-form-actions button { flex:1 1 0; min-width:0; }
+    }
   </style>
 </head>
 <body>
@@ -10001,7 +10250,7 @@
       <div class="workspace-menu" data-menu-view="stock">
         <button class="workspace-tab" data-view="stock">Stock</button>
         <div class="workspace-menu-panel">
-          <button class="workspace-subitem" data-view="stock" data-anchor="product-master-section">Maestro de insumos</button>
+          <button class="workspace-subitem" data-view="stock" data-anchor="product-master-section">Productos</button>
           <button class="workspace-subitem" data-view="stock" data-anchor="operational-inventory-section">Inventario operativo</button>
           <button class="workspace-subitem" data-view="stock" data-anchor="stock-summary-section">Inventario</button>
           <button class="workspace-subitem" data-view="stock" data-anchor="stock-receptions-section">Recepciones</button>
@@ -10369,7 +10618,7 @@
               <section class="guided-form-section" data-guided-step-panel="2" aria-labelledby="event-step-operation-title" hidden>
                 <div class="guided-form-section-head">
                   <h3 id="event-step-operation-title">Menú y operación</h3>
-                  <p>Menú, bebidas, vajilla, stock ficticio y checklist operativo.</p>
+                  <p>Menú, bebidas, vajilla, consumos estimados y checklist operativo.</p>
                 </div>
                 <div class="guided-form-panel">
               <div class="form-field full">
@@ -10442,9 +10691,9 @@
               <section class="guided-form-section" data-guided-step-panel="2" hidden>
                 <div class="guided-form-panel">
               <div class="form-field full">
-                <label>Mercaderia de stock / costo ficticio</label>
+                <label>Consumos y costos estimados</label>
                 <div id="event-stock-items" class="stock-lines"></div>
-                <button class="filter action-secondary" type="button" onclick="addEventStockLine()">Agregar costo ficticio</button>
+                <button class="filter action-secondary" type="button" onclick="addEventStockLine()">Agregar costo estimado</button>
               </div>
                 </div>
               </section>
@@ -10464,6 +10713,7 @@
                       <span class="metric-label">Pendientes sugeridos</span>
                       <ul id="event-guided-review-list"></ul>
                     </div>
+                    <div id="event-guided-review-tableware"></div>
                   </div>
               <div class="form-field full">
                 <label>Proxima accion</label>
@@ -10842,10 +11092,13 @@
       <section id="product-master-section" class="erp-section">
         <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
           <div>
-            <h2>Maestro de insumos</h2>
-            <p class="subtitle">Productos consolidados desde recetas, compras, stock, ordenes y precios historicos.</p>
+            <h2>Productos</h2>
+            <p class="subtitle">Catálogo de productos de compra con stock e historial consolidados.</p>
           </div>
-          <button class="filter" type="button" onclick="refreshWorkspaceView('stock')">Actualizar</button>
+          <div class="actions">
+            <button class="approve" type="button" data-permission="purchases:write" onclick="showPurchaseProductForm()">Nuevo producto</button>
+            <button class="filter" type="button" onclick="refreshWorkspaceView('stock')">Actualizar</button>
+          </div>
         </div>
         <div id="product-master-dashboard"></div>
       </section>
@@ -10869,10 +11122,71 @@
             <h2>Stock</h2>
             <p class="subtitle">Inventario, recepciones y variaciones de insumos.</p>
           </div>
-          <button class="filter" type="button" onclick="refreshWorkspaceView('stock')">Actualizar</button>
+          <div class="actions">
+            <button class="filter" type="button" onclick="refreshWorkspaceView('stock')">Actualizar</button>
+            <button class="approve" type="button" onclick="openQuickStockAdjustment()">+ Ajuste rápido</button>
+          </div>
         </div>
         <div id="stock-dashboard"></div>
       </section>
+
+      <!-- Modal: Ajuste rápido de stock -->
+      <div id="quick-stock-adjustment-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="qsa-title"
+        onclick="closeQuickStockAdjustment()"
+        style="position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:16px;">
+        <div onclick="event.stopPropagation()" style="background:var(--surface,#fff);border-radius:14px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(0,0,0,0.18);display:flex;flex-direction:column;overflow:hidden;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border,#e5e7eb);">
+            <h3 id="qsa-title" style="margin:0;font-size:16px;font-weight:600;">Ajuste rápido de stock</h3>
+            <button type="button" onclick="closeQuickStockAdjustment()" aria-label="Cerrar"
+              style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted,#9ca3af);line-height:1;padding:0 2px;">×</button>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:70vh;">
+            <div class="form-row">
+              <label>Producto</label>
+              <div style="position:relative;">
+                <input id="qsa-search" type="search" placeholder="Buscar producto en stock..." autocomplete="off"
+                  oninput="qsaFilterProducts(this.value)" onfocus="qsaFilterProducts(this.value)"
+                  onblur="setTimeout(()=>document.getElementById('qsa-suggestions').style.display='none',200)">
+                <div id="qsa-suggestions" class="autocomplete-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:200;background:var(--surface,#fff);border:1px solid var(--border,#e5e7eb);border-radius:8px;overflow:hidden;max-height:180px;overflow-y:auto;"></div>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Ajuste de cantidad</label>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="display:flex;border:1px solid var(--border,#e5e7eb);border-radius:6px;overflow:hidden;height:36px;">
+                  <button type="button" style="width:36px;border:none;background:var(--surface-alt,#f8f9fb);color:var(--text,#111);font-size:20px;cursor:pointer;" onclick="qsaSetSign(-1)" id="qsa-btn-out">−</button>
+                  <button type="button" style="width:36px;border:none;border-left:1px solid var(--border,#e5e7eb);background:var(--surface-alt,#f8f9fb);color:var(--text,#111);font-size:20px;cursor:pointer;" onclick="qsaSetSign(1)" id="qsa-btn-in">+</button>
+                </div>
+                <input id="qsa-qty" type="number" min="0" step="any" placeholder="Cantidad" style="flex:1;">
+                <input id="qsa-unit" type="text" placeholder="kg / L / u" style="width:72px;">
+              </div>
+              <div id="qsa-sign-label" style="font-size:12px;color:var(--muted,#6b7280);margin-top:4px;"></div>
+            </div>
+            <div class="form-row">
+              <label>Motivo</label>
+              <select id="qsa-reason">
+                <option value="ajuste_manual">Ajuste manual</option>
+                <option value="recepcion_parcial">Recepción parcial sin compra</option>
+                <option value="merma">Merma / vencimiento</option>
+                <option value="consumo">Consumo interno</option>
+                <option value="devolucion">Devolución</option>
+                <option value="correccion">Corrección de error</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Notas (opcional)</label>
+              <input id="qsa-notes" type="text" placeholder="Detalles adicionales...">
+            </div>
+            <div id="qsa-error" class="hidden" style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;color:#b91c1c;font-size:13px;font-weight:500;padding:10px 12px;"></div>
+            <div id="qsa-success" class="hidden" style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;color:#166534;font-size:13px;font-weight:500;padding:10px 12px;"></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border,#e5e7eb);">
+            <button class="filter" type="button" onclick="closeQuickStockAdjustment()">Cancelar</button>
+            <button class="approve" type="button" onclick="submitQuickStockAdjustment()" id="qsa-submit">Guardar ajuste</button>
+          </div>
+        </div>
+      </div>
       <section id="stock-receptions-section" class="erp-section">
         <div id="stock-receptions-dashboard"></div>
       </section>
@@ -12104,6 +12418,7 @@
                 <div id="purchase-summary-discount-wrap" class="hidden"><span>Descuentos</span><strong id="purchase-summary-discount">-$0</strong></div>
                 <div><span>Neto</span><strong id="purchase-summary-net">$0</strong></div>
                 <div><span>IVA estimado</span><strong id="purchase-summary-iva">$0</strong></div>
+                <div id="purchase-summary-charges-wrap" class="hidden"><span>Impuestos / agregados</span><strong id="purchase-summary-charges">$0</strong></div>
                 <div><span>Total final</span><strong id="purchase-summary-total">$0</strong></div>
               </div>
             </div>
@@ -12112,49 +12427,28 @@
           <section class="purchase-section">
             <div class="purchase-section-head">
               <div>
+                <h3>Impuestos y agregados</h3>
+                <p>Percepciones, retenciones, flete, descuentos u otros cargos sobre la compra.</p>
+              </div>
+              <button class="filter" type="button" onclick="addPurchaseChargeRow()">+ Agregar</button>
+            </div>
+            <div id="purchase-charges" class="purchase-items" style="margin-bottom:8px;"></div>
+            <div id="purchase-charges-summary" style="display:none;font-size:13px;color:var(--muted);text-align:right;padding:4px 0;"></div>
+          </section>
+
+          <section class="purchase-section" id="purchase-imputation-section">
+            <div class="purchase-section-head">
+              <div>
                 <h3>Imputación</h3>
-                <p>¿Para qué evento o área es esta compra?</p>
+                <p>Destino de los productos de esta compra.</p>
               </div>
+              <button class="filter" type="button" onclick="addImputationRow()">+ Agregar destino</button>
             </div>
-            <div class="purchase-section-grid">
-              <input name="imputationType" type="hidden" value="event">
-              <div class="form-field full">
-                <label>Destino</label>
-                <div class="purchase-imputation-toggle" role="group" aria-label="Destino de la compra">
-                  <button id="purchase-imputation-event" class="active" type="button" onclick="setPurchaseImputationType('event', { confirmChange: true })">Evento</button>
-                  <button id="purchase-imputation-internal" type="button" onclick="setPurchaseImputationType('internal', { confirmChange: true })">Consumo interno / Empresa</button>
-                </div>
-                <div id="purchase-imputation-pending" class="purchase-imputation-pending hidden">Pendiente de imputación. Elegí Evento o Consumo interno / Empresa antes de guardar.</div>
-              </div>
-              <div id="purchase-event-imputation-panel" class="form-field full purchase-imputation-panel">
-                <label>Evento</label>
-                <input name="eventName" id="purchase-event" type="hidden">
-                <div class="purchase-search-select autocomplete">
-                  <input id="purchase-event-search" autocomplete="off" placeholder="Seleccionar evento" required>
-                  <div id="purchase-event-suggestions" class="autocomplete-list"></div>
-                </div>
-              </div>
-              <div id="purchase-internal-imputation-panel" class="purchase-section-grid full purchase-imputation-panel hidden">
-                <div class="form-field">
-                  <label>Área de consumo</label>
-                  <select name="internalArea" id="purchase-internal-area">
-                    <option value="">Seleccionar área</option>
-                    <option>Cocina diaria</option>
-                    <option>Administración</option>
-                    <option>Limpieza</option>
-                    <option>Mantenimiento</option>
-                    <option>Personal</option>
-                    <option>Logística</option>
-                    <option>Marketing</option>
-                    <option>Otro</option>
-                  </select>
-                </div>
-                <div class="form-field">
-                  <label>Detalle</label>
-                  <input name="imputationNotes" id="purchase-imputation-notes" maxlength="140" placeholder="Ej: Insumos para pruebas de menú">
-                </div>
-              </div>
-            </div>
+            <!-- hidden legacy fields kept for backward compat reads -->
+            <input name="imputationType" type="hidden" value="event">
+            <input name="eventName" id="purchase-event" type="hidden">
+            <div id="purchase-imputation-rows"></div>
+            <div id="purchase-imputation-validation" class="imputation-validation-error hidden"></div>
           </section>
 
           <section class="purchase-section purchase-payment-section" id="purchase-payment-section">
@@ -12508,6 +12802,9 @@
       productMaster: [],
     };
     let erpLoadedAt = 0;
+    let purchaseProductStatusFilter = "active";
+    let purchaseProductFormOpen = false;
+    let purchaseProductFormInitialState = "";
     let erpLoadPromise = null;
     const _erpLoadedViews = new Set();
     const ERP_BACKGROUND_REFRESH_MS = 60000;
@@ -12589,6 +12886,8 @@
     let eventTablewareEditingId = "";
     let eventTablewareSelectedInventoryId = "";
     let eventTablewareProviderReturnDraft = null;
+    let eventTablewarePickerCategory = "all";
+    let eventContextScrollState = null;
     let recipeItemCounter = 0;
     let recipeProcessCounter = 0;
     let budgetRecipeCounter = 0;
@@ -12631,7 +12930,7 @@
         items: [
           { label: "Compras", description: "Planilla de compras, importación Sheets y carga manual.", anchor: "purchase-sheet-section" },
           { label: "Órdenes de compra", description: "Pedidos por evento, recepción y diferencias.", anchor: "purchase-orders-section" },
-          { label: "Maestro de insumos", description: "Productos consolidados desde compras, recetas, stock y ordenes.", view: "stock", anchor: "product-master-section" },
+          { label: "Productos", description: "Catálogo de compra con stock e historial consolidados.", view: "stock", anchor: "product-master-section" },
           { label: "Inventario", description: "Stock generado por recepciones aceptadas.", anchor: "purchase-inventory-section" },
           { label: "Insumos con variación", description: "Cambios fuertes de precio e impacto en recetas.", anchor: "purchase-variations-section" },
         ],
@@ -12722,7 +13021,7 @@
         title: "Stock",
         subtitle: "Inventario, recepciones, diferencias y variación de insumos.",
         items: [
-          { label: "Maestro de insumos", description: "Productos unificados por compras, recetas, stock y ordenes.", anchor: "product-master-section" },
+          { label: "Productos", description: "Catálogo de compra con stock e historial consolidados.", anchor: "product-master-section" },
           { label: "Inventario operativo", description: "Equipamiento y consumibles seleccionables por evento.", anchor: "operational-inventory-section" },
           { label: "Inventario", description: "Stock generado desde recepciones aceptadas.", anchor: "stock-summary-section" },
           { label: "Recepciones", description: "Diferencias, aceptación y conversión en compra real.", anchor: "stock-receptions-section" },
@@ -13006,10 +13305,7 @@
     document.getElementById("role-filter").addEventListener("change", renderErp);
     document.getElementById("invoice-photo")?.addEventListener("change", previewInvoicePhoto);
     setupAutocomplete("purchase-provider", "purchase-provider-suggestions", () => purchaseOptions.providers || []);
-    setupAutocomplete("purchase-event-search", "purchase-event-suggestions", () => purchaseOptions.events || [], setPurchaseEventValue, { showOnEmpty: true });
-    document.getElementById("purchase-event-search").addEventListener("input", (event) => {
-      setPurchaseEventValue(event.target.value);
-    });
+    // purchase-event-search now lives inside dynamically created imputation rows; skip top-level setup
     syncGlobalSearchPlaceholder();
     renderProfileMenu();
     prepareShellNavigation();
@@ -15657,6 +15953,24 @@
       }
       renderPendingList("event-summary-pending", pending);
       renderPendingList("event-guided-review-list", pending);
+      renderEventGuidedTablewareReview();
+    }
+
+    function renderEventGuidedTablewareReview() {
+      const container = document.getElementById("event-guided-review-tableware");
+      if (!container) return;
+      const summary = getEventTablewareSummary();
+      if (!summary.items) {
+        container.innerHTML = `<div class="empty-state compact-empty"><strong class="empty-title">Sin artículos de vajilla</strong><span class="empty-copy">Podés planificarlos en Menú y operación.</span><button class="filter action-secondary" type="button" onclick="openEventTablewareStep()">Agregar artículos</button></div>`;
+        return;
+      }
+      const provider = eventTablewareState.rental?.defaultProviderName || "Proveedor pendiente";
+      container.innerHTML = `<div class="tableware-review-summary"><strong>Vajilla y alquiler</strong><div class="tableware-summary-chips"><span class="tableware-summary-chip">${summary.items} ${summary.items === 1 ? "artículo" : "artículos"}</span><span class="tableware-summary-chip">Stock ${formatTablewareQuantity(summary.stock)}</span><span class="tableware-summary-chip">Alquiler ${formatTablewareQuantity(summary.rental)}</span>${summary.pending ? `<span class="tableware-summary-chip status-warning">${summary.pending} ${summary.pending === 1 ? "pendiente" : "pendientes"}</span>` : ""}</div>${summary.rental ? `<span class="secondary">${escapeHtml(provider)} · ${escapeHtml(getTablewareRentalStatusLabel(eventTablewareState.rental?.status))}</span>` : ""}<button class="filter action-ghost" type="button" onclick="openEventTablewareStep()">Revisar planificación</button></div>`;
+    }
+
+    function openEventTablewareStep() {
+      setGuidedFormStep("erp-event-form", 2);
+      window.setTimeout(() => document.getElementById("tableware-builder")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
     }
 
     function initEventGuidedForm(stepIndex = 0) {
@@ -18998,7 +19312,11 @@
     }
 
     function getPurchaseLineTotal(purchase, item) {
-      const net = Number(item.total || 0);
+      const storedTotal = Number(item.total || 0);
+      if (item.ivaAmount !== undefined || item.netTotal !== undefined || item.netSubtotal !== undefined) {
+        return storedTotal;
+      }
+      const net = Number(item.netSubtotal ?? item.netTotal ?? item.total ?? 0);
       const rawIvaRate = Number(purchase.ivaRate || 0);
       const ivaRate = rawIvaRate > 1 ? rawIvaRate / 100 : rawIvaRate;
       return ivaRate > 0 ? net * (1 + ivaRate) : net;
@@ -19710,13 +20028,6 @@
       if (!rate) return "0%";
       const pct = rate > 1 ? rate : rate * 100;
       return `${Number.isInteger(pct) ? pct : pct.toFixed(1)}%`;
-    }
-
-    function formatPurchaseLineDiscountSummary(item = {}) {
-      const discounts = Array.isArray(item.discounts) ? item.discounts : [];
-      if (!discounts.length) return "";
-      const total = Number(item.discountTotal || 0);
-      return `<div class="secondary">${discounts.length} descuento${discounts.length === 1 ? "" : "s"}${total ? ` ? -${formatCurrency(total)}` : ""}</div>`;
     }
 
     function renderPurchaseLinePanel(purchase = {}) {
@@ -21309,9 +21620,9 @@
         const pending = plannedItems.filter((item) => !item.requiredQuantity || item.sourcingMode === "pending" || (Number(item.rentalQuantity || 0) > 0 && !(item.rentalProviderId || event.tablewareRental?.defaultProviderId))).length;
         const rows = plannedItems.map((item) => {
           const provider = item.rentalProviderName || (item.rentalProviderId === event.tablewareRental?.defaultProviderId ? event.tablewareRental?.defaultProviderName : "") || event.tablewareRental?.defaultProviderName || "";
-          return `<div class="tableware-line"><div class="tableware-line-head"><h5>${escapeHtml(item.name || "Artículo")}</h5><span class="status-chip ${item.sourcingMode === "pending" ? "status-warning" : "status-info"}">${escapeHtml(getTablewareModeLabel(item.sourcingMode))}</span></div><div class="tableware-line-meta">Total ${formatTablewareQuantity(item.requiredQuantity)} ${escapeHtml(item.unit || "")} · Stock ${formatTablewareQuantity(item.stockPlannedQuantity)} · Alquiler ${formatTablewareQuantity(item.rentalQuantity)}</div><div class="tableware-line-meta">${Number(item.rentalQuantity || 0) ? escapeHtml(provider || "Proveedor pendiente") : "Sin alquiler"}${item.rentalStatus ? ` · ${escapeHtml(item.rentalStatus.replaceAll("_", " "))}` : ""}</div></div>`;
+          return `<div class="tableware-line"><div class="tableware-line-head"><h5>${escapeHtml(item.name || "Artículo")}</h5><span class="status-chip ${item.sourcingMode === "pending" ? "status-warning" : "status-info"}">${escapeHtml(getTablewareModeLabel(item.sourcingMode))}</span></div><div class="tableware-line-meta">Total ${formatTablewareQuantity(item.requiredQuantity)} ${escapeHtml(item.unit || "")} · Stock planificado ${formatTablewareQuantity(item.stockPlannedQuantity)} · Alquiler ${formatTablewareQuantity(item.rentalQuantity)}</div><div class="tableware-line-meta">${Number(item.rentalQuantity || 0) ? escapeHtml(provider || "Proveedor pendiente") : "Sin alquiler"}${item.rentalStatus ? ` · ${escapeHtml(getTablewareRentalStatusLabel(item.rentalStatus))}` : ""}</div></div>`;
         }).join("");
-        return `<div class="row logistics-tableware-card"><div class="tableware-line-head"><strong>Vajilla</strong><span class="badge">${plannedItems.length} ítems</span></div><div class="secondary">Stock: ${formatTablewareQuantity(stock)} · Alquiler: ${formatTablewareQuantity(rental)} · Pendientes: ${pending}</div><div class="tableware-lines">${rows}</div></div>`;
+        return `<div class="row logistics-tableware-card"><div class="tableware-line-head"><strong>Vajilla</strong><span class="badge">${plannedItems.length} ${plannedItems.length === 1 ? "artículo" : "artículos"}</span></div><div class="secondary">Stock planificado: ${formatTablewareQuantity(stock)} · Alquiler: ${formatTablewareQuantity(rental)} · Pendientes: ${pending}</div><div class="tableware-lines">${rows}</div></div>`;
       }
       const parts = [
         ["Vajilla", event.tableware],
@@ -22282,21 +22593,42 @@
       const container = document.getElementById("product-master-dashboard");
       if (!container) return;
       const products = erpData.productMaster || [];
+      const active = products.filter((item) => item.active !== false).length;
+      const inactive = products.length - active;
+      const managed = products.filter((item) => item.catalogManaged).length;
       const withStock = products.filter((item) => Number(item.stockQuantity || 0) > 0).length;
-      const withProvider = products.filter((item) => item.lastProvider || item.providerSuggestions?.length).length;
-      const categories = new Set(products.map((item) => item.category).filter(Boolean)).size;
       container.innerHTML = `
         <section class="purchase-kpis">
-          <div class="purchase-kpi"><span>Insumos maestros</span><strong>${escapeHtml(products.length)}</strong></div>
+          <div class="purchase-kpi"><span>Activos</span><strong>${escapeHtml(active)}</strong></div>
+          <div class="purchase-kpi"><span>Inactivos</span><strong>${escapeHtml(inactive)}</strong></div>
+          <div class="purchase-kpi"><span>Fichas maestras</span><strong>${escapeHtml(managed)}</strong></div>
           <div class="purchase-kpi"><span>Con stock</span><strong>${escapeHtml(withStock)}</strong></div>
-          <div class="purchase-kpi"><span>Con proveedor</span><strong>${escapeHtml(withProvider)}</strong></div>
-          <div class="purchase-kpi"><span>Categorias</span><strong>${escapeHtml(categories)}</strong></div>
         </section>
-        <div class="toolbar-actions" style="margin:12px 0;">
-          <input id="product-master-search" class="search" placeholder="Buscar producto, categoria, proveedor o donde se usa" oninput="renderProductMasterRows()">
+        <div class="purchase-product-toolbar">
+          <input id="product-master-search" class="search" placeholder="Buscar producto, categoría, código o proveedor" oninput="renderProductMasterRows()">
+          <select id="product-master-status" onchange="setPurchaseProductStatusFilter(this.value)">
+            <option value="active" ${purchaseProductStatusFilter === "active" ? "selected" : ""}>Activos</option>
+            <option value="inactive" ${purchaseProductStatusFilter === "inactive" ? "selected" : ""}>Inactivos</option>
+            <option value="all" ${purchaseProductStatusFilter === "all" ? "selected" : ""}>Todos</option>
+          </select>
         </div>
-        <div id="product-master-list">${renderProductMasterTable(products)}</div>
+        <div id="product-master-list"></div>
       `;
+      renderProductMasterRows();
+    }
+
+    function getEventTablewareOverviewText(event = {}) {
+      const items = Array.isArray(event.tablewareItems) ? event.tablewareItems : [];
+      if (!items.length) return [event.tableware, event.tablewareQuantities, event.tablewareDetail].filter(Boolean).join(" · ") || "Sin definir";
+      const stock = items.reduce((sum, item) => sum + Number(item.stockPlannedQuantity || 0), 0);
+      const rental = items.reduce((sum, item) => sum + Number(item.rentalQuantity || 0), 0);
+      const pending = items.filter((item) => !item.requiredQuantity || item.sourcingMode === "pending" || (Number(item.rentalQuantity || 0) > 0 && !(item.rentalProviderId || event.tablewareRental?.defaultProviderId))).length;
+      return `${items.length} ${items.length === 1 ? "artículo" : "artículos"} · Stock planificado ${formatTablewareQuantity(stock)} · Alquiler ${formatTablewareQuantity(rental)}${pending ? ` · ${pending} ${pending === 1 ? "pendiente" : "pendientes"}` : ""}`;
+    }
+
+    function setPurchaseProductStatusFilter(value) {
+      purchaseProductStatusFilter = value || "active";
+      renderProductMasterRows();
     }
 
     function renderProductMasterRows() {
@@ -22305,47 +22637,43 @@
         const haystack = [
           item.name,
           item.category,
+          item.subcategory,
           item.defaultUnit,
+          item.barcode,
+          item.internalCode,
           item.lastProvider,
           ...(item.providerSuggestions || []),
           ...(item.sources || []),
         ].join(" ");
-        return !term || normalizeSearch(haystack).includes(term);
+        const matchesStatus = purchaseProductStatusFilter === "all"
+          || (purchaseProductStatusFilter === "inactive" ? item.active === false : item.active !== false);
+        return matchesStatus && (!term || normalizeSearch(haystack).includes(term));
       });
       const container = document.getElementById("product-master-list");
       if (container) container.innerHTML = renderProductMasterTable(products);
     }
 
     function renderProductMasterTable(products = []) {
-      if (!products.length) return `<div class="empty">No hay insumos para mostrar.</div>`;
+      if (!products.length) return `<div class="empty-state"><strong class="empty-title">No hay productos para mostrar.</strong><p class="empty-copy">Probá otro filtro o creá una ficha nueva.</p></div>`;
       return `
-        <div class="purchase-table-wrap compact-table-wrap">
-          <table class="purchase-table">
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Categoria</th>
-                <th>Unidad</th>
-                <th>Proveedor sugerido</th>
-                <th>Stock</th>
-                ${canSeeRecipeCosts() ? `<th>Ultimo costo</th>` : ""}
-                <th>Presente en</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${products.slice(0, 250).map((item) => `
-                <tr onclick="showProductMasterDetail('${escapeAttribute(item.id || item.key || "")}')">
-                  <td><strong>${escapeHtml(item.name || "")}</strong></td>
-                  <td>${escapeHtml(item.category || "Sin categoria")}</td>
-                  <td>${escapeHtml(item.defaultUnit || item.stockUnit || "-")}</td>
-                  <td>${escapeHtml(item.lastProvider || item.providerSuggestions?.[0] || "Sin proveedor")}</td>
-                  <td>${escapeHtml(item.stockQuantity ? `${item.stockQuantity} ${item.stockUnit || ""}` : "-")}</td>
-                  ${canSeeRecipeCosts() ? `<td>${item.lastUnitCost ? formatCurrency(item.lastUnitCost) : "-"}</td>` : ""}
-                  <td>${escapeHtml(formatProductSources(item.sources || []))}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
+        <div class="purchase-product-list">
+          ${products.slice(0, 250).map((item) => `
+            <button class="purchase-product-row" type="button" onclick="showProductMasterDetail('${escapeAttribute(item.id || item.key || "")}')">
+              <div class="purchase-product-name">
+                <strong>${escapeHtml(item.name || "")}</strong>
+                <div class="purchase-product-meta">${escapeHtml(item.category || "Sin categoría")} · ${escapeHtml(item.baseUnit || item.defaultUnit || item.stockUnit || "Sin unidad")}</div>
+                <div class="purchase-product-chips">
+                  <span class="purchase-product-chip ${item.active === false ? "inactive" : ""}">${item.active === false ? "Inactivo" : "Activo"}</span>
+                  <span class="purchase-product-chip ${item.catalogManaged ? "" : "derived"}">${item.catalogManaged ? "Ficha maestra" : "Derivado del historial"}</span>
+                </div>
+              </div>
+              <div class="purchase-product-cell"><span>Stock actual</span><strong>${item.stockQuantity ? escapeHtml(`${formatSmartNumber(item.stockQuantity)} ${item.stockUnit || ""}`) : "-"}</strong></div>
+              <div class="purchase-product-cell"><span>Último proveedor</span>${escapeHtml(item.lastProvider || item.providerSuggestions?.[0] || "-")}</div>
+              <div class="purchase-product-cell"><span>Última compra</span>${escapeHtml(item.lastPurchaseDate || "-")}</div>
+              <div class="purchase-product-cell"><span>Último precio</span>${canSeeRecipeCosts() && item.lastUnitCost ? formatCurrency(item.lastUnitCost) : "-"}</div>
+              <span aria-hidden="true">›</span>
+            </button>
+          `).join("")}
         </div>
         ${products.length > 250 ? `<p class="subtitle">Mostrando 250 de ${escapeHtml(products.length)} productos. Use el buscador para afinar.</p>` : ""}
       `;
@@ -22359,6 +22687,7 @@
         stock: "Stock contable",
         precio: "Precios historicos",
         config: "Listas base",
+        catalogo: "Catálogo maestro",
       };
       return sources.map((source) => labels[source] || source).join(", ") || "-";
     }
@@ -22366,22 +22695,220 @@
     function showProductMasterDetail(id) {
       const item = (erpData.productMaster || []).find((product) => (product.id || product.key) === id);
       if (!item) return;
-      document.getElementById("detail-title").textContent = item.name || "Producto";
-      document.getElementById("detail-subtitle").textContent = "Ficha maestra del insumo";
+      showPurchaseProductForm(item);
+    }
+
+    function showPurchaseProductForm(item = null) {
+      const product = item || { active: true, catalogManaged: false };
+      const editable = can("purchases:write");
+      const disabled = editable ? "" : "disabled";
+      document.getElementById("detail-title").textContent = item ? (item.name || "Producto") : "Nuevo producto";
+      document.getElementById("detail-subtitle").textContent = item?.catalogManaged
+        ? (item.active === false ? "Producto inactivo" : "Ficha del catálogo de compras")
+        : (item ? "Producto derivado · guardalo para convertirlo en ficha maestra" : "Nueva ficha del catálogo de compras");
       document.getElementById("detail-fields").innerHTML = `
-        ${field("Nombre propio", item.name || "Sin nombre")}
-        ${field("Categoria", item.category || "Sin categoria")}
-        ${field("Unidad base", item.defaultUnit || item.stockUnit || "Sin definir")}
-        ${field("Proveedor sugerido", item.lastProvider || item.providerSuggestions?.[0] || "Sin proveedor")}
-        ${canSeeRecipeCosts() ? field("Ultimo costo", item.lastUnitCost ? formatCurrency(item.lastUnitCost) : "Sin costo") : ""}
-        ${field("Stock contable", item.stockQuantity ? `${formatSmartNumber(item.stockQuantity)} ${item.stockUnit || ""}` : "Sin stock contable")}
-        ${field("Presente en", formatProductSources(item.sources || []))}
-        <div class="form-field full">
-          <label>Como deberia usarse</label>
-          <div class="empty" style="text-align:left;">Esta ficha unifica nombres de compra, receta, orden y stock. El siguiente paso es permitir alias: por ejemplo, que FRACC JAM CRU X 150G y JAMON CRUDO X 150G apunten al producto maestro JAMON CRUDO.</div>
+        <form id="purchase-product-form" class="purchase-product-form" onsubmit="savePurchaseProduct(event)">
+          <input type="hidden" name="id" value="${escapeAttribute(product.catalogManaged ? product.id || "" : "")}">
+          <input type="hidden" name="normalizedKey" value="${escapeAttribute(product.normalizedKey || product.key || "")}">
+          <div class="purchase-product-form-section"><h3>Datos básicos</h3><p class="subtitle">Identificación y forma habitual de compra.</p></div>
+          <div class="form-field full"><label>Nombre</label><input name="name" required ${disabled} value="${escapeAttribute(product.name || "")}" placeholder="Ej: Harina 000"></div>
+          <div class="form-field"><label>Categoría</label><input name="category" ${disabled} value="${escapeAttribute(product.category || "")}" placeholder="Alimentos, bebidas..."></div>
+          <div class="form-field"><label>Subcategoría</label><input name="subcategory" ${disabled} value="${escapeAttribute(product.subcategory || "")}" placeholder="Secos, frescos..."></div>
+          <div class="form-field"><label>Unidad base</label><select name="baseUnit" ${disabled}>${renderPurchaseProductUnitOptions(product.baseUnit || product.defaultUnit || product.stockUnit || "")}</select></div>
+          <div class="form-field"><label>Unidad habitual de compra</label><select name="purchaseUnit" ${disabled}>${renderPurchaseProductUnitOptions(product.purchaseUnit || "")}</select></div>
+          <div class="form-field"><label>Presentación</label><input name="presentation" ${disabled} value="${escapeAttribute(product.presentation || "")}" placeholder="Caja, bolsa, bidón..."></div>
+          <div class="form-field"><label>Unidades por caja/bulto</label><input name="unitsPerPackage" inputmode="decimal" ${disabled} value="${escapeAttribute(formatSmartNumber(product.unitsPerPackage || 0))}"></div>
+          <div class="form-field"><label>Código comercial</label><input name="barcode" ${disabled} value="${escapeAttribute(product.barcode || "")}" autocomplete="off"></div>
+          <div class="form-field"><label>Código interno</label><input name="internalCode" ${disabled} value="${escapeAttribute(product.internalCode || "")}" autocomplete="off"></div>
+          <div class="form-field full"><label>Descripción</label><textarea name="description" ${disabled} rows="3">${escapeHtml(product.description || "")}</textarea></div>
+          <details class="full"><summary><strong>Datos avanzados</strong></summary>
+            <div class="purchase-product-form" style="margin-top:12px;">
+              <div class="form-field"><label>Stock mínimo</label><input name="minStock" inputmode="decimal" ${disabled} value="${escapeAttribute(formatSmartNumber(product.minStock || 0))}"></div>
+              <div class="form-field full"><label>Notas</label><textarea name="notes" ${disabled} rows="3">${escapeHtml(product.notes || "")}</textarea></div>
+            </div>
+          </details>
+          <div class="purchase-product-form-section"><h3>Información actual</h3><p class="subtitle">Datos de solo lectura derivados de compras, órdenes y stock contable.</p></div>
+          <div class="purchase-product-readonly">
+            ${purchaseProductStat("Stock actual", product.stockQuantity ? `${formatSmartNumber(product.stockQuantity)} ${product.stockUnit || ""}` : "Sin stock")}
+            ${purchaseProductStat("Último proveedor", product.lastProvider || product.providerSuggestions?.[0] || "Sin proveedor")}
+            ${purchaseProductStat("Última compra", product.lastPurchaseDate || "Sin compras")}
+            ${purchaseProductStat("Último precio", canSeeRecipeCosts() && product.lastUnitCost ? formatCurrency(product.lastUnitCost) : "Sin precio")}
+            ${purchaseProductStat("Compras", formatSmartNumber(product.purchaseCount || 0))}
+            ${purchaseProductStat("Órdenes", formatSmartNumber(product.orderCount || 0))}
+            ${purchaseProductStat("Fuentes", formatProductSources(product.sources || []))}
+          </div>
+          <div id="purchase-product-providers" class="purchase-product-providers">
+            ${renderPurchaseProductProviders(product, editable)}
+          </div>
+          ${renderPurchaseProductRiskZone(product)}
+          <div class="purchase-product-form-actions">
+            <button class="filter" type="button" onclick="hideDetail()">Cancelar</button>
+            ${editable ? `<button class="approve" type="submit">${product.catalogManaged ? "Guardar cambios" : "Guardar producto"}</button>` : ""}
+          </div>
+        </form>
+      `;
+      purchaseProductFormOpen = true;
+      document.getElementById("detail").classList.add("open");
+      requestAnimationFrame(() => {
+        purchaseProductFormInitialState = serializePurchaseProductForm();
+      });
+    }
+
+    function renderPurchaseProductUnitOptions(selected = "") {
+      const units = ["", "unidad", "kg", "g", "litro", "ml", "caja", "bulto", "pack", "bolsa", "botella", "lata", "bidón"];
+      if (selected && !units.includes(selected)) units.push(selected);
+      return units.map((unit) => `<option value="${escapeAttribute(unit)}" ${unit === selected ? "selected" : ""}>${escapeHtml(unit || "Seleccionar")}</option>`).join("");
+    }
+
+    function purchaseProductStat(label, value) {
+      return `<div class="purchase-product-stat"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value || "-"))}</strong></div>`;
+    }
+
+    function getPurchaseProductProviders() {
+      return (erpData.providers || allProviders || []).slice().sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+    }
+
+    function renderPurchaseProductProviders(product = {}, editable = can("purchases:write")) {
+      const insights = product.providerInsights || [];
+      const providers = getPurchaseProductProviders();
+      const addForm = product.catalogManaged && editable ? `
+        <div id="purchase-product-provider-add" class="purchase-product-provider-add">
+          <div class="form-field"><label>Buscar proveedor existente</label><input id="purchase-product-provider-name" list="purchase-product-provider-options" required placeholder="Escribí para buscar"><datalist id="purchase-product-provider-options">${providers.map((provider) => `<option value="${escapeAttribute(provider.name || "")}"></option>`).join("")}</datalist></div>
+          <div class="form-field"><label>Presentación habitual</label><input id="purchase-product-provider-presentation" placeholder="Caja, bolsa, unidad"></div>
+          <div class="form-field"><label>Moneda</label><select id="purchase-product-provider-currency"><option value="ARS">ARS</option><option value="USD">USD</option></select></div>
+          <label class="check-row"><input id="purchase-product-provider-preferred" type="checkbox" value="true"><span>Preferido</span></label>
+          <div class="actions"><button class="filter" type="button" onclick="associatePurchaseProductProvider('${escapeAttribute(product.id || "")}')">Asociar proveedor</button></div>
+        </div>
+      ` : product.catalogManaged ? "" : `<div class="empty-state"><strong class="empty-title">Guardá la ficha para asociar proveedores.</strong><p class="empty-copy">Las sugerencias históricas ya están disponibles abajo.</p></div>`;
+      return `
+        <div class="purchase-product-form-section"><h3>Proveedores</h3><p class="subtitle">Asociaciones y sugerencias calculadas desde el historial. Ninguna se aplica automáticamente a una orden.</p></div>
+        ${addForm}
+        <div class="purchase-product-provider-list">
+          ${insights.length ? insights.map((provider) => renderPurchaseProductProviderRow(product, provider, editable)).join("") : `<div class="empty-state"><strong class="empty-title">Producto sin proveedores.</strong><p class="empty-copy">Todavía no hay asociaciones ni compras históricas para sugerir.</p></div>`}
         </div>
       `;
-      document.getElementById("detail").classList.add("open");
+    }
+
+    function formatPurchaseLineDiscountSummary(item = {}) {
+      const discounts = Array.isArray(item.discounts) ? item.discounts : [];
+      if (!discounts.length) return "";
+      const total = Number(item.discountTotal || 0);
+      return `<div class="secondary">${discounts.length} descuento${discounts.length === 1 ? "" : "s"}${total ? ` · -${formatCurrency(total)}` : ""}</div>`;
+    }
+
+    function renderPurchaseProductProviderRow(product = {}, provider = {}, editable = false) {
+      const canAssociate = editable && product.catalogManaged && provider.providerId;
+      return `
+        <article class="purchase-product-provider-row">
+          <div class="purchase-product-provider-name">
+            <strong>${escapeHtml(provider.providerName || "Proveedor")}</strong>
+            <div class="purchase-product-provider-reasons">${(provider.reasons || []).map((reason) => `<span class="purchase-product-chip ${provider.preferred ? "" : "derived"}">${escapeHtml(reason)}</span>`).join("")}</div>
+          </div>
+          <div class="purchase-product-cell" style="display:block"><span>Última compra</span>${escapeHtml(provider.lastPurchaseDate || "-")}</div>
+          <div class="purchase-product-cell" style="display:block"><span>Último precio</span>${provider.lastUnitCost ? `${escapeHtml(provider.currency || "ARS")} ${escapeHtml(formatSmartNumber(provider.lastUnitCost))}` : "-"}</div>
+          <div class="purchase-product-cell" style="display:block"><span>Presentación</span>${escapeHtml(provider.presentation || "-")}</div>
+          <div class="purchase-product-provider-actions">
+            ${canAssociate && !provider.associated ? `<button class="filter" type="button" onclick="associateSuggestedPurchaseProductProvider('${escapeAttribute(product.id || "")}', '${escapeAttribute(provider.providerId)}', '${escapeAttribute(provider.presentation || "")}', '${escapeAttribute(provider.currency || "ARS")}')">Asociar</button>` : ""}
+            ${canAssociate && provider.associated && !provider.preferred ? `<button class="filter" type="button" onclick="setPreferredPurchaseProductProvider('${escapeAttribute(product.id || "")}', '${escapeAttribute(provider.providerId)}')">Marcar preferido</button>` : ""}
+            ${canAssociate && provider.associated ? `<button class="action-ghost" type="button" onclick="removePurchaseProductProvider('${escapeAttribute(product.id || "")}', '${escapeAttribute(provider.providerId)}')">Quitar</button>` : ""}
+          </div>
+        </article>
+      `;
+    }
+
+    function findPurchaseProviderByName(name = "") {
+      const key = normalizeSearch(name);
+      return getPurchaseProductProviders().find((provider) => normalizeSearch(provider.name || "") === key) || null;
+    }
+
+    async function associatePurchaseProductProvider(productId) {
+      const provider = findPurchaseProviderByName(document.getElementById("purchase-product-provider-name")?.value || "");
+      if (!provider) return showNotice("Seleccione un proveedor existente de la lista.", "error");
+      await updatePurchaseProductProvider({
+        productId,
+        providerId: provider.id,
+        action: "associate",
+        presentation: document.getElementById("purchase-product-provider-presentation")?.value || "",
+        currency: document.getElementById("purchase-product-provider-currency")?.value || "ARS",
+        preferred: Boolean(document.getElementById("purchase-product-provider-preferred")?.checked),
+      });
+    }
+
+    async function associateSuggestedPurchaseProductProvider(productId, providerId, presentation = "", currency = "ARS") {
+      await updatePurchaseProductProvider({ productId, providerId, action: "associate", presentation, currency });
+    }
+
+    async function setPreferredPurchaseProductProvider(productId, providerId) {
+      await updatePurchaseProductProvider({ productId, providerId, action: "prefer" });
+    }
+
+    async function removePurchaseProductProvider(productId, providerId) {
+      if (!confirm("¿Quitar esta asociación? Las compras históricas se conservarán.")) return;
+      await updatePurchaseProductProvider({ productId, providerId, action: "remove" });
+    }
+
+    async function updatePurchaseProductProvider(payload) {
+      const result = await postJson("/api/purchase-product-provider", payload);
+      if (!result.ok) return showNotice(result.error || "No se pudo actualizar el proveedor.", "error");
+      const productIndex = (erpData.productMaster || []).findIndex((item) => item.id === payload.productId);
+      if (productIndex >= 0 && result.product) {
+        erpData.productMaster[productIndex] = { ...erpData.productMaster[productIndex], ...result.product };
+      }
+      const product = (erpData.productMaster || []).find((item) => item.id === payload.productId);
+      const container = document.getElementById("purchase-product-providers");
+      if (container && product) container.innerHTML = renderPurchaseProductProviders(product, can("purchases:write"));
+      renderProductMasterRows();
+      showNotice(payload.action === "remove" ? "Asociación quitada." : payload.action === "prefer" ? "Proveedor preferido actualizado." : "Proveedor asociado.");
+    }
+
+    function renderPurchaseProductRiskZone(product = {}) {
+      if (!product.catalogManaged || !can("purchases:write") || !can("sensitive:delete")) return "";
+      if (product.active === false) {
+        return `<div class="purchase-product-risk"><strong>Producto inactivo</strong><p class="subtitle">El historial se conserva. Podés reactivarlo para volver a usarlo.</p><button class="filter" type="button" onclick="reactivatePurchaseProduct('${escapeAttribute(product.id)}')">Reactivar</button></div>`;
+      }
+      return `<div class="purchase-product-risk"><strong>Zona de riesgo</strong><p class="subtitle">La baja no elimina compras, órdenes ni stock histórico.</p><div class="inline-field-action"><input id="purchase-product-archive-reason" placeholder="Motivo de la baja"><button class="reject" type="button" onclick="archivePurchaseProduct('${escapeAttribute(product.id)}')">Dar de baja</button></div></div>`;
+    }
+
+    function serializePurchaseProductForm() {
+      const form = document.getElementById("purchase-product-form");
+      return form ? JSON.stringify(Array.from(new FormData(form).entries())) : "";
+    }
+
+    async function savePurchaseProduct(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const payload = Object.fromEntries(new FormData(form).entries());
+      const result = await postJson("/api/purchase-product", payload);
+      if (!result.ok) return showNotice(result.error || "No se pudo guardar el producto.", "error");
+      erpData.productMaster = result.products || erpData.productMaster;
+      renderProductMasterDashboard();
+      purchaseProductFormInitialState = serializePurchaseProductForm();
+      hideDetail(true);
+      showNotice("Producto guardado correctamente.");
+    }
+
+    async function archivePurchaseProduct(id) {
+      const reason = document.getElementById("purchase-product-archive-reason")?.value.trim() || "";
+      if (!reason) return showNotice("Ingresá el motivo de la baja.", "error");
+      if (!confirm("El producto quedará inactivo, pero conservará todo su historial. ¿Continuar?")) return;
+      const result = await postJson("/api/purchase-product-archive", { id, reason });
+      if (!result.ok) return showNotice(result.error || "No se pudo dar de baja.", "error");
+      erpData.productMaster = result.products || erpData.productMaster;
+      renderProductMasterDashboard();
+      purchaseProductFormInitialState = serializePurchaseProductForm();
+      hideDetail(true);
+      showNotice("Producto dado de baja.");
+    }
+
+    async function reactivatePurchaseProduct(id) {
+      if (!confirm("¿Reactivar este producto?")) return;
+      const result = await postJson("/api/purchase-product-reactivate", { id });
+      if (!result.ok) return showNotice(result.error || "No se pudo reactivar.", "error");
+      erpData.productMaster = result.products || erpData.productMaster;
+      renderProductMasterDashboard();
+      purchaseProductFormInitialState = serializePurchaseProductForm();
+      hideDetail(true);
+      showNotice("Producto reactivado.");
     }
 
     function renderOperationalInventoryManager() {
@@ -22910,6 +23437,121 @@
       showNotice("Item eliminado.", "success");
     }
 
+    // ── Ajuste rápido de stock ────────────────────────────────────────
+    let _qsaSign = 1;
+
+    function openQuickStockAdjustment() {
+      const modal = document.getElementById("quick-stock-adjustment-modal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.style.display = "flex";
+      _qsaSign = 1;
+      document.getElementById("qsa-search").value = "";
+      document.getElementById("qsa-qty").value = "";
+      document.getElementById("qsa-unit").value = "";
+      document.getElementById("qsa-reason").value = "ajuste_manual";
+      document.getElementById("qsa-notes").value = "";
+      document.getElementById("qsa-error").style.display = "none";
+      document.getElementById("qsa-success").style.display = "none";
+      document.getElementById("qsa-suggestions").style.display = "none";
+      _qsaUpdateSignUI();
+      setTimeout(() => document.getElementById("qsa-search").focus(), 80);
+    }
+
+    function closeQuickStockAdjustment() {
+      const modal = document.getElementById("quick-stock-adjustment-modal");
+      if (modal) { modal.classList.add("hidden"); modal.style.display = "none"; }
+    }
+
+    function _qsaUpdateSignUI() {
+      const btnOut = document.getElementById("qsa-btn-out");
+      const btnIn  = document.getElementById("qsa-btn-in");
+      const lbl    = document.getElementById("qsa-sign-label");
+      if (!btnOut || !btnIn) return;
+      if (_qsaSign > 0) {
+        btnIn.style.background  = "var(--primary,#1e40af)";
+        btnIn.style.color       = "#fff";
+        btnOut.style.background = "var(--surface-alt,#f8f9fb)";
+        btnOut.style.color      = "var(--text)";
+        lbl.textContent = "Se sumará al stock actual";
+      } else {
+        btnOut.style.background = "#dc2626";
+        btnOut.style.color      = "#fff";
+        btnIn.style.background  = "var(--surface-alt,#f8f9fb)";
+        btnIn.style.color       = "var(--text)";
+        lbl.textContent = "Se restará del stock actual";
+      }
+    }
+
+    function qsaSetSign(s) {
+      _qsaSign = s;
+      _qsaUpdateSignUI();
+    }
+
+    function qsaFilterProducts(q) {
+      const box = document.getElementById("qsa-suggestions");
+      const inventory = erpData.inventory || [];
+      const matches = q
+        ? inventory.filter((i) => normalizeSearch(i.productName).includes(normalizeSearch(q))).slice(0, 8)
+        : inventory.slice(0, 8);
+      if (!matches.length) { box.style.display = "none"; return; }
+      box.innerHTML = matches.map((i) => {
+        const stock = `${Math.round(i.quantity * 100) / 100} ${i.unit || ""}`.trim();
+        return `<div class="autocomplete-item" onmousedown="event.preventDefault();" onclick="qsaPickProduct(${JSON.stringify(escapeHtml(i.productName))}, ${JSON.stringify(escapeHtml(i.unit || ''))})">
+          <span>${escapeHtml(i.productName)}</span>
+          <span style="color:var(--muted);font-size:12px;margin-left:auto;">${escapeHtml(stock)}</span>
+        </div>`;
+      }).join("");
+      box.style.display = "";
+    }
+
+    function qsaPickProduct(name, unit) {
+      document.getElementById("qsa-search").value = name;
+      document.getElementById("qsa-unit").value = unit;
+      document.getElementById("qsa-suggestions").style.display = "none";
+    }
+
+    async function submitQuickStockAdjustment() {
+      const errEl  = document.getElementById("qsa-error");
+      const okEl   = document.getElementById("qsa-success");
+      const btn    = document.getElementById("qsa-submit");
+      errEl.style.display = "none";
+      okEl.style.display = "none";
+
+      const productName = document.getElementById("qsa-search").value.trim();
+      const qty         = parseFloat(document.getElementById("qsa-qty").value) || 0;
+      const unit        = document.getElementById("qsa-unit").value.trim();
+      const reason      = document.getElementById("qsa-reason").value;
+      const notes       = document.getElementById("qsa-notes").value.trim();
+
+      if (!productName) { errEl.textContent = "Ingresá el nombre del producto."; errEl.style.display = ""; return; }
+      if (!qty || qty <= 0) { errEl.textContent = "Ingresá una cantidad mayor a cero."; errEl.style.display = ""; return; }
+
+      btn.disabled = true;
+      btn.textContent = "Guardando…";
+      try {
+        const res = await fetch("/api/inventory-adjustment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productName, delta: qty * _qsaSign, unit, reason, notes }),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Error al guardar.");
+        erpData.inventory = data.inventory || erpData.inventory;
+        okEl.textContent = `✓ Stock de "${productName}" ${_qsaSign > 0 ? "aumentado" : "reducido"} en ${qty} ${unit}.`;
+        okEl.style.display = "";
+        renderStockDashboard();
+        setTimeout(() => closeQuickStockAdjustment(), 1800);
+      } catch (err) {
+        errEl.textContent = err.message || "No se pudo guardar el ajuste.";
+        errEl.style.display = "";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Guardar ajuste";
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────
+
     function renderStockDashboard() {
       const dashboard = document.getElementById("stock-dashboard");
       const receiptsBox = document.getElementById("stock-receptions-dashboard");
@@ -23083,7 +23725,7 @@
         ..._cap((erpData.events || []).map((item) => ({ type: "Evento", title: item.name, detail: `${item.clientName || ""} ${item.serviceType || ""}`, action: () => { showEventOverview(item.id); closeGlobalSearch(); } })), 4),
         ..._cap((erpData.quotes || []).map((item) => ({ type: "Presupuesto", title: item.eventName, detail: `${formatCurrency(item.priceTotal)} ${item.status}`, action: () => { showWorkspaceView("commercial", { anchor: "commercial-quotes-section" }); closeGlobalSearch(); } })), 3),
         ..._cap((erpData.customers || []).map((item) => ({ type: "Cliente", title: item.fullName || item.contactName, detail: `${item.displayPhone || ""} Cierre ${formatPercent(item.closeRate || 0)}`, action: () => { showCustomerDetail(item.id); closeGlobalSearch(); } })), 3),
-        ..._cap((erpData.purchases || []).map((item) => ({ type: "Compra", title: item.provider, detail: `${item.description || ""} ${item.eventName || ""}`, action: () => { showWorkspaceView("purchases", { anchor: "purchase-sheet-section" }); closeGlobalSearch(); } })), 4),
+        ..._cap((erpData.purchases || []).map((item) => ({ type: "Compra", title: item.provider, detail: `${item.description || ""} ${getPurchaseDestinationLabel(item)}`, action: () => { showWorkspaceView("purchases", { anchor: "purchase-sheet-section" }); closeGlobalSearch(); } })), 4),
         ..._cap((allRecipes || []).map((item) => ({ type: "Receta", title: item.name, detail: `${item.category || ""} ${formatCurrency(item.costPerPortion)}`, action: () => { showRecipeDetail(item.id); closeGlobalSearch(); } })), 3),
       ];
 
@@ -23409,7 +24051,7 @@
           <div class="event-detail-item"><span>Facturacion</span><strong>${escapeHtml(getInvoiceSummaryLabel(event))}${event.invoiceNumber && !isNoInvoiceEvent(event) ? ` · ${escapeHtml(event.invoiceNumber)}` : ""}</strong></div>
           <div class="event-detail-item event-menu-panel"><span>Menu</span>${renderMenuItems(event)}</div>
           <div class="event-detail-item"><span>Bebidas</span><strong>${escapeHtml([event.includesDrinks, event.drinkType].filter(Boolean).join(" · ") || "Sin definir")}</strong></div>
-          <div class="event-detail-item"><span>Vajilla</span><strong>${escapeHtml([event.tableware, event.tablewareQuantities, event.tablewareDetail].filter(Boolean).join(" · ") || "Sin definir")}</strong></div>
+          <div class="event-detail-item"><span>Vajilla</span><strong>${escapeHtml(getEventTablewareOverviewText(event))}</strong></div>
           <div class="event-detail-item"><span>Rol operativo</span><strong>${escapeHtml(event.role || "Sin definir")}</strong></div>
           <div class="event-detail-item"><span>Proxima accion</span><strong>${escapeHtml(event.nextAction || "Sin definir")}</strong></div>
         </div>
@@ -24697,18 +25339,19 @@
       }
       const summary = getEventTablewareSummary();
       const legacy = [form.elements.tableware?.value, form.elements.tablewareQuantities?.value, form.elements.tablewareDetail?.value].filter(Boolean).join("\n");
+      const hasItems = summary.items > 0;
       container.innerHTML = `
-        <section class="tableware-planner">
+        <section class="tableware-planner ${hasItems ? "" : "empty"}">
           <div class="tableware-planner-head">
-            <div><h4>Vajilla y alquiler</h4><div class="tableware-summary-copy">${summary.items} ítems · Stock: ${formatTablewareQuantity(summary.stock)} · Alquiler: ${formatTablewareQuantity(summary.rental)}<br>${summary.pending} pendiente(s) de resolver</div></div>
-            <button class="filter action-secondary" type="button" onclick="toggleTablewareLines()">Ver / editar</button>
+            <div><h4>Vajilla</h4><p class="tableware-planner-copy">Definí qué necesita el evento y qué se cubre con stock o alquiler.</p></div>
           </div>
+          ${hasItems ? `<div class="tableware-summary-chips"><span class="tableware-summary-chip">${summary.items} ${summary.items === 1 ? "artículo" : "artículos"}</span><span class="tableware-summary-chip">${summary.covered} ${summary.covered === 1 ? "resuelto" : "resueltos"}</span><span class="tableware-summary-chip">${summary.rentalItems} para alquilar</span>${summary.pending ? `<span class="tableware-summary-chip status-warning">${summary.pending} ${summary.pending === 1 ? "pendiente" : "pendientes"}</span>` : ""}</div>` : ""}
           <div class="tableware-planner-actions">
             <button class="approve action-primary" type="button" onclick="openTablewareInventoryPicker()">Agregar artículo</button>
             ${summary.rental > 0 ? `<button class="filter action-secondary" type="button" onclick="openTablewareRentalRequest()">Ver lista de alquiler</button>` : ""}
           </div>
-          <div id="tableware-builder-list" class="tableware-lines" ${eventTablewareState.items.length ? "" : "hidden"}>${eventTablewareState.items.length ? eventTablewareState.items.map(renderEventTablewareLine).join("") : `<div class="empty">Todavía no hay artículos planificados.</div>`}</div>
-          ${renderTablewareRentalSettings()}
+          ${hasItems ? `<div id="tableware-builder-list" class="tableware-lines">${eventTablewareState.items.map(renderEventTablewareLine).join("")}</div>` : ""}
+          ${summary.rental > 0 ? renderTablewareRentalSettings() : ""}
           ${legacy ? `<details class="tableware-legacy"><summary>Información anterior</summary><p class="secondary">Datos históricos conservados. No se convierten automáticamente.</p><pre>${escapeHtml(legacy)}</pre></details>` : ""}
         </section>`;
     }
@@ -24723,13 +25366,14 @@
         summary.items += 1;
         summary.stock += Number(item.stockPlannedQuantity || 0);
         summary.rental += Number(item.rentalQuantity || 0);
+        if (Number(item.rentalQuantity || 0) > 0) summary.rentalItems += 1;
         const providerId = item.rentalProviderId || eventTablewareState.rental?.defaultProviderId || "";
         const invalidCoverage = !["client", "venue", "pending"].includes(item.sourcingMode)
           && Math.abs(Number(item.requiredQuantity || 0) - Number(item.stockPlannedQuantity || 0) - Number(item.rentalQuantity || 0)) > 0.0001;
-        if (!item.requiredQuantity || item.sourcingMode === "pending" || invalidCoverage || (Number(item.rentalQuantity || 0) > 0 && !providerId)) summary.pending += 1;
+        const pending = !item.requiredQuantity || item.sourcingMode === "pending" || invalidCoverage || (Number(item.rentalQuantity || 0) > 0 && !providerId);
+        if (pending) summary.pending += 1; else summary.covered += 1;
         return summary;
-      }, { items: 0, stock: 0, rental: 0, pending: 0 });
-      if (summary.rental > 0 && !eventTablewareState.rental?.deliveryAt) summary.pending += 1;
+      }, { items: 0, stock: 0, rental: 0, rentalItems: 0, covered: 0, pending: 0 });
       return summary;
     }
 
@@ -24737,20 +25381,33 @@
       const provider = getEventTablewareProvider(item);
       const mode = getTablewareModeLabel(item.sourcingMode);
       const inventoryItem = (erpData.operationalInventory?.items || []).find((entry) => entry.id === item.inventoryItemId);
-      const currentStock = Number(inventoryItem?.availableQuantity ?? inventoryItem?.quantity ?? item.stockAvailableSnapshot ?? 0);
+      const currentStock = Number(inventoryItem?.stockRegisteredQuantity ?? inventoryItem?.quantity ?? inventoryItem?.availableQuantity ?? item.stockAvailableSnapshot ?? 0);
       const stockWarning = Number(item.stockPlannedQuantity || 0) > currentStock;
+      const state = getTablewareLineState(item, currentStock, stockWarning);
       return `<article class="tableware-line">
-        <div class="tableware-line-head"><h5>${escapeHtml(item.name || "Artículo")}</h5><button class="filter action-ghost" type="button" onclick="openTablewareLineEditor('${escapeAttribute(item.id)}')">Editar</button></div>
-        <div class="tableware-line-meta">Necesarias ${formatTablewareQuantity(item.requiredQuantity)} ${escapeHtml(item.unit || "un.")} · Stock disponible ${formatTablewareQuantity(currentStock)}</div>
-        <div class="tableware-line-meta">Stock planificado ${formatTablewareQuantity(item.stockPlannedQuantity)} · Alquiler ${formatTablewareQuantity(item.rentalQuantity)}</div>
-        <div class="tableware-line-meta">${escapeHtml(mode)} · ${escapeHtml(Number(item.rentalQuantity || 0) > 0 ? (provider || "Proveedor pendiente") : "Sin alquiler")}${stockWarning ? ` · <strong>Stock insuficiente: revisar</strong>` : ""}</div>
+        <div class="tableware-line-head"><h5>${escapeHtml(item.name || "Artículo")}</h5><span class="status-chip ${state.className} tableware-status">${escapeHtml(state.label)}</span></div>
+        <div class="tableware-line-meta">Necesarias ${formatTablewareQuantity(item.requiredQuantity)} ${escapeHtml(item.unit || "un.")} · Stock planificado ${formatTablewareQuantity(item.stockPlannedQuantity)} · Alquiler ${formatTablewareQuantity(item.rentalQuantity)}</div>
+        <div class="tableware-line-meta">${escapeHtml(mode)}${Number(item.rentalQuantity || 0) ? ` · ${escapeHtml(provider || "Proveedor pendiente")}` : ""}</div>
+        <div class="tableware-line-head"><span class="secondary">Stock registrado: ${item.stockReliable === false ? "Sin verificar" : formatTablewareQuantity(currentStock)}</span><div class="actions"><button class="filter action-secondary" type="button" onclick="openTablewareLineEditor('${escapeAttribute(item.id)}')">Editar</button></div></div>
       </article>`;
+    }
+
+    function getTablewareLineState(item = {}, currentStock = 0, stockWarning = false) {
+      if (item.sourcingMode === "client") return { label: "Aporta cliente", className: "status-info" };
+      if (item.sourcingMode === "venue") return { label: "Aporta lugar", className: "status-info" };
+      if (item.sourcingMode === "pending" || !item.requiredQuantity) return { label: "Pendiente de definir", className: "status-warning" };
+      if (Number(item.rentalQuantity || 0) > 0 && !getEventTablewareProvider(item)) return { label: "Proveedor pendiente", className: "status-warning" };
+      const assigned = Number(item.stockPlannedQuantity || 0) + Number(item.rentalQuantity || 0);
+      const missing = Math.max(0, Number(item.requiredQuantity || 0) - assigned);
+      if (missing > 0 || stockWarning) return { label: `Faltan ${formatTablewareQuantity(missing || Math.max(0, Number(item.stockPlannedQuantity || 0) - currentStock))}`, className: "status-danger" };
+      return { label: "Cubierto", className: "status-success" };
     }
 
     function renderTablewareRentalSettings() {
       const rental = eventTablewareState.rental || {};
+      const providers = getTablewareRentalProviders();
       return `<details><summary>Datos generales del alquiler</summary><div class="tableware-line-form" style="margin-top:10px">
-        <div class="form-field full"><label>Proveedor principal</label><select onchange="updateTablewareRentalField('defaultProviderId', this.value)">${renderTablewareProviderOptions(rental.defaultProviderId, true)}</select></div>
+        <div class="form-field full"><label>Proveedor principal</label>${providers.length ? `<select onchange="updateTablewareRentalField('defaultProviderId', this.value)">${renderTablewareProviderOptions(rental.defaultProviderId, true, providers)}</select>` : `<div class="empty compact-empty">No hay proveedores de alquiler cargados.${can("providers:write") ? ` <button class="filter action-secondary" type="button" onclick="showQuickTablewareProviderForm()">Crear proveedor</button>` : ""}</div>`}</div>
         <div class="form-field"><label>Entrega</label><input type="datetime-local" value="${escapeAttribute(rental.deliveryAt || "")}" onchange="updateTablewareRentalField('deliveryAt', this.value)"></div>
         <div class="form-field"><label>Retiro / devolución</label><input type="datetime-local" value="${escapeAttribute(rental.returnAt || "")}" onchange="updateTablewareRentalField('returnAt', this.value)"></div>
         <div class="form-field"><label>Estado</label><select onchange="updateTablewareRentalField('status', this.value)">${renderTablewareRentalStatusOptions(rental.status)}</select></div>
@@ -24764,28 +25421,118 @@
     }
 
     function getTablewareInventoryItems() {
-      const allowedFamilies = new Set(["tableware", "glassware", "linen_textiles", "disposables", "packaging_containers", "event_equipment"]);
-      return (erpData.operationalInventory?.items || []).filter((item) => allowedFamilies.has(item.functionalFamily) && item.status !== "inactive");
+      return (erpData.operationalInventory?.items || [])
+        .map((item) => ({ ...item, tablewarePlanningFamily: getTablewarePlanningFamily(item) }))
+        .filter((item) => item.tablewarePlanningFamily && item.status !== "inactive" && !item.archivedAt)
+        .sort((left, right) => String(left.name || "").localeCompare(String(right.name || ""), "es"));
     }
 
-    function openTablewareInventoryPicker() {
-      const items = getTablewareInventoryItems();
-      openEventContextPanel(`<div class="event-context-head"><div><h3>Agregar artículo</h3><p>Elegí un artículo del Inventario Operativo. No se descontará stock.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div>
-        <input id="tableware-inventory-search" type="search" placeholder="Buscar por nombre o categoría" oninput="filterTablewareInventoryPicker(this.value)">
-        <div id="tableware-inventory-picker-list" class="tableware-picker-list">${renderTablewareInventoryPickerItems(items)}</div>
-        <div id="tableware-picker-empty" class="empty" ${items.length ? "hidden" : ""}>No se encontró este artículo.${can("stock:write:any") ? ` <button class="filter action-secondary" type="button" onclick="showQuickTablewareInventoryForm()">Crear artículo</button>` : ""}</div>`);
+    function getTablewarePlanningFamily(item = {}) {
+      const family = item.functionalFamily || "";
+      if (["tableware", "glassware", "linen_textiles", "disposables", "packaging_containers", "event_equipment", "furniture_structures"].includes(family)) return family;
+      const text = normalizeSearch([item.name, item.categoryId, item.category, item.subcategory, item.usageType].filter(Boolean).join(" "));
+      if (/mantel|manteler|textil|servilleta de tela/.test(text)) return "linen_textiles";
+      if (/copa|cristal|vaso de vidrio|vaso vidrio/.test(text)) return "glassware";
+      if (/plato|vajilla|cubierto|tenedor|cuchillo|cuchara|bowl|compotera|taza|jarra/.test(text)) return "tableware";
+      if (/descartable|vaso plast|vaso carton|servilleta descart|sorbete/.test(text)) return "disposables";
+      if (/contenedor|conservadora|caja|bin|bandeja|fuente|campana/.test(text)) return "packaging_containers";
+      if (/mesa|silla|tablero|estructura|altura|mobiliario/.test(text)) return "furniture_structures";
+      if (/servicio|equipamiento evento|equipamiento de evento|chafing|cafetera/.test(text)) return "event_equipment";
+      return "";
+    }
+
+    function normalizeTablewareSearch(value = "") {
+      return normalizeSearch(value).split(/\s+/).filter(Boolean).map((token) => token.length > 3 ? token.replace(/es$|s$/u, "") : token).join(" ");
+    }
+
+    async function openTablewareInventoryPicker() {
+      eventTablewarePickerCategory = "all";
+      openEventContextPanel(renderTablewarePickerShell("loading"));
+      try {
+        if (!erpData.operationalInventory) {
+          const response = await fetch("/api/erp?view=events");
+          const result = await readJsonResponse(response);
+          if (!response.ok || !result.ok) throw new Error(result.error || "No se pudo cargar el inventario.");
+          erpData.operationalInventory = result.operationalInventory || { items: [] };
+          if (Array.isArray(result.providers)) erpData.providers = result.providers;
+        }
+        renderTablewarePickerContent();
+      } catch (error) {
+        const state = document.getElementById("tableware-picker-state");
+        if (state) state.innerHTML = `No pudimos cargar el inventario. Reintentá.<button class="filter action-secondary" type="button" onclick="openTablewareInventoryPicker()">Reintentar</button>`;
+      }
+    }
+
+    function renderTablewarePickerShell(state = "ready") {
+      return `<div class="event-context-head"><div><h3>Agregar vajilla</h3><p>Seleccioná un artículo del inventario. El stock mostrado es registrado, no reservado.</p></div><button class="close action-ghost" type="button" aria-label="Cerrar selector" onclick="closeEventContextPanel()">×</button></div>
+        <div class="tableware-picker-sticky"><input id="tableware-inventory-search" type="search" placeholder="Buscar plato, vaso, copa…" oninput="filterTablewareInventoryPicker(this.value)"><div class="tableware-picker-categories">${renderTablewarePickerCategories()}</div></div>
+        <div id="tableware-inventory-picker-list" class="tableware-picker-list"></div>
+        <div id="tableware-picker-state" class="tableware-picker-state">${state === "loading" ? "Buscando artículos…" : "Seleccioná un artículo o empezá a buscar."}</div>`;
+    }
+
+    function renderTablewarePickerCategories() {
+      return [["all","Todos"],["tableware","Vajilla y cubiertos"],["glassware","Cristalería"],["linen_textiles","Mantelería"],["disposables","Descartables"],["other","Otros"]].map(([id, label]) => `<button class="filter tableware-picker-category ${eventTablewarePickerCategory === id ? "active" : ""}" type="button" onclick="setTablewarePickerCategory('${id}', this)">${label}</button>`).join("");
+    }
+
+    function setTablewarePickerCategory(category, button) {
+      eventTablewarePickerCategory = category;
+      document.querySelectorAll(".tableware-picker-category").forEach((item) => item.classList.toggle("active", item === button));
+      filterTablewareInventoryPicker(document.getElementById("tableware-inventory-search")?.value || "");
+    }
+
+    function renderTablewarePickerContent() {
+      const list = document.getElementById("tableware-inventory-picker-list");
+      if (!list) return;
+      list.innerHTML = renderTablewareInventoryPickerItems(getTablewareInventoryItems());
+      filterTablewareInventoryPicker("");
     }
 
     function renderTablewareInventoryPickerItems(items) {
-      return items.map((item) => `<button class="tableware-picker-item" type="button" data-search="${escapeAttribute(normalizeSearch([item.name, item.categoryId, item.subcategory].join(" ")))}" onclick="selectTablewareInventoryItem('${escapeAttribute(item.id)}')"><strong>${escapeHtml(item.name)}</strong><span class="secondary">${escapeHtml([item.categoryId, item.unit].filter(Boolean).join(" · "))} · Stock ${formatTablewareQuantity(item.availableQuantity ?? item.quantity)}</span></button>`).join("");
+      return items.map((item) => {
+        const stockKnown = item.stockReliable !== false && (item.stockRegisteredQuantity !== undefined || item.quantity !== undefined || item.availableQuantity !== undefined);
+        const stock = item.stockRegisteredQuantity ?? item.quantity ?? item.availableQuantity ?? 0;
+        const location = [item.locationDetail, item.locationType, item.location].find(Boolean) || "Ubicación sin definir";
+        const family = item.tablewarePlanningFamily || getTablewarePlanningFamily(item);
+        const categoryLabel = getTablewarePlanningFamilyLabel(family);
+        const search = normalizeTablewareSearch([item.name, item.categoryId, item.subcategory, categoryLabel].join(" "));
+        return `<div class="tableware-picker-item" data-category="${escapeAttribute(family)}" data-search="${escapeAttribute(search)}"><div class="tableware-picker-item-main"><strong>${escapeHtml(item.name)}</strong><span class="secondary">${escapeHtml([categoryLabel, item.subcategory, item.unit].filter(Boolean).join(" · "))}</span><span class="secondary">${escapeHtml(location)} · ${stockKnown ? `Stock registrado ${formatTablewareQuantity(stock)}` : "Stock sin verificar"}${item.statusLabel ? ` · ${escapeHtml(item.statusLabel)}` : ""}</span></div><button class="filter action-secondary" type="button" onclick="selectTablewareInventoryItem('${escapeAttribute(item.id)}')">Seleccionar</button></div>`;
+      }).join("");
+    }
+
+    function getTablewarePlanningFamilyLabel(family) {
+      return { tableware: "Vajilla / cubiertos", glassware: "Cristalería", linen_textiles: "Mantelería", disposables: "Descartables", packaging_containers: "Contenedores", event_equipment: "Servicio", furniture_structures: "Mobiliario" }[family] || "Otros";
     }
 
     function filterTablewareInventoryPicker(value) {
-      const term = normalizeSearch(value || "");
+      const rawTerm = String(value || "").trim();
+      const term = normalizeTablewareSearch(rawTerm);
       let visible = 0;
-      document.querySelectorAll("#tableware-inventory-picker-list .tableware-picker-item").forEach((item) => { item.hidden = term && !item.dataset.search.includes(term); if (!item.hidden) visible += 1; });
-      const empty = document.getElementById("tableware-picker-empty");
-      if (empty) { empty.hidden = visible > 0; empty.innerHTML = `No se encontró este artículo.${can("stock:write:any") ? ` <button class="filter action-secondary" type="button" onclick="showQuickTablewareInventoryForm()">Crear artículo</button>` : ""}`; }
+      document.querySelectorAll("#tableware-inventory-picker-list .tableware-picker-item").forEach((item) => {
+        const categoryMatches = eventTablewarePickerCategory === "all"
+          || (eventTablewarePickerCategory === "other" ? ["packaging_containers", "event_equipment", "furniture_structures"].includes(item.dataset.category) : item.dataset.category === eventTablewarePickerCategory);
+        item.hidden = !categoryMatches || Boolean(term && !item.dataset.search.includes(term));
+        if (!item.hidden) visible += 1;
+      });
+      const state = document.getElementById("tableware-picker-state");
+      if (!state) return;
+      const total = getTablewareInventoryItems().length;
+      state.hidden = visible > 0;
+      if (visible > 0) return;
+      if (!total) {
+        state.innerHTML = `Todavía no hay artículos de vajilla disponibles.${can("stock:operations:write") ? ` <button class="filter action-secondary" type="button" onclick="showQuickTablewareInventoryForm()">Crear artículo</button>` : ""}`;
+      } else if (!rawTerm) {
+        state.textContent = "Seleccioná otra categoría o empezá a buscar.";
+      } else {
+        state.innerHTML = `No encontramos “${escapeHtml(rawTerm)}” en el inventario.<div class="actions">${can("stock:operations:write") ? `<button class="filter action-secondary" type="button" onclick="showQuickTablewareInventoryForm()">Crear artículo</button>` : ""}<button class="filter action-ghost" type="button" onclick="clearTablewareInventorySearch()">Limpiar búsqueda</button></div>`;
+      }
+    }
+
+    function clearTablewareInventorySearch() {
+      const input = document.getElementById("tableware-inventory-search");
+      if (input) input.value = "";
+      eventTablewarePickerCategory = "all";
+      document.querySelectorAll(".tableware-picker-category").forEach((item, index) => item.classList.toggle("active", index === 0));
+      filterTablewareInventoryPicker("");
     }
 
     function selectTablewareInventoryItem(inventoryItemId) {
@@ -24805,19 +25552,21 @@
       if (!inventoryItem && !existing) return;
       eventTablewareEditingId = lineId;
       eventTablewareSelectedInventoryId = existing?.inventoryItemId || inventoryItem.id;
-      const line = existing ? { ...existing } : { inventoryItemId: inventoryItem.id, name: inventoryItem.name, categoryId: inventoryItem.categoryId, functionalFamily: inventoryItem.functionalFamily, unit: inventoryItem.unit, requiredQuantity: 1, stockAvailableSnapshot: Number(inventoryItem.availableQuantity ?? inventoryItem.quantity ?? 0), sourcingMode: "stock", stockPlannedQuantity: 1, rentalQuantity: 0, rentalStatus: "" };
+      const stockReliable = inventoryItem?.stockReliable !== false && (inventoryItem?.stockRegisteredQuantity !== undefined || inventoryItem?.quantity !== undefined || inventoryItem?.availableQuantity !== undefined);
+      const stockAvailable = Number(inventoryItem?.stockRegisteredQuantity ?? inventoryItem?.quantity ?? inventoryItem?.availableQuantity ?? 0);
+      const line = existing ? { ...existing } : { inventoryItemId: inventoryItem.id, name: inventoryItem.name, categoryId: inventoryItem.categoryId, functionalFamily: inventoryItem.functionalFamily, unit: inventoryItem.unit, requiredQuantity: 1, stockAvailableSnapshot: stockAvailable, stockReliable, sourcingMode: "pending", stockPlannedQuantity: 0, rentalQuantity: 0, rentalStatus: "" };
       if (duplicateMode === "sum") { line.requiredQuantity = 1; line.stockPlannedQuantity = 0; line.rentalQuantity = 0; }
       openEventContextPanel(`<div class="event-context-head"><div><h3>${existing ? "Editar" : "Agregar"} ${escapeHtml(line.name)}</h3><p>La disponibilidad es una referencia; no descuenta stock.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div>
         <form class="tableware-line-form" onsubmit="saveTablewareLine(event, '${escapeAttribute(duplicateMode)}')">
           <div class="form-field"><label>Cantidad necesaria</label><input name="requiredQuantity" inputmode="decimal" required value="${escapeAttribute(line.requiredQuantity)}" oninput="suggestTablewareCoverage(this.form)"></div>
-          <div class="form-field"><label>Modalidad</label><select name="sourcingMode" onchange="suggestTablewareCoverage(this.form, true)">${renderTablewareModeOptions(line.sourcingMode)}</select></div>
+          <div class="form-field full"><label>¿Cómo se cubre?</label><input type="hidden" name="sourcingMode" value="${escapeAttribute(line.sourcingMode || "pending")}"><div class="tableware-source-options">${renderTablewareSourceOptions(line.sourcingMode || "pending")}</div></div>
           <div class="tableware-coverage full" data-coverage></div>
           <div class="form-field"><label>Usar del stock</label><input name="stockPlannedQuantity" inputmode="decimal" value="${escapeAttribute(line.stockPlannedQuantity || 0)}"></div>
           <div class="form-field"><label>A alquilar</label><input name="rentalQuantity" inputmode="decimal" value="${escapeAttribute(line.rentalQuantity || 0)}"></div>
-          <div class="form-field full"><label>Proveedor de alquiler</label><div class="inline-action-field"><select name="rentalProviderId">${renderTablewareProviderOptions(line.rentalProviderId, true)}</select>${can("providers:write") ? `<button class="filter action-secondary" type="button" onclick="showQuickTablewareProviderForm()">Nuevo</button>` : ""}</div></div>
+          <div class="form-field full"><label>Proveedor de alquiler</label>${renderTablewareProviderField(line.rentalProviderId)}</div>
           <div class="form-field"><label>Estado del alquiler</label><select name="rentalStatus">${renderTablewareRentalStatusOptions(line.rentalStatus)}</select></div>
           <div class="form-field full"><label>Nota</label><textarea name="notes">${escapeHtml(line.notes || "")}</textarea></div>
-          <input type="hidden" name="stockAvailableSnapshot" value="${escapeAttribute(line.stockAvailableSnapshot)}">
+          <input type="hidden" name="stockAvailableSnapshot" value="${escapeAttribute(line.stockAvailableSnapshot)}"><input type="hidden" name="stockReliable" value="${line.stockReliable === false ? "false" : "true"}">
           <div class="actions full"><button class="filter action-ghost" type="button" onclick="closeEventContextPanel()">Cancelar</button>${existing ? `<button class="reject action-danger" type="button" onclick="deleteTablewareLine('${escapeAttribute(existing.id)}')">Eliminar</button>` : ""}<button class="approve action-primary" type="submit">Guardar línea</button></div>
         </form>`);
       suggestTablewareCoverage(document.querySelector("#event-context-panel form"), false);
@@ -24827,20 +25576,22 @@
       if (!form) return;
       const required = Math.max(0, parseDecimal(form.elements.requiredQuantity.value));
       const available = Math.max(0, parseDecimal(form.elements.stockAvailableSnapshot.value));
+      const stockReliable = form.elements.stockReliable?.value !== "false";
       const mode = form.elements.sourcingMode.value;
-      let stock = Math.min(required, available);
-      let rental = Math.max(0, required - stock);
-      let suggestion = rental > 0 && stock > 0 ? "Mixto" : rental > 0 ? "Alquilar" : "Usar stock";
+      let stock = stockReliable ? Math.min(required, available) : 0;
+      let rental = stockReliable ? Math.max(0, required - stock) : 0;
+      let suggestion = !stockReliable ? "A definir" : rental > 0 && stock > 0 ? "Combinar" : rental > 0 ? "Alquilar" : "Usar stock";
       if (mode === "rental") { stock = 0; rental = required; }
-      if (["client", "venue", "pending"].includes(mode)) { stock = 0; rental = 0; }
+      if (["client", "venue"].includes(mode)) { stock = 0; rental = 0; }
       if (apply) {
         form.elements.stockPlannedQuantity.value = formatTablewareQuantity(stock);
         form.elements.rentalQuantity.value = formatTablewareQuantity(rental);
-        if (!["client", "venue", "pending"].includes(mode)) {
+        if (stockReliable && !["client", "venue"].includes(mode)) {
           form.elements.sourcingMode.value = rental > 0 && stock > 0 ? "mixed" : rental > 0 ? "rental" : "stock";
+          syncTablewareSourceOptions(form);
         }
       }
-      form.querySelector("[data-coverage]").innerHTML = `<strong>Necesarias: ${formatTablewareQuantity(required)}</strong><span>Stock disponible: ${formatTablewareQuantity(available)}</span><span>Sugerencia: ${suggestion} · Stock ${formatTablewareQuantity(stock)} · Alquiler ${formatTablewareQuantity(rental)}</span><button class="filter action-secondary" type="button" onclick="applyTablewareCoverage(this.form)">Aplicar sugerencia</button>`;
+      form.querySelector("[data-coverage]").innerHTML = `<strong>Necesarias: ${formatTablewareQuantity(required)}</strong><span>${stockReliable ? `Stock registrado: ${formatTablewareQuantity(available)}` : "Stock sin verificar"}</span><span>Sugerencia: ${suggestion}${stockReliable ? ` · Stock ${formatTablewareQuantity(stock)} · Alquiler ${formatTablewareQuantity(rental)}` : ""}</span>${stockReliable ? `<button class="filter action-secondary" type="button" onclick="applyTablewareCoverage(this.form)">Aplicar sugerencia</button>` : ""}`;
     }
 
     function applyTablewareCoverage(form) { suggestTablewareCoverage(form, true); }
@@ -24851,15 +25602,19 @@
       const inventoryItem = (erpData.operationalInventory?.items || []).find((item) => item.id === eventTablewareSelectedInventoryId);
       const existingIndex = eventTablewareState.items.findIndex((item) => item.id === eventTablewareEditingId);
       const existing = existingIndex >= 0 ? eventTablewareState.items[existingIndex] : null;
-      const requiredQuantity = Math.max(0, parseDecimal(form.elements.requiredQuantity.value));
+      const rawRequired = parseDecimal(form.elements.requiredQuantity.value);
+      const rawStock = parseDecimal(form.elements.stockPlannedQuantity.value);
+      const rawRental = parseDecimal(form.elements.rentalQuantity.value);
+      if (rawRequired < 0 || rawStock < 0 || rawRental < 0) { showNotice("Las cantidades no pueden ser negativas.", "error"); return; }
+      const requiredQuantity = rawRequired;
       const sourcingMode = form.elements.sourcingMode.value;
-      let stockPlannedQuantity = Math.max(0, parseDecimal(form.elements.stockPlannedQuantity.value));
-      let rentalQuantity = Math.max(0, parseDecimal(form.elements.rentalQuantity.value));
+      let stockPlannedQuantity = rawStock;
+      let rentalQuantity = rawRental;
       if (["client", "venue", "pending"].includes(sourcingMode)) { stockPlannedQuantity = 0; rentalQuantity = 0; }
       if (!requiredQuantity) { showNotice("Ingresá una cantidad necesaria.", "error"); return; }
       if (!["client", "venue", "pending"].includes(sourcingMode) && Math.abs(requiredQuantity - stockPlannedQuantity - rentalQuantity) > 0.0001) { showNotice("La cantidad necesaria debe coincidir con stock + alquiler.", "error"); return; }
       const provider = (erpData.providers || []).find((item) => item.id === form.elements.rentalProviderId.value);
-      const line = { id: existing?.id || `event-tableware-${Date.now()}`, inventoryItemId: inventoryItem?.id || existing.inventoryItemId, name: inventoryItem?.name || existing.name, categoryId: inventoryItem?.categoryId || existing.categoryId, functionalFamily: inventoryItem?.functionalFamily || existing.functionalFamily, unit: inventoryItem?.unit || existing.unit, requiredQuantity: duplicateMode === "sum" && existing ? Number(existing.requiredQuantity || 0) + requiredQuantity : requiredQuantity, stockAvailableSnapshot: Number(inventoryItem?.availableQuantity ?? inventoryItem?.quantity ?? existing?.stockAvailableSnapshot ?? 0), stockPlannedQuantity: duplicateMode === "sum" && existing ? Number(existing.stockPlannedQuantity || 0) + stockPlannedQuantity : stockPlannedQuantity, rentalQuantity: duplicateMode === "sum" && existing ? Number(existing.rentalQuantity || 0) + rentalQuantity : rentalQuantity, sourcingMode: duplicateMode === "sum" && existing && existing.sourcingMode !== sourcingMode ? "mixed" : sourcingMode, rentalProviderId: provider?.id || existing?.rentalProviderId || "", rentalProviderName: provider?.name || existing?.rentalProviderName || "", rentalStatus: rentalQuantity > 0 ? form.elements.rentalStatus.value || "unassigned" : existing?.rentalStatus || "", notes: form.elements.notes.value.trim() || existing?.notes || "" };
+      const line = { id: existing?.id || `event-tableware-${Date.now()}`, inventoryItemId: inventoryItem?.id || existing.inventoryItemId, name: inventoryItem?.name || existing.name, categoryId: inventoryItem?.categoryId || existing.categoryId, functionalFamily: inventoryItem?.functionalFamily || existing.functionalFamily, unit: inventoryItem?.unit || existing.unit, requiredQuantity: duplicateMode === "sum" && existing ? Number(existing.requiredQuantity || 0) + requiredQuantity : requiredQuantity, stockAvailableSnapshot: Number(inventoryItem?.stockRegisteredQuantity ?? inventoryItem?.quantity ?? inventoryItem?.availableQuantity ?? existing?.stockAvailableSnapshot ?? 0), stockReliable: form.elements.stockReliable?.value !== "false", stockPlannedQuantity: duplicateMode === "sum" && existing ? Number(existing.stockPlannedQuantity || 0) + stockPlannedQuantity : stockPlannedQuantity, rentalQuantity: duplicateMode === "sum" && existing ? Number(existing.rentalQuantity || 0) + rentalQuantity : rentalQuantity, sourcingMode: duplicateMode === "sum" && existing && existing.sourcingMode !== sourcingMode ? "mixed" : sourcingMode, rentalProviderId: provider?.id || existing?.rentalProviderId || "", rentalProviderName: provider?.name || existing?.rentalProviderName || "", rentalStatus: rentalQuantity > 0 ? form.elements.rentalStatus.value || "unassigned" : "", notes: form.elements.notes.value.trim() || existing?.notes || "" };
       if (existingIndex >= 0) eventTablewareState.items[existingIndex] = line; else eventTablewareState.items.push(line);
       closeEventContextPanel(); renderTablewareBuilder(); updateEventGuidedSummary();
     }
@@ -24869,10 +25624,16 @@
       closeEventContextPanel(); renderTablewareBuilder();
     }
 
-    function getTablewareModeLabel(mode) { return { stock: "Usar stock", rental: "Alquilar", mixed: "Mixto", client: "Lo aporta el cliente", venue: "Lo aporta el lugar", pending: "A definir" }[mode] || "A definir"; }
+    function getTablewareModeLabel(mode) { return { stock: "Usar stock", rental: "Alquilar", mixed: "Combinar stock y alquiler", client: "Lo aporta el cliente", venue: "Lo aporta el lugar", pending: "A definir" }[mode] || "A definir"; }
     function renderTablewareModeOptions(value) { return [["stock","Usar stock"],["rental","Alquilar"],["mixed","Mixto: stock + alquiler"],["client","Lo aporta el cliente"],["venue","Lo aporta el lugar"],["pending","A definir"]].map(([id,label]) => `<option value="${id}" ${id === value ? "selected" : ""}>${label}</option>`).join(""); }
     function renderTablewareRentalStatusOptions(value) { return [["unassigned","Sin proveedor"],["pending_quote","Pendiente de cotización"],["quoted","Cotización recibida"],["confirmed","Confirmado"],["cancelled","Cancelado"]].map(([id,label]) => `<option value="${id}" ${id === value ? "selected" : ""}>${label}</option>`).join(""); }
-    function renderTablewareProviderOptions(value, allowEmpty = false) { return `${allowEmpty ? `<option value="">Proveedor pendiente</option>` : ""}${(erpData.providers || []).map((provider) => `<option value="${escapeAttribute(provider.id)}" ${provider.id === value ? "selected" : ""}>${escapeHtml(provider.name)}</option>`).join("")}`; }
+    function renderTablewareSourceOptions(value) { return [["stock","Usar stock"],["rental","Alquilar"],["mixed","Combinar"],["client","Aporta cliente"],["venue","Aporta lugar"],["pending","A definir"]].map(([id,label]) => `<button class="tableware-source-option ${id === value ? "active" : ""}" type="button" onclick="setTablewareSourcingMode(this.form, '${id}')">${label}</button>`).join(""); }
+    function setTablewareSourcingMode(form, mode) { if (!form) return; form.elements.sourcingMode.value = mode; syncTablewareSourceOptions(form); suggestTablewareCoverage(form, ["stock","rental","mixed"].includes(mode)); }
+    function syncTablewareSourceOptions(form) { form?.querySelectorAll(".tableware-source-option").forEach((button) => button.classList.toggle("active", button.getAttribute("onclick")?.includes(`'${form.elements.sourcingMode.value}'`))); }
+    function getTablewareRentalProviders() { return (erpData.providers || []).filter((provider) => { const text = normalizeSearch([provider.category, provider.type, provider.serviceType, provider.notes, provider.name].filter(Boolean).join(" ")); return !provider.archivedAt && provider.active !== false && /vajilla|alquiler|manteler|cristaler|evento/.test(text); }).sort((a,b) => String(a.name || "").localeCompare(String(b.name || ""), "es")); }
+    function renderTablewareProviderOptions(value, allowEmpty = false, providers = getTablewareRentalProviders()) { return `${allowEmpty ? `<option value="">Proveedor pendiente</option>` : ""}${providers.map((provider) => `<option value="${escapeAttribute(provider.id)}" ${provider.id === value ? "selected" : ""}>${escapeHtml(provider.name)}</option>`).join("")}`; }
+    function renderTablewareProviderField(value) { const providers = getTablewareRentalProviders(); return providers.length ? `<div class="inline-action-field"><select name="rentalProviderId">${renderTablewareProviderOptions(value, true, providers)}</select>${can("providers:write") ? `<button class="filter action-secondary" type="button" onclick="showQuickTablewareProviderForm()">Nuevo</button>` : ""}</div>` : `<input type="hidden" name="rentalProviderId" value=""><div class="empty-state compact-empty"><span class="empty-copy">No hay proveedores de alquiler cargados.</span>${can("providers:write") ? `<button class="filter action-secondary" type="button" onclick="showQuickTablewareProviderForm()">Crear proveedor</button>` : ""}</div>`; }
+    function getTablewareRentalStatusLabel(value) { return { unassigned: "Sin proveedor", pending_quote: "Pendiente de cotización", quoted: "Cotización recibida", confirmed: "Confirmado", cancelled: "Cancelado" }[value] || "Pendiente de cotización"; }
     function getEventTablewareProvider(item) { const id = item.rentalProviderId || eventTablewareState.rental?.defaultProviderId; return (erpData.providers || []).find((provider) => provider.id === id)?.name || item.rentalProviderName || eventTablewareState.rental?.defaultProviderName || ""; }
     function updateTablewareRentalField(field, value) { eventTablewareState.rental = { status: "pending_quote", ...(eventTablewareState.rental || {}), [field]: value }; if (field === "defaultProviderId") eventTablewareState.rental.defaultProviderName = (erpData.providers || []).find((provider) => provider.id === value)?.name || ""; }
 
@@ -24900,8 +25661,23 @@
 
     function showQuickTablewareProviderForm() {
       const lineForm = document.querySelector("#event-context-panel .tableware-line-form");
-      eventTablewareProviderReturnDraft = lineForm ? Object.fromEntries(new FormData(lineForm).entries()) : null;
-      openEventContextPanel(`<div class="event-context-head"><div><h3>Nuevo proveedor de alquiler</h3><p>Podés guardar solo el nombre y completar sus datos después.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div><form class="quick-form" onsubmit="saveQuickTablewareProvider(event)"><div class="form-field full"><label>Nombre</label><input name="name" required></div><div class="form-field"><label>Teléfono</label><input name="phone"></div><div class="form-field"><label>Email</label><input name="email" type="email"></div><div class="form-field full"><label>Notas</label><textarea name="notes"></textarea></div><div class="actions full"><button class="filter action-ghost" type="button" onclick="openTablewareLineEditor(eventTablewareEditingId)">Cancelar</button><button class="approve action-primary" type="submit">Guardar proveedor</button></div></form>`);
+      eventTablewareProviderReturnDraft = lineForm ? Object.fromEntries(new FormData(lineForm).entries()) : { __generalRental: "true" };
+      openEventContextPanel(`<div class="event-context-head"><div><h3>Nuevo proveedor de alquiler</h3><p>Podés guardar solo el nombre y completar sus datos después.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div><form class="quick-form" onsubmit="saveQuickTablewareProvider(event)"><div class="form-field full"><label>Nombre</label><input name="name" required></div><div class="form-field"><label>Teléfono</label><input name="phone"></div><div class="form-field"><label>Email</label><input name="email" type="email"></div><div class="form-field full"><label>Notas</label><textarea name="notes"></textarea></div><div class="actions full"><button class="filter action-ghost" type="button" onclick="openTablewareProviderReturnView()">Cancelar</button><button class="approve action-primary" type="submit">Guardar proveedor</button></div></form>`);
+    }
+
+    function openTablewareProviderReturnView() {
+      if (eventTablewareProviderReturnDraft?.__generalRental) { closeEventContextPanel(); return; }
+      openTablewareLineEditor(eventTablewareEditingId);
+      restoreTablewareProviderLineDraft();
+    }
+
+    function restoreTablewareProviderLineDraft(providerId = "") {
+      const restoredForm = document.querySelector("#event-context-panel .tableware-line-form");
+      if (!restoredForm || !eventTablewareProviderReturnDraft || eventTablewareProviderReturnDraft.__generalRental) return;
+      Object.entries(eventTablewareProviderReturnDraft).forEach(([name, value]) => { if (restoredForm.elements[name]) restoredForm.elements[name].value = value; });
+      if (providerId && restoredForm.elements.rentalProviderId) restoredForm.elements.rentalProviderId.value = providerId;
+      syncTablewareSourceOptions(restoredForm);
+      suggestTablewareCoverage(restoredForm, false);
     }
 
     async function saveQuickTablewareProvider(event) {
@@ -24912,15 +25688,19 @@
       const result = await readJsonResponse(response);
       if (!result.ok) { showNotice(result.error || "No se pudo crear el proveedor.", "error"); return; }
       erpData.providers = result.providers || erpData.providers || [];
-      const line = eventTablewareState.items.find((item) => item.id === eventTablewareEditingId);
-      if (line) { line.rentalProviderId = result.provider.id; line.rentalProviderName = result.provider.name; }
-      openTablewareLineEditor(eventTablewareEditingId);
-      const restoredForm = document.querySelector("#event-context-panel .tableware-line-form");
-      if (restoredForm && eventTablewareProviderReturnDraft) {
-        Object.entries(eventTablewareProviderReturnDraft).forEach(([name, value]) => { if (restoredForm.elements[name]) restoredForm.elements[name].value = value; });
-        restoredForm.elements.rentalProviderId.value = result.provider.id;
-        suggestTablewareCoverage(restoredForm, false);
+      const createdProvider = result.provider || (erpData.providers || []).find((item) => normalizeSearch(item.name) === normalizeSearch(payload.name));
+      if (!createdProvider) { showNotice("El proveedor se guardó, pero no pudimos seleccionarlo automáticamente.", "error"); closeEventContextPanel(); return; }
+      if (eventTablewareProviderReturnDraft?.__generalRental) {
+        eventTablewareState.rental = { status: "pending_quote", ...(eventTablewareState.rental || {}), defaultProviderId: createdProvider.id, defaultProviderName: createdProvider.name };
+        eventTablewareProviderReturnDraft = null;
+        closeEventContextPanel(); renderTablewareBuilder(); updateEventGuidedSummary();
+        showNotice("Proveedor creado y seleccionado.");
+        return;
       }
+      const line = eventTablewareState.items.find((item) => item.id === eventTablewareEditingId);
+      if (line) { line.rentalProviderId = createdProvider.id; line.rentalProviderName = createdProvider.name; }
+      openTablewareLineEditor(eventTablewareEditingId);
+      restoreTablewareProviderLineDraft(createdProvider.id);
       eventTablewareProviderReturnDraft = null;
       showNotice("Proveedor creado y asociado.");
     }
@@ -24933,12 +25713,13 @@
       rentalLines.forEach((item) => { const provider = getEventTablewareProvider(item) || "Sin proveedor asignado"; if (!groups.has(provider)) groups.set(provider, []); groups.get(provider).push(`- ${formatTablewareQuantity(item.rentalQuantity)} ${item.name}`); });
       const grouped = [...groups.entries()].map(([provider, lines]) => `${groups.size > 1 ? provider + "\n" : ""}${lines.join("\n")}`).join("\n\n");
       const rental = eventTablewareState.rental || {};
-      return [`SOLICITUD DE ALQUILER DE VAJILLA`, ``, `Evento: ${form.elements.name.value || "A definir"}`, `Fecha: ${formatShortDate(form.elements.eventDate.value) || "A definir"}`, `Lugar: ${form.elements.venue.value || "A definir"}`, `Dirección: ${venue?.address || "A definir"}`, `Invitados: ${form.elements.guestCount.value || "A definir"}`, ``, `Solicitamos cotización y disponibilidad de:`, ``, grouped || "- Sin artículos para alquilar", ``, `Entrega solicitada:`, formatRentalDateTime(rental.deliveryAt), ``, `Retiro / devolución:`, formatRentalDateTime(rental.returnAt), ``, `Observaciones:`, rental.notes || "Sin observaciones.", ``, `Gracias.`, `Gratitud Gourmet`].join("\n");
+      return [`Solicitud de vajilla – ${form.elements.name.value || "Evento a definir"}`, ``, `Fecha: ${formatShortDate(form.elements.eventDate.value) || "A definir"}`, `Lugar: ${form.elements.venue.value || "A definir"}`, `Dirección: ${venue?.address || "A definir"}`, `Invitados: ${form.elements.guestCount.value || "A definir"}`, ``, `Solicitamos cotización y disponibilidad de:`, ``, grouped || "• Sin artículos para alquilar", ``, `Entrega solicitada: ${formatRentalDateTime(rental.deliveryAt)}`, `Retiro / devolución: ${formatRentalDateTime(rental.returnAt)}`, ``, `Observaciones: ${rental.notes || "Sin observaciones."}`, ``, `Gracias.`, `Gratitud Gourmet`].join("\n").replace(/^- /gm, "• ");
     }
 
     function formatRentalDateTime(value) { if (!value) return "A definir"; const [date, time] = value.split("T"); return `${formatShortDate(date)}${time ? `, ${time}` : ""}`; }
-    function openTablewareRentalRequest() { openEventContextPanel(`<div class="event-context-head"><div><h3>Lista de alquiler</h3><p>Revisá el mensaje antes de copiarlo.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div><textarea id="tableware-rental-message" class="tableware-rental-message">${escapeHtml(buildTablewareRentalMessage())}</textarea><div class="tableware-rental-actions"><button class="filter action-ghost" type="button" onclick="closeEventContextPanel()">Cerrar</button><button class="approve action-primary" type="button" onclick="copyTablewareRentalMessage()">Copiar mensaje</button></div>`); }
+    function openTablewareRentalRequest() { openEventContextPanel(`<div class="event-context-head"><div><h3>Lista de alquiler</h3><p>Revisá y editá el mensaje antes de copiarlo.</p></div><button class="close action-ghost" type="button" onclick="closeEventContextPanel()">×</button></div><textarea id="tableware-rental-message" class="tableware-rental-message">${escapeHtml(buildTablewareRentalMessage())}</textarea><div class="tableware-rental-actions"><button class="filter action-ghost" type="button" onclick="closeEventContextPanel()">Cerrar</button><button class="filter action-secondary" type="button" onclick="printTablewareRentalRequest()">Imprimir</button><button class="approve action-primary" type="button" onclick="copyTablewareRentalMessage()">Copiar mensaje</button></div>`); }
     async function copyTablewareRentalMessage() { const text = document.getElementById("tableware-rental-message")?.value || ""; try { await navigator.clipboard.writeText(text); } catch { const area = document.getElementById("tableware-rental-message"); area.select(); document.execCommand("copy"); } showNotice("Lista copiada", "success"); }
+    function printTablewareRentalRequest() { const text = document.getElementById("tableware-rental-message")?.value || ""; const popup = window.open("", "_blank", "width=720,height=800"); if (!popup) { showNotice("El navegador bloqueó la ventana de impresión.", "error"); return; } popup.document.write(`<title>Solicitud de vajilla</title><style>body{font:16px/1.55 Arial,sans-serif;max-width:720px;margin:40px auto;padding:0 24px;white-space:pre-wrap;color:#10231e}</style><body>${escapeHtml(text)}</body>`); popup.document.close(); popup.focus(); popup.print(); }
 
     function syncOperationBuildersToFields() {
       syncDietaryRestrictionsToField();
@@ -25270,6 +26051,13 @@
     function openEventContextPanel(html) {
       const panel = document.getElementById("event-context-panel");
       if (!panel) return;
+      const modal = document.getElementById("erp-form-modal");
+      const scrollPanel = modal?.querySelector(".detail-panel");
+      if (!eventContextScrollState && scrollPanel) {
+        eventContextScrollState = { element: scrollPanel, scrollTop: scrollPanel.scrollTop, overflow: scrollPanel.style.overflow };
+        scrollPanel.style.overflow = "hidden";
+      }
+      modal?.classList.add("event-context-active");
       panel.innerHTML = html;
       panel.classList.remove("hidden");
       window.setTimeout(() => panel.querySelector("input, select, textarea, button")?.focus(), 30);
@@ -25280,6 +26068,12 @@
       if (!panel) return;
       panel.classList.add("hidden");
       panel.innerHTML = "";
+      document.getElementById("erp-form-modal")?.classList.remove("event-context-active");
+      if (eventContextScrollState?.element) {
+        eventContextScrollState.element.style.overflow = eventContextScrollState.overflow;
+        eventContextScrollState.element.scrollTop = eventContextScrollState.scrollTop;
+      }
+      eventContextScrollState = null;
     }
 
     async function saveQuickVenue(event) {
@@ -28502,8 +29296,7 @@
       form.dataset.originalEventName = isMissingPurchaseEventName(purchase.eventName || "") ? "" : purchase.eventName || "";
       form.dataset.originalInternalArea = purchase.internalArea || "";
       syncPurchaseEventSearch();
-      setPurchaseImputationType(normalizePurchaseImputationType(purchase), { silent: true });
-      resetPurchaseItems(purchase.lineItems || []);
+      resetPurchaseItems(purchase.lineItems || [], purchase.additionalCharges || [], purchase.imputationRows || null, purchase);
       document.getElementById("purchase").classList.add("open");
       renderPurchaseDraftTools();
       updatePurchaseSummary();
@@ -28540,6 +29333,7 @@
           <div style="background:var(--surface-alt,var(--bg));border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;">
             <div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em;">Total</div>
             <div style="font-size:16px;font-weight:700;">${formatCurrency(total)}</div>
+            ${purchase.chargesTotal > 0 ? `<div style="font-size:10px;color:var(--muted);margin-top:2px;">incl. ${formatCurrency(purchase.chargesTotal)} en cargos</div>` : ""}
           </div>
           <div style="background:var(--surface-alt,var(--bg));border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center;">
             <div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em;">Pagado</div>
@@ -28572,6 +29366,18 @@
             : `pendiente ${formatCurrency(purchase.reimbursementPendingAmount || 0)}`;
           return field(`Reintegro (${purchase.fundsSource || "personal"})`, `${purchase.reimbursementStatus || "Pendiente"} · ${reimbursementLabel}`);
         })() : ""}
+
+        <!-- Cargos adicionales -->
+        ${(purchase.additionalCharges || []).length > 0 ? `
+        <div style="margin-bottom:4px;">
+          ${(purchase.additionalCharges).map((c) => `
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border);">
+              <span style="color:var(--muted);">${escapeHtml(c.type || "Cargo")} <span style="font-size:11px;">(${c.mode === "fixed" ? "fijo" : `${c.value}% s/${c.base === "net" ? "neto" : "total"}`})</span></span>
+              <strong>${formatCurrency(c.amount || 0)}</strong>
+            </div>
+          `).join("")}
+        </div>
+        ` : ""}
 
         <!-- Bloque colapsable de ítems -->
         ${items.length > 0 ? `
@@ -28629,16 +29435,18 @@
       }
     }
 
-    function resetPurchaseItems(items = []) {
+    function resetPurchaseItems(items = [], charges = [], imputationRows = null, purchase = null) {
       purchaseItemCounter = 0;
       document.getElementById("purchase-items").innerHTML = "";
 
       if (items.length) {
         items.forEach((item) => addPurchaseItemRow(item));
-        return;
+      } else {
+        addPurchaseItemRow();
       }
 
-      addPurchaseItemRow();
+      resetPurchaseCharges(charges);
+      resetImputationRows(imputationRows, purchase);
     }
 
     function getPurchaseDraftPayload() {
@@ -28650,14 +29458,16 @@
         invoiceType: form.elements.invoiceType.value || "",
         ivaRate: form.elements.ivaRate.value || "",
         imputationType: form.elements.imputationType?.value || "event",
-        eventName: form.elements.eventName.value || "",
-        internalArea: form.elements.internalArea?.value || "",
-        imputationNotes: form.elements.imputationNotes?.value || "",
+        eventName: form.elements.eventName?.value || "",
+        internalArea: "",
+        imputationNotes: "",
+        imputationRows: getImputationRows(),
         paymentStatus: form.elements.paymentStatus.value || "",
         paymentMethod: form.elements.paymentMethod.value || "",
         fundsSource: form.elements.fundsSource.value || "",
         notes: form.elements.notes.value || "",
         items: getPurchaseItems(),
+        additionalCharges: getPurchaseCharges(),
       };
     }
 
@@ -28842,6 +29652,311 @@
       if (currentType === "internal" && (form.elements.internalArea?.value || form.dataset.originalInternalArea)) return true;
       return false;
     }
+
+    // ── Multi-row imputation ──────────────────────────────────────────────
+    const INTERNAL_AREAS = ["Cocina diaria","Administración","Limpieza","Mantenimiento","Personal","Logística","Marketing","Otro"];
+    let imputationRowCounter = 0;
+
+    /* ---- helpers ---- */
+    function _getCurrentPurchaseProducts() {
+      return Array.from(document.querySelectorAll("#purchase-items .purchase-item")).map((row, i) => {
+        const name    = row.querySelector(".purchase-item-description")?.value?.trim() || `Producto ${i + 1}`;
+        const qty     = parsePurchaseDecimal(row.querySelector(".purchase-item-quantity")?.value) || 0;
+        const unit    = parsePurchaseDecimal(row.querySelector(".purchase-item-unit")?.value)     || 0;
+        const ivaRate = parsePurchaseDecimal(row.querySelector(".purchase-item-iva")?.value)      || 0;
+        const subtotal     = Math.round(qty * unit * 100) / 100;
+        const subtotalIva  = Math.round(subtotal * (1 + ivaRate) * 100) / 100;
+        return { key: name, name, qty, unit, ivaRate, subtotal, subtotalIva };
+      });
+    }
+
+    function _getExplicitAssignments(excludeRowId) {
+      const map = new Map();
+      document.querySelectorAll("#purchase-imputation-rows .imputation-row").forEach((row) => {
+        if (row.id === excludeRowId) return;
+        row.querySelectorAll(".imputation-products-list input[type=checkbox]:checked").forEach((cb) => map.set(cb.value, row.id));
+      });
+      return map;
+    }
+
+    function _getRowCheckedProducts(rowEl) {
+      const cbs = rowEl.querySelectorAll(".imputation-products-list input[type=checkbox]");
+      if (cbs.length === 0) return null;
+      return new Set(Array.from(cbs).filter((cb) => cb.checked).map((cb) => cb.value));
+    }
+
+    function _buildCheckboxHtml(products, checkedSet, takenByOthers) {
+      return products.map((p) => {
+        const isMine  = checkedSet.has(p.key);
+        const isTaken = takenByOthers.has(p.key);
+        const qtyLabel = p.qty > 0 ? `${p.qty} u.` : "";
+        const priceLabel = p.unit > 0 ? formatCurrency(p.unit) : "";
+        const totalLabel = p.subtotal > 0 ? `= ${formatCurrency(p.subtotal)}` : "";
+        const ivaLabel   = p.subtotalIva > 0 && p.ivaRate > 0 ? `c/IVA ${formatCurrency(p.subtotalIva)}` : "";
+        const meta = [qtyLabel, priceLabel && `× ${priceLabel}`, totalLabel, ivaLabel].filter(Boolean).join(" ");
+        const detail = isTaken
+          ? `<span class="imputation-product-taken">→ en otro destino</span>`
+          : (meta ? `<span class="imputation-product-qty">${escapeHtml(meta)}</span>` : "");
+        return `<label class="${isTaken ? "imputation-label-taken" : ""}">
+          <input type="checkbox" value="${escapeAttribute(p.key)}" ${isMine ? "checked" : ""} ${isTaken ? "disabled" : ""} onchange="_onPickerCheckChange('${escapeAttribute(p.key)}',this.checked,this)">
+          <span class="imputation-product-name">${escapeHtml(p.name)}</span>
+          ${detail}
+        </label>`;
+      }).join("");
+    }
+
+    /* ---- row HTML ---- */
+    function _imputationRowHtml(rowId, data = {}) {
+      const type      = data.type || "event";
+      const eventVal  = data.eventName || "";
+      const area      = data.internalArea || "";
+      const notes     = data.imputationNotes || "";
+      const isEvent   = type !== "internal";
+      const isInternal = type === "internal";
+      return `
+        <div class="imputation-row" id="${rowId}">
+          <div class="imputation-row-head">
+            <div class="imputation-row-type-toggle">
+              <button type="button" class="${!isInternal ? "active" : ""}" onclick="_setImputRowType('${rowId}','event')">Evento</button>
+              <button type="button" class="${isInternal ? "active" : ""}" onclick="_setImputRowType('${rowId}','internal')">Consumo interno</button>
+            </div>
+            <button type="button" class="imputation-row-delete" title="Eliminar" onclick="_deleteImputationRow('${rowId}')">×</button>
+          </div>
+          <div class="imputation-dest-panel${isInternal ? " hidden" : ""}" data-dest="event">
+            <div class="purchase-search-select autocomplete" style="position:relative;">
+              <input class="imputation-event-search" autocomplete="off" placeholder="Buscar evento…" value="${escapeAttribute(eventVal)}">
+              <div class="imputation-event-suggestions autocomplete-list" style="display:none;position:absolute;z-index:20;width:100%;top:100%;left:0;"></div>
+            </div>
+          </div>
+          <div class="imputation-dest-panel${isInternal ? "" : " hidden"}" data-dest="internal">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <select class="imputation-area-select">
+                <option value="">Seleccionar área…</option>
+                ${INTERNAL_AREAS.map((a) => `<option${area === a ? " selected" : ""}>${escapeHtml(a)}</option>`).join("")}
+              </select>
+              <input class="imputation-notes-input" maxlength="140" placeholder="Detalle (opcional)" value="${escapeAttribute(notes)}">
+            </div>
+          </div>
+          <div class="imputation-products-picker" id="${rowId}-picker">
+            <button type="button" class="imputation-products-summary" onclick="_toggleImputPickerOpen('${rowId}')">
+              <span class="imputation-products-label">Todos los productos</span>
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 4.5l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="imputation-products-list"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ---- add / delete / type ---- */
+    function addImputationRow(data = {}) {
+      const rowId = `imputation-row-${++imputationRowCounter}`;
+      const container = document.getElementById("purchase-imputation-rows");
+      const div = document.createElement("div");
+      div.innerHTML = _imputationRowHtml(rowId, data);
+      container.appendChild(div.firstElementChild);
+      _bindImputationEventSearch(rowId);
+      if (data.products && Array.isArray(data.products)) _renderPickerWithData(rowId, data.products);
+      _syncImputationDeleteButtons();
+      _syncAllPickerLabels();
+    }
+
+    function _renderPickerWithData(rowId, savedProducts) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const list = row.querySelector(".imputation-products-list");
+      if (!list) return;
+      const products = _getCurrentPurchaseProducts();
+      const savedSet = new Set(savedProducts);
+      list.innerHTML = _buildCheckboxHtml(products, savedSet, new Map());
+    }
+
+    function _bindImputationEventSearch(rowId) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const searchInput   = row.querySelector(".imputation-event-search");
+      const suggestionsEl = row.querySelector(".imputation-event-suggestions");
+      if (!searchInput || !suggestionsEl) return;
+
+      function showSugg(q) {
+        const events  = purchaseOptions.events || [];
+        const matches = q
+          ? events.filter((e) => normalizeSearch(e).includes(normalizeSearch(q))).slice(0, 8)
+          : events.slice(0, 8);
+        if (!matches.length) { suggestionsEl.style.display = "none"; return; }
+        suggestionsEl.innerHTML = matches.map((m) =>
+          `<div class="autocomplete-item" onmousedown="event.preventDefault();" onclick="_pickImputationEvent('${rowId}','${escapeAttribute(m)}')">${escapeHtml(m)}</div>`
+        ).join("");
+        suggestionsEl.style.display = "";
+      }
+
+      searchInput.addEventListener("focus", () => showSugg(searchInput.value));
+      searchInput.addEventListener("input", () => showSugg(searchInput.value));
+      searchInput.addEventListener("blur",  () => setTimeout(() => { suggestionsEl.style.display = "none"; }, 200));
+    }
+
+    function _pickImputationEvent(rowId, value) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      row.querySelector(".imputation-event-search").value = value;
+      row.querySelector(".imputation-event-suggestions").style.display = "none";
+      savePurchaseDraft();
+    }
+
+    function _setImputRowType(rowId, type) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const isInternal = type === "internal";
+      row.querySelectorAll(".imputation-row-type-toggle button").forEach((b, i) => {
+        b.classList.toggle("active", i === 0 ? !isInternal : isInternal);
+      });
+      row.querySelectorAll(".imputation-dest-panel").forEach((p) => {
+        p.classList.toggle("hidden", p.dataset.dest !== type);
+      });
+      savePurchaseDraft();
+    }
+
+    function _deleteImputationRow(rowId) {
+      const rows = document.querySelectorAll("#purchase-imputation-rows .imputation-row");
+      if (rows.length <= 1) { showNotice("Debe quedar al menos un destino.", "error"); return; }
+      document.getElementById(rowId)?.remove();
+      _syncImputationDeleteButtons();
+      _syncAllPickerLabels();
+      savePurchaseDraft();
+    }
+
+    function _syncImputationDeleteButtons() {
+      const rows = document.querySelectorAll("#purchase-imputation-rows .imputation-row");
+      rows.forEach((r) => {
+        const btn = r.querySelector(".imputation-row-delete");
+        if (btn) btn.style.display = rows.length > 1 ? "" : "none";
+      });
+    }
+
+    /* ---- product picker ---- */
+    function _toggleImputPickerOpen(rowId) {
+      const picker = document.getElementById(`${rowId}-picker`);
+      if (!picker) return;
+      const summary = picker.querySelector(".imputation-products-summary");
+      const list    = picker.querySelector(".imputation-products-list");
+      const isOpen  = !list.classList.contains("open");
+      list.classList.toggle("open", isOpen);
+      summary.classList.toggle("open", isOpen);
+      if (isOpen) _refreshPickerCheckboxes(rowId);
+    }
+
+    function _refreshPickerCheckboxes(rowId) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const list = row.querySelector(".imputation-products-list");
+      if (!list) return;
+      const products      = _getCurrentPurchaseProducts();
+      const takenByOthers = _getExplicitAssignments(rowId);
+      const currentChecked = new Set(
+        Array.from(list.querySelectorAll("input[type=checkbox]:checked")).map((cb) => cb.value)
+      );
+      // first open with no pre-selection: default all non-taken products to checked
+      const defaultChecked = currentChecked.size === 0
+        ? new Set(products.map((p) => p.key).filter((k) => !takenByOthers.has(k)))
+        : currentChecked;
+      list.innerHTML = _buildCheckboxHtml(products, defaultChecked, takenByOthers);
+    }
+
+    function _onPickerCheckChange(productKey, isChecked, cbEl) {
+      if (isChecked) {
+        // uncheck same product in other rows if they have it rendered
+        document.querySelectorAll("#purchase-imputation-rows .imputation-row").forEach((otherRow) => {
+          if (otherRow === cbEl.closest(".imputation-row")) return;
+          const otherCb = otherRow.querySelector(`.imputation-products-list input[value="${CSS.escape(productKey)}"]`);
+          if (otherCb) otherCb.checked = false;
+        });
+      }
+      _syncAllPickerLabels();
+      savePurchaseDraft();
+    }
+
+    function _getRowCheckedProducts(rowEl) {
+      const cbs = rowEl.querySelectorAll(".imputation-products-list input[type=checkbox]");
+      if (cbs.length === 0) return null; // list not opened = "all"
+      return new Set(Array.from(cbs).filter((cb) => cb.checked).map((cb) => cb.value));
+    }
+
+    function _syncAllPickerLabels() {
+      const products   = _getCurrentPurchaseProducts();
+      const totalCount = products.length;
+      document.querySelectorAll("#purchase-imputation-rows .imputation-row").forEach((row) => {
+        const label   = row.querySelector(".imputation-products-label");
+        if (!label) return;
+        const checked = _getRowCheckedProducts(row);
+        if (checked === null) {
+          label.textContent = totalCount > 0 ? `Todos los productos (${totalCount})` : "Todos los productos";
+        } else if (checked.size === 0) {
+          label.textContent = "Sin productos seleccionados";
+        } else {
+          const names = products.filter((p) => checked.has(p.key)).map((p) => p.name);
+          label.textContent = names.join(", ");
+        }
+      });
+      _validateImputationCoverage();
+    }
+
+    function _validateImputationCoverage() {
+      const rows      = Array.from(document.querySelectorAll("#purchase-imputation-rows .imputation-row"));
+      const valEl     = document.getElementById("purchase-imputation-validation");
+      if (!valEl || rows.length <= 1) { valEl?.classList.add("hidden"); return; }
+      const products  = _getCurrentPurchaseProducts();
+      if (!products.length) { valEl.classList.add("hidden"); return; }
+      const assigned  = new Set();
+      rows.forEach((row) => {
+        const checked = _getRowCheckedProducts(row);
+        if (checked === null) products.forEach((p) => assigned.add(p.key));
+        else checked.forEach((k) => assigned.add(k));
+      });
+      const missing = products.filter((p) => !assigned.has(p.key)).map((p) => p.name);
+      valEl.textContent = missing.length ? `Productos sin destino: ${missing.join(", ")}` : "";
+      valEl.classList.toggle("hidden", !missing.length);
+    }
+
+    function refreshImputationPickers() { _syncAllPickerLabels(); }
+
+    /* ---- read / reset ---- */
+    function getImputationRows() {
+      return Array.from(document.querySelectorAll("#purchase-imputation-rows .imputation-row")).map((row) => {
+        const isInternal = row.querySelector(".imputation-row-type-toggle button:last-child")?.classList.contains("active");
+        const type          = isInternal ? "internal" : "event";
+        const eventName     = row.querySelector(".imputation-event-search")?.value?.trim() || "";
+        const internalArea  = row.querySelector(".imputation-area-select")?.value || "";
+        const imputationNotes = row.querySelector(".imputation-notes-input")?.value?.trim() || "";
+        const checked  = _getRowCheckedProducts(row);
+        const products = checked === null ? null : Array.from(checked);
+        return { type, eventName, internalArea, imputationNotes, products };
+      });
+    }
+
+    function resetImputationRows(imputationRows = null, purchase = null) {
+      imputationRowCounter = 0;
+      document.getElementById("purchase-imputation-rows").innerHTML = "";
+      if (imputationRows && imputationRows.length > 0) {
+        imputationRows.forEach((row) => addImputationRow(row));
+      } else if (purchase) {
+        addImputationRow({
+          type: normalizePurchaseImputationType(purchase),
+          eventName: purchase.eventName || "",
+          internalArea: purchase.internalArea || "",
+          imputationNotes: purchase.imputationNotes || "",
+        });
+      } else {
+        addImputationRow();
+      }
+    }
+
+    // Legacy shim
+    function setPurchaseImputationType(type = "event", options = {}) {
+      const form = document.getElementById("purchase-form");
+      if (form?.elements?.imputationType) form.elements.imputationType.value = type;
+    }
+
+    function purchaseImputationChangeNeedsConfirm() { return false; }
 
     function getPurchaseDestinationLabel(purchase = {}) {
       const type = normalizePurchaseImputationType(purchase);
@@ -29141,6 +30256,98 @@
       updatePurchaseSummary();
     }
 
+    const PURCHASE_CHARGE_TYPES = [
+      "Percepción IVA", "Percepción IIBB Mendoza", "Retención Ganancias",
+      "Retención IIBB", "Impuesto Débitos (Cheque)", "Flete / Acarreo",
+      "Descuento proveedor", "Otro",
+    ];
+
+    let purchaseChargeCounter = 0;
+
+    function addPurchaseChargeRow(charge = {}) {
+      const id = `purchase-charge-${++purchaseChargeCounter}`;
+      const container = document.getElementById("purchase-charges");
+      const row = document.createElement("div");
+      row.className = "purchase-charge-row";
+      row.id = id;
+      const type = charge.type || PURCHASE_CHARGE_TYPES[0];
+      const base = charge.base || "total";
+      const mode = charge.mode || "percent";
+      const value = charge.value != null ? String(charge.value) : "";
+      row.innerHTML = `
+        <select class="charge-type" onchange="updatePurchaseChargeSummary()">
+          ${PURCHASE_CHARGE_TYPES.map((t) => `<option value="${escapeAttribute(t)}"${type === t ? " selected" : ""}>${escapeHtml(t)}</option>`).join("")}
+        </select>
+        <div class="purchase-charge-toggle charge-base-toggle">
+          <button type="button" data-val="total" class="${base === "total" ? "active" : ""}" onclick="_toggleChargeBtn(this, 'charge-base-toggle', '${id}')">Ttl</button>
+          <button type="button" data-val="net" class="${base === "net" ? "active" : ""}" onclick="_toggleChargeBtn(this, 'charge-base-toggle', '${id}')">Net</button>
+        </div>
+        <div class="purchase-charge-toggle charge-mode-toggle">
+          <button type="button" data-val="percent" class="${mode === "percent" ? "active" : ""}" onclick="_toggleChargeBtn(this, 'charge-mode-toggle', '${id}')">%</button>
+          <button type="button" data-val="fixed" class="${mode === "fixed" ? "active" : ""}" onclick="_toggleChargeBtn(this, 'charge-mode-toggle', '${id}')">$</button>
+        </div>
+        <input class="charge-value" type="text" inputmode="decimal" placeholder="0" value="${escapeAttribute(value)}" oninput="updatePurchaseChargeSummary()">
+        <span class="purchase-charge-result"></span>
+        <button type="button" class="purchase-charge-delete" onclick="document.getElementById('${id}').remove(); updatePurchaseChargeSummary();" title="Eliminar">×</button>
+      `;
+      container.appendChild(row);
+      updatePurchaseChargeSummary();
+    }
+
+    function _toggleChargeBtn(btn, groupClass, rowId) {
+      const row = document.getElementById(rowId);
+      row.querySelectorAll(`.${groupClass} button`).forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      updatePurchaseChargeSummary();
+    }
+
+    function getPurchaseCharges() {
+      const totals = calculatePurchaseManualTotals();
+      const netBase = totals.net || 0;
+      const totalBase = totals.total || 0;
+      return Array.from(document.querySelectorAll("#purchase-charges .purchase-charge-row")).map((row) => {
+        const type = row.querySelector(".charge-type")?.value || "Otro";
+        const base = row.querySelector(".charge-base-toggle .active")?.dataset.val || "total";
+        const mode = row.querySelector(".charge-mode-toggle .active")?.dataset.val || "percent";
+        const value = parsePurchaseDecimal(row.querySelector(".charge-value")?.value);
+        const baseAmount = base === "net" ? netBase : totalBase;
+        const amount = Number.isFinite(value) ? (mode === "fixed" ? value : Math.round(baseAmount * value / 100 * 100) / 100) : 0;
+        return { type, base, mode, value: Number.isFinite(value) ? value : 0, amount };
+      });
+    }
+
+    function updatePurchaseChargeSummary() {
+      const charges = getPurchaseCharges();
+      const chargesTotal = charges.reduce((s, c) => s + (c.amount || 0), 0);
+      const summaryEl = document.getElementById("purchase-charges-summary");
+      const chargesWrap = document.getElementById("purchase-summary-charges-wrap");
+      const chargesEl = document.getElementById("purchase-summary-charges");
+
+      document.querySelectorAll("#purchase-charges .purchase-charge-row").forEach((row, i) => {
+        const amountEl = row.querySelector(".purchase-charge-result");
+        if (amountEl && charges[i]) {
+          const c = charges[i];
+          const label = c.mode === "percent" ? `${c.value}% de ${c.base === "net" ? "neto" : "total"}` : "monto fijo";
+          amountEl.textContent = `${label} = ${formatCurrency(c.amount)}`;
+        }
+      });
+
+      if (summaryEl) {
+        summaryEl.style.display = charges.length ? "block" : "none";
+        summaryEl.textContent = charges.length ? `Total impuestos/agregados: ${formatCurrency(chargesTotal)}` : "";
+      }
+      if (chargesWrap) chargesWrap.classList.toggle("hidden", chargesTotal === 0);
+      if (chargesEl) chargesEl.textContent = formatCurrency(chargesTotal);
+      updatePurchaseSummary();
+    }
+
+    function resetPurchaseCharges(charges = []) {
+      purchaseChargeCounter = 0;
+      document.getElementById("purchase-charges").innerHTML = "";
+      document.getElementById("purchase-charges-summary").style.display = "none";
+      charges.forEach((c) => addPurchaseChargeRow(c));
+    }
+
     function getPurchaseItems() {
       return Array.from(document.querySelectorAll("#purchase-items .purchase-item"))
         .map((row) => ({
@@ -29176,6 +30383,12 @@
         }, { gross: 0, discounts: 0, net: 0, iva: 0, total: 0, items: 0, hasErrors: false });
     }
 
+    function calculatePurchaseChargesTotals(baseNet, baseTotal) {
+      // delegate to getPurchaseCharges so base/mode reading is always in one place
+      const charges = getPurchaseCharges();
+      return charges.reduce((sum, c) => sum + (c.amount || 0), 0);
+    }
+
     function updatePurchaseSummary() {
       const form = document.getElementById("purchase-form");
       if (!form) return;
@@ -29194,13 +30407,17 @@
         if (el) el.textContent = value;
       };
 
+      const chargesTotal = calculatePurchaseChargesTotals(totals.net || 0, totals.total || 0);
+      const grandTotal = (totals.total || 0) + chargesTotal;
       setText("purchase-summary-gross", formatCurrency(totals.gross || 0));
       setText("purchase-summary-discount", `-${formatCurrency(totals.discounts || 0)}`);
       setText("purchase-summary-net", formatCurrency(totals.net || 0));
       setText("purchase-summary-iva", formatCurrency(totals.iva || 0));
-      setText("purchase-summary-total", formatCurrency(totals.total || 0));
+      setText("purchase-summary-charges", formatCurrency(chargesTotal));
+      setText("purchase-summary-total", formatCurrency(grandTotal));
       setText("purchase-summary-count", String(totals.items || 0));
-      setText("purchase-footer-total", formatCurrency(totals.total || 0));
+      setText("purchase-footer-total", formatCurrency(grandTotal));
+      document.getElementById("purchase-summary-charges-wrap")?.classList.toggle("hidden", chargesTotal === 0);
       setText("purchase-review-provider", provider || "Sin proveedor");
       const purchaseDate = getPurchaseDateInput()?.value || "";
       setText("purchase-review-date", formatShortDate(purchaseDate) || purchaseDate || "Sin fecha");
@@ -29809,7 +31026,12 @@
       `;
     }
 
-    function hideDetail() {
+    function hideDetail(force = false) {
+      if (!force && purchaseProductFormOpen && purchaseProductFormInitialState
+        && serializePurchaseProductForm() !== purchaseProductFormInitialState
+        && !confirm("Hay cambios sin guardar. ¿Cerrar la ficha igualmente?")) return;
+      purchaseProductFormOpen = false;
+      purchaseProductFormInitialState = "";
       document.getElementById("detail").classList.remove("open");
       document.querySelector("#detail .detail-panel")?.classList.remove("wide", "extra-wide", "event-wide");
     }

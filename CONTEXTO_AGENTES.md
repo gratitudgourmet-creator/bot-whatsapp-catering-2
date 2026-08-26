@@ -21,6 +21,33 @@ antes de empezar" para que tenga el contexto de lo ultimo hablado.
 
 ---
 
+## [2026-08-26] Claude (Ajuste rápido de stock + mejoras UI compras)
+
+**De que se hablo:** dos temas principales en sesiones compactadas.
+
+1. **Formulario de compras (sesion anterior):** rediseño del bloque de impuestos/cargos con pill toggles (Ttl/Net, %/$), y construccion del sistema de imputacion multi-destino donde cada compra puede dividirse entre varios eventos o consumo interno. Cada destino tiene su propio selector de productos con checkbox, con exclusion mutua (marcar en destino 2 desmarca de destino 1). Se mostraron mockups del wizard de unificacion de productos (Maestro de insumos) antes de implementarlo.
+
+2. **Inventario — ajuste rápido:** analisis de usabilidad del modulo `/inventario`. El flujo actual (sesion → contar todo → finalizar) es pesado para uso diario. Se disenaron 4 mejoras (inicio con estado del dia, ajuste rapido, conteo parcial, alertas) y se implemento el "ajuste rapido".
+
+**Decisiones tomadas:**
+- El ajuste rapido no usa el flujo de sesion: es un modal flotante que llama directamente a `POST /api/inventory-adjustment`.
+- El movimiento se guarda como tipo `adjustment` con `sourceType: "adjustment"`, compatible con `getInventoryBalanceList()` que ya suma/resta por `movementType`.
+- El usuario elige signo (+ o -), producto (con autocomplete del balance actual), cantidad, unidad, motivo y notas.
+- Las otras 3 mejoras (inicio con estado del dia, conteo parcial, alertas) quedaron pendientes de implementacion; se mostraron como mockup interactivo.
+- El wizard de unificacion de productos (maestro de insumos) tambien quedo en mockup, pendiente de implementacion.
+
+**Cambios en el codigo:**
+- `whatsapp-catering-bot.js`: nuevo endpoint `POST /api/inventory-adjustment` (linea ~1934, antes del bloque de operational-inventory GET).
+- `approval-panel.html`: boton "+ Ajuste rapido" en la toolbar del section `stock-summary-section`; modal `#quick-stock-adjustment-modal` con formulario completo; funciones JS `openQuickStockAdjustment`, `closeQuickStockAdjustment`, `qsaSetSign`, `qsaFilterProducts`, `qsaPickProduct`, `submitQuickStockAdjustment`.
+
+**Pendiente para la proxima sesion:**
+- Deploy a produccion (`git push` + restart en VPS).
+- Implementar las 3 mejoras restantes de inventario: inicio con estado del dia, conteo parcial por zona/rubro, panel de alertas (stock bajo + vencimientos).
+- Implementar wizard de unificacion de productos en Maestro de insumos.
+- Revisar el formulario de compras: el select de tipo de cargo (impuesto) aun no le gusta al usuario ("el select de impuestos sigue sin gustarme").
+
+---
+
 ## [2026-07-22] Codex (RRHH centro de horas deployado en produccion)
 
 **De que se hablo:** reorganizacion UX de `Personal/RRHH` para que deje de funcionar como una lista de tabs tecnicas y pase a operar como centro de horas y personal.

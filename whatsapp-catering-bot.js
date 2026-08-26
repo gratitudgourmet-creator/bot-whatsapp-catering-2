@@ -71,6 +71,7 @@ const ERP_QUOTES_FILE = dataPath("presupuestos-erp.json");
 const ERP_PURCHASES_FILE = dataPath("compras-erp.json");
 const ERP_PURCHASE_ORDERS_FILE = dataPath("ordenes-compra-erp.json");
 const ERP_PURCHASE_RECEIPTS_FILE = dataPath("recepciones-compra-erp.json");
+const ERP_PURCHASE_PRODUCTS_FILE = dataPath("productos-compra-erp.json");
 const ERP_INVENTORY_FILE = dataPath("inventario-erp.json");
 const ERP_OPERATIONAL_INVENTORY_FILE = dataPath("inventario-operativo-erp.json");
 const ERP_PROVIDERS_FILE = dataPath("proveedores-erp.json");
@@ -231,6 +232,7 @@ function _bustCache(...keys) {
 const CACHE_TTL = 12000;
 let erpPurchaseOrders = [];
 let erpPurchaseReceipts = [];
+let erpPurchaseProducts = [];
 let erpInventoryMovements = [];
 let erpOperationalInventory = { categories: [], items: [] };
 let erpProviders = [];
@@ -1136,9 +1138,9 @@ function startApprovalPanelServer() {
         const _VIEW_FIELDS = {
           erp:            new Set(["dashboard","pipeline","events","confirmedEvents","quotes"]),
           commercial:     new Set(["dashboard","pipeline","events","confirmedEvents","quotes","customers","venues"]),
-          events:         new Set(["events","confirmedEvents","quotes","dashboard","venues","customers"]),
+          events:         new Set(["events","confirmedEvents","quotes","dashboard","venues","customers","operationalInventory","providers"]),
           purchases:      new Set(["purchases","purchaseOrders","purchaseReceipts","inventory","inventoryMovements","operationalInventory","productMaster","providers","productAlerts"]),
-          stock:          new Set(["inventory","inventoryMovements","operationalInventory","productMaster","productAlerts"]),
+          stock:          new Set(["inventory","inventoryMovements","operationalInventory","productMaster","providers","productAlerts"]),
           finance:        new Set(["financeDashboard","purchases","paymentOrdersDashboard","providers"]),
           production:     new Set(["events","confirmedEvents","recipes","productMaster"]),
           recipes:        new Set(["recipes","productMaster"]),
@@ -1232,7 +1234,11 @@ function startApprovalPanelServer() {
           purchaseReceipts: _has("purchaseReceipts") ? (canSeePurchases || canSeeStock ? getPurchaseReceiptList() : []) : undefined,
           inventory: _has("inventory") ? (canSeePurchases || canSeeStock ? getInventoryBalanceList() : []) : undefined,
           inventoryMovements: _has("inventoryMovements") ? (canSeePurchases || canSeeStock ? getInventoryMovementList() : []) : undefined,
-          operationalInventory: _has("operationalInventory") ? (canSeePurchases || canSeeStock || canSeeEverything ? getOperationalInventoryAdminView(sessionUser) : undefined) : undefined,
+          operationalInventory: _has("operationalInventory")
+            ? (canSeePurchases || canSeeStock || canSeeEverything
+              ? getOperationalInventoryAdminView(sessionUser)
+              : (_view === "events" && canSeeCommercial ? getEventTablewarePlanningCatalog() : undefined))
+            : undefined,
           productMaster: _has("productMaster") ? (canSeePurchases || canSeeStock || canSeeRecipes || canSeeProduction || canSeeEverything ? getProductMasterListForUser(sessionUser) : []) : undefined,
           providers: _has("providers") ? (canSeeProviders ? getProviderList() : canSeeCommercial ? getRentalProviderOptionList() : []) : undefined,
           recipes: _has("recipes") ? (canSeeRecipes ? getRecipeListForUser(sessionUser) : []) : undefined,
@@ -1856,6 +1862,106 @@ function startApprovalPanelServer() {
           ok: true,
           inventory: getInventoryBalanceList(),
           movements: getInventoryMovementList(),
+        });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/purchase-products") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:read"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, products: getProductMasterListForUser(user) });
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/purchase-product") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const product = savePurchaseProductRecord(body.product || body, user);
+          return sendJson(response, { ok: true, product, products: getProductMasterListForUser(user) });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message || "No se pudo guardar el producto." }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/purchase-product-provider") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        const body = await readJsonBody(request);
+        try {
+          const product = updatePurchaseProductProviderAssociation(body, user);
+          const enrichedProduct = {
+            ...product,
+            providerInsights: getPurchaseProductProviderInsights(product),
+            catalogManaged: true,
+            derivedOnly: false,
+          };
+          return sendJson(response, { ok: true, product: enrichedProduct });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message || "No se pudo actualizar el proveedor del producto." }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/purchase-product-archive") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        if (!hasPanelPermission(user, "sensitive:delete")) {
+          return sendJson(response, { ok: false, error: "No tiene permiso para dar de baja productos." }, 403);
+        }
+        const body = await readJsonBody(request);
+        try {
+          const product = archivePurchaseProductRecord(body, user);
+          return sendJson(response, { ok: true, product, products: getProductMasterListForUser(user) });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message || "No se pudo dar de baja el producto." }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/purchase-product-reactivate") {
+        const user = requirePanelPermission(request, response, "purchases:write");
+        if (!user) return;
+        if (!hasPanelPermission(user, "sensitive:delete")) {
+          return sendJson(response, { ok: false, error: "No tiene permiso para reactivar productos." }, 403);
+        }
+        const body = await readJsonBody(request);
+        try {
+          const product = reactivatePurchaseProductRecord(body, user);
+          return sendJson(response, { ok: true, product, products: getProductMasterListForUser(user) });
+        } catch (error) {
+          return sendJson(response, { ok: false, error: error.message || "No se pudo reactivar el producto." }, 400);
+        }
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/api/inventory-adjustment") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const productName = normalizeText(body.productName || "");
+        const delta = roundMoney(parseOptionalNumber(body.delta || 0));
+        const unit = normalizeText(body.unit || "");
+        const notes = normalizeText(body.notes || "");
+        const reason = normalizeText(body.reason || "ajuste_manual");
+        if (!productName) return sendJson(response, { ok: false, error: "Nombre de producto requerido." }, 400);
+        if (!delta || isNaN(delta)) return sendJson(response, { ok: false, error: "Ingresá un ajuste distinto de cero." }, 400);
+        const movement = {
+          id: `adj-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          date: getDateOnly(new Date()),
+          productName,
+          itemType: normalizeText(body.itemType || "ingredient"),
+          quantity: Math.abs(delta),
+          unit,
+          movementType: delta > 0 ? "in" : "out",
+          sourceType: "adjustment",
+          sourceId: `adjustment-${Date.now()}`,
+          notes: notes || reason,
+          createdAt: new Date().toISOString(),
+          createdBy: user.name || user.username || "sistema",
+        };
+        erpInventoryMovements.push(movement);
+        saveErpInventory();
+        return sendJson(response, {
+          ok: true,
+          movement,
+          inventory: getInventoryBalanceList(),
         });
       }
 
@@ -3346,6 +3452,7 @@ function loadBusinessData() {
   erpPurchases = loadErpPurchasesFromStorage();
   erpPurchaseOrders = normalizePurchaseOrderList(readJsonFile(ERP_PURCHASE_ORDERS_FILE, []));
   erpPurchaseReceipts = normalizePurchaseReceiptList(readJsonFile(ERP_PURCHASE_RECEIPTS_FILE, []));
+  erpPurchaseProducts = normalizePurchaseProductList(readJsonFile(ERP_PURCHASE_PRODUCTS_FILE, []));
   erpInventoryMovements = normalizeInventoryMovementList(readJsonFile(ERP_INVENTORY_FILE, []));
   erpOperationalInventory = normalizeOperationalInventoryData(readJsonFile(ERP_OPERATIONAL_INVENTORY_FILE, {}));
   erpProviders = readJsonFile(ERP_PROVIDERS_FILE, []);
@@ -3972,6 +4079,11 @@ function saveAuditRecords(record) {
 
 function savePanelRoles() {
   writeJsonFile(ERP_ROLES_FILE, panelRoleDefinitions);
+}
+
+function saveErpPurchaseProducts() {
+  _bustCache("prodmaster");
+  writeJsonFile(ERP_PURCHASE_PRODUCTS_FILE, erpPurchaseProducts);
 }
 
 let zktecoService = null;
@@ -5177,6 +5289,7 @@ function getProductMasterListForUser(user) {
     delete clone.previousUnitCost;
     delete clone.changePercent;
     delete clone.totalStockValue;
+    clone.providerInsights = (clone.providerInsights || []).map(({ lastUnitCost, ...provider }) => provider);
     return clone;
   });
 }
@@ -5189,6 +5302,316 @@ function getRentalProviderOptionList() {
     phone: provider.phone,
     email: provider.email,
   }));
+}
+
+function normalizePurchaseProductProviderAssociations(input = []) {
+  const seen = new Set();
+  return (Array.isArray(input) ? input : []).map((association) => {
+    const providerId = normalizeText(association.providerId || association.id || "");
+    if (!providerId || seen.has(providerId)) return null;
+    seen.add(providerId);
+    return {
+      providerId,
+      providerName: normalizeText(association.providerName || association.name || ""),
+      preferred: parseBooleanLike(association.preferred),
+      presentation: normalizeText(association.presentation || ""),
+      currency: normalizeText(association.currency || "ARS").toUpperCase() || "ARS",
+      createdAt: association.createdAt || new Date().toISOString(),
+      createdBy: normalizeText(association.createdBy || ""),
+      updatedAt: association.updatedAt || association.createdAt || new Date().toISOString(),
+      updatedBy: normalizeText(association.updatedBy || ""),
+    };
+  }).filter(Boolean).map((association, index, associations) => ({
+    ...association,
+    preferred: association.preferred && associations.findIndex((item) => item.preferred) === index,
+  }));
+}
+
+function normalizePurchaseProductRecord(input = {}, previous = {}) {
+  const now = new Date().toISOString();
+  const name = normalizeText(input.name ?? previous.name ?? "");
+  const normalizedKey = normalizeProductKey(input.normalizedKey || previous.normalizedKey || name);
+  return {
+    id: normalizeText(input.id || previous.id || `producto-compra-${Date.now()}-${Math.random().toString(16).slice(2)}`),
+    name,
+    normalizedKey,
+    category: normalizeText(input.category ?? previous.category ?? ""),
+    subcategory: normalizeText(input.subcategory ?? previous.subcategory ?? ""),
+    baseUnit: normalizeText(input.baseUnit ?? previous.baseUnit ?? ""),
+    purchaseUnit: normalizeText(input.purchaseUnit ?? previous.purchaseUnit ?? ""),
+    presentation: normalizeText(input.presentation ?? previous.presentation ?? ""),
+    unitsPerPackage: Math.max(0, parseDecimalNumber(input.unitsPerPackage ?? previous.unitsPerPackage ?? 0)),
+    barcode: normalizeInventoryBarcode(input.barcode ?? previous.barcode ?? ""),
+    internalCode: normalizeInventoryInternalCode(input.internalCode ?? previous.internalCode ?? ""),
+    description: normalizeText(input.description ?? previous.description ?? ""),
+    active: input.active === undefined ? previous.active !== false : parseBooleanLike(input.active),
+    minStock: Math.max(0, parseDecimalNumber(input.minStock ?? previous.minStock ?? 0)),
+    notes: normalizeText(input.notes ?? previous.notes ?? ""),
+    providerAssociations: normalizePurchaseProductProviderAssociations(input.providerAssociations ?? previous.providerAssociations ?? []),
+    createdAt: previous.createdAt || input.createdAt || now,
+    createdBy: normalizeText(previous.createdBy || input.createdBy || ""),
+    updatedAt: input.updatedAt || previous.updatedAt || now,
+    updatedBy: normalizeText(input.updatedBy || previous.updatedBy || ""),
+    archivedAt: input.archivedAt ?? previous.archivedAt ?? null,
+    archivedBy: normalizeText(input.archivedBy ?? previous.archivedBy ?? ""),
+    archiveReason: normalizeText(input.archiveReason ?? previous.archiveReason ?? ""),
+  };
+}
+
+function normalizePurchaseProductList(input = []) {
+  return (Array.isArray(input) ? input : [])
+    .map((record) => normalizePurchaseProductRecord(record))
+    .filter((record) => record.name && record.normalizedKey);
+}
+
+function validatePurchaseProductCodes(record, excludeId = "") {
+  const codes = [record.barcode, record.internalCode].filter(Boolean).map((code) => code.toUpperCase());
+  if (codes.length !== new Set(codes).size) throw new Error("El codigo comercial y el codigo interno deben ser diferentes.");
+  const conflict = erpPurchaseProducts.find((item) => item.id !== excludeId
+    && [item.barcode, item.internalCode].filter(Boolean).some((code) => codes.includes(code.toUpperCase())));
+  if (conflict) throw new Error("El codigo ya esta asociado a " + conflict.name + ".");
+}
+
+function getPurchaseProductCatalogList() {
+  return normalizePurchaseProductList(erpPurchaseProducts);
+}
+
+function buildPurchaseProductProviderContext() {
+  const providers = getProviderList();
+  const providersById = new Map(providers.map((provider) => [provider.id, provider]));
+  const providersByName = new Map(providers.map((provider) => [normalizeSearchKey(provider.name), provider]));
+  const historyByProduct = new Map();
+
+  for (const purchase of getErpPurchaseList()) {
+    const providerName = normalizeText(purchase.provider || "");
+    const provider = providersByName.get(normalizeSearchKey(providerName));
+    const providerId = provider?.id || "";
+    const historyKey = providerId || normalizeSearchKey(providerName);
+    if (!historyKey) continue;
+    const productsInPurchase = new Set();
+    for (const item of purchase.lineItems || []) {
+      const productKey = normalizeProductKey(item.description || purchase.description);
+      if (!productKey) continue;
+      if (!historyByProduct.has(productKey)) historyByProduct.set(productKey, new Map());
+      const history = historyByProduct.get(productKey);
+      const current = history.get(historyKey) || {
+        providerId,
+        providerName: provider?.name || providerName,
+        purchaseCount: 0,
+        lastPurchaseDate: "",
+        lastUnitCost: 0,
+        currency: normalizeText(purchase.currency || "ARS").toUpperCase() || "ARS",
+        units: new Map(),
+      };
+      if (!productsInPurchase.has(productKey)) {
+        current.purchaseCount += 1;
+        productsInPurchase.add(productKey);
+      }
+      const unit = normalizeText(item.unit || "");
+      if (unit) current.units.set(unit, (current.units.get(unit) || 0) + 1);
+      if (String(purchase.date || "") >= String(current.lastPurchaseDate || "")) {
+        current.lastPurchaseDate = purchase.date || "";
+        current.lastUnitCost = Number(item.unitAmount || 0);
+        current.currency = normalizeText(purchase.currency || "ARS").toUpperCase() || "ARS";
+      }
+      history.set(historyKey, current);
+    }
+  }
+
+  return { providersById, historyByProduct };
+}
+
+function getPurchaseProductProviderInsights(product = {}, context = null) {
+  const productKey = product.normalizedKey || product.key || normalizeProductKey(product.name);
+  const providerContext = context || buildPurchaseProductProviderContext();
+  const providersById = providerContext.providersById;
+  const history = providerContext.historyByProduct.get(productKey) || new Map();
+
+  const associations = normalizePurchaseProductProviderAssociations(product.providerAssociations || []);
+  const preferredId = associations.find((association) => association.preferred)?.providerId || "";
+  const latestHistory = Array.from(history.values()).sort((a, b) => String(b.lastPurchaseDate || "").localeCompare(String(a.lastPurchaseDate || "")))[0] || null;
+  const habitualHistory = Array.from(history.values()).sort((a, b) => b.purchaseCount - a.purchaseCount || String(b.lastPurchaseDate || "").localeCompare(String(a.lastPurchaseDate || "")))[0] || null;
+  const rows = new Map();
+
+  for (const association of associations) {
+    const provider = providersById.get(association.providerId);
+    const historical = history.get(association.providerId) || history.get(normalizeSearchKey(association.providerName || provider?.name || ""));
+    rows.set(association.providerId, {
+      providerId: association.providerId,
+      providerName: provider?.name || association.providerName || "Proveedor",
+      associated: true,
+      preferred: association.preferred,
+      presentation: association.presentation || getMostFrequentPurchaseUnit(historical?.units),
+      currency: association.currency || historical?.currency || "ARS",
+      purchaseCount: historical?.purchaseCount || 0,
+      lastPurchaseDate: historical?.lastPurchaseDate || "",
+      lastUnitCost: historical?.lastUnitCost || 0,
+      reasons: [],
+    });
+  }
+
+  for (const historical of history.values()) {
+    const rowKey = historical.providerId || normalizeSearchKey(historical.providerName);
+    const current = rows.get(rowKey) || {
+      providerId: historical.providerId,
+      providerName: historical.providerName,
+      associated: false,
+      preferred: false,
+      presentation: getMostFrequentPurchaseUnit(historical.units),
+      currency: historical.currency || "ARS",
+      purchaseCount: 0,
+      lastPurchaseDate: "",
+      lastUnitCost: 0,
+      reasons: [],
+    };
+    current.purchaseCount = historical.purchaseCount;
+    current.lastPurchaseDate = historical.lastPurchaseDate;
+    current.lastUnitCost = historical.lastUnitCost;
+    current.presentation = current.presentation || getMostFrequentPurchaseUnit(historical.units);
+    rows.set(rowKey, current);
+  }
+
+  for (const row of rows.values()) {
+    if (row.providerId && row.providerId === preferredId) row.reasons.push("Proveedor preferido");
+    if (latestHistory && (row.providerId ? row.providerId === latestHistory.providerId : normalizeSearchKey(row.providerName) === normalizeSearchKey(latestHistory.providerName))) row.reasons.push("Última compra");
+    if (habitualHistory && (row.providerId ? row.providerId === habitualHistory.providerId : normalizeSearchKey(row.providerName) === normalizeSearchKey(habitualHistory.providerName))) row.reasons.push("Proveedor habitual");
+    if (row.purchaseCount > 0) row.reasons.push(`Comprado ${row.purchaseCount} ${row.purchaseCount === 1 ? "vez" : "veces"}`);
+    if (!row.reasons.length && row.associated) row.reasons.push("Proveedor asociado");
+  }
+
+  return Array.from(rows.values()).sort((a, b) => Number(b.preferred) - Number(a.preferred)
+    || Number(b.lastPurchaseDate === latestHistory?.lastPurchaseDate) - Number(a.lastPurchaseDate === latestHistory?.lastPurchaseDate)
+    || b.purchaseCount - a.purchaseCount
+    || a.providerName.localeCompare(b.providerName));
+}
+
+function getMostFrequentPurchaseUnit(units) {
+  if (!(units instanceof Map) || !units.size) return "";
+  return Array.from(units.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0][0];
+}
+
+function updatePurchaseProductProviderAssociation(input = {}, user = null) {
+  const productId = normalizeText(input.productId || input.id || "");
+  const action = normalizeText(input.action || "associate").toLowerCase();
+  const productIndex = erpPurchaseProducts.findIndex((record) => record.id === productId);
+  if (productIndex < 0) throw new Error("Primero guarde el producto como ficha maestra.");
+  const providerId = normalizeText(input.providerId || "");
+  const provider = getProviderList().find((item) => item.id === providerId);
+  if (!provider) throw new Error("Seleccione un proveedor existente.");
+
+  const previous = normalizePurchaseProductRecord(erpPurchaseProducts[productIndex]);
+  let associations = normalizePurchaseProductProviderAssociations(previous.providerAssociations);
+  const associationIndex = associations.findIndex((association) => association.providerId === providerId);
+  const now = new Date().toISOString();
+
+  if (action === "remove") {
+    if (associationIndex < 0) throw new Error("El proveedor no está asociado a este producto.");
+    associations = associations.filter((association) => association.providerId !== providerId);
+  } else if (action === "prefer") {
+    if (associationIndex < 0) throw new Error("Asocie el proveedor antes de marcarlo como preferido.");
+    associations = associations.map((association) => ({ ...association, preferred: association.providerId === providerId, updatedAt: now, updatedBy: user?.username || "" }));
+  } else if (action === "associate") {
+    const nextAssociation = {
+      ...(associationIndex >= 0 ? associations[associationIndex] : {}),
+      providerId,
+      providerName: provider.name,
+      preferred: associationIndex >= 0
+        ? associations[associationIndex].preferred || parseBooleanLike(input.preferred)
+        : parseBooleanLike(input.preferred),
+      presentation: normalizeText(input.presentation || (associationIndex >= 0 ? associations[associationIndex].presentation : "")),
+      currency: normalizeText(input.currency || (associationIndex >= 0 ? associations[associationIndex].currency : "ARS")).toUpperCase() || "ARS",
+      createdAt: associationIndex >= 0 ? associations[associationIndex].createdAt : now,
+      createdBy: associationIndex >= 0 ? associations[associationIndex].createdBy : user?.username || "",
+      updatedAt: now,
+      updatedBy: user?.username || "",
+    };
+    if (nextAssociation.preferred) associations = associations.map((association) => ({ ...association, preferred: false }));
+    if (associationIndex >= 0) associations[associationIndex] = nextAssociation;
+    else associations.push(nextAssociation);
+  } else {
+    throw new Error("Acción de proveedor no válida.");
+  }
+
+  const record = normalizePurchaseProductRecord({
+    ...previous,
+    providerAssociations: associations,
+    updatedAt: now,
+    updatedBy: user?.username || "",
+  }, previous);
+  erpPurchaseProducts[productIndex] = record;
+  saveErpPurchaseProducts();
+  recordAudit(user, `provider_${action}`, "purchase_product", record.id, record.name,
+    { providerAssociations: previous.providerAssociations }, { providerAssociations: record.providerAssociations }, { providerId, providerName: provider.name });
+  return record;
+}
+
+function savePurchaseProductRecord(input = {}, user = null) {
+  const cleanId = normalizeText(input.id || "");
+  const index = cleanId ? erpPurchaseProducts.findIndex((record) => record.id === cleanId) : -1;
+  const previous = index >= 0 ? erpPurchaseProducts[index] : {};
+  const record = normalizePurchaseProductRecord({
+    ...input,
+    id: cleanId || undefined,
+    active: index >= 0 ? previous.active !== false : true,
+    createdBy: previous.createdBy || user?.username || "",
+    updatedAt: new Date().toISOString(),
+    updatedBy: user?.username || "",
+  }, previous);
+  if (!record.name) throw new Error("Ingrese el nombre del producto.");
+  if (!record.normalizedKey) throw new Error("No se pudo identificar el producto.");
+  const keyConflict = erpPurchaseProducts.find((item) => item.id !== record.id && item.normalizedKey === record.normalizedKey);
+  if (keyConflict) throw new Error("Ya existe un producto maestro con ese nombre o clave historica.");
+  validatePurchaseProductCodes(record, record.id);
+  if (index >= 0) erpPurchaseProducts[index] = record;
+  else erpPurchaseProducts.push(record);
+  saveErpPurchaseProducts();
+  recordAudit(user, index >= 0 ? "update" : "create", "purchase_product", record.id, record.name, index >= 0 ? previous : null, record);
+  return record;
+}
+
+function archivePurchaseProductRecord(input = {}, user = null) {
+  const id = normalizeText(input.id || input.productId || "");
+  const reason = normalizeText(input.reason || "");
+  if (!id) throw new Error("Producto requerido.");
+  if (!reason) throw new Error("Ingrese el motivo de la baja.");
+  const index = erpPurchaseProducts.findIndex((record) => record.id === id);
+  if (index < 0) throw new Error("Primero guarde el producto derivado como producto maestro.");
+  const previous = erpPurchaseProducts[index];
+  const now = new Date().toISOString();
+  const record = normalizePurchaseProductRecord({
+    ...previous,
+    active: false,
+    archivedAt: now,
+    archivedBy: user?.username || "",
+    archiveReason: reason,
+    updatedAt: now,
+    updatedBy: user?.username || "",
+  }, previous);
+  erpPurchaseProducts[index] = record;
+  saveErpPurchaseProducts();
+  recordAudit(user, "archive", "purchase_product", record.id, record.name, previous, record, { reason });
+  return record;
+}
+
+function reactivatePurchaseProductRecord(input = {}, user = null) {
+  const id = normalizeText(input.id || input.productId || "");
+  if (!id) throw new Error("Producto requerido.");
+  const index = erpPurchaseProducts.findIndex((record) => record.id === id);
+  if (index < 0) throw new Error("Producto maestro no encontrado.");
+  const previous = erpPurchaseProducts[index];
+  const record = normalizePurchaseProductRecord({
+    ...previous,
+    active: true,
+    archivedAt: null,
+    archivedBy: "",
+    archiveReason: "",
+    updatedAt: new Date().toISOString(),
+    updatedBy: user?.username || "",
+  }, previous);
+  erpPurchaseProducts[index] = record;
+  saveErpPurchaseProducts();
+  recordAudit(user, "reactivate", "purchase_product", record.id, record.name, previous, record);
+  return record;
 }
 
 function getProductMasterList() {
@@ -5322,9 +5745,61 @@ function _computeProductMasterList() {
     });
   }
 
+  for (const record of getPurchaseProductCatalogList()) {
+    const key = record.normalizedKey || normalizeProductKey(record.name);
+    let current = byKey.get(key);
+    if (!current) {
+      current = touch(record.name, { sources: ["catalogo"] });
+      const generatedKey = normalizeProductKey(record.name);
+      if (generatedKey && generatedKey !== key) byKey.delete(generatedKey);
+    }
+    if (!current) continue;
+    byKey.set(key, {
+      ...current,
+      ...record,
+      id: record.id,
+      key,
+      normalizedKey: key,
+      name: record.name || current.name,
+      category: record.category || current.category,
+      defaultUnit: record.baseUnit || current.defaultUnit,
+      baseUnit: record.baseUnit || current.defaultUnit,
+      stockQuantity: current.stockQuantity,
+      stockUnit: current.stockUnit,
+      lastProvider: current.lastProvider,
+      lastPurchaseDate: current.lastPurchaseDate,
+      lastUnitCost: current.lastUnitCost,
+      previousUnitCost: current.previousUnitCost,
+      changePercent: current.changePercent,
+      purchaseCount: current.purchaseCount,
+      orderCount: current.orderCount,
+      recipeCount: current.recipeCount,
+      totalStockValue: current.totalStockValue,
+      providerSuggestions: current.providerSuggestions,
+      sources: Array.from(new Set([...(current.sources || []), "catalogo"])),
+      catalogManaged: true,
+      derivedOnly: false,
+    });
+  }
+
+  const providerContext = buildPurchaseProductProviderContext();
   return Array.from(byKey.values())
     .map((product) => ({
       ...product,
+      normalizedKey: product.normalizedKey || product.key,
+      baseUnit: product.baseUnit || product.defaultUnit || "",
+      purchaseUnit: product.purchaseUnit || "",
+      presentation: product.presentation || "",
+      unitsPerPackage: Number(product.unitsPerPackage || 0),
+      barcode: product.barcode || "",
+      internalCode: product.internalCode || "",
+      description: product.description || "",
+      active: product.active !== false,
+      minStock: Number(product.minStock || 0),
+      notes: product.notes || "",
+      catalogManaged: product.catalogManaged === true,
+      derivedOnly: product.catalogManaged !== true,
+      providerInsights: getPurchaseProductProviderInsights(product, providerContext),
       providerSuggestions: product.providerSuggestions.slice(0, 5),
       sources: product.sources.sort((a, b) => a.localeCompare(b)),
     }))
@@ -8311,6 +8786,64 @@ function saveOperationalInventoryRecord(input = {}, user = null) {
   return getOperationalInventoryAdminView(user);
 }
 
+const EVENT_TABLEWARE_FAMILIES = new Set([
+  "tableware",
+  "glassware",
+  "linen_textiles",
+  "disposables",
+  "packaging_containers",
+  "event_equipment",
+  "furniture_structures",
+]);
+
+function getEventTablewarePlanningFamily(item = {}) {
+  const family = getFunctionalFamilyForItem(item);
+  if (EVENT_TABLEWARE_FAMILIES.has(family)) return family;
+  const text = normalizeSearchKey([
+    item.name,
+    item.categoryId,
+    item.category,
+    item.subcategory,
+    item.usageType,
+  ].filter(Boolean).join(" "));
+  if (/mantel|manteler|textil|servilleta de tela/.test(text)) return "linen_textiles";
+  if (/copa|cristal|vaso de vidrio|vaso vidrio/.test(text)) return "glassware";
+  if (/plato|vajilla|cubierto|tenedor|cuchillo|cuchara|bowl|compotera|taza|jarra/.test(text)) return "tableware";
+  if (/descartable|vaso plast|vaso carton|servilleta descart|sorbete/.test(text)) return "disposables";
+  if (/contenedor|conservadora|caja|bin|bandeja|fuente|campana/.test(text)) return "packaging_containers";
+  if (/mesa|silla|tablero|estructura|altura|mobiliario/.test(text)) return "furniture_structures";
+  if (/servicio|equipamiento evento|equipamiento de evento|chafing|cafetera/.test(text)) return "event_equipment";
+  return "";
+}
+
+function getEventTablewarePlanningCatalog() {
+  const data = normalizeOperationalInventoryData(erpOperationalInventory);
+  const items = data.items
+    .filter((item) => !item.archivedAt && item.status !== "inactive")
+    .map((item) => ({ item, planningFamily: getEventTablewarePlanningFamily(item) }))
+    .filter(({ planningFamily }) => Boolean(planningFamily))
+    .map(({ item, planningFamily }) => ({
+      id: item.id,
+      name: item.name,
+      categoryId: item.categoryId,
+      subcategory: item.subcategory,
+      functionalFamily: planningFamily,
+      inventoryArea: getInventoryAreaForItem(item),
+      unit: item.unit,
+      quantity: Number(item.quantity || 0),
+      stockRegisteredQuantity: Number(item.quantity || 0),
+      stockReliable: Object.prototype.hasOwnProperty.call(item, "quantity"),
+      status: item.status,
+      statusLabel: getOperationalInventoryStatusLabel(item.status),
+      operationalStatus: item.operationalStatus,
+      location: item.location,
+      locationType: item.locationType,
+      locationDetail: item.locationDetail,
+    }))
+    .sort((left, right) => String(left.name || "").localeCompare(String(right.name || ""), "es"));
+  return { areas: ["operations"], writableAreas: [], categories: [], planningOnly: true, items };
+}
+
 function associateOperationalInventoryBarcode(input = {}, user = null) {
   const itemId = normalizeText(input.itemId || "");
   const codeType = normalizeText(input.codeType || "").toLowerCase();
@@ -11065,6 +11598,8 @@ function _computeErpPurchaseList() {
       netAmount: amounts.netAmount,
       ivaRate: amounts.ivaRate,
       ivaAmount: amounts.ivaAmount,
+      chargesTotal: amounts.chargesTotal,
+      additionalCharges: purchase.additionalCharges || [],
       totalAmount: amounts.totalAmount,
       paidAmount,
       pendingAmount,
@@ -11072,6 +11607,7 @@ function _computeErpPurchaseList() {
       imputationType: normalizePurchaseImputationType(purchase, purchase.eventName || purchase.evento || ""),
       internalArea: purchase.internalArea || purchase.areaConsumo || "",
       imputationNotes: purchase.imputationNotes || purchase.detalleImputacion || "",
+      imputationRows: purchase.imputationRows || null,
       imputationLabel: getPurchaseImputationLabel(purchase),
       reimbursementPaidAmount,
       reimbursementBalance,
@@ -11081,6 +11617,19 @@ function _computeErpPurchaseList() {
       notes: purchase.notes || "",
     };
   }).sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+}
+
+function normalizePurchaseCharges(rawCharges, netBase, totalBase) {
+  if (!Array.isArray(rawCharges)) return [];
+  return rawCharges.map((c) => {
+    const type = String(c.type || "Otro").trim();
+    const base = c.base === "net" ? "net" : "total";
+    const mode = c.mode === "fixed" ? "fixed" : "percent";
+    const value = Number(c.value || 0);
+    const baseAmount = base === "net" ? netBase : totalBase;
+    const amount = roundMoney(mode === "fixed" ? value : baseAmount * value / 100);
+    return { type, base, mode, value, amount };
+  }).filter((c) => Number.isFinite(c.amount));
 }
 
 function getPurchaseAmounts(purchase = {}) {
@@ -11104,7 +11653,8 @@ function getPurchaseAmounts(purchase = {}) {
   const grossAmount = roundMoney(netAmount + ivaAmount);
   const totalAmount = storedTotal || lineGrossTotal || grossAmount;
 
-  return { netAmount, ivaRate, ivaAmount, totalAmount };
+  const chargesTotal = roundMoney(Number(purchase.chargesTotal || 0));
+  return { netAmount, ivaRate, ivaAmount, chargesTotal, totalAmount };
 }
 
 function getPurchasePaidAmount(purchase = {}, totalAmount = 0) {
@@ -11141,6 +11691,7 @@ function normalizeEventTablewareItems(input = []) {
       unit: normalizeText(inventoryItem?.unit || line.unit || "unidad"),
       requiredQuantity,
       stockAvailableSnapshot: Math.max(0, parseDecimalNumber(line.stockAvailableSnapshot ?? inventoryItem?.quantity ?? 0)),
+      stockReliable: line.stockReliable !== false && Boolean(inventoryItem && Object.prototype.hasOwnProperty.call(inventoryItem, "quantity")),
       stockPlannedQuantity,
       rentalQuantity,
       sourcingMode,
@@ -13343,8 +13894,11 @@ function buildPurchaseRecord(input, options = {}) {
     lineItems.reduce((sum, item) => sum + item.netTotal, 0)
   );
   const ivaAmount = roundMoney(lineItems.reduce((sum, item) => sum + item.ivaAmount, 0));
-  const totalAmount = roundMoney(lineItems.reduce((sum, item) => sum + item.total, 0));
+  const lineTotal = roundMoney(lineItems.reduce((sum, item) => sum + item.total, 0));
   const ivaRate = getDominantIvaRate(lineItems);
+  const additionalCharges = normalizePurchaseCharges(input.additionalCharges || [], netAmount, lineTotal);
+  const chargesTotal = roundMoney(additionalCharges.reduce((s, c) => s + (c.amount || 0), 0));
+  const totalAmount = roundMoney(lineTotal + chargesTotal);
   const rawEventName = isMissingPurchaseEventName(input.eventName || input.evento || "") ? "" : normalizeText(input.eventName || input.evento || "");
   const imputationType = normalizePurchaseImputationType(input, rawEventName);
   const internalArea = imputationType === "internal" ? normalizeText(input.internalArea || input.areaConsumo || "") : "";
@@ -13384,6 +13938,17 @@ function buildPurchaseRecord(input, options = {}) {
     origenFondos: normalizeText(input.fundsSource || ""),
     observaciones: normalizeText(input.notes || ""),
     lineItems,
+    additionalCharges,
+    chargesTotal,
+    imputationRows: Array.isArray(input.imputationRows) && input.imputationRows.length > 0
+      ? input.imputationRows.map((r) => ({
+          type: r.type === "internal" ? "internal" : "event",
+          eventName: r.type !== "internal" ? normalizeText(r.eventName || "") : "",
+          internalArea: r.type === "internal" ? normalizeText(r.internalArea || "") : "",
+          imputationNotes: r.type === "internal" ? normalizeText(r.imputationNotes || "") : "",
+          products: Array.isArray(r.products) ? r.products : null,
+        }))
+      : null,
   };
 
   Object.assign(purchase, {
@@ -13430,7 +13995,7 @@ function buildPurchaseRecord(input, options = {}) {
     throw new Error("Ingrese el evento al que corresponde la compra.");
   }
 
-  if (purchase.imputationType === "internal" && !purchase.internalArea) {
+  if (purchase.imputationType === "internal" && !purchase.internalArea && !purchase.imputationRows?.length) {
     throw new Error("Seleccione el area de consumo interno.");
   }
 
