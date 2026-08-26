@@ -1953,6 +1953,10 @@ function startApprovalPanelServer() {
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/print-relay") {
+        // Override CSP to allow fetch a localhost (Browser Print)
+        response.setHeader("Content-Security-Policy",
+          "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:9100 http://localhost:9101;"
+        );
         const html = `<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relay de impresión · Gratitud Gourmet</title>
 <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}.card{background:#fff;border-radius:16px;padding:28px 32px;max-width:400px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.1);text-align:center}.logo{font-size:13px;font-weight:800;letter-spacing:.04em;color:#888;margin-bottom:16px}h1{font-size:20px;font-weight:700;margin-bottom:6px}.sub{font-size:14px;color:#666;margin-bottom:24px}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#e5e5e5;margin-right:8px}.dot.ok{background:#1d9e75}.dot.err{background:#d85a30}.status{display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin-bottom:8px}.log{text-align:left;background:#f9f9f9;border-radius:10px;padding:14px;font-size:12px;color:#555;max-height:200px;overflow-y:auto;margin-top:20px;line-height:1.6}.hint{font-size:12px;color:#aaa;margin-top:16px}</style>
 </head><body>
