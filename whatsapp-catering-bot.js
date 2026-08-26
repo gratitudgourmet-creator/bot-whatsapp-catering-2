@@ -2024,8 +2024,24 @@ input[type=checkbox]{accent-color:#1d9e75;width:16px;height:16px;vertical-align:
           <input type="range" id="r-ns" min="16" max="52" value="34" oninput="updatePreview()">
         </div>
         <div class="field">
+          <label>Tamaño código <span id="v-cs">18</span></label>
+          <input type="range" id="r-cs" min="10" max="40" value="18" oninput="updatePreview()">
+        </div>
+        <div class="field">
           <label>Tamaño marca <span id="v-bs">22</span></label>
           <input type="range" id="r-bs" min="12" max="32" value="22" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Tamaño ubicación <span id="v-ls">22</span></label>
+          <input type="range" id="r-ls" min="10" max="36" value="22" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Margen izquierdo <span id="v-ml">30</span>px</label>
+          <input type="range" id="r-ml" min="0" max="80" value="30" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Margen superior <span id="v-mt">8</span>px</label>
+          <input type="range" id="r-mt" min="0" max="40" value="8" oninput="updatePreview()">
         </div>
         <div class="field">
           <label><input type="checkbox" id="ck-loc" checked onchange="updatePreview()"> Mostrar ubicación</label>
@@ -2056,17 +2072,13 @@ let printerDevice = null;
 const DEMO = { name: 'Nombre del artículo', code: 'GG-EJEMPLO', location: 'Freezer', expiry: '' };
 
 // ── Configuración ──────────────────────────────────────────────────────
-const DEFAULTS = { bh:120, mw:3, ns:34, bs:22, showLoc:true, showExp:true };
+const DEFAULTS = { bh:120, mw:3, ns:34, cs:18, bs:22, ls:22, ml:30, mt:8, showLoc:true, showExp:true };
 function loadSettings() {
   try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('labelCfg') || '{}')); }
   catch { return {...DEFAULTS}; }
 }
 function saveSettings() {
-  const cfg = getCfg();
-  localStorage.setItem('labelCfg', JSON.stringify(cfg));
-  showSaved();
-}
-function showSaved() {
+  localStorage.setItem('labelCfg', JSON.stringify(getCfg()));
   const btn = document.querySelector('.btn-primary');
   btn.textContent = '¡Guardado!'; setTimeout(() => btn.textContent = 'Guardar ajustes', 1500);
 }
@@ -2075,7 +2087,11 @@ function getCfg() {
     bh: +document.getElementById('r-bh').value,
     mw: +document.getElementById('r-mw').value,
     ns: +document.getElementById('r-ns').value,
+    cs: +document.getElementById('r-cs').value,
     bs: +document.getElementById('r-bs').value,
+    ls: +document.getElementById('r-ls').value,
+    ml: +document.getElementById('r-ml').value,
+    mt: +document.getElementById('r-mt').value,
     showLoc: document.getElementById('ck-loc').checked,
     showExp: document.getElementById('ck-exp').checked,
   };
@@ -2084,7 +2100,11 @@ function applySettings(cfg) {
   document.getElementById('r-bh').value = cfg.bh;
   document.getElementById('r-mw').value = cfg.mw;
   document.getElementById('r-ns').value = cfg.ns;
+  document.getElementById('r-cs').value = cfg.cs;
   document.getElementById('r-bs').value = cfg.bs;
+  document.getElementById('r-ls').value = cfg.ls;
+  document.getElementById('r-ml').value = cfg.ml;
+  document.getElementById('r-mt').value = cfg.mt;
   document.getElementById('ck-loc').checked = cfg.showLoc;
   document.getElementById('ck-exp').checked = cfg.showExp;
 }
@@ -2095,19 +2115,29 @@ function buildZpl(data, cfg) {
   const code = data.code || '';
   const location = (data.location || '').substring(0, 35);
   const expiry = data.expiry || '';
+  const ml = cfg.ml; // margen izquierdo
+  const fw = 431 - ml; // ancho disponible para ^FB
+  const y0 = cfg.mt; // margen superior
   const bsW = Math.round(cfg.bs * 0.55);
   const nsW = Math.round(cfg.ns * 0.53);
-  const barcodeY = 8 + cfg.bs + 6 + cfg.ns + 8;
-  const humanReadableH = 18;
-  const afterBarcodeY = barcodeY + cfg.bh + humanReadableH + 8;
+  const csW = Math.round(cfg.cs * 0.55);
+  const lsW = Math.round(cfg.ls * 0.55);
+  const brandY   = y0;
+  const nameY    = brandY + cfg.bs + 6;
+  const barcodeY = nameY + cfg.ns + 8;
+  // BCN con Y=N (sin human readable integrado) + línea separada de código legible
+  const codeY    = barcodeY + cfg.bh + 4;
+  const locY     = codeY + cfg.cs + 6;
+  const expY     = locY + cfg.ls + 4;
   const lines = [
     '^XA',
     '^PW431^LL352^CI28^LH0,0',
-    \`^FO0,8^FB431,1,0,C^A0N,\${cfg.bs},\${bsW}^FDGRATITUD GOURMET^FS\`,
-    \`^FO0,\${8+cfg.bs+6}^FB431,1,0,C^A0N,\${cfg.ns},\${nsW}^FD\${name}^FS\`,
-    \`^FO30,\${barcodeY}^BY\${cfg.mw}^BCN,\${cfg.bh},Y,N,N^FD\${code}^FS\`,
-    cfg.showLoc && location ? \`^FO0,\${afterBarcodeY}^FB431,1,0,C^A0N,22,12^FD\${location}^FS\` : '',
-    cfg.showExp && expiry   ? \`^FO0,\${afterBarcodeY+26}^FB431,1,0,C^A0N,20,11^FD\${expiry}^FS\` : '',
+    \`^FO\${ml},\${brandY}^FB\${fw},1,0,C^A0N,\${cfg.bs},\${bsW}^FDGRATITUD GOURMET^FS\`,
+    \`^FO\${ml},\${nameY}^FB\${fw},1,0,C^A0N,\${cfg.ns},\${nsW}^FD\${name}^FS\`,
+    \`^FO\${ml},\${barcodeY}^BY\${cfg.mw}^BCN,\${cfg.bh},N,N,N^FD\${code}^FS\`,
+    \`^FO\${ml},\${codeY}^FB\${fw},1,0,C^A0N,\${cfg.cs},\${csW}^FD\${code}^FS\`,
+    cfg.showLoc && location ? \`^FO\${ml},\${locY}^FB\${fw},1,0,C^A0N,\${cfg.ls},\${lsW}^FD\${location}^FS\` : '',
+    cfg.showExp && expiry   ? \`^FO\${ml},\${expY}^FB\${fw},1,0,C^A0N,20,11^FD\${expiry}^FS\` : '',
     '^XZ',
   ];
   return lines.filter(Boolean).join('\\n');
@@ -2132,15 +2162,22 @@ function updatePreview() {
   document.getElementById('v-bh').textContent = cfg.bh;
   document.getElementById('v-mw').textContent = cfg.mw;
   document.getElementById('v-ns').textContent = cfg.ns;
+  document.getElementById('v-cs').textContent = cfg.cs;
   document.getElementById('v-bs').textContent = cfg.bs;
-  // Escala preview: label 431px → 250px = 0.58x
-  const sc = 0.58;
-  document.querySelector('.lp-brand').style.fontSize = Math.round(cfg.bs * sc * 0.45) + 'px';
-  document.getElementById('lp-name').style.fontSize  = Math.round(cfg.ns * sc * 0.45) + 'px';
+  document.getElementById('v-ls').textContent = cfg.ls;
+  document.getElementById('v-ml').textContent = cfg.ml;
+  document.getElementById('v-mt').textContent = cfg.mt;
+  const sc = 0.45; // escala dots→px para preview
+  const lp = document.getElementById('lp');
+  lp.style.paddingLeft  = Math.round(cfg.ml * sc) + 'px';
+  lp.style.paddingTop   = Math.round(cfg.mt * sc) + 'px';
+  document.querySelector('.lp-brand').style.fontSize = Math.round(cfg.bs * sc * 0.5) + 'px';
+  document.getElementById('lp-name').style.fontSize  = Math.round(cfg.ns * sc * 0.5) + 'px';
+  document.getElementById('lp-code').style.fontSize  = Math.round(cfg.cs * sc * 0.5) + 'px';
+  document.getElementById('lp-loc').style.fontSize   = Math.round(cfg.ls * sc * 0.5) + 'px';
   document.getElementById('lp-bc').innerHTML = makeBarcodeSvg(DEMO.code, cfg.mw);
-  document.getElementById('lp-bc').style.height = Math.round(cfg.bh * sc * 0.45) + 'px';
-  const loc = document.getElementById('lp-loc');
-  loc.style.display = cfg.showLoc ? '' : 'none';
+  document.getElementById('lp-bc').style.height = Math.round(cfg.bh * sc * 0.5) + 'px';
+  document.getElementById('lp-loc').style.display = cfg.showLoc ? '' : 'none';
 }
 
 // ── Impresora ──────────────────────────────────────────────────────────
