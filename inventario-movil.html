@@ -101,7 +101,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 
 /* ITEM LIST */
 .item-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
-.item{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid var(--border);background:var(--surface);transition:background .15s;min-width:0}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto auto;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid var(--border);background:var(--surface);transition:background .15s;min-width:0}
 .item.counted{background:#f0fbf6}
 .item-info{flex:1;min-width:0;position:relative;padding:6px 28px 6px 6px;margin:-6px;border-radius:10px;cursor:pointer}
 .item-info:hover,.item-info:focus-visible{background:var(--bg);outline:none}
@@ -130,7 +130,7 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .item-action{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
 .item-action.danger{background:var(--danger-bg);border-color:#f5c4b3;color:var(--danger)}
 @media(min-width:641px){
-  .item{padding:9px 12px;grid-template-columns:minmax(240px,1fr) auto auto auto minmax(280px,auto)}
+  .item{padding:9px 12px;grid-template-columns:minmax(240px,1fr) auto auto auto auto minmax(280px,auto)}
   .item-actions{grid-column:auto;max-width:360px;padding-top:0}
   .item-meta-line{margin-top:4px}
   .item-stock-line{margin-top:4px}
@@ -151,6 +151,9 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .cond-mini-btn{width:44px;min-width:44px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:11px;font-weight:700;color:var(--muted);transition:all .15s}
 .cond-mini-btn:active{background:var(--bg)}
 .cond-mini-btn.has-issue{border-color:#f5a623;background:#fff7e0}
+/* AJUSTE RÁPIDO MINI BUTTON */
+.adj-mini-btn{width:44px;min-width:44px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:18px;font-weight:300;color:var(--muted);transition:all .15s;line-height:1}
+.adj-mini-btn:active{background:var(--bg)}
 
 /* CONDITION MODAL */
 #cond-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;align-items:flex-end}
@@ -292,6 +295,8 @@ body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 </style>
+<!-- ZXing: fallback para navegadores sin BarcodeDetector (iPhone/Safari) -->
+<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
 </head>
 <body>
 
@@ -1098,34 +1103,66 @@ async function associateCapturedBarcode(itemId) {
   } catch { toast('No se pudo asociar el código.'); }
 }
 
+let _zxingReader = null; // instancia ZXing (para iOS/Safari sin BarcodeDetector)
+
 async function startBarcodeCamera() {
-  if (!('BarcodeDetector' in window) || !navigator.mediaDevices?.getUserMedia) {
+  if (!navigator.mediaDevices?.getUserMedia) {
     toast('La cámara no está disponible en este navegador. Podés escribir el código.');
     focusBarcodeInput();
     return;
   }
   const overlay = document.getElementById('barcode-camera-overlay');
   overlay.classList.add('open');
+
+  const useNative = 'BarcodeDetector' in window;
+
   try {
-    const detector = new BarcodeDetector({ formats:['ean_13','ean_8','code_128','upc_a','upc_e','qr_code'] });
-    barcodeCameraStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:'environment' } }, audio:false });
-    const video = document.getElementById('barcode-camera-video');
-    video.srcObject = barcodeCameraStream;
-    await video.play();
-    const detectFrame = async () => {
-      if (!barcodeCameraStream) return;
-      try {
-        const codes = await detector.detect(video);
-        if (codes[0]?.rawValue) {
-          const value = codes[0].rawValue;
-          stopBarcodeCamera();
-          searchCapturedBarcode(value);
-          return;
-        }
-      } catch {}
-      barcodeCameraFrame = requestAnimationFrame(detectFrame);
-    };
-    detectFrame();
+    if (useNative) {
+      // Chrome/Android: usa BarcodeDetector nativa (más rápida)
+      const detector = new BarcodeDetector({ formats:['ean_13','ean_8','code_128','upc_a','upc_e','qr_code'] });
+      barcodeCameraStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:'environment' } }, audio:false });
+      const video = document.getElementById('barcode-camera-video');
+      video.srcObject = barcodeCameraStream;
+      await video.play();
+      const detectFrame = async () => {
+        if (!barcodeCameraStream) return;
+        try {
+          const codes = await detector.detect(video);
+          if (codes[0]?.rawValue) {
+            const value = codes[0].rawValue;
+            stopBarcodeCamera();
+            searchCapturedBarcode(value);
+            return;
+          }
+        } catch {}
+        barcodeCameraFrame = requestAnimationFrame(detectFrame);
+      };
+      detectFrame();
+    } else {
+      // iPhone/Safari: usa ZXing como decoder JS
+      if (typeof ZXingBrowser === 'undefined') {
+        throw new Error('ZXing no disponible');
+      }
+      const hints = new Map();
+      const formats = [
+        ZXingBrowser.BarcodeFormat.EAN_13,
+        ZXingBrowser.BarcodeFormat.EAN_8,
+        ZXingBrowser.BarcodeFormat.CODE_128,
+        ZXingBrowser.BarcodeFormat.UPC_A,
+        ZXingBrowser.BarcodeFormat.UPC_E,
+        ZXingBrowser.BarcodeFormat.QR_CODE,
+      ].filter(Boolean);
+      if (formats.length) hints.set(ZXingBrowser.DecodeHintType?.POSSIBLE_FORMATS, formats);
+      _zxingReader = new ZXingBrowser.BrowserMultiFormatReader(hints);
+      const video = document.getElementById('barcode-camera-video');
+      await _zxingReader.decodeFromVideoDevice(null, video, (result, err) => {
+        if (!result) return;
+        const value = result.getText();
+        stopBarcodeCamera();
+        searchCapturedBarcode(value);
+      });
+      barcodeCameraStream = video.srcObject;
+    }
   } catch {
     stopBarcodeCamera();
     toast('No se pudo abrir la cámara. Podés escribir el código.');
@@ -1136,6 +1173,7 @@ async function startBarcodeCamera() {
 function stopBarcodeCamera() {
   if (barcodeCameraFrame) cancelAnimationFrame(barcodeCameraFrame);
   barcodeCameraFrame = 0;
+  if (_zxingReader) { try { _zxingReader.reset(); } catch {} _zxingReader = null; }
   barcodeCameraStream?.getTracks().forEach(track => track.stop());
   barcodeCameraStream = null;
   const video = document.getElementById('barcode-camera-video');
@@ -1557,9 +1595,9 @@ function renderItems() {
       <div class="check-btn ${isCounted ? 'on' : ''}" ontouchstart="" onclick="toggleCount('${item.id}')">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
       </div>
+      <div class="adj-mini-btn" ontouchstart="" onclick="openQuickAdj('${esc(item.name)}')" title="Ajuste rápido de stock">±</div>
       <div class="cond-mini-btn ${itemHasProblem(item) ? 'has-issue' : ''}" ontouchstart="" onclick="openCondModal('${item.id}')" title="Estado del artículo">Estado</div>
       <div class="item-actions">
-        <button class="item-action" type="button" onclick="openQuickAdj('${esc(item.name)}')">± Ajuste</button>
         <button class="item-action" type="button" onclick="openPackageModal('${item.id}')">Cajas / bultos</button>
         <button class="item-action" type="button" onclick="openMetaModal('${item.id}')">Clasificar / ubicacion</button>
         <button class="item-action danger" type="button" onclick="openArchiveModal('${item.id}')">Dar de baja</button>
@@ -2519,6 +2557,19 @@ function _printLabelFallback(item) {
 async function printCurrentLabel() {
   if (!currentLabelItem?.internalCode) return;
   const zpl = _buildZpl(currentLabelItem);
+  // Intentar relay server-side (funciona desde mobile porque va por HTTPS al servidor)
+  try {
+    const r = await fetch('/api/print-job', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ zpl, itemCode: currentLabelItem.internalCode })
+    });
+    if (r.ok) {
+      showToast('Etiqueta enviada a la impresora Zebra');
+      return;
+    }
+  } catch (_) {}
+  // Fallback: intentar Browser Print local (solo funciona si están en la misma PC)
   const sent = await _tryZebraBrowserPrint(zpl);
   if (!sent) _printLabelFallback(currentLabelItem);
 }

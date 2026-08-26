@@ -234,6 +234,7 @@ let erpPurchaseOrders = [];
 let erpPurchaseReceipts = [];
 let erpPurchaseProducts = [];
 let erpInventoryMovements = [];
+const printJobQueue = []; // cola en memoria, no persiste — los jobs son efímeros
 let erpOperationalInventory = { categories: [], items: [] };
 let erpProviders = [];
 let erpVenues = [];
@@ -1930,6 +1931,106 @@ function startApprovalPanelServer() {
           return sendJson(response, { ok: false, error: error.message || "No se pudo reactivar el producto." }, 400);
         }
       }
+
+      // ── Cola de impresión (mobile → servidor → relay en PC) ──────────
+      if (request.method === "POST" && requestUrl.pathname === "/api/print-job") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "stock:read"]);
+        if (!user) return;
+        const body = await readJsonBody(request);
+        const zpl = normalizeText(body.zpl || "");
+        if (!zpl) return sendJson(response, { ok: false, error: "ZPL vacío." }, 400);
+        const job = { id: `pj-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`, zpl, createdAt: new Date().toISOString() };
+        printJobQueue.push(job);
+        if (printJobQueue.length > 50) printJobQueue.shift(); // limpia jobs viejos
+        return sendJson(response, { ok: true, jobId: job.id });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/api/print-job/next") {
+        const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write", "stock:kitchen_equipment:write", "stock:operations:write", "stock:read"]);
+        if (!user) return;
+        const job = printJobQueue.shift() || null;
+        return sendJson(response, { ok: true, job });
+      }
+
+      if (request.method === "GET" && requestUrl.pathname === "/print-relay") {
+        const html = `<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relay de impresión · Gratitud Gourmet</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}.card{background:#fff;border-radius:16px;padding:28px 32px;max-width:400px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.1);text-align:center}.logo{font-size:13px;font-weight:800;letter-spacing:.04em;color:#888;margin-bottom:16px}h1{font-size:20px;font-weight:700;margin-bottom:6px}.sub{font-size:14px;color:#666;margin-bottom:24px}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#e5e5e5;margin-right:8px}.dot.ok{background:#1d9e75}.dot.err{background:#d85a30}.status{display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin-bottom:8px}.log{text-align:left;background:#f9f9f9;border-radius:10px;padding:14px;font-size:12px;color:#555;max-height:200px;overflow-y:auto;margin-top:20px;line-height:1.6}.hint{font-size:12px;color:#aaa;margin-top:16px}</style>
+</head><body>
+<div class="card">
+  <div class="logo">GRATITUD GOURMET</div>
+  <h1>Relay de impresión</h1>
+  <p class="sub">Esta pestaña envía etiquetas automáticamente a la Zebra conectada a esta PC.</p>
+  <div class="status"><span class="dot" id="dot"></span><span id="status-txt">Iniciando…</span></div>
+  <div class="log" id="log"></div>
+  <p class="hint">Dejá esta pestaña abierta mientras uses el inventario desde el celular.</p>
+</div>
+<script>
+const BASE = 'http://localhost:9100';
+let printerDevice = null;
+let ok = false;
+
+function log(msg) {
+  const el = document.getElementById('log');
+  const t = new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  el.innerHTML = '<div>' + t + ' · ' + msg + '</div>' + el.innerHTML;
+}
+function setStatus(connected) {
+  ok = connected;
+  document.getElementById('dot').className = 'dot ' + (connected ? 'ok' : 'err');
+  document.getElementById('status-txt').textContent = connected ? 'Conectado a la impresora' : 'Sin impresora · reintentando…';
+}
+
+async function initPrinter() {
+  try {
+    const r = await fetch(BASE + '/available', { signal: AbortSignal.timeout(2000) });
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    printerDevice = (d.printer || [])[0] || null;
+    if (!printerDevice) throw new Error('Sin impresora');
+    setStatus(true);
+    log('Impresora lista: ' + (printerDevice.name || printerDevice.uid));
+  } catch {
+    setStatus(false);
+    printerDevice = null;
+  }
+}
+
+async function sendZpl(zpl) {
+  if (!printerDevice) { await initPrinter(); }
+  if (!printerDevice) { log('Sin impresora, descartando trabajo.'); return; }
+  try {
+    const r = await fetch(BASE + '/write', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ device: printerDevice, data: zpl }),
+    });
+    if (r.ok) { log('Etiqueta impresa ✓'); } else { log('Error al imprimir.'); }
+  } catch(e) { log('Error de comunicación: ' + e.message); setStatus(false); }
+}
+
+async function poll() {
+  try {
+    const r = await fetch('/api/print-job/next');
+    if (r.ok) {
+      const d = await r.json();
+      if (d.job?.zpl) {
+        log('Trabajo recibido, enviando a impresora…');
+        await sendZpl(d.job.zpl);
+      }
+    }
+  } catch {}
+  setTimeout(poll, 2000);
+}
+
+initPrinter().then(poll);
+setInterval(initPrinter, 30000);
+</script>
+</body></html>`;
+        response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        response.end(html);
+        return;
+      }
+      // ─────────────────────────────────────────────────────────────────
 
       if (request.method === "POST" && requestUrl.pathname === "/api/inventory-adjustment") {
         const user = requireAnyPanelPermission(request, response, ["purchases:write", "stock:write", "stock:kitchen:write"]);
