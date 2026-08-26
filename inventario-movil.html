@@ -2556,11 +2556,21 @@ function _printLabelFallback(item) {
 async function printCurrentLabel() {
   if (!currentLabelItem?.internalCode) return;
   const zpl = _buildZpl(currentLabelItem);
+  const item = currentLabelItem;
+  const location = [...new Set([locationTypeLabel(item.locationType), item.locationDetail || item.location].filter(Boolean))].join(' · ').substring(0, 35);
   try {
     const r = await fetch('/api/print-job', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ zpl, itemCode: currentLabelItem.internalCode })
+      body: JSON.stringify({
+        zpl,
+        data: {
+          name: item.name || 'Artículo',
+          code: item.internalCode || '',
+          location,
+          expiry: item.expiryDate ? ('Vence: ' + fmtDateOnly(item.expiryDate)) : '',
+        }
+      })
     });
     if (r.ok) {
       showToast('Etiqueta enviada a la impresora');

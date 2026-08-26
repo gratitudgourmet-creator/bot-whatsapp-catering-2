@@ -1958,74 +1958,249 @@ function startApprovalPanelServer() {
           "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:9100 http://localhost:9101;"
         );
         const html = `<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relay de impresión · Gratitud Gourmet</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}.card{background:#fff;border-radius:16px;padding:28px 32px;max-width:400px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.1);text-align:center}.logo{font-size:13px;font-weight:800;letter-spacing:.04em;color:#888;margin-bottom:16px}h1{font-size:20px;font-weight:700;margin-bottom:6px}.sub{font-size:14px;color:#666;margin-bottom:24px}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#e5e5e5;margin-right:8px}.dot.ok{background:#1d9e75}.dot.err{background:#d85a30}.status{display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin-bottom:8px}.log{text-align:left;background:#f9f9f9;border-radius:10px;padding:14px;font-size:12px;color:#555;max-height:200px;overflow-y:auto;margin-top:20px;line-height:1.6}.hint{font-size:12px;color:#aaa;margin-top:16px}</style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f0;padding:24px;min-height:100vh}
+.page{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media(max-width:640px){.page{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.logo{font-size:11px;font-weight:800;letter-spacing:.06em;color:#aaa;margin-bottom:12px;text-align:center}
+h1{font-size:18px;font-weight:700;margin-bottom:4px;text-align:center}
+h2{font-size:14px;font-weight:700;margin-bottom:16px;color:#333}
+.sub{font-size:13px;color:#888;margin-bottom:20px;text-align:center}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#e5e5e5;margin-right:7px;flex-shrink:0}
+.dot.ok{background:#1d9e75}.dot.err{background:#d85a30}
+.status{display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;margin-bottom:6px}
+.log{background:#f7f7f7;border-radius:8px;padding:12px;font-size:11px;color:#666;max-height:120px;overflow-y:auto;line-height:1.7;margin-top:16px}
+.hint{font-size:11px;color:#bbb;margin-top:12px;text-align:center}
+/* editor */
+.editor-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.field{margin-bottom:14px}
+.field label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#555;margin-bottom:5px}
+.field label span{font-weight:400;color:#888}
+input[type=range]{width:100%;accent-color:#1d9e75}
+input[type=checkbox]{accent-color:#1d9e75;width:16px;height:16px;vertical-align:middle;margin-right:6px}
+.btn{display:block;width:100%;padding:10px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px}
+.btn-primary{background:#1d9e75;color:#fff}.btn-primary:hover{background:#178a64}
+.btn-secondary{background:#f0f0f0;color:#333;margin-top:8px}.btn-secondary:hover{background:#e4e4e4}
+/* label preview */
+.preview-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.label-preview{width:270px;height:220px;background:#fff;border:1.5px solid #ccc;border-radius:4px;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;flex-direction:column;align-items:center;padding:8px 10px;gap:3px}
+.lp-brand{font-size:9px;font-weight:700;letter-spacing:.04em;color:#333;text-align:center;width:100%}
+.lp-name{font-size:13px;font-weight:600;color:#333;text-align:center;width:100%}
+.lp-barcode{display:flex;align-items:flex-end;justify-content:center;width:100%;flex:1}
+.lp-barcode svg{max-width:100%}
+.lp-code{font-size:10px;color:#444;text-align:center;width:100%;letter-spacing:.03em}
+.lp-loc{font-size:9px;color:#666;text-align:center;width:100%}
+.preview-note{font-size:11px;color:#aaa;text-align:center}
+</style>
 </head><body>
-<div class="card">
-  <div class="logo">GRATITUD GOURMET</div>
-  <h1>Relay de impresión</h1>
-  <p class="sub">Esta pestaña envía etiquetas automáticamente a la Zebra conectada a esta PC.</p>
-  <div class="status"><span class="dot" id="dot"></span><span id="status-txt">Iniciando…</span></div>
-  <div class="log" id="log"></div>
-  <p class="hint">Dejá esta pestaña abierta mientras uses el inventario desde el celular.</p>
-</div>
-<script>
-const BASE = 'http://localhost:9100'; // Chrome permite HTTP a localhost desde HTTPS (excepcion mixed-content)
-let printerDevice = null;
-let ok = false;
+<div class="page">
+  <!-- Panel izquierdo: estado + log -->
+  <div class="card">
+    <div class="logo">GRATITUD GOURMET</div>
+    <h1>Relay de impresión</h1>
+    <p class="sub">Mantené esta pestaña abierta para recibir trabajos desde el celular.</p>
+    <div class="status"><span class="dot" id="dot"></span><span id="status-txt">Iniciando…</span></div>
+    <div class="log" id="log"></div>
+    <p class="hint">Los trabajos del celular aparecen aquí y se envían automáticamente.</p>
+  </div>
 
+  <!-- Panel derecho: editor de etiqueta -->
+  <div class="card">
+    <h2>Diseño de etiqueta</h2>
+    <div class="editor-cols">
+      <div>
+        <div class="field">
+          <label>Altura del código de barras <span id="v-bh">120</span>px</label>
+          <input type="range" id="r-bh" min="60" max="160" value="120" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Ancho de barras <span id="v-mw">3</span></label>
+          <input type="range" id="r-mw" min="1" max="4" value="3" step="1" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Tamaño nombre <span id="v-ns">34</span></label>
+          <input type="range" id="r-ns" min="16" max="52" value="34" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label>Tamaño marca <span id="v-bs">22</span></label>
+          <input type="range" id="r-bs" min="12" max="32" value="22" oninput="updatePreview()">
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="ck-loc" checked onchange="updatePreview()"> Mostrar ubicación</label>
+        </div>
+        <div class="field">
+          <label><input type="checkbox" id="ck-exp" checked onchange="updatePreview()"> Mostrar vencimiento</label>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()">Guardar ajustes</button>
+        <button class="btn btn-secondary" onclick="testPrint()">Imprimir prueba</button>
+      </div>
+      <div class="preview-wrap">
+        <div class="label-preview" id="lp">
+          <div class="lp-brand">GRATITUD GOURMET</div>
+          <div class="lp-name" id="lp-name">Nombre del artículo</div>
+          <div class="lp-barcode" id="lp-bc"></div>
+          <div class="lp-code" id="lp-code">GG-EJEMPLO</div>
+          <div class="lp-loc" id="lp-loc">Freezer</div>
+        </div>
+        <div class="preview-note">Vista previa aproximada</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BASE = 'http://localhost:9100';
+let printerDevice = null;
+const DEMO = { name: 'Nombre del artículo', code: 'GG-EJEMPLO', location: 'Freezer', expiry: '' };
+
+// ── Configuración ──────────────────────────────────────────────────────
+const DEFAULTS = { bh:120, mw:3, ns:34, bs:22, showLoc:true, showExp:true };
+function loadSettings() {
+  try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('labelCfg') || '{}')); }
+  catch { return {...DEFAULTS}; }
+}
+function saveSettings() {
+  const cfg = getCfg();
+  localStorage.setItem('labelCfg', JSON.stringify(cfg));
+  showSaved();
+}
+function showSaved() {
+  const btn = document.querySelector('.btn-primary');
+  btn.textContent = '¡Guardado!'; setTimeout(() => btn.textContent = 'Guardar ajustes', 1500);
+}
+function getCfg() {
+  return {
+    bh: +document.getElementById('r-bh').value,
+    mw: +document.getElementById('r-mw').value,
+    ns: +document.getElementById('r-ns').value,
+    bs: +document.getElementById('r-bs').value,
+    showLoc: document.getElementById('ck-loc').checked,
+    showExp: document.getElementById('ck-exp').checked,
+  };
+}
+function applySettings(cfg) {
+  document.getElementById('r-bh').value = cfg.bh;
+  document.getElementById('r-mw').value = cfg.mw;
+  document.getElementById('r-ns').value = cfg.ns;
+  document.getElementById('r-bs').value = cfg.bs;
+  document.getElementById('ck-loc').checked = cfg.showLoc;
+  document.getElementById('ck-exp').checked = cfg.showExp;
+}
+
+// ── ZPL builder ────────────────────────────────────────────────────────
+function buildZpl(data, cfg) {
+  const name = (data.name || 'Artículo').substring(0, 28);
+  const code = data.code || '';
+  const location = (data.location || '').substring(0, 35);
+  const expiry = data.expiry || '';
+  const bsW = Math.round(cfg.bs * 0.55);
+  const nsW = Math.round(cfg.ns * 0.53);
+  const barcodeY = 8 + cfg.bs + 6 + cfg.ns + 8;
+  const humanReadableH = 18;
+  const afterBarcodeY = barcodeY + cfg.bh + humanReadableH + 8;
+  const lines = [
+    '^XA',
+    '^PW431^LL352^CI28^LH0,0',
+    \`^FO0,8^FB431,1,0,C^A0N,\${cfg.bs},\${bsW}^FDGRATITUD GOURMET^FS\`,
+    \`^FO0,\${8+cfg.bs+6}^FB431,1,0,C^A0N,\${cfg.ns},\${nsW}^FD\${name}^FS\`,
+    \`^FO30,\${barcodeY}^BY\${cfg.mw}^BCN,\${cfg.bh},Y,N,N^FD\${code}^FS\`,
+    cfg.showLoc && location ? \`^FO0,\${afterBarcodeY}^FB431,1,0,C^A0N,22,12^FD\${location}^FS\` : '',
+    cfg.showExp && expiry   ? \`^FO0,\${afterBarcodeY+26}^FB431,1,0,C^A0N,20,11^FD\${expiry}^FS\` : '',
+    '^XZ',
+  ];
+  return lines.filter(Boolean).join('\\n');
+}
+
+// ── Preview ────────────────────────────────────────────────────────────
+function makeBarcodeSvg(text, moduleW) {
+  // Code128 simplificado como barras visuales de referencia
+  const bars = [];
+  let x = 0;
+  const seed = [...text].reduce((a,c)=>a+c.charCodeAt(0),0);
+  const totalBars = 40;
+  for (let i = 0; i < totalBars; i++) {
+    const w = ((seed * (i+1) * 7 + i * 13) % 3) + 1;
+    if (i % 2 === 0) bars.push(\`<rect x="\${x}" y="0" width="\${w*moduleW}" height="100%" fill="#000"/>\`);
+    x += w * moduleW;
+  }
+  return \`<svg viewBox="0 0 \${x} 40" width="\${Math.min(x*2, 240)}" height="40" xmlns="http://www.w3.org/2000/svg">\${bars.join('')}</svg>\`;
+}
+function updatePreview() {
+  const cfg = getCfg();
+  document.getElementById('v-bh').textContent = cfg.bh;
+  document.getElementById('v-mw').textContent = cfg.mw;
+  document.getElementById('v-ns').textContent = cfg.ns;
+  document.getElementById('v-bs').textContent = cfg.bs;
+  // Escala preview: label 431px → 250px = 0.58x
+  const sc = 0.58;
+  document.querySelector('.lp-brand').style.fontSize = Math.round(cfg.bs * sc * 0.45) + 'px';
+  document.getElementById('lp-name').style.fontSize  = Math.round(cfg.ns * sc * 0.45) + 'px';
+  document.getElementById('lp-bc').innerHTML = makeBarcodeSvg(DEMO.code, cfg.mw);
+  document.getElementById('lp-bc').style.height = Math.round(cfg.bh * sc * 0.45) + 'px';
+  const loc = document.getElementById('lp-loc');
+  loc.style.display = cfg.showLoc ? '' : 'none';
+}
+
+// ── Impresora ──────────────────────────────────────────────────────────
 function log(msg) {
   const el = document.getElementById('log');
-  const t = new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const t = new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   el.innerHTML = '<div>' + t + ' · ' + msg + '</div>' + el.innerHTML;
 }
 function setStatus(connected) {
-  ok = connected;
   document.getElementById('dot').className = 'dot ' + (connected ? 'ok' : 'err');
-  document.getElementById('status-txt').textContent = connected ? 'Conectado a la impresora' : 'Sin impresora · reintentando…';
+  document.getElementById('status-txt').textContent = connected ? 'Conectado · ' + (printerDevice?.name || '') : 'Sin impresora · reintentando…';
 }
-
 async function initPrinter() {
   try {
     const r = await fetch(BASE + '/available', { signal: AbortSignal.timeout(2000) });
     if (!r.ok) throw new Error();
     const d = await r.json();
     printerDevice = (d.printer || [])[0] || null;
-    if (!printerDevice) throw new Error('Sin impresora');
+    if (!printerDevice) throw new Error();
     setStatus(true);
-    log('Impresora lista: ' + (printerDevice.name || printerDevice.uid));
-  } catch {
-    setStatus(false);
-    printerDevice = null;
-  }
+  } catch { setStatus(false); printerDevice = null; }
 }
-
 async function sendZpl(zpl) {
-  if (!printerDevice) { await initPrinter(); }
-  if (!printerDevice) { log('Sin impresora, descartando trabajo.'); return; }
+  if (!printerDevice) await initPrinter();
+  if (!printerDevice) { log('Sin impresora, descartando.'); return; }
   try {
     const r = await fetch(BASE + '/write', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ device: printerDevice, data: zpl }),
     });
-    if (r.ok) { log('Etiqueta impresa ✓'); } else { log('Error al imprimir.'); }
-  } catch(e) { log('Error de comunicación: ' + e.message); setStatus(false); }
+    if (r.ok) log('Etiqueta impresa ✓'); else log('Error al imprimir.');
+  } catch(e) { log('Error: ' + e.message); setStatus(false); }
+}
+async function testPrint() {
+  const zpl = buildZpl(DEMO, getCfg());
+  log('Imprimiendo prueba…');
+  await sendZpl(zpl);
 }
 
+// ── Polling ────────────────────────────────────────────────────────────
 async function poll() {
   try {
     const r = await fetch('/api/print-job/next');
     if (r.ok) {
       const d = await r.json();
-      if (d.job?.zpl) {
-        log('Trabajo recibido, enviando a impresora…');
-        await sendZpl(d.job.zpl);
+      if (d.job) {
+        log('Trabajo recibido…');
+        // Si viene con datos del item, reconstruye ZPL con ajustes locales
+        const zpl = d.job.data ? buildZpl(d.job.data, getCfg()) : d.job.zpl;
+        await sendZpl(zpl);
       }
     }
   } catch {}
   setTimeout(poll, 2000);
 }
 
+// ── Init ───────────────────────────────────────────────────────────────
+const saved = loadSettings();
+applySettings(saved);
+updatePreview();
 initPrinter().then(poll);
 setInterval(initPrinter, 30000);
 </script>
