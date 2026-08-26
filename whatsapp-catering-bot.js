@@ -1965,7 +1965,7 @@ function startApprovalPanelServer() {
   <p class="hint">Dejá esta pestaña abierta mientras uses el inventario desde el celular.</p>
 </div>
 <script>
-const BASE = 'https://localhost:9101'; // Browser Print HTTPS (evita mixed-content desde HTTPS)
+const BASE = 'http://localhost:9100'; // Chrome permite HTTP a localhost desde HTTPS (excepcion mixed-content)
 let printerDevice = null;
 let ok = false;
 
