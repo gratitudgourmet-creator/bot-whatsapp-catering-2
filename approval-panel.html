@@ -8006,6 +8006,45 @@
       white-space: nowrap;
     }
 
+    .wa-opp-kanban {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(5, minmax(180px, 1fr));
+      overflow-x: auto;
+      padding: 2px 2px 10px;
+      scrollbar-width: thin;
+    }
+    .wa-opp-col {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 200px;
+      padding: 10px;
+    }
+    .wa-opp-col h3 {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .wa-opp-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      margin-bottom: 8px;
+      padding: 9px;
+    }
+    .wa-opp-card .name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .wa-opp-card .meta { font-size: 11px; color: var(--text-soft); margin-bottom: 5px; }
+    .wa-opp-card .suggested-msg { font-size: 11px; background: var(--surface-soft); border-radius: 5px; padding: 5px 7px; margin-bottom: 6px; white-space: pre-wrap; word-break: break-word; }
+    .wa-opp-card-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+    .wa-opp-card-actions button { font-size: 10px; padding: 3px 7px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; }
+    .wa-opp-card-actions button:hover { background: var(--surface-hover, #f5f5f5); }
+    #wa-opp-form-modal { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 400; display: flex; align-items: center; justify-content: center; }
+    #wa-opp-form-modal .erp-form-panel { background: var(--surface); border-radius: 12px; padding: 24px; width: min(540px, 95vw); max-height: 90vh; overflow-y: auto; position: relative; }
+    #wa-opp-form-modal .erp-form-close { position: absolute; top: 12px; right: 14px; font-size: 20px; background: none; border: none; cursor: pointer; color: var(--text-soft); }
+
     .venue-card {
       background: var(--surface-soft);
       border: 1px solid var(--line);
@@ -10207,6 +10246,7 @@
       <div class="workspace-menu" data-menu-view="commercial">
         <button class="workspace-tab" data-view="commercial">Comercial</button>
         <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-wa-opportunities-section">Oportunidades WA</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-opportunities-section">Oportunidades</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-pipeline-section">Pipeline</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-quotes-section">Presupuestos</button>
@@ -10887,6 +10927,42 @@
         <div class="metric"><span>Listas para presupuestar</span><strong id="m-ready">0</strong></div>
         <div class="metric"><span>Seguimientos hoy</span><strong id="m-today">0</strong></div>
         <div class="metric"><span>Vencidas</span><strong id="m-overdue">0</strong></div>
+      </section>
+
+      <section id="commercial-wa-opportunities-section" class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2 class="section-title">Oportunidades WhatsApp</h2>
+            <p class="subtitle">Consultas recibidas por WhatsApp o registradas manualmente por el equipo.</p>
+          </div>
+          <button class="approve" type="button" onclick="showWaOpportunityForm()">Nueva oportunidad</button>
+        </div>
+        <div id="wa-opp-kanban" class="wa-opp-kanban">
+          <div class="wa-opp-col" data-status="nueva"><h3>Nueva</h3><div class="wa-opp-cards"></div></div>
+          <div class="wa-opp-col" data-status="contactada"><h3>Contactada</h3><div class="wa-opp-cards"></div></div>
+          <div class="wa-opp-col" data-status="cotizada"><h3>Cotizada</h3><div class="wa-opp-cards"></div></div>
+          <div class="wa-opp-col" data-status="ganada"><h3>Ganada</h3><div class="wa-opp-cards"></div></div>
+          <div class="wa-opp-col" data-status="perdida"><h3>Perdida</h3><div class="wa-opp-cards"></div></div>
+        </div>
+        <div id="wa-opp-form-modal" class="erp-form-modal" style="display:none;">
+          <div class="erp-form-panel">
+            <button class="erp-form-close" onclick="closeWaOpportunityForm()">×</button>
+            <h3 id="wa-opp-form-title">Nueva oportunidad</h3>
+            <form id="wa-opp-form" class="form-grid quick-form" onsubmit="saveWaOpportunity(event)">
+              <input type="hidden" id="wa-opp-id">
+              <div class="form-field"><label>Nombre</label><input id="wa-opp-name" placeholder="Nombre del contacto"></div>
+              <div class="form-field"><label>Teléfono</label><input id="wa-opp-phone" placeholder="+54..."></div>
+              <div class="form-field"><label>Tipo de evento</label><input id="wa-opp-event-type" placeholder="Casamiento, Corporativo..."></div>
+              <div class="form-field"><label>Fecha tentativa</label><input id="wa-opp-event-date" type="date"></div>
+              <div class="form-field"><label>Comensales</label><input id="wa-opp-guests" type="number" min="1" placeholder="Cantidad"></div>
+              <div class="form-field full"><label>Notas</label><textarea id="wa-opp-notes" rows="3" placeholder="Observaciones..."></textarea></div>
+              <div class="form-field full toolbar-actions" style="justify-content:flex-end;gap:8px;">
+                <button type="button" class="filter" onclick="closeWaOpportunityForm()">Cancelar</button>
+                <button type="submit" class="approve">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </section>
 
       <section id="commercial-opportunities-section" class="toolbar">
@@ -14582,6 +14658,7 @@
         renderVenueList();
         renderErpQuotes();
         renderCommercialCustomers();
+        loadWaOpportunities();
       }
       if (canAccessTab("events")) {
         renderEventsOperationalSummary(dashboard);
@@ -22133,6 +22210,110 @@
         </article>
       `).join("");
     }
+
+    // ── WhatsApp Oportunidades ─────────────────────────────────────────────
+    let _waOpportunities = [];
+
+    async function loadWaOpportunities() {
+      try {
+        const r = await fetch("/api/opportunities", { credentials: "include" });
+        if (!r.ok) return;
+        const data = await r.json();
+        _waOpportunities = data.opportunities || data || [];
+        renderWaKanban();
+      } catch (_) {}
+    }
+
+    function renderWaKanban() {
+      const statuses = ["nueva", "contactada", "cotizada", "ganada", "perdida"];
+      for (const status of statuses) {
+        const col = document.querySelector(`.wa-opp-col[data-status="${status}"] .wa-opp-cards`);
+        if (!col) continue;
+        const items = _waOpportunities.filter(o => o.status === status);
+        if (!items.length) { col.innerHTML = `<div style="font-size:12px;color:var(--text-soft);text-align:center;padding:16px 0;">Sin oportunidades</div>`; continue; }
+        col.innerHTML = items.map(o => {
+          const meta = [o.eventType, o.eventDate, o.guestCount ? `${o.guestCount} comensales` : ""].filter(Boolean).join(" · ");
+          return `<div class="wa-opp-card" data-id="${escapeAttribute(o.id)}">
+            <div class="name">${escapeHtml(o.name || o.phone || "Sin nombre")}</div>
+            <div class="meta">${escapeHtml(o.phone || "")}${meta ? " · " + escapeHtml(meta) : ""}</div>
+            ${o.notes ? `<div class="meta">${escapeHtml(o.notes)}</div>` : ""}
+            ${o.suggestedMessage ? `<div class="suggested-msg">${escapeHtml(o.suggestedMessage)}</div>` : ""}
+            <div class="wa-opp-card-actions">
+              ${statuses.filter(s => s !== status).map(s => `<button onclick="updateWaOpp('${escapeAttribute(o.id)}','${s}')">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join("")}
+              <button onclick="showWaOpportunityForm('${escapeAttribute(o.id)}')">Editar</button>
+              <button onclick="deleteWaOpp('${escapeAttribute(o.id)}')">Eliminar</button>
+            </div>
+          </div>`;
+        }).join("");
+      }
+    }
+
+    async function updateWaOpp(id, status) {
+      try {
+        await fetch(`/api/opportunities/${encodeURIComponent(id)}`, {
+          method: "PATCH", credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status })
+        });
+        await loadWaOpportunities();
+      } catch (_) {}
+    }
+
+    async function deleteWaOpp(id) {
+      if (!confirm("¿Eliminar esta oportunidad?")) return;
+      try {
+        await fetch(`/api/opportunities/${encodeURIComponent(id)}`, { method: "DELETE", credentials: "include" });
+        await loadWaOpportunities();
+      } catch (_) {}
+    }
+
+    function showWaOpportunityForm(id = "") {
+      const opp = _waOpportunities.find(o => o.id === id) || {};
+      document.getElementById("wa-opp-form-title").textContent = id ? "Editar oportunidad" : "Nueva oportunidad";
+      document.getElementById("wa-opp-id").value = id;
+      document.getElementById("wa-opp-name").value = opp.name || "";
+      document.getElementById("wa-opp-phone").value = opp.phone || "";
+      document.getElementById("wa-opp-event-type").value = opp.eventType || "";
+      document.getElementById("wa-opp-event-date").value = opp.eventDate || "";
+      document.getElementById("wa-opp-guests").value = opp.guestCount || "";
+      document.getElementById("wa-opp-notes").value = opp.notes || "";
+      document.getElementById("wa-opp-form-modal").style.display = "flex";
+    }
+
+    function closeWaOpportunityForm() {
+      document.getElementById("wa-opp-form-modal").style.display = "none";
+    }
+
+    async function saveWaOpportunity(e) {
+      e.preventDefault();
+      const id = document.getElementById("wa-opp-id").value;
+      const body = {
+        name: document.getElementById("wa-opp-name").value.trim(),
+        phone: document.getElementById("wa-opp-phone").value.trim(),
+        eventType: document.getElementById("wa-opp-event-type").value.trim(),
+        eventDate: document.getElementById("wa-opp-event-date").value,
+        guestCount: parseInt(document.getElementById("wa-opp-guests").value) || null,
+        notes: document.getElementById("wa-opp-notes").value.trim(),
+      };
+      try {
+        if (id) {
+          await fetch(`/api/opportunities/${encodeURIComponent(id)}`, {
+            method: "PATCH", credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+          });
+        } else {
+          await fetch("/api/opportunities", {
+            method: "POST", credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...body, source: "manual" })
+          });
+        }
+        closeWaOpportunityForm();
+        await loadWaOpportunities();
+      } catch (_) {}
+    }
+    // ── End WhatsApp Oportunidades ─────────────────────────────────────────
 
     function showVenueForm(id = "", options = {}) {
       const venue = (erpData.venues || []).find((item) => item.id === id) || { name: options.name || "" };

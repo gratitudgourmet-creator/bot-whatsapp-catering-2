@@ -85,6 +85,7 @@ const ERP_USERS_FILE = dataPath("usuarios-erp.json");
 const ERP_AUDIT_FILE = dataPath("historial-erp.json");
 const ERP_ROLES_FILE = dataPath("roles-erp.json");
 const ERP_INVENTARIO_SESION_FILE = dataPath("inventario-sesion.json");
+const ERP_OPPORTUNITIES_FILE = dataPath("oportunidades.json");
 const ERP_CONFORMITIES_DIR = dataPath("conformidades-eventos");
 const CATERING_DB_FILE = dataPath(process.env.CATERING_DB_FILE || BOT_CONFIG.cateringDbFile || "catering.db");
 const ZKTECO_CONFIG = loadZktecoConfig(process.env, {
@@ -234,6 +235,7 @@ let erpPurchaseOrders = [];
 let erpPurchaseReceipts = [];
 let erpPurchaseProducts = [];
 let erpInventoryMovements = [];
+let erpOpportunities = [];
 const printJobQueue = []; // cola en memoria, no persiste — los jobs son efímeros
 let erpOperationalInventory = { categories: [], items: [] };
 let erpProviders = [];
@@ -1950,6 +1952,59 @@ function startApprovalPanelServer() {
         if (!user) return;
         const job = printJobQueue.shift() || null;
         return sendJson(response, { ok: true, job });
+      }
+
+      // ── OPORTUNIDADES ──────────────────────────────────────────────────
+      if (requestUrl.pathname === "/api/opportunities") {
+        const user = requireAnyPanelPermission(request, response, ["events:write", "events:read", "purchases:write"]);
+        if (!user) return;
+
+        if (request.method === "GET") {
+          const list = erpOpportunities.map(o => ({ ...o, suggestedMessage: buildSuggestedMessage(o) }));
+          return sendJson(response, { ok: true, opportunities: list });
+        }
+
+        if (request.method === "POST") {
+          const body = await readJsonBody(request);
+          const opp = createOrUpdateOpportunity({
+            phone: (body.phone || "").trim(),
+            name: (body.name || "").trim().toUpperCase(),
+            source: "manual",
+            notes: (body.notes || "").trim().toUpperCase(),
+            eventType: (body.eventType || "").trim().toUpperCase(),
+            eventDate: body.eventDate || "",
+            guestCount: body.guestCount ? Number(body.guestCount) : null,
+          });
+          return sendJson(response, { ok: true, opportunity: { ...opp, suggestedMessage: buildSuggestedMessage(opp) } });
+        }
+      }
+
+      if (requestUrl.pathname.startsWith("/api/opportunities/")) {
+        const user = requireAnyPanelPermission(request, response, ["events:write", "events:read", "purchases:write"]);
+        if (!user) return;
+        const id = requestUrl.pathname.split("/").pop();
+        const idx = erpOpportunities.findIndex(o => o.id === id);
+        if (idx === -1) return sendJson(response, { ok: false, error: "No encontrado" }, 404);
+
+        if (request.method === "PATCH") {
+          const body = await readJsonBody(request);
+          const opp = erpOpportunities[idx];
+          if (body.status !== undefined)    opp.status    = body.status;
+          if (body.name !== undefined)      opp.name      = (body.name || "").toUpperCase();
+          if (body.notes !== undefined)     opp.notes     = (body.notes || "").toUpperCase();
+          if (body.eventType !== undefined) opp.eventType = (body.eventType || "").toUpperCase();
+          if (body.eventDate !== undefined) opp.eventDate = body.eventDate;
+          if (body.guestCount !== undefined) opp.guestCount = body.guestCount ? Number(body.guestCount) : null;
+          if (body.responsable !== undefined) opp.responsable = body.responsable;
+          saveOpportunities();
+          return sendJson(response, { ok: true, opportunity: { ...opp, suggestedMessage: buildSuggestedMessage(opp) } });
+        }
+
+        if (request.method === "DELETE") {
+          erpOpportunities.splice(idx, 1);
+          saveOpportunities();
+          return sendJson(response, { ok: true });
+        }
       }
 
       if (request.method === "GET" && requestUrl.pathname === "/print-relay") {
@@ -3782,6 +3837,7 @@ function loadBusinessData() {
   panelRoleDefinitions = normalizeRoleDefinitions(readJsonFile(ERP_ROLES_FILE, {}));
   erpUsers = normalizeUserList(readJsonFile(ERP_USERS_FILE, []));
   auditRecords = loadAuditFromStorage();
+  erpOpportunities = readJsonFile(ERP_OPPORTUNITIES_FILE, []);
   ensureDefaultAdminUser();
   syncProvidersFromPurchasesAndConfig();
   syncVenuesFromEventsAndConfig();
@@ -4347,6 +4403,46 @@ function saveErpInventory() {
 function saveErpOperationalInventory() {
   _bustCache("op_inventory");
   writeJsonFile(ERP_OPERATIONAL_INVENTORY_FILE, erpOperationalInventory);
+}
+
+// ── OPORTUNIDADES CRM ──────────────────────────────────────────────────
+
+function saveOpportunities() {
+  writeJsonFile(ERP_OPPORTUNITIES_FILE, erpOpportunities);
+}
+
+function createOrUpdateOpportunity({ phone, name, source, notes = "", eventType = "", eventDate = "", guestCount = null }) {
+  const active = erpOpportunities.find(o => o.phone === phone && !["ganada", "perdida"].includes(o.status));
+  if (active) {
+    if (notes) active.notes = [active.notes, notes].filter(Boolean).join("\n");
+    if (eventType && !active.eventType) active.eventType = eventType;
+    if (name && !active.name) active.name = name;
+    saveOpportunities();
+    return active;
+  }
+  const opp = {
+    id: "opp_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+    createdAt: new Date().toISOString(),
+    status: "nueva",
+    phone,
+    name: name || "",
+    source: source || "whatsapp",
+    notes,
+    eventType,
+    eventDate,
+    guestCount,
+    responsable: "",
+  };
+  erpOpportunities.unshift(opp);
+  saveOpportunities();
+  return opp;
+}
+
+function buildSuggestedMessage(opp) {
+  const nombre = opp.name ? opp.name.split(" ")[0] : "";
+  const saludo = nombre ? `Hola ${nombre}` : "Hola";
+  const evento = opp.eventType ? ` sobre tu consulta de ${opp.eventType}` : "";
+  return `${saludo}, gracias por contactarte con Gratitud Gourmet${evento}. Me llamo Joaquín y soy el responsable de eventos. ¿Podemos coordinar una llamada para contarte todos los detalles?`;
 }
 
 function saveErpPurchases() {
@@ -13142,6 +13238,11 @@ async function processIncomingMessage(message) {
     return;
   }
 
+  // Creación manual de oportunidad desde el equipo (vCard o número + contexto)
+  if (ADMIN_INCOMING_IDS.has(phone)) {
+    if (await tryHandleOpportunityFromTeam(message, text)) return;
+  }
+
   if (!(await isTestMessage(message)) && await isInternalTeamMessage(message)) {
     console.log(`Mensaje interno ignorado: ${phone}`);
     return;
@@ -13737,6 +13838,14 @@ async function requestInitialConversationPermission({
   console.log(
     `Nueva solicitud pendiente (${approvalId}) de ${customerPhone}. Revise el panel local.`
   );
+
+  // Auto-crear oportunidad CRM
+  createOrUpdateOpportunity({
+    phone: customerPhone,
+    name: (customerContactName || customerDisplayPhone || "").toUpperCase(),
+    source: "whatsapp",
+    notes: customerMessage ? `PRIMER MENSAJE: "${customerMessage}"` : "",
+  });
 }
 
 function findPendingApprovalIdByCustomer(customerPhone) {
@@ -13766,6 +13875,45 @@ async function deliverReplyPlan(phone, replyPlan) {
   if (replyPlan.webhookPayload) {
     await sendBudgetRequestToWebhook(replyPlan.webhookPayload);
   }
+}
+
+// ── Oportunidad desde mensaje del equipo ───────────────────────────────
+async function tryHandleOpportunityFromTeam(message, text) {
+  // Caso 1: es una vCard (contacto reenviado)
+  if (message.type === "vcard" || message.type === "multi_vcard") {
+    const vcardBody = message.body || message.vCards?.[0] || "";
+    const phoneMatch = vcardBody.match(/TEL[^:]*:([^\r\n]+)/i);
+    const nameMatch  = vcardBody.match(/FN:([^\r\n]+)/i);
+    if (!phoneMatch) return false;
+    const rawPhone = phoneMatch[1].replace(/\D/g, "");
+    const contactPhone = rawPhone.length >= 10 ? rawPhone + "@c.us" : null;
+    if (!contactPhone) return false;
+    const contactName = (nameMatch?.[1] || "").trim().toUpperCase();
+    const opp = createOrUpdateOpportunity({ phone: contactPhone, name: contactName, source: "manual" });
+    await client.sendMessage(message.from, `✅ Oportunidad creada para *${contactName || contactPhone}*. La encontrás en el panel ERP → Oportunidades.`);
+    return true;
+  }
+
+  // Caso 2: número + contexto opcional  (+54... o 011... o 15...)
+  const phonePattern = /(\+?[\d\s\-()]{8,20})/;
+  const match = text.match(phonePattern);
+  if (!match) return false;
+  const digits = (match[1] || "").replace(/\D/g, "");
+  if (digits.length < 8) return false;
+  const contactPhone = digits + "@c.us";
+  // El resto del texto (sin el número) es el contexto/notas
+  const context = text.replace(match[0], "").replace(/^[\s\-—·]+/, "").trim().toUpperCase();
+  // Detectar palabras clave de tipo de evento
+  const eventKeywords = { casamiento: "CASAMIENTO", boda: "CASAMIENTO", cumple: "CUMPLEAÑOS", cumpleaños: "CUMPLEAÑOS", corporativo: "CORPORATIVO", empresa: "CORPORATIVO", social: "EVENTO SOCIAL", graduacion: "GRADUACIÓN", graduación: "GRADUACIÓN", bautismo: "BAUTISMO", baby: "BABY SHOWER" };
+  let eventType = "";
+  for (const [kw, type] of Object.entries(eventKeywords)) {
+    if (context.toLowerCase().includes(kw)) { eventType = type; break; }
+  }
+  const guestMatch = context.match(/(\d+)\s*(pers|inv|pax)/i);
+  const guestCount = guestMatch ? Number(guestMatch[1]) : null;
+  const opp = createOrUpdateOpportunity({ phone: contactPhone, name: "", source: "manual", notes: context, eventType, guestCount });
+  await client.sendMessage(message.from, `✅ Oportunidad creada para *${digits}*${eventType ? ` (${eventType})` : ""}. La encontrás en el panel ERP → Oportunidades.`);
+  return true;
 }
 
 async function handleAdminCommand(text) {
