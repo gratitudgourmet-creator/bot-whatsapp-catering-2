@@ -13266,8 +13266,12 @@ async function processIncomingMessage(message) {
   }
 
   // Creación manual de oportunidad desde el equipo (vCard o número + contexto)
-  if (ADMIN_INCOMING_IDS.has(phone)) {
+  const isAdminPhone = ADMIN_INCOMING_IDS.has(phone) ||
+    [...ADMIN_INCOMING_IDS].some(id => id.replace(/@\w+$/, "") === phone.replace(/@\w+$/, ""));
+  if (isAdminPhone) {
     if (await tryHandleOpportunityFromTeam(message, text)) return;
+    // Si es mensaje del equipo pero no matcheó ningún patrón, ignorar — no crear oportunidad falsa
+    return;
   }
 
   if (!(await isTestMessage(message)) && await isInternalTeamMessage(message)) {
@@ -13921,12 +13925,12 @@ async function tryHandleOpportunityFromTeam(message, text) {
     return true;
   }
 
-  // Caso 2: número + contexto opcional  (+54... o 011... o 15...)
-  const phonePattern = /(\+?[\d\s\-()]{8,20})/;
+  // Caso 2: número de teléfono explícito (+54... o secuencia de ≥10 dígitos)
+  const phonePattern = /(\+[\d\s\-()]{7,20}|\b\d[\d\s\-()]{9,18}\d\b)/;
   const match = text.match(phonePattern);
   if (!match) return false;
   const digits = (match[1] || "").replace(/\D/g, "");
-  if (digits.length < 8) return false;
+  if (digits.length < 10) return false;
   const contactPhone = digits + "@c.us";
   // El resto del texto (sin el número) es el contexto/notas
   const context = text.replace(match[0], "").replace(/^[\s\-—·]+/, "").trim().toUpperCase();
