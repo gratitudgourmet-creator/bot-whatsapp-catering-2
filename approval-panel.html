@@ -10246,6 +10246,7 @@
       <div class="workspace-menu" data-menu-view="commercial">
         <button class="workspace-tab" data-view="commercial">Comercial</button>
         <div class="workspace-menu-panel">
+          <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-wa-status-section">Estado WhatsApp</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-wa-opportunities-section">Oportunidades WA</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-opportunities-section">Oportunidades</button>
           <button class="workspace-subitem" data-view="commercial" data-anchor="commercial-pipeline-section">Pipeline</button>
@@ -10927,6 +10928,26 @@
         <div class="metric"><span>Listas para presupuestar</span><strong id="m-ready">0</strong></div>
         <div class="metric"><span>Seguimientos hoy</span><strong id="m-today">0</strong></div>
         <div class="metric"><span>Vencidas</span><strong id="m-overdue">0</strong></div>
+      </section>
+
+      <section id="commercial-wa-status-section" class="erp-section">
+        <div class="toolbar-actions" style="justify-content:space-between;margin-bottom:12px;">
+          <div>
+            <h2 class="section-title">Estado de WhatsApp</h2>
+            <p class="subtitle">Conexion del bot con WhatsApp Web.</p>
+          </div>
+          <button class="filter" type="button" onclick="loadWaStatus()">Actualizar</button>
+        </div>
+        <div id="wa-status-box" style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+          <div id="wa-status-indicator" style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:10px;border:1px solid var(--line);background:var(--surface-soft);min-width:220px;">
+            <span id="wa-status-dot" style="width:12px;height:12px;border-radius:50%;background:#ccc;flex-shrink:0;"></span>
+            <span id="wa-status-label" style="font-size:14px;font-weight:700;">Cargando...</span>
+          </div>
+          <div id="wa-qr-container" style="display:none;flex-direction:column;align-items:center;gap:8px;">
+            <p style="font-size:12px;color:var(--text-soft);">Escaneá con WhatsApp → Dispositivos vinculados → Vincular dispositivo</p>
+            <canvas id="wa-qr-canvas" style="border-radius:8px;border:1px solid var(--line);"></canvas>
+          </div>
+        </div>
       </section>
 
       <section id="commercial-wa-opportunities-section" class="erp-section">
@@ -12861,6 +12882,7 @@
     </section>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js"></script>
   <script>
     let allChats = [];
     let allCustomers = [];
@@ -14658,6 +14680,7 @@
         renderVenueList();
         renderErpQuotes();
         renderCommercialCustomers();
+        loadWaStatus();
         loadWaOpportunities();
       }
       if (canAccessTab("events")) {
@@ -22210,6 +22233,53 @@
         </article>
       `).join("");
     }
+
+    // ── WhatsApp Status ────────────────────────────────────────────────────
+    let _waStatusInterval = null;
+
+    async function loadWaStatus() {
+      try {
+        const r = await fetch("/api/whatsapp-status", { credentials: "include" });
+        if (!r.ok) return;
+        const data = await r.json();
+        renderWaStatus(data.status, data.qr);
+      } catch (_) {}
+    }
+
+    function renderWaStatus(status, qr) {
+      const dot = document.getElementById("wa-status-dot");
+      const label = document.getElementById("wa-status-label");
+      const qrContainer = document.getElementById("wa-qr-container");
+      if (!dot) return;
+
+      const cfg = {
+        ready:        { color: "#22c55e", text: "Conectado" },
+        authenticated:{ color: "#22c55e", text: "Autenticado" },
+        connecting:   { color: "#f59e0b", text: "Conectando..." },
+        qr:           { color: "#f59e0b", text: "Esperando escaneo QR" },
+        disconnected: { color: "#ef4444", text: "Desconectado" },
+        auth_failure: { color: "#ef4444", text: "Error de autenticacion" },
+      };
+      const s = cfg[status] || { color: "#ccc", text: status };
+      dot.style.background = s.color;
+      label.textContent = s.text;
+
+      if (status === "qr" && qr) {
+        qrContainer.style.display = "flex";
+        const canvas = document.getElementById("wa-qr-canvas");
+        if (canvas && typeof QRCode !== "undefined") {
+          QRCode.toCanvas(canvas, qr, { errorCorrectionLevel: "M", margin: 2, width: 260 }, () => {});
+        }
+        // Poll every 20s while waiting for scan
+        if (!_waStatusInterval) {
+          _waStatusInterval = setInterval(loadWaStatus, 20000);
+        }
+      } else {
+        qrContainer.style.display = "none";
+        if (_waStatusInterval) { clearInterval(_waStatusInterval); _waStatusInterval = null; }
+      }
+    }
+    // ── End WhatsApp Status ────────────────────────────────────────────────
 
     // ── WhatsApp Oportunidades ─────────────────────────────────────────────
     let _waOpportunities = [];

@@ -520,29 +520,47 @@ loadBusinessData();
 
 console.log(`Version de WhatsApp Web configurada: ${WHATSAPP_WEB_VERSION || "actual"}`);
 
+let waStatus = "connecting"; // connecting | qr | authenticated | ready | disconnected | auth_failure
+let waQrData = null; // raw QR string (for generating image client-side)
+let waQrBase64 = null; // QR as data URL
+
 client.on("qr", (qr) => {
   console.log("Escanee este QR con WhatsApp para iniciar sesion:");
   qrcode.generate(qr, { small: true });
+  waStatus = "qr";
+  waQrData = qr;
+  waQrBase64 = null; // rendered client-side
 });
 
 client.on("authenticated", () => {
   console.log("WhatsApp autenticado correctamente.");
+  waStatus = "authenticated";
+  waQrData = null;
+  waQrBase64 = null;
 });
 
 client.on("auth_failure", (message) => {
   console.error("Fallo la autenticacion de WhatsApp:", message);
+  waStatus = "auth_failure";
 });
 
 client.on("disconnected", (reason) => {
   console.error("WhatsApp se desconecto:", reason);
+  waStatus = "disconnected";
+  waQrData = null;
+  waQrBase64 = null;
 });
 
 client.on("loading_screen", (percent, message) => {
   console.log(`Cargando WhatsApp: ${percent}% - ${message}`);
+  waStatus = "connecting";
 });
 
 client.on("ready", async () => {
   console.log("Bot corriendo. WhatsApp conectado correctamente.");
+  waStatus = "ready";
+  waQrData = null;
+  waQrBase64 = null;
   await processUnreadMessagesOnStartup();
 });
 
@@ -1955,6 +1973,12 @@ function startApprovalPanelServer() {
       }
 
       // ── OPORTUNIDADES ──────────────────────────────────────────────────
+      if (request.method === "GET" && requestUrl.pathname === "/api/whatsapp-status") {
+        const user = requireAnyPanelPermission(request, response, ["events:write", "events:read", "purchases:write", "stock:read"]);
+        if (!user) return;
+        return sendJson(response, { ok: true, status: waStatus, qr: waQrData });
+      }
+
       if (requestUrl.pathname === "/api/opportunities") {
         const user = requireAnyPanelPermission(request, response, ["events:write", "events:read", "purchases:write"]);
         if (!user) return;
