@@ -1974,7 +1974,10 @@ function startApprovalPanelServer() {
 
       // ── OPORTUNIDADES ──────────────────────────────────────────────────
       if (request.method === "GET" && requestUrl.pathname === "/api/whatsapp-status") {
-        const user = requireAnyPanelPermission(request, response, ["events:write", "events:read", "purchases:write", "stock:read"]);
+        const user = requireAnyPanelPermission(request, response, [
+          "events:write", "events:read", "purchases:write", "purchases:read",
+          "stock:read", "stock:write", "quotes:read", "quotes:write", "commercial:read",
+        ]);
         if (!user) return;
         return sendJson(response, { ok: true, status: waStatus, qr: waQrData });
       }

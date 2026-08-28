@@ -22240,10 +22240,15 @@
     async function loadWaStatus() {
       try {
         const r = await fetch("/api/whatsapp-status", { credentials: "include" });
-        if (!r.ok) return;
+        if (!r.ok) {
+          renderWaStatus("error_" + r.status, null);
+          return;
+        }
         const data = await r.json();
         renderWaStatus(data.status, data.qr);
-      } catch (_) {}
+      } catch (e) {
+        renderWaStatus("fetch_error", null);
+      }
     }
 
     function renderWaStatus(status, qr) {
@@ -22259,6 +22264,10 @@
         qr:           { color: "#f59e0b", text: "Esperando escaneo QR" },
         disconnected: { color: "#ef4444", text: "Desconectado" },
         auth_failure: { color: "#ef4444", text: "Error de autenticacion" },
+        fetch_error:  { color: "#ef4444", text: "No se pudo consultar el estado" },
+        error_401:    { color: "#ef4444", text: "Sin permiso para ver el estado" },
+        error_403:    { color: "#ef4444", text: "Sin permiso para ver el estado" },
+        error_500:    { color: "#ef4444", text: "Error interno del servidor" },
       };
       const s = cfg[status] || { color: "#ccc", text: status };
       dot.style.background = s.color;
